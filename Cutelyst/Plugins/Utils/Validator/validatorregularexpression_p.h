@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREGEX_P_H
@@ -14,11 +14,11 @@ class ValidatorRegularExpressionPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRegularExpressionPrivate(const QString &f,
-                                      const QRegularExpression &r,
+                                      QRegularExpression r,
                                       const ValidatorMessages &m,
                                       const QString &dvk)
-        : ValidatorRulePrivate(f, m, dvk)
-        , regex(r)
+        : ValidatorRulePrivate(f, m, dvk, "ValidatorRegularExpression")
+        , regex(std::move(r))
     {
     }
 

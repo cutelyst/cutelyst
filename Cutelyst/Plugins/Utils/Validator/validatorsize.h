@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORSIZE_H
@@ -96,7 +96,7 @@ protected:
     QString genericParsingError(Context *c, const QVariant &errorData) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorSize)
+    Q_DECLARE_PRIVATE(ValidatorSize) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorSize)
 };
 

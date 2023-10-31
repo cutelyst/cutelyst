@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -45,21 +45,21 @@ ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &p
             const QDate odate = _comp.toDate();
             if (Q_UNLIKELY(!odate.isValid())) {
                 qCWarning(C_VALIDATOR).noquote()
-                        << "ValidatorAfter: Invalid comparison date for field"
-                        << "field" << field() << "at" << caName(c);
+                        << debugString(c)
+                        << "Invalid comparison date";
                 result.errorMessage = validationDataError(c);
             } else {
                 const QDate date = d->extractDate(c, v, d->inputFormat);
                 if (Q_UNLIKELY(!date.isValid())) {
-                    qCWarning(C_VALIDATOR).noquote()
-                            << "ValidatorAfter: Can not parse input date \"" << v
-                            << "\" for field" << field() << "at" << caName(c);
+                    qCWarning(C_VALIDATOR).noquote().nospace()
+                            << debugString(c)
+                            << " Can not parse input date \"" << v << "\"";
                     result.errorMessage = parsingError(c, odate);
                 } else {
                     if (Q_UNLIKELY(date <= odate)) {
-                        qCDebug(C_VALIDATOR).noquote().nospace() << "ValidatorAfter: Validation failed at " << caName(c)
-                                                                 << " for field " << field() << ": Input " << date
-                                                                 << " is not after " << odate;
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << "Input" << date << "is not after" << odate;
                         result.errorMessage = validationError(c, odate);
                     } else {
                         result.value.setValue(date);
@@ -72,22 +72,21 @@ ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &p
             const QDateTime odatetime = _comp.toDateTime();
             if (Q_UNLIKELY(!odatetime.isValid())) {
                 qCWarning(C_VALIDATOR).noquote()
-                        << "ValidatorAfter: Invalid comparison datetime for field"
-                        << field() << "at" << caName(c);
+                        << debugString(c)
+                        << "Invalid comparison datetime";
                 result.errorMessage = validationDataError(c);
             } else {
                 const QDateTime datetime = d->extractDateTime(c, v, d->inputFormat, tz);
                 if (Q_UNLIKELY(!datetime.isValid())) {
-                    qCWarning(C_VALIDATOR).noquote()
-                            << "ValidatorAfter: Can not parse input datetime \"" << v
-                            << "\" for field" << field() << "at" << caName(c);
+                    qCWarning(C_VALIDATOR).noquote().nospace()
+                            << debugString(c)
+                            << " Can not parse input datetime \"" << v << "\"";
                     result.errorMessage = parsingError(c, odatetime);
                 } else {
                     if (Q_UNLIKELY(datetime <= odatetime)) {
-                        qCDebug(C_VALIDATOR).noquote().nospace()
-                                << "ValidatorAfter: Validation failed at " << caName(c)
-                                << " for field " << field() << ": Input " << datetime
-                                << " is not after " << odatetime;
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << "Input" << datetime << "is not after" << odatetime;
                         result.errorMessage = validationError(c, odatetime);
                     } else {
                         result.value.setValue(datetime);
@@ -100,22 +99,21 @@ ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &p
             const QTime otime = _comp.toTime();
             if (Q_UNLIKELY(!otime.isValid())) {
                 qCWarning(C_VALIDATOR).noquote()
-                        << "ValidatorAfter: Invalid comparison time for field"
-                        << field() << "at" << caName(c);
+                        << debugString(c)
+                        << "Invalid comparison time";
                 result.errorMessage = validationDataError(c);
             } else {
                 const QTime time = d->extractTime(c, v, d->inputFormat);
                 if (Q_UNLIKELY(!time.isValid())) {
-                    qCWarning(C_VALIDATOR).noquote()
-                            << "ValdiatorAfter: Can not parse input time \"" << v
-                            << "\" for field" << field() << "at" << caName(c);
+                    qCWarning(C_VALIDATOR).noquote().nospace()
+                            << debugString(c)
+                            << " Can not parse input time \"" << v << "\"";
                     result.errorMessage = parsingError(c, otime);
                 } else {
                     if (Q_UNLIKELY(time <= otime)) {
-                        qCDebug(C_VALIDATOR).noquote().nospace()
-                                << "ValidatorAfter: Validation failed at " << caName(c)
-                                << " for field " << field() << ": Input " << time
-                                << " is not after " << otime;
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << "Input" << time << "is not after" << otime;
                         result.errorMessage = validationError(c, otime);
                     } else {
                         result.value.setValue(time);
@@ -124,13 +122,14 @@ ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &p
             }
 
         } else {
-            qCWarning(C_VALIDATOR).noquote().nospace()
-                << "ValidatorAfter: Invalid validation data for field " << field() << " at "
-                << caName(c) << ": " << d->comparison;
+            qCWarning(C_VALIDATOR).noquote()
+                    << debugString(c)
+                    << "Invalid comparison data:"
+                    << d->comparison;
             result.errorMessage = validationDataError(c);
         }
     } else {
-        defaultValue(c, &result, "ValidatorAfter");
+        defaultValue(c, &result);
     }
 
     return result;

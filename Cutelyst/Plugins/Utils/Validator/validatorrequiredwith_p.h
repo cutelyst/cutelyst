@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREQUIREDWITH_P_H
@@ -13,9 +13,9 @@ namespace Cutelyst {
 class ValidatorRequiredWithPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRequiredWithPrivate(const QString &f, const QStringList &o, const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString())
-        , otherFields(o)
+    ValidatorRequiredWithPrivate(const QString &f, QStringList o, const ValidatorMessages &m)
+        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredWith")
+        , otherFields(std::move(o))
     {
     }
 

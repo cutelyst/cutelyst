@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREQUIREDUNLESS_P_H
@@ -14,12 +14,12 @@ class ValidatorRequiredUnlessPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRequiredUnlessPrivate(const QString &f,
-                                   const QString &of,
-                                   const QStringList &ov,
+                                   QString of,
+                                   QStringList ov,
                                    const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString())
-        , otherField(of)
-        , otherValues(ov)
+        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredUnless")
+        , otherField(std::move(of))
+        , otherValues(std::move(ov))
     {
     }
 

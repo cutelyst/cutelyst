@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -15,9 +15,7 @@ ValidatorRegularExpression::ValidatorRegularExpression(const QString &field,
 {
 }
 
-ValidatorRegularExpression::~ValidatorRegularExpression()
-{
-}
+ValidatorRegularExpression::~ValidatorRegularExpression() = default;
 
 ValidatorReturnType ValidatorRegularExpression::validate(Context *c,
                                                          const ParamsMultiMap &params) const
@@ -34,26 +32,17 @@ ValidatorReturnType ValidatorRegularExpression::validate(Context *c,
                 result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR,
-                        "ValidatorRegularExpression: Validation failed for field %s at %s::%s "
-                        "because value does not match the following regular expression: %s",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()),
-                        qPrintable(d->regex.pattern()));
+                qCDebug(C_VALIDATOR).noquote().nospace()
+                        << debugString(c) << " value \"" << v << "\" does not match " << d->regex;
             }
         } else {
-            defaultValue(c, &result, "ValidatorRegularExpression");
+            defaultValue(c, &result);
         }
     } else {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR,
-                  "ValidatorRegularExpression: the regular expression for the field %s at %s::%s "
-                  "is not valid: %s",
-                  qPrintable(field()),
-                  qPrintable(c->controllerName()),
-                  qPrintable(c->actionName()),
-                  qPrintable(d->regex.errorString()));
+        qCWarning(C_VALIDATOR).noquote().nospace()
+                << debugString(c) << " the regular expression is not valid: "
+                << d->regex.errorString();
     }
 
     return result;

@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -81,7 +81,7 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
         result.extra = QVariant::fromValue<QList<Diagnose>>(diag.returnStatus);
 
     } else {
-        defaultValue(c, &result, "ValidatorEmail");
+        defaultValue(c, &result);
     }
 
     return result;
@@ -1854,7 +1854,7 @@ Cutelyst::ValidatorEmail::Category ValidatorEmail::category(Diagnose diagnose)
 {
     Category cat = Error;
 
-    const quint8 diag = static_cast<quint8>(diagnose);
+    const auto diag = static_cast<quint8>(diagnose);
 
     if (diag < static_cast<quint8>(Valid)) {
         cat = Valid;

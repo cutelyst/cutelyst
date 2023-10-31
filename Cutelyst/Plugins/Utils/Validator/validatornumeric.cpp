@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -14,9 +14,7 @@ ValidatorNumeric::ValidatorNumeric(const QString &field,
 {
 }
 
-ValidatorNumeric::~ValidatorNumeric()
-{
-}
+ValidatorNumeric::~ValidatorNumeric() = default;
 
 ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -26,20 +24,17 @@ ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap 
 
     if (!v.isEmpty()) {
         bool ok         = false;
-        const double _v = v.toDouble(&ok);
+        const auto _v   = v.toDouble(&ok);
         if (Q_LIKELY(ok)) {
             result.value.setValue(_v);
         } else {
-            qCDebug(C_VALIDATOR,
-                    "ValidatorNumeric: Validation failed for field %s at %s::%s: can not convert "
-                    "input value into a numeric value.",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " Can not convert input value \"" << v << "\" into a numeric value";
             result.errorMessage = validationError(c);
         }
     } else {
-        defaultValue(c, &result, "ValidatorNumeric");
+        defaultValue(c, &result);
     }
 
     return result;

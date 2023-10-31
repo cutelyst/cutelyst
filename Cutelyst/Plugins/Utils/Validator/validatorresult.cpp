@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -15,22 +15,17 @@ ValidatorResult::ValidatorResult()
 {
 }
 
-ValidatorResult::ValidatorResult(const ValidatorResult &other)
-    : d(other.d)
-{
-}
+ValidatorResult::ValidatorResult(const ValidatorResult &other) noexcept = default;
 
-ValidatorResult &ValidatorResult::operator=(const ValidatorResult &other)
-{
-    d = other.d;
-    return *this;
-}
+ValidatorResult::ValidatorResult(ValidatorResult &&other) noexcept = default;
 
-ValidatorResult::~ValidatorResult()
-{
-}
+ValidatorResult& ValidatorResult::operator=(const ValidatorResult &other) noexcept = default;
 
-bool ValidatorResult::isValid() const
+ValidatorResult& ValidatorResult::operator=(ValidatorResult &&other) noexcept = default;
+
+ValidatorResult::~ValidatorResult() noexcept = default;
+
+bool ValidatorResult::isValid() const noexcept
 {
     return d->errors.empty();
 }
@@ -55,17 +50,17 @@ QStringList ValidatorResult::errorStrings() const
     return strings;
 }
 
-QHash<QString, QStringList> ValidatorResult::errors() const
+QHash<QString, QStringList> ValidatorResult::errors() const noexcept
 {
     return d->errors;
 }
 
-QStringList ValidatorResult::errors(const QString &field) const
+QStringList ValidatorResult::errors(const QString &field) const noexcept
 {
     return d->errors.value(field);
 }
 
-bool ValidatorResult::hasErrors(const QString &field) const
+bool ValidatorResult::hasErrors(const QString &field) const noexcept
 {
     return d->errors.contains(field);
 }
@@ -90,12 +85,12 @@ QStringList ValidatorResult::failedFields() const
     return QStringList(d->errors.keys());
 }
 
-QVariantHash ValidatorResult::values() const
+QVariantHash ValidatorResult::values() const noexcept
 {
     return d->values;
 }
 
-QVariant ValidatorResult::value(const QString &field) const
+QVariant ValidatorResult::value(const QString &field) const noexcept
 {
     return d->values.value(field);
 }
@@ -105,12 +100,12 @@ void ValidatorResult::addValue(const QString &field, const QVariant &value)
     d->values.insert(field, value);
 }
 
-QVariantHash ValidatorResult::extras() const
+QVariantHash ValidatorResult::extras() const noexcept
 {
     return d->extras;
 }
 
-QVariant ValidatorResult::extra(const QString &field) const
+QVariant ValidatorResult::extra(const QString &field) const noexcept
 {
     return d->extras.value(field);
 }

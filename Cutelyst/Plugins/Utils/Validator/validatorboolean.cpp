@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -42,13 +42,12 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
             result.value.setValue<bool>(false);
         } else {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR).nospace().noquote()
-                    << "ValidatorBoolean: The value \"" << v << "\" of field"
-                    << field() << "at" << caName(c)
-                    << "can not be interpreted as boolean";
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " \"" << v << "\" can not be interpreted as boolean";
         }
     } else {
-        defaultValue(c, &result, "ValidatorBoolean");
+        defaultValue(c, &result);
     }
 
     return result;

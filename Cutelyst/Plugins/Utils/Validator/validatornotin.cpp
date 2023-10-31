@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -8,7 +8,7 @@
 using namespace Cutelyst;
 
 ValidatorNotIn::ValidatorNotIn(const QString &field,
-                               const QStringList &values,
+                               const QVariant &values,
                                Qt::CaseSensitivity cs,
                                const Cutelyst::ValidatorMessages &messages,
                                const QString &defValKey)
@@ -16,9 +16,7 @@ ValidatorNotIn::ValidatorNotIn(const QString &field,
 {
 }
 
-ValidatorNotIn::~ValidatorNotIn()
-{
-}
+ValidatorNotIn::~ValidatorNotIn() = default;
 
 ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c,
                                              const ParamsMultiMap &params) const
@@ -27,32 +25,33 @@ ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c,
 
     Q_D(const ValidatorNotIn);
 
-    if (d->values.empty()) {
-        result.errorMessage = validationDataError(c);
-        qCWarning(
-            C_VALIDATOR,
-            "ValidatorNotIn: The list of comparison values for the field %s at %s::%s is empty.",
-            qPrintable(field()),
-            qPrintable(c->controllerName()),
-            qPrintable(c->actionName()));
-    } else {
-        const QString v = value(params);
-        if (!v.isEmpty()) {
-            if (d->values.contains(v, d->cs)) {
+    const QString v = value(params);
+    if (!v.isEmpty()) {
+        QStringList vals;
+
+        if (d->values.userType() == QMetaType::QStringList) {
+            vals = d->values.toStringList();
+        } else if (d->values.userType() == QMetaType::QString) {
+            vals = c->stash(d->values.toString()).toStringList();
+        }
+
+        if (vals.empty()) {
+            result.errorMessage = validationDataError(c);
+            qCWarning(C_VALIDATOR).noquote()
+                    << debugString(c)
+                    << "The list of comparison values is empty";
+        } else {
+            if (vals.contains(v, d->cs)) {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR,
-                        "ValidatorNotIn: Validation failed for field %s at %s::%s: \"%s\" is part "
-                        "of the list of not allowed comparison values.",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()),
-                        qPrintable(v));
+                qCDebug(C_VALIDATOR).noquote().nospace()
+                        << debugString(c)
+                        << " \"" << v << "\" is part of the list of not allowed values" << d->values;
             } else {
                 result.value.setValue(v);
             }
-        } else {
-            defaultValue(c, &result, "ValidatorNotIn");
         }
+    } else {
+        defaultValue(c, &result);
     }
 
     return result;

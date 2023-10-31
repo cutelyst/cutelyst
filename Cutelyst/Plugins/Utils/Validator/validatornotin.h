@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORNOTIN_H
@@ -39,14 +39,16 @@ public:
     /*!
      * \brief Constructs a new not in validator.
      * \param field         Name of the input field to validate.
-     * \param values        List of values to compare against.
+     * \param values        List of values to compare against. Can be either a QStringList containing
+     *                      the not allowed values or a QString specifing a stash key containing a
+     *                      QStringList with not allowed values.
      * \param cs            Case sensitivity when comparing the values.
      * \param messages      Custom error message if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
      * input field is empty. This value will \b NOT be validated.
      */
     ValidatorNotIn(const QString &field,
-                   const QStringList &values,
+                   const QVariant &values,
                    Qt::CaseSensitivity cs            = Qt::CaseSensitive,
                    const ValidatorMessages &messages = ValidatorMessages(),
                    const QString &defValKey          = QString());
@@ -77,7 +79,7 @@ protected:
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorNotIn)
+    Q_DECLARE_PRIVATE(ValidatorNotIn) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorNotIn)
 };
 

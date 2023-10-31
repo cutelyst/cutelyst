@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORRESULT_H
@@ -82,24 +82,34 @@ public:
     /*!
      * \brief Constructs a copy of \a other.
      */
-    ValidatorResult(const ValidatorResult &other);
+    ValidatorResult(const ValidatorResult &other) noexcept;
+
+    /*!
+     * \brief
+     */
+    ValidatorResult(ValidatorResult &&other) noexcept;
 
     /*!
      * \brief Assigns \a other to this %ValidatorResult.
      */
-    ValidatorResult &operator=(const ValidatorResult &other);
+    ValidatorResult &operator=(const ValidatorResult &other) noexcept;
+
+    /*!
+     * \brief
+     */
+    ValidatorResult &operator=(ValidatorResult &&other) noexcept;
 
     /*!
      * \brief Deconstructs the %ValidatorResult.
      */
-    ~ValidatorResult();
+    ~ValidatorResult() noexcept;
 
     /*!
      * \brief Returns \c true if the validation was successful.
      *
      * \note A newly constructed %ValidatorResult will be valid by default.
      */
-    bool isValid() const;
+    Q_REQUIRED_RESULT bool isValid() const noexcept;
 
     /*!
      * \brief Adds new error information to the internal QHash.
@@ -113,7 +123,7 @@ public:
      * \brief Returns a list of all error messages.
      * \return A list of all error messages from every failed ValidatorRule.
      */
-    QStringList errorStrings() const;
+    Q_REQUIRED_RESULT QStringList errorStrings() const;
 
     /*!
      * \brief Returns a dictionary containing fields with errors.
@@ -121,7 +131,7 @@ public:
      * parameter\endlink as key and a list of validation errors for this parameter in a QStringList
      * as value.
      */
-    QHash<QString, QStringList> errors() const;
+    Q_REQUIRED_RESULT QHash<QString, QStringList> errors() const noexcept;
 
     /*!
      * \brief Returns a list of all error messages for an input \a field.
@@ -130,7 +140,7 @@ public:
      * returned list will be empty.
      * \sa errorStrings()
      */
-    QStringList errors(const QString &field) const;
+    Q_REQUIRED_RESULT QStringList errors(const QString &field) const noexcept;
 
     /*!
      * \brief Returns \c true if the \a field has validation errors.
@@ -139,7 +149,7 @@ public:
      * \sa \link errors(const QString &field) errors()\endlink
      * \since Cutelyst 2.0.0
      */
-    bool hasErrors(const QString &field) const;
+    Q_REQUIRED_RESULT bool hasErrors(const QString &field) const noexcept;
 
     /*!
      * \brief Returns the dictionray containing fields with errors as JSON object.
@@ -151,21 +161,21 @@ public:
      * \sa errors() errorStrings()
      * \since Cutelyst 1.12.0
      */
-    QJsonObject errorsJsonObject() const;
+    Q_REQUIRED_RESULT QJsonObject errorsJsonObject() const;
 
     /*!
      * \brief Returns a list of fields with errors.
      * \return A list of of  input \link Request::parameters() parameter\endlink names that have
      * validation errors. \since Cutelyst 1.12.0
      */
-    QStringList failedFields() const;
+    Q_REQUIRED_RESULT QStringList failedFields() const;
 
     /*!
      * \brief Returns \c true if the validation was successful.
      *
      * \note A newly constructed ValidatorResult will be valid by default.
      */
-    explicit operator bool() const { return isValid(); }
+    explicit operator bool() const noexcept { return isValid(); }
 
     /*!
      * \brief Returns the values that have been extracted by the validators.
@@ -174,7 +184,7 @@ public:
      * look at the documentation of the specific validator to see what kind of extracted value they
      * will provide. \sa value() addValue() \since Cutelyst 2.0.0
      */
-    QVariantHash values() const;
+    Q_REQUIRED_RESULT QVariantHash values() const noexcept;
 
     /*!
      * \brief Returns the extracted value for the input \a field.
@@ -184,7 +194,7 @@ public:
      * specific validator to see what kind of extracted value they will provide. \sa values()
      * addValue() \since Cutelyst 2.0.0
      */
-    QVariant value(const QString &field) const;
+    Q_REQUIRED_RESULT QVariant value(const QString &field) const noexcept;
 
     /*!
      * \brief Adds a new \a value extracted from the specified input \a field.
@@ -202,7 +212,7 @@ public:
      * \sa extra() addExtra()
      * \since Cutelyst 2.0.0
      */
-    QVariantHash extras() const;
+    Q_REQUIRED_RESULT QVariantHash extras() const noexcept;
 
     /*!
      * \brief Returns the extra data for the input \a field.
@@ -212,7 +222,7 @@ public:
      * look at the documentation of the specific validators to see what kind of extra data they
      * might generate. \sa extras() addExtra() \since Cutelyst 2.0.0
      */
-    QVariant extra(const QString &field) const;
+    Q_REQUIRED_RESULT QVariant extra(const QString &field) const noexcept;
 
     /*!
      * \brief Adds new \a extra data that came up when validating the input \a field.

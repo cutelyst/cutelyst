@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -254,7 +254,7 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
         }
 
     } else {
-        defaultValue(c, &result, "ValidatorFileSize");
+        defaultValue(c, &result);
     }
 
     return result;

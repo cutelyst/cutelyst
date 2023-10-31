@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -12,8 +12,9 @@ using namespace Cutelyst;
 
 ValidatorRule::ValidatorRule(const QString &field,
                              const ValidatorMessages &messages,
-                             const QString &defValKey)
-    : d_ptr(new ValidatorRulePrivate(field, messages, defValKey))
+                             const QString &defValKey,
+                             QByteArrayView validatorName)
+    : d_ptr(new ValidatorRulePrivate(field, messages, defValKey, validatorName))
 {
 }
 
@@ -24,7 +25,7 @@ ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd)
 
 ValidatorRule::~ValidatorRule() = default;
 
-QString ValidatorRule::field() const
+QString ValidatorRule::field() const noexcept
 {
     Q_D(const ValidatorRule);
     return d->field;
@@ -156,39 +157,39 @@ QString ValidatorRule::genericValidationDataError(Context *c, const QVariant &er
 }
 
 void ValidatorRule::defaultValue(Context *c,
-                                 ValidatorReturnType *result,
-                                 const char *validatorName) const
+                                 ValidatorReturnType *result) const
 {
     Q_ASSERT_X(c, "getting default value", "invalid context object");
     Q_ASSERT_X(result, "getting default value", "invalid result object");
-    Q_ASSERT_X(validatorName, "getting default value", "invalid validator name");
     Q_D(const ValidatorRule);
     if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
         result->value.setValue(c->stash(d->defValKey));
         qCDebug(C_VALIDATOR).noquote().nospace()
-                << validatorName << ": Using default value " << result->value
-                << " for field " << field() << " at " << caName(c);
+                << d->validatorName << ": Using default value " << result->value
+                << " for field \"" << field() << "\" at " << c->controllerName() << "::"
+                << c->actionName();
     }
 }
 
-QString ValidatorRule::caName(Context *c)
+QString ValidatorRule::debugString(Context *c) const
 {
-    return c->controllerName() + QLatin1String("::") + c->actionName();
+    Q_D(const ValidatorRule);
+    return QString::fromLatin1(d->validatorName) + QLatin1String(": Validation failed for field \"") + field() + QLatin1String("\" at ") + c->controllerName() + QLatin1String("::") + c->actionName() + QLatin1Char(':');
 }
 
-bool ValidatorRule::trimBefore() const
+bool ValidatorRule::trimBefore() const noexcept
 {
     Q_D(const ValidatorRule);
     return d->trimBefore;
 }
 
-void ValidatorRule::setTrimBefore(bool trimBefore)
+void ValidatorRule::setTrimBefore(bool trimBefore) noexcept
 {
     Q_D(ValidatorRule);
     d->trimBefore = trimBefore;
 }
 
-void ValidatorRule::setTranslationContext(QLatin1String trContext)
+void ValidatorRule::setTranslationContext(QLatin1String trContext) noexcept
 {
     Q_D(ValidatorRule);
     d->translationContext = trContext;

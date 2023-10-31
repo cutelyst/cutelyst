@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORPWQUALITY_H
@@ -57,6 +57,11 @@ class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorPwQuality : public Validat
 {
 public:
     /*!
+     * \brief The default quality score threshold below the validation fails.
+     */
+    static constexpr int defaultThreshold{30};
+
+    /*!
      * \brief Constructs a new %ValidatorPwQuality with the given parameters.
      * \param field     Name of the input field to validate.
      * \param threshold The quality score threshold below the validation fails.
@@ -68,7 +73,7 @@ public:
      * fails.
      */
     explicit ValidatorPwQuality(const QString &field,
-                                int threshold                     = 30,
+                                int threshold                     = ValidatorPwQuality::defaultThreshold,
                                 const QVariant &options           = QVariant(),
                                 const QString &userName           = QString(),
                                 const QString &oldPassword        = QString(),
@@ -127,7 +132,7 @@ protected:
     QString genericValidationError(Context *c, const QVariant &errorData) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorPwQuality)
+    Q_DECLARE_PRIVATE(ValidatorPwQuality) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorPwQuality)
 };
 

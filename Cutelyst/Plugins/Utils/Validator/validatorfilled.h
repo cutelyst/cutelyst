@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORFILLED_H
@@ -19,7 +19,7 @@ class ValidatorFilledPrivate;
  * \brief The field under validation must not be empty when it is present.
  *
  * The difference to the \link ValidatorRequired required validator \endlink is, that it will only
- * be checked for non emptyness, if it is available. If it is available, it is not allowed to be
+ * be checked for non emptyness if it is available. If it is available, it is not allowed to be
  * empty.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link

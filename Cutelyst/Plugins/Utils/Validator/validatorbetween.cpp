@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -42,22 +42,22 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << "ValidatorBetween: Can not parse input \"" << v << "\" for field "
-                        << field() << " at " << caName(c) << " into a number";
+                        << debugString(c)
+                        << " Can not parse input \"" << v << "\" into an integer number";
             } else {
                 const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, -1);
-                    qCWarning(C_VALIDATOR).noquote().nospace()
-                            << "ValidatorBetween: Invalid minimum comparison value for field "
-                            << field() << " at " << caName(c) << ": " << d->min;
+                    qCWarning(C_VALIDATOR).noquote()
+                            << "Invalid mininum comparison value:"
+                            << d->min;
                 } else {
                     const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(c, 1);
-                        qCWarning(C_VALIDATOR).noquote().nospace()
-                                << "ValidatorBetween: Invalid maximum comparison value for field "
-                                << field() << " at " << caName(c) << ": " << d->max;
+                        qCWarning(C_VALIDATOR).noquote()
+                                << "Invalid maximum comparison value:"
+                                << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
                             result.errorMessage =
@@ -65,10 +65,9 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                                 QVariantMap{{QStringLiteral("val"), val},
                                                             {QStringLiteral("min"), min},
                                                             {QStringLiteral("max"), max}});
-                            qCDebug(C_VALIDATOR).noquote().nospace()
-                                    << "ValidatorBetween: Validation failed for field " << field()
-                                    << " at " << caName(c) << ": " << val << " is not between "
-                                    << min << " and " << max;
+                            qCDebug(C_VALIDATOR).noquote()
+                                    << debugString(c)
+                                    << val << "is not between" << min << "and" << max;
                         } else {
                             valid = true;
                         }
@@ -86,22 +85,24 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << "ValidatorBetween: Can not parse input \"" << v << "\" for field "
-                        << field() << " at " << caName(c) << " into a number";
+                        << debugString(c)
+                        << " Can not parse input \"" << v << "\" into an unsigned integer number";
             } else {
                 const qulonglong min = d->extractULongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, -1);
-                    qCWarning(C_VALIDATOR).noquote().nospace()
-                            << "ValidatorBetween: Invalid minimum comparison value for field "
-                            << field() << " at " << caName(c) << ": " << d->min;
+                    qCWarning(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid mininum comparison value:"
+                            << d->min;
                 } else {
                     const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(c, 1);
-                        qCWarning(C_VALIDATOR).noquote().nospace()
-                                << "ValidatorBetween: Invalid maximum comparison value for field "
-                                << field() << " at " << caName(c) << ": " << d->max;
+                        qCWarning(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << "Invalid maximum comparison value:"
+                                << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
                             result.errorMessage =
@@ -109,10 +110,9 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                                 QVariantMap{{QStringLiteral("val"), val},
                                                             {QStringLiteral("min"), min},
                                                             {QStringLiteral("max"), max}});
-                            qCDebug(C_VALIDATOR).noquote().nospace()
-                                    << "ValidatorBetween: Validation failed for field " << field()
-                                    << " at " << caName(c) << ": " << val << " is not between "
-                                    << min << " and " << max;
+                            qCDebug(C_VALIDATOR).noquote()
+                                    << debugString(c)
+                                    << val << "is not between" << min << "and" << max;
                         } else {
                             valid = true;
                         }
@@ -127,22 +127,24 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << "ValidatorBetween: Can not parse input \"" << v << "\" for field "
-                        << field() << " at " << caName(c) << " into a number";
+                        << debugString(c)
+                        << " Can not parse input \"" << v << "\" into a floating point number";
             } else {
                 const double min = d->extractDouble(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, -1);
-                    qCWarning(C_VALIDATOR).noquote().nospace()
-                            << "ValidatorBetween: Invalid minimum comparison value for field "
-                            << field() << " at " << caName(c) << ": " << d->min;
+                    qCWarning(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid mininum comparison value:"
+                            << d->min;
                 } else {
                     const double max = d->extractDouble(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(c, 1);
-                        qCWarning(C_VALIDATOR).noquote().nospace()
-                                << "ValidatorBetween: Invalid minimum comparison value for field "
-                                << field() << " at " << caName(c) << ": " << d->min;
+                        qCWarning(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << "Invalid maximum comparison value:"
+                                << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
                             result.errorMessage =
@@ -150,10 +152,9 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                                 QVariantMap{{QStringLiteral("val"), val},
                                                             {QStringLiteral("min"), min},
                                                             {QStringLiteral("max"), max}});
-                            qCDebug(C_VALIDATOR).noquote().nospace()
-                                    << "ValidatorBetween: Validation failed for field " << field()
-                                    << " at " << caName(c) << ": " << val << " is not between "
-                                    << min << " and " << max;
+                            qCDebug(C_VALIDATOR).noquote()
+                                    << debugString(c)
+                                    << val << "is not between" << min << "and" << max;
                         } else {
                             valid = true;
                         }
@@ -167,16 +168,18 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(c, -1);
-                qCWarning(C_VALIDATOR).noquote().nospace()
-                        << "ValidatorBetween: Invalid minimum comparison value for field "
-                        << field() << " at " << caName(c) << ": " << d->min;
+                qCWarning(C_VALIDATOR).noquote()
+                        << debugString(c)
+                        << "Invalid mininum comparison value:"
+                        << d->min;
             } else {
                 const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(C_VALIDATOR).noquote().nospace()
-                            << "ValidatorBetween: Invalid minimum comparison value for field "
-                            << field() << " at " << caName(c) << ": " << d->min;
+                    qCWarning(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid maximum comparison value:"
+                            << d->max;
                 } else {
                     if ((val < min) || (val > max)) {
                         result.errorMessage =
@@ -184,10 +187,9 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("min"), min},
                                                         {QStringLiteral("max"), max}});
-                        qCDebug(C_VALIDATOR).noquote().nospace()
-                                << "ValidatorBetween: Validation failed for field " << field()
-                                << " at " << caName(c) << ": string length " << val
-                                << " is not between " << min << " and " << max;
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << "String length" << val << "is not between" << min << "and" << max;
                     } else {
                         valid = true;
                     }
@@ -196,8 +198,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
         } break;
         default:
             qCWarning(C_VALIDATOR).noquote()
-                    << "ValidatorBetween: The comparison type" << d->type << "for field" << field()
-                    << "at" << caName(c) << "is not supported";
+                    << debugString(c)
+                    << "The comparison type" << d->type << "is not supported";
             result.errorMessage = validationDataError(c, 0);
             break;
         }
@@ -215,7 +217,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             }
         }
     } else {
-        defaultValue(c, &result, "ValidatorBetween");
+        defaultValue(c, &result);
     }
 
     return result;

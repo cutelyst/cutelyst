@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORRULE_P_H
@@ -22,16 +22,17 @@ class ValidatorRulePrivate
 {
     Q_DISABLE_COPY(ValidatorRulePrivate)
 public:
-    ValidatorRulePrivate() {}
+    ValidatorRulePrivate() = default;
 
-    ValidatorRulePrivate(const QString &f, const ValidatorMessages &m, const QString &dvk)
+    ValidatorRulePrivate(const QString &f, const ValidatorMessages &m, const QString &dvk, QByteArrayView valName)
         : field(f)
         , defValKey(dvk)
         , messages(m)
+        , validatorName(valName)
     {
     }
 
-    virtual ~ValidatorRulePrivate() {}
+    virtual ~ValidatorRulePrivate() = default;
 
     QDate extractDate(Context *c, const QString &date, const char *format = nullptr) const
     {
@@ -170,7 +171,7 @@ public:
 
         Q_ASSERT(c);
 
-        int sepPos = field.indexOf(QLatin1Char('|'));
+        qsizetype sepPos = field.indexOf(QLatin1Char('|'));
         if (sepPos > -1) {
             const QString fieldName = field.left(sepPos);
             const QString value     = params.value(fieldName);
@@ -496,7 +497,8 @@ public:
     QString field;
     QString defValKey;
     ValidatorMessages messages;
-    bool trimBefore = true;
+    QByteArrayView validatorName;
+    bool trimBefore{true};
 };
 
 } // namespace Cutelyst

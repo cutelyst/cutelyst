@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -32,12 +32,12 @@ ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c,
             result.value.setValue(v);
         } else {
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << "ValidatorAlpha: Validation failed for field " << field() << " at "
-                    << caName(c) << ": \"" << v << "\" contains charactes that are not allowed";
+                    << debugString(c)
+                    << " \"" << v << "\" contains character that are not allowed";
             result.errorMessage = validationError(c);
         }
     } else {
-        defaultValue(c, &result, "ValidatorAlpha");
+        defaultValue(c, &result);
     }
 
     return result;

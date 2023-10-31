@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORNOTIN_P_H
@@ -14,18 +14,18 @@ class ValidatorNotInPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorNotInPrivate(const QString &f,
-                          const QStringList &v,
+                          QVariant v,
                           Qt::CaseSensitivity s,
                           const ValidatorMessages &m,
                           const QString &dvk)
-        : ValidatorRulePrivate(f, m, dvk)
+        : ValidatorRulePrivate(f, m, dvk, "ValidatorNotIn")
         , cs(s)
-        , values(v)
+        , values(std::move(v))
     {
     }
 
     Qt::CaseSensitivity cs;
-    QStringList values;
+    QVariant values;
 };
 
 } // namespace Cutelyst

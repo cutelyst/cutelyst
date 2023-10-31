@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORDOMAIN_P_H
@@ -19,7 +19,7 @@ public:
                            bool cd,
                            const ValidatorMessages &m,
                            const QString &dvk)
-        : ValidatorRulePrivate(f, m, dvk)
+        : ValidatorRulePrivate(f, m, dvk, "ValidatorDomain")
         , checkDNS(cd)
     {
     }

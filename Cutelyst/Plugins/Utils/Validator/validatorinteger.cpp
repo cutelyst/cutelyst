@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -44,8 +44,8 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
         default:
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << "ValidatorInteger: Conversion type for field" << field()
-                    << "at" << caName(c) << "is not an integer value";
+                    << debugString(c)
+                    << "Conversion type" << d->type << "is not an integer type";
             break;
         }
 
@@ -53,12 +53,13 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
             result.value = converted;
         } else {
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << "ValidatorInteger: Validation failed for field " << field()
-                    << " at " << caName(c) << ": not an integer value";
+                    << debugString(c)
+                    << " \"" << v << "\" is not parseable as integer value "
+                    << "or exceeds the limits of the selected type " << d->type;
             result.errorMessage = validationError(c);
         }
     } else {
-        defaultValue(c, &result, "ValidatorInteger");
+        defaultValue(c, &result);
     }
 
     return result;

@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -15,9 +15,7 @@ ValidatorRequiredUnless::ValidatorRequiredUnless(const QString &field,
 {
 }
 
-ValidatorRequiredUnless::~ValidatorRequiredUnless()
-{
-}
+ValidatorRequiredUnless::~ValidatorRequiredUnless() = default;
 
 ValidatorReturnType ValidatorRequiredUnless::validate(Context *c,
                                                       const ParamsMultiMap &params) const
@@ -28,11 +26,8 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c,
 
     if (d->otherField.isEmpty() || d->otherValues.empty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR,
-                  "ValidatorRequiredUnless: invalid validation data for field %s at %s::%s",
-                  qPrintable(field()),
-                  qPrintable(c->controllerName()),
-                  qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR).noquote()
+                << "Invalid validation data";
     } else {
         const QString v = value(params);
         const QString ov =
@@ -42,11 +37,9 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c,
                 result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR,
-                        "ValidatorRequiredUnless: Validation failed for field %s at %s::%s",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()));
+                qCDebug(C_VALIDATOR).noquote().nospace()
+                        << debugString(c)
+                        << " The field is not present or empty but \"" << d->otherField << "\" not contains " << ov;
             }
         } else {
             if (!v.isEmpty()) {

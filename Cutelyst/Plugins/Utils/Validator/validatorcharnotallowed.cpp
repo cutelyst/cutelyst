@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2019-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2019-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -54,12 +54,12 @@ ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c,
             }
         } else {
             qCWarning(C_VALIDATOR).noquote()
-                << "ValidatorCharNotAllowed: Empty validation data for field"
-                << field() << "at" << caName(c);
+                    << debugString(c)
+                    << "Empty validation data";
             result.errorMessage = validationDataError(c);
         }
     } else {
-        defaultValue(c, &result, "ValidatorCharNotAllowed");
+        defaultValue(c, &result);
     }
 
     return result;

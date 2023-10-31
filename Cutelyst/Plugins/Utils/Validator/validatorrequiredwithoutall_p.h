@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREQUIREDWITHOUTALL_P_H
@@ -14,10 +14,10 @@ class ValidatorRequiredWithoutAllPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRequiredWithoutAllPrivate(const QString &f,
-                                       const QStringList &o,
+                                       QStringList o,
                                        const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString())
-        , otherFields(o)
+        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredWithoutAll")
+        , otherFields(std::move(o))
     {
     }
 
