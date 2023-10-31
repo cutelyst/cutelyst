@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -17,9 +17,7 @@ ValidatorTime::ValidatorTime(const QString &field,
 {
 }
 
-ValidatorTime::~ValidatorTime()
-{
-}
+ValidatorTime::~ValidatorTime() = default;
 
 ValidatorReturnType ValidatorTime::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -34,19 +32,15 @@ ValidatorReturnType ValidatorTime::validate(Context *c, const ParamsMultiMap &pa
 
         if (!time.isValid()) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorTime: Validation failed for value \"%s\" in field %s at %s::%s: not "
-                    "a valid time",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " \"" << v << "\" is not a valid time";
         } else {
             result.value.setValue(time);
         }
 
     } else {
-        defaultValue(c, &result, "ValidatorTime");
+        defaultValue(c, &result);
     }
 
     return result;

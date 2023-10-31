@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREQUIRED_P_H
@@ -14,7 +14,7 @@ class ValidatorRequiredPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRequiredPrivate(const QString &f, const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString())
+        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequired")
     {
     }
 };

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREQUIREDIFSTASH_P_H
@@ -14,12 +14,12 @@ class ValidatorRequiredIfStashPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRequiredIfStashPrivate(const QString &f,
-                                    const QString &sk,
-                                    const QVariantList &sv,
+                                    QString sk,
+                                    QVariantList sv,
                                     const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString())
-        , stashKey(sk)
-        , stashValues(sv)
+        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredIfStash")
+        , stashKey(std::move(sk))
+        , stashValues(std::move(sv))
     {
     }
 

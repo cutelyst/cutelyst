@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -14,9 +14,7 @@ ValidatorRequiredWithout::ValidatorRequiredWithout(const QString &field,
 {
 }
 
-ValidatorRequiredWithout::~ValidatorRequiredWithout()
-{
-}
+ValidatorRequiredWithout::~ValidatorRequiredWithout() = default;
 
 ValidatorReturnType ValidatorRequiredWithout::validate(Context *c,
                                                        const ParamsMultiMap &params) const
@@ -27,19 +25,18 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c,
 
     if (d->otherFields.isEmpty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR,
-                  "ValidatorRequiredWithout: invalid validation data for field %s at %s::%s",
-                  qPrintable(field()),
-                  qPrintable(c->controllerName()),
-                  qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR).noquote()
+                << "Invalid validation data";
     } else {
 
         bool otherMissing = false;
 
         const QStringList ofc = d->otherFields;
 
+        QString otherField;
         for (const QString &other : ofc) {
             if (!params.contains(other)) {
+                otherField = other;
                 otherMissing = true;
                 break;
             }
@@ -52,11 +49,9 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c,
                 result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR,
-                        "ValidatorRequiredWithout: Validation failed for field %s at %s::%s",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()));
+                qCDebug(C_VALIDATOR).noquote().nospace()
+                        << debugString(c)
+                        << " The field is not present or empty but the field \"" << otherField << "\" is not present";
             }
         } else {
             if (!v.isEmpty()) {

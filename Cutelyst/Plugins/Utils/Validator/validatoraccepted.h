@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORACCEPTED_H
@@ -43,7 +43,7 @@ public:
     /*!
      * \brief Deconstructs the accepted validator.
      */
-    ~ValidatorAccepted() override = default;
+    ~ValidatorAccepted() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

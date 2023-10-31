@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORMIN_P_H
@@ -15,12 +15,12 @@ class ValidatorMinPrivate : public ValidatorRulePrivate
 public:
     ValidatorMinPrivate(const QString &f,
                         QMetaType::Type t,
-                        const QVariant &m,
+                        QVariant m,
                         const ValidatorMessages &msgs,
                         const QString &dvk)
-        : ValidatorRulePrivate(f, msgs, dvk)
+        : ValidatorRulePrivate(f, msgs, dvk, "ValidatorMin")
         , type(t)
-        , min(m)
+        , min(std::move(m))
     {
     }
 

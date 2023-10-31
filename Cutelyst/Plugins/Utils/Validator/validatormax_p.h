@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORMAX_P_H
@@ -18,7 +18,7 @@ public:
                         QVariant m,
                         const ValidatorMessages &msgs,
                         const QString &dvk)
-        : ValidatorRulePrivate(f, msgs, dvk)
+        : ValidatorRulePrivate(f, msgs, dvk, "ValidatorMax")
         , type(t)
         , max(std::move(m))
     {

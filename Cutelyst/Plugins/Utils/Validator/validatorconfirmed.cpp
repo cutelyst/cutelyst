@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -30,9 +30,9 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
 
         if (Q_UNLIKELY(v != ofv)) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR).noquote()
-                    << "ValidatorConfirmed: Failed to confirm the value in the field"
-                    << field() << "at" << caName(c);
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " The value in \"" << ofn << "\" does not fit: \"" << v << "\" != \"" << ofv << "\"";
         } else {
             result.value.setValue(v);
         }

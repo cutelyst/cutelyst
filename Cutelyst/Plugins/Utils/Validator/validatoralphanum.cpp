@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -31,13 +31,13 @@ ValidatorReturnType ValidatorAlphaNum::validate(Context *c, const ParamsMultiMap
             result.value.setValue(v);
         } else {
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << "ValidatorAlphaNum: Validation failed for field " << field() << " at "
-                    << caName(c) << ": \"" << v << "\" contains characters that are not allowed";
+                    << debugString(c)
+                    << " \"" << v << "\" contains character that are not allowed";
             result.errorMessage = validationError(c);
         }
 
     } else {
-        defaultValue(c, &result, "ValidatorAlphaNum");
+        defaultValue(c, &result);
     }
 
     return result;

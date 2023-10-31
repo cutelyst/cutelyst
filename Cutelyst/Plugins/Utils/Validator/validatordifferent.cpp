@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -30,10 +30,9 @@ ValidatorReturnType ValidatorDifferent::validate(Context *c, const ParamsMultiMa
     if (!v.isEmpty()) {
         if ((v == o)) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR).nospace().noquote()
-                    << "ValidatorDifferent: Validation failed for value \"" << v << "\" in field "
-                    << field() << " at " << caName(c) << ": the value in the field " << d->otherField
-                    << " is not different";
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " The value in \"" << d->otherField << "\" is not different: \"" << v << "\" == \"" << o << "\"";
         } else {
             result.value.setValue(v);
         }

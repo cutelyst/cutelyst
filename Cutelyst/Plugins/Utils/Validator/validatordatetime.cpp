@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -35,15 +35,15 @@ ValidatorReturnType ValidatorDateTime::validate(Context *c, const ParamsMultiMap
 
         if (!dt.isValid()) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR).noquote()
-                    << "ValidatorDateTime: Validation failed for value \"" << v << "\" in field"
-                    << field() << "at" << caName(c);
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " \"" << v << "\" is not a valid datetime";
         } else {
             result.value.setValue(dt);
         }
 
     } else {
-        defaultValue(c, &result, "ValidatorDateTime");
+        defaultValue(c, &result);
     }
 
     return result;

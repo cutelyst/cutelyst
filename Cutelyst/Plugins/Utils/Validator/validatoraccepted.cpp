@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -9,11 +9,20 @@
 
 using namespace Cutelyst;
 
+const QStringList ValidatorAcceptedPrivate::trueVals{
+    u"yes"_qs,
+    u"on"_qs,
+    u"1"_qs,
+    u"true"_qs
+};
+
 ValidatorAccepted::ValidatorAccepted(const QString &field,
                                      const Cutelyst::ValidatorMessages &messages)
     : ValidatorRule(*new ValidatorAcceptedPrivate(field, messages))
 {
 }
+
+ValidatorAccepted::~ValidatorAccepted() = default;
 
 ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
                                                 const Cutelyst::ParamsMultiMap &params) const
@@ -25,9 +34,7 @@ ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
     } else {
         result.errorMessage = validationError(c);
         result.value.setValue<bool>(false);
-        qCDebug(C_VALIDATOR).nospace().noquote()
-                << "ValidatorAccepted: Validation failed for field "
-                << field() << " at " << caName(c);
+        qCDebug(C_VALIDATOR).noquote() << debugString(c);
     }
 
     return result;
@@ -35,11 +42,7 @@ ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
 
 bool ValidatorAccepted::validate(const QString &value)
 {
-    bool ret = true;
-    static const QStringList l(
-        {QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
-    ret = l.contains(value, Qt::CaseInsensitive);
-    return ret;
+    return ValidatorAcceptedPrivate::trueVals.contains(value, Qt::CaseInsensitive);
 }
 
 QString ValidatorAccepted::genericValidationError(Cutelyst::Context *c,

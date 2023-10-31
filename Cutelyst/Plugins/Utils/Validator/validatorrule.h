@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORRULE_H
@@ -64,14 +64,14 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
      * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link
      * QString::isNull() null string\endlink, indicating that the validation has succeeded.
      */
-    explicit operator bool() const { return errorMessage.isNull(); }
+    explicit operator bool() const noexcept { return errorMessage.isNull(); }
 
     /*!
      * \brief Returns \c true if validation succeeded.
      * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link
      * QString::isNull() null string\endlink, indicating that the validation has succeeded.
      */
-    bool isValid() const { return errorMessage.isNull(); }
+    Q_REQUIRED_RESULT bool isValid() const noexcept { return errorMessage.isNull(); }
 };
 
 /*!
@@ -142,7 +142,7 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorMessages {
     /*!
      * \brief Constructs a default %ValidatorMessages object with all custom messages disabled.
      */
-    ValidatorMessages() {}
+    ValidatorMessages() = default;
     /*!
      * \brief Constructs a new %ValidatorMessages object with the given parameters.
      *
@@ -240,7 +240,7 @@ class ValidatorRulePrivate;
  *
  * MyValidator::MyValidator(const QString &field, const QString &compareValue, const
  * ValidatorMessages &messages, const QString &defValKey) : Cutelyst::ValidatorRule(field, messages,
- * defValKey), m_compareValue(compareValue)
+ * defValKey, "MyValidator"), m_compareValue(compareValue)
  * {
  * }
  *
@@ -306,10 +306,12 @@ public:
      * \param messages      Custom error messages if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
      * input field is empty. This value will \b NOT be validated.
+     * \param vaidatorName  Name of the validator used for debug output.
      */
     ValidatorRule(const QString &field,
                   const ValidatorMessages &messages = ValidatorMessages(),
-                  const QString &defValKey          = QString());
+                  const QString &defValKey          = QString(),
+                  QByteArrayView validatorName      = nullptr);
 
     /*!
      * \brief Deconstructs the ValidatorRule.
@@ -374,19 +376,19 @@ protected:
      * \brief Returns the name of the field to validate.
      * \return The name of the field to validate that has been set in the constructor.
      */
-    QString field() const;
+    Q_REQUIRED_RESULT QString field() const noexcept;
 
     /*!
      * \brief Returns the human readable field label used for generic error messages.
      * The label can be set in the ValidatorMessages on the constructor.
      * \return Human readable field label used for generic error messages.
      */
-    QString label(Context *c) const;
+    Q_REQUIRED_RESULT QString label(Context *c) const;
 
     /*!
      * \brief Returns the value of the field from the input \a params.
      */
-    QString value(const ParamsMultiMap &params) const;
+    Q_REQUIRED_RESULT QString value(const ParamsMultiMap &params) const;
 
     /*!
      * \brief Returns true if the field value should be trimmed before validation.
@@ -394,7 +396,7 @@ protected:
      * By default, this will return \c true and all input values will be trimmed before validation
      * to remove whitespaces from the beginning and the end.
      */
-    bool trimBefore() const;
+    Q_REQUIRED_RESULT bool trimBefore() const noexcept;
 
     /*!
      * \brief Returns a descriptive error message if validation failed.
@@ -410,7 +412,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    QString validationError(Context *c, const QVariant &errorData = QVariant()) const;
+    Q_REQUIRED_RESULT QString validationError(Context *c, const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error mesage if validation failed.
@@ -459,7 +461,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    QString parsingError(Context *c, const QVariant &errorData = QVariant()) const;
+    Q_REQUIRED_RESULT QString parsingError(Context *c, const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error message if an error occures while parsing input.
@@ -507,7 +509,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    QString validationDataError(Context *c, const QVariant &errorData = QVariant()) const;
+    Q_REQUIRED_RESULT QString validationDataError(Context *c, const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error message if any validation data is missing or invalid.
@@ -547,20 +549,18 @@ protected:
      * value from the stash and put it into the result.
      * \param c             Current Context to get the default value from.
      * \param result        The result struct to put the default value in.
-     * \param validatorName Name of the validator used for logging.
      */
-    void defaultValue(Context *c, ValidatorReturnType *result, const char *validatorName) const;
+    void defaultValue(Context *c, ValidatorReturnType *result) const;
 
     /*!
-     * \brief Returns a string describing the current controller and action.
+     * \brief Returns a string that can be used for debug output if validation fails.
      *
-     * This is mostly used by debug and warning output. Returns something
-     * like \c MyController::myAction
+     * This returns something like <tt>MyValidator: Validation failed for field "my_field" at MyController::myAction:</tt>
      */
-    static QString caName(Context *c);
+    Q_REQUIRED_RESULT QString debugString(Context *c) const;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorRule)
+    Q_DECLARE_PRIVATE(ValidatorRule) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorRule)
 
     /*!
@@ -568,7 +568,7 @@ private:
      * \brief Sets the translation context used for custom messages.
      * \param trContext The name of the context.
      */
-    void setTranslationContext(QLatin1String trContext);
+    void setTranslationContext(QLatin1String trContext) noexcept;
 
     /*!
      * \internal
@@ -580,7 +580,7 @@ private:
      *
      * \sa trimBefore()
      */
-    void setTrimBefore(bool trimBefore);
+    void setTrimBefore(bool trimBefore) noexcept;
 
     friend class Validator;
     friend class ValidatorPrivate;

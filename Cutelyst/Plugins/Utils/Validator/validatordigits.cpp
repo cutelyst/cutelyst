@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -23,10 +23,13 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
 
     Q_D(const ValidatorDigits);
 
-    const QString v = value(params);
-    bool ok         = false;
-    int _length     = d->extractInt(c, params, d->length, &ok);
+    const QString v   = value(params);
+    bool ok           = false;
+    const int _length = d->extractInt(c, params, d->length, &ok);
     if (!ok) {
+        qCDebug(C_VALIDATOR).noquote()
+                << debugString(c)
+                << "Invalid comparison length";
         result.errorMessage = validationDataError(c);
         return result;
     }
@@ -36,22 +39,21 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
         if (Q_LIKELY(ValidatorDigits::validate(v, _length))) {
             if ((_length > 0) && (v.length() != _length)) {
                 result.errorMessage = validationError(c, _length);
-                qCDebug(C_VALIDATOR).noquote().nospace()
-                        << "ValidatorDigits: Validation failed for value \"" << v << "\" in field "
-                        << field() << " at " << caName(c) << ": does not contain exactly " << _length
-                        << " digits";
+                qCDebug(C_VALIDATOR).noquote()
+                        << debugString(c)
+                        << "Does not contain exactly" << _length << "digits:" << v.length() << "!=" << _length;
             } else {
                 result.value.setValue(v);
             }
         } else {
             result.errorMessage = validationError(c, _length);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << "ValidatorDigits: Validation failed for value \"" << v << "\" in field "
-                    << field() << " at " << caName(c) << ": does not only contain digits";
+                    << debugString(c)
+                    << " Does not only contain digits: \"" << v << "\"";
         }
 
     } else {
-        defaultValue(c, &result, "ValidatorDigits");
+        defaultValue(c, &result);
     }
 
     return result;

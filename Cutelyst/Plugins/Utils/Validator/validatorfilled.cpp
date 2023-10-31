@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -26,9 +26,12 @@ ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c);
+            qCDebug(C_VALIDATOR)
+                    << debugString(c)
+                    << "Is present but empty";
         }
     } else {
-        defaultValue(c, &result, "ValidatorFilled");
+        defaultValue(c, &result);
     }
 
     return result;

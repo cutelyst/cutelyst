@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -16,9 +16,7 @@ ValidatorSame::ValidatorSame(const QString &field,
 {
 }
 
-ValidatorSame::~ValidatorSame()
-{
-}
+ValidatorSame::~ValidatorSame() = default;
 
 ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -33,18 +31,15 @@ ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &pa
             trimBefore() ? params.value(d->otherField).trimmed() : params.value(d->otherField);
         if (v != ov) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorSame: Validation failed for field %s at %s::%s: value is not the "
-                    "same as in the field %s",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()),
-                    qPrintable(d->otherField));
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << debugString(c)
+                    << " The value in \"" << d->otherField << "\" is not the same: "
+                    << v << " != " << ov;
         } else {
             result.value.setValue(v);
         }
     } else {
-        defaultValue(c, &result, "ValidatorSame");
+        defaultValue(c, &result);
     }
 
     return result;

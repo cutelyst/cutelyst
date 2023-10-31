@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -16,9 +16,8 @@ class ValidatorRequiredUnlessStashPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredUnlessStash validatorrequiredunlessstash.h
- * <Cutelyst/Plugins/Utils/validatorrequiredunlessstash.h> \brief The \a field under validation must
- * be present and not emptly unless the content of a stash key is equal to a value in a list.
+ * \class ValidatorRequiredUnlessStash validatorrequiredunlessstash.h <Cutelyst/Plugins/Utils/validatorrequiredunlessstash.h>
+ * \brief The \a field under validation must be present and not empty unless the content of a stash key is equal to a value in a list.
  *
  * If the \link Context::stash() stash\endlink content identified by \a stashKey does \b not contain
  * \b any of the values specified in the \a stashValues list, the \a field under validation must be
@@ -73,7 +72,7 @@ protected:
                                    const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorRequiredUnlessStash)
+    Q_DECLARE_PRIVATE(ValidatorRequiredUnlessStash) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorRequiredUnlessStash)
 };
 

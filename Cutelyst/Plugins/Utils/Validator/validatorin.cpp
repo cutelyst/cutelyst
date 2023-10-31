@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -35,21 +35,22 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
         }
 
         if (vals.empty()) {
+            result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << "ValidatorIn: The list of comparison values for the field"
-                    << field() << "at" << caName(c) << "is empty";
+                    << debugString(c)
+                    << "The list of comparison values is emtpy";
         } else {
             if (vals.contains(v, d->cs)) {
                 result.value.setValue(v);
             } else {
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                        << "ValidatorIn: Validation failed for field " << field()
-                        << " at " << caName(c) << ": \"" << v << "\" is not part of the comparison value list";
+                        << debugString(c)
+                        << " \"" << v << "\" is not part of the comparison list " << vals;
                 result.errorMessage = validationError(c, vals);
             }
         }
     } else {
-        defaultValue(c, &result, "ValidatorIn");
+        defaultValue(c, &result);
     }
 
     return result;

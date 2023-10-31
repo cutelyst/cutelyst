@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -376,9 +376,72 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
             result.value.setValue(exVal);
         } else {
             result.errorMessage = validationError(c, diag);
+            if (C_VALIDATOR().isDebugEnabled()) {
+                switch(diag) {
+                case Valid:
+                    break;
+                case MissingDNS:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Can not find valid DNS entry for" << v;
+                    break;
+                case InvalidChars:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "The domain name contains characters that are not allowed";
+                    break;
+                case LabelTooLong:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "At least on of the domain name labels exceeds the maximum"
+                            << "size of" << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
+                    break;
+                case TooLong:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "The domain name exceeds the maximum size of" << ValidatorDomainPrivate::maxDnsNameWithLastDot
+                            << "characters";
+                    break;
+                case InvalidLabelCount:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid label count. Either no labels or only TLD";
+                    break;
+                case EmptyLabel:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "At least one of the domain name labels is empty";
+                    break;
+                case InvalidTLD:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "The TLD label contains characters that are not allowed";
+                    break;
+                case DashStart:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "At least one label starts with a dash";
+                    break;
+                case DashEnd:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "At least one label ends with a dash";
+                    break;
+                case DigitStart:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "At least one label start with a digit";
+                    break;
+                case DNSTimeout:
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "The DNS lookup exceeds the timeout of"
+                            << ValidatorDomainPrivate::dnsLookupTimeout;
+                }
+            }
         }
     } else {
-        defaultValue(c, &result, "ValidatorDomain");
+        defaultValue(c, &result);
     }
 
     return result;

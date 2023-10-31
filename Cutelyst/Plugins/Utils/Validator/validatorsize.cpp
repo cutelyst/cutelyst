@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -16,9 +16,7 @@ ValidatorSize::ValidatorSize(const QString &field,
 {
 }
 
-ValidatorSize::~ValidatorSize()
-{
-}
+ValidatorSize::~ValidatorSize() = default;
 
 ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -38,36 +36,28 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
         case QMetaType::Long:
         case QMetaType::LongLong:
         {
-            const qlonglong val = c->locale().toLongLong(v, &ok);
+            const auto val = c->locale().toLongLong(v, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
-                qCWarning(C_VALIDATOR,
-                          "ValidatorSize: Failed to parse value of field %s into number at %s::%s.",
-                          qPrintable(field()),
-                          qPrintable(c->controllerName()),
-                          qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote().nospace()
+                        << debugString(c)
+                        << "Failed to parse \"" << v << "\" into an integer number";
             } else {
                 const qlonglong size = d->extractLongLong(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(C_VALIDATOR,
-                              "ValidatorSize: Invalid comparison size for field %s in %s::%s.",
-                              qPrintable(field()),
-                              qPrintable(c->controllerName()),
-                              qPrintable(c->actionName()));
+                    qCWarning(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid comparison size";
                 } else {
                     if (val != size) {
                         result.errorMessage =
                             validationError(c,
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("size"), size}});
-                        qCDebug(C_VALIDATOR,
-                                "ValidatorSize: Validation failed for field %s in %s::%s: value is "
-                                "not %lli.",
-                                qPrintable(field()),
-                                qPrintable(c->controllerName()),
-                                qPrintable(c->actionName()),
-                                size);
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << val << "!=" << size;
                     } else {
                         valid = true;
                     }
@@ -79,37 +69,28 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
         case QMetaType::ULong:
         case QMetaType::ULongLong:
         {
-            const qulonglong val = v.toULongLong(&ok);
+            const auto val = v.toULongLong(&ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
-                qCWarning(C_VALIDATOR,
-                          "ValidatorSize: Failed to parse value of field %s into number at %s::%s.",
-                          qPrintable(field()),
-                          qPrintable(c->controllerName()),
-                          qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote().nospace()
+                        << debugString(c)
+                        << "Failed to parse \"" << v << "\" into an unsigned integer number";
             } else {
                 const qulonglong size = d->extractULongLong(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(
-                        C_VALIDATOR,
-                        "ValidatorSize: Invalid maximum comparison value for field %s in %s::%s.",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()));
+                    qCWarning(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid comparison size";
                 } else {
                     if (val != size) {
                         result.errorMessage =
                             validationError(c,
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("size"), size}});
-                        qCDebug(C_VALIDATOR,
-                                "ValidatorSize: Validation failed for field %s in %s::%s: value is "
-                                "not %llu.",
-                                qPrintable(field()),
-                                qPrintable(c->controllerName()),
-                                qPrintable(c->actionName()),
-                                size);
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << val << "!=" << size;
                     } else {
                         valid = true;
                     }
@@ -119,37 +100,28 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
         case QMetaType::Float:
         case QMetaType::Double:
         {
-            const double val = v.toDouble(&ok);
+            const auto val = v.toDouble(&ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
-                qCWarning(C_VALIDATOR,
-                          "ValidatorSize: Failed to parse value of field %s into number at %s::%s.",
-                          qPrintable(field()),
-                          qPrintable(c->controllerName()),
-                          qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote().nospace()
+                        << debugString(c)
+                        << "Failed to parse \"" << v << "\" into a floating point number";
             } else {
                 const double size = d->extractDouble(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(
-                        C_VALIDATOR,
-                        "ValidatorSize: Invalid maximum comparison value for field %s in %s::%s.",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()));
+                    qCWarning(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "Invalid comparison size";
                 } else {
                     if (val != size) {
                         result.errorMessage =
                             validationError(c,
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("size"), size}});
-                        qCDebug(C_VALIDATOR,
-                                "ValidatorSize: Validation failed for field %s in %s::%s: value is "
-                                "not %f.",
-                                qPrintable(field()),
-                                qPrintable(c->controllerName()),
-                                qPrintable(c->actionName()),
-                                size);
+                        qCDebug(C_VALIDATOR).noquote()
+                                << debugString(c)
+                                << val << "!=" << size;
                     } else {
                         valid = true;
                     }
@@ -158,40 +130,30 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
         } break;
         case QMetaType::QString:
         {
-            const qlonglong val  = static_cast<qlonglong>(v.length());
+            const auto val       = static_cast<qlonglong>(v.length());
             const qlonglong size = d->extractLongLong(c, params, d->size, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(c, 1);
-                qCWarning(C_VALIDATOR,
-                          "ValidatorSize: Invalid maximum comparison value for field %s in %s::%s.",
-                          qPrintable(field()),
-                          qPrintable(c->controllerName()),
-                          qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote()
+                        << debugString(c)
+                        << "Invalid comparison size";
             } else {
                 if (val != size) {
                     result.errorMessage = validationError(
                         c,
                         QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("size"), size}});
-                    qCDebug(C_VALIDATOR,
-                            "ValidatorSize: Validation failed for field %s in %s::%s: string "
-                            "length is not %lli.",
-                            qPrintable(field()),
-                            qPrintable(c->controllerName()),
-                            qPrintable(c->actionName()),
-                            size);
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "string length" << val << "!=" << size;
                 } else {
                     valid = true;
                 }
             }
         } break;
         default:
-            qCWarning(C_VALIDATOR,
-                      "ValidatorSize: The comparison type with ID %i for field %s at %s::%s is not "
-                      "supported.",
-                      static_cast<int>(d->type),
-                      qPrintable(field()),
-                      qPrintable(c->controllerName()),
-                      qPrintable(c->actionName()));
+            qCWarning(C_VALIDATOR).noquote()
+                    << debugString(c)
+                    << "The comparison type" << d->type << "is not supported";
             result.errorMessage = validationDataError(c, 0);
             break;
         }
@@ -209,7 +171,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
             }
         }
     } else {
-        defaultValue(c, &result, "ValidatorSize");
+        defaultValue(c, &result);
     }
 
     return result;
@@ -229,17 +191,17 @@ QString ValidatorSize::genericValidationError(Context *c, const QVariant &errorD
     case QMetaType::Long:
     case QMetaType::LongLong:
     case QMetaType::QString:
-        size = c->locale().toString(map.value(QStringLiteral("size")).toLongLong());
+        size = c->locale().toString(map.value(u"size"_qs).toLongLong());
         break;
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:
     case QMetaType::ULongLong:
-        size = c->locale().toString(map.value(QStringLiteral("size")).toULongLong());
+        size = c->locale().toString(map.value(u"size"_qs).toULongLong());
         break;
     case QMetaType::Float:
     case QMetaType::Double:
-        size = c->locale().toString(map.value(QStringLiteral("size")).toDouble());
+        size = c->locale().toString(map.value(u"size"_qs).toDouble());
         break;
     default:
         error = validationDataError(c);

@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -31,14 +31,13 @@ ValidatorReturnType ValidatorJson::validate(Cutelyst::Context *c,
         const QJsonDocument json = QJsonDocument::fromJson(v.toUtf8(), &jpe);
         if (json.isEmpty() || json.isNull()) {
             result.errorMessage = validationError(c, jpe.errorString());
-            qCDebug(C_VALIDATOR).noquote().nospace()
-                    << "ValidatorJson: Validation failed for field " << field()
-                    << " at " << caName(c) << ": " << jpe.errorString();
+            qCDebug(C_VALIDATOR).noquote()
+                    << jpe.errorString();
         } else {
             result.value.setValue(json);
         }
     } else {
-        defaultValue(c, &result, "ValidatorJson");
+        defaultValue(c, &result);
     }
 
     return result;

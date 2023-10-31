@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -32,16 +32,16 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     if (!ok) {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote()
-                << "ValidatorDigitsBetween: Invalid minimum validation length for field"
-                << field() << "at" << caName(c);
+                << debugString(c)
+                << "Invalid minimum length comparison data";
         return result;
     } else {
         _max = d->extractInt(c, params, d->max, &ok);
         if (!ok) {
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << "ValidatorBetween: Invalid maximum validation length for field"
-                    << field() << "at" << caName(c);
+                    << debugString(c)
+                    << "Invalid maximum length comparison data";
             return result;
         }
     }
@@ -49,8 +49,9 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     if (_min > _max) {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote()
-                << "ValidatorDigitsBetween: Minimum length" << _min << "is larger than"
-                << "maximum lenth" << _max << "for field" << field() << "at" << caName(c);
+                << debugString(c)
+                << "Minimum comparison length" << _min << "is larger than"
+                << "maximum comparison length" << _max;
         return result;
     }
 
@@ -60,14 +61,14 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c, QVariantList{_min, _max});
-            qCDebug(C_VALIDATOR).noquote().nospace()
-                    << "ValidatorBetween: Validation failed for value \"" << v << "\" in field "
-                    << field() << " at " << caName(c) << ": length not between " << _min << " and "
-                    << _max << " and/or non-digit characters in the input value";
+            qCDebug(C_VALIDATOR).noquote()
+                    << debugString(c)
+                    << "Length of" << v.length() << "is not between" << _min << "and" << _max
+                    << "and/or input value contains non-digit characters";
         }
 
     } else {
-        defaultValue(c, &result, "ValidatorDigitsBetween");
+        defaultValue(c, &result);
     }
 
     return result;

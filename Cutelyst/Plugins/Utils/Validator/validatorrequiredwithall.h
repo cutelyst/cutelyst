@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORREQUIREDWITHALL_H
@@ -17,9 +17,8 @@ class ValidatorRequiredWithAllPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredWithAll validatorrequiredwithall.h
- * <Cutelyst/Plugins/Utils/validatorrequiredwithall.h> \brief The field under validation must be
- * present and not empty only if all of the other specified fields are present.
+ * \class ValidatorRequiredWithAll validatorrequiredwithall.h <Cutelyst/Plugins/Utils/validatorrequiredwithall.h>
+ * \brief The field under validation must be present and not empty only if all of the other specified fields are present.
  *
  * If \b all of the fields defined in the \a otherFields list are present in the input data, the \a
  * field under validation must be present and not empty. For the other fields only their presence
@@ -69,7 +68,7 @@ protected:
                                    const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorRequiredWithAll)
+    Q_DECLARE_PRIVATE(ValidatorRequiredWithAll) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorRequiredWithAll)
 };
 

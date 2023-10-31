@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORALPHADASH_P_H
@@ -19,7 +19,7 @@ public:
                               bool ao,
                               const ValidatorMessages &m,
                               const QString &dvk)
-        : ValidatorRulePrivate(f, m, dvk)
+        : ValidatorRulePrivate(f, m, dvk, "ValidatorAlphaDash")
         , asciiOnly(ao)
     {
     }

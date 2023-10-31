@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -26,9 +26,7 @@ ValidatorPwQuality::ValidatorPwQuality(const QString &field,
 {
 }
 
-ValidatorPwQuality::~ValidatorPwQuality()
-{
-}
+ValidatorPwQuality::~ValidatorPwQuality() = default;
 
 int ValidatorPwQuality::validate(const QString &value,
                                  const QVariant &options,
@@ -52,12 +50,10 @@ int ValidatorPwQuality::validate(const QString &value,
                             const QString opt = i.key() + QLatin1Char('=') + i.value().toString();
                             const int orv     = pwquality_set_option(pwq, opt.toUtf8().constData());
                             if (orv != 0) {
-                                char buf[1024];
-                                qCWarning(
-                                    C_VALIDATOR,
-                                    "ValidatorPwQuality: Failed to set pwquality option %s: %s",
-                                    qUtf8Printable(opt),
-                                    pwquality_strerror(buf, sizeof(buf), orv, nullptr));
+                                QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
+                                qCWarning(C_VALIDATOR).noquote().nospace()
+                                        << "ValidatorPwQuality: Failed to set pwquality option "
+                                        << opt << ": " << pwquality_strerror(buf.data(), buf.size(), orv, nullptr);
                             }
                             ++i;
                         }
@@ -67,16 +63,14 @@ int ValidatorPwQuality::validate(const QString &value,
                     const QString configFile = options.toString();
                     if (!configFile.isEmpty()) {
                         if (C_VALIDATOR().isWarningEnabled()) {
-                            void *auxerror;
+                            void *auxerror = nullptr;
                             const int rcrv = pwquality_read_config(
                                 pwq, configFile.toUtf8().constData(), &auxerror);
                             if (rcrv != 0) {
-                                char buf[1024];
-                                qCWarning(
-                                    C_VALIDATOR,
-                                    "ValidatorPwQuality: Failed to read configuration file %s: %s",
-                                    qUtf8Printable(configFile),
-                                    pwquality_strerror(buf, sizeof(buf), rcrv, auxerror));
+                                QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
+                                qCWarning(C_VALIDATOR).noquote().nospace()
+                                        << "ValidatorPwQuality: Failed to read configuration file "
+                                        << configFile << ": " << pwquality_strerror(buf.data(), buf.size(), rcrv, auxerror);
                             }
                         } else {
                             pwquality_read_config(pwq, configFile.toUtf8().constData(), nullptr);
@@ -88,14 +82,13 @@ int ValidatorPwQuality::validate(const QString &value,
 
             if (!optionsSet) {
                 if (C_VALIDATOR().isWarningEnabled()) {
-                    void *auxerror;
+                    void *auxerror = nullptr;
                     const int rcrv = pwquality_read_config(pwq, nullptr, &auxerror);
                     if (rcrv != 0) {
-                        char buf[1024];
-                        qCWarning(
-                            C_VALIDATOR,
-                            "ValidatorPwQuality: Failed to read default configuration file: %s",
-                            pwquality_strerror(buf, sizeof(buf), rcrv, auxerror));
+                        QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
+                        qCWarning(C_VALIDATOR).noquote()
+                                << "VaidatorPwQuality: Failed to read default configuration file:"
+                                << pwquality_strerror(buf.data(), buf.size(), rcrv, auxerror);
                     }
                 } else {
                     pwquality_read_config(pwq, nullptr, nullptr);
@@ -491,29 +484,19 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
             result.errorMessage = validationError(c, rv);
             if (C_VALIDATOR().isDebugEnabled()) {
                 if (rv < 0) {
-                    char buf[1024];
-                    qCDebug(C_VALIDATOR,
-                            "ValidatorPwQuality: Validation failed for field %s at %s::%s: %s",
-                            qPrintable(field()),
-                            qPrintable(c->controllerName()),
-                            qPrintable(c->actionName()),
-                            pwquality_strerror(buf, sizeof(buf), rv, nullptr));
+                    QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << pwquality_strerror(buf.data(), buf.size(), rv, nullptr);
                 } else {
-                    qCDebug(C_VALIDATOR,
-                            "ValidatorPwQuality: Validation failed for field %s at %s::%s because "
-                            "the quality score %i is below the threshold of %i.",
-                            qPrintable(field()),
-                            qPrintable(c->controllerName()),
-                            qPrintable(c->actionName()),
-                            rv,
-                            d->threshold);
+                    qCDebug(C_VALIDATOR).noquote()
+                            << debugString(c)
+                            << "The quality score" << rv << "is below the threshold of" << d->threshold;
                 }
             }
         } else {
-            qCDebug(C_VALIDATOR,
-                    "ValidatorPwQuality: \"%s\" got a quality score of %i",
-                    qPrintable(v),
-                    rv);
+            qCDebug(C_VALIDATOR).noquote()
+                    << "ValidatorPwQuality: \"" << v << "\" got a quality score of" << rv;
             result.value = v;
         }
     }
@@ -523,12 +506,6 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
 
 QString ValidatorPwQuality::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorPwQuality);
-    const int returnValue = errorData.toInt();
-    const QString _label  = label(c);
-    error                 = ValidatorPwQuality::errorString(c, returnValue, _label, d->threshold);
-
-    return error;
+    return ValidatorPwQuality::errorString(c, errorData.toInt(), label(c), d->threshold);
 }

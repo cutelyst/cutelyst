@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -13,19 +13,28 @@ ValidatorRequired::ValidatorRequired(const QString &field,
 {
 }
 
-ValidatorRequired::~ValidatorRequired()
-{
-}
+ValidatorRequired::~ValidatorRequired() = default;
 
 ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c,
                                                 const Cutelyst::ParamsMultiMap &params) const
 {
     ValidatorReturnType result;
 
+    if (!params.contains(field())) {
+        qCDebug(C_VALIDATOR).noquote()
+                << debugString(c)
+                << "Field not found";
+        result.errorMessage = validationError(c);
+        return result;
+    }
+
     const QString v = value(params);
     if (Q_LIKELY(!v.isEmpty())) {
         result.value.setValue(v);
     } else {
+        qCDebug(C_VALIDATOR).noquote()
+                << debugString(c)
+                << "The field is not present or empty";
         result.errorMessage = validationError(c);
     }
 
