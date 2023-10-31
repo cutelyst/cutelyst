@@ -85,7 +85,11 @@ bool CSRFProtection::setup(Application *app)
         qCWarning(C_CSRFPROTECTION).nospace() << "Invalid value set for cookie_expiration. "
                                                  "Has to be an integer greater than 0. "
                                                  "Using default value "
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
                                               << CSRFProtectionPrivate::cookieDefaultExpiration;
+#else
+                                              << "1 year";
+#endif
         d->cookieExpiration = CSRFProtectionPrivate::cookieDefaultExpiration;
     }
 
