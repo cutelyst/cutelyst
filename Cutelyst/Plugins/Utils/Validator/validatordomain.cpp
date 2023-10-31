@@ -435,8 +435,13 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
                     break;
                 case DNSTimeout:
                     qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "The DNS lookup exceeds the timeout of"
-                        << ValidatorDomainPrivate::dnsLookupTimeout;
+                            << debugString(c)
+                            << "The DNS lookup exceeds the timeout of"
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+                            << ValidatorDomainPrivate::dnsLookupTimeout;
+#else
+                            << ValidatorDomainPrivate::dnsLookupTimeout.count() << "milliseconds"
+#endif
                 }
             }
         }
