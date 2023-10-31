@@ -439,7 +439,7 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
                         << ValidatorDomainPrivate::dnsLookupTimeout;
 #else
-                        << ValidatorDomainPrivate::dnsLookupTimeout.count() << "milliseconds"
+                        << ValidatorDomainPrivate::dnsLookupTimeout.count() << "milliseconds";
 #endif
                 }
             }
