@@ -438,7 +438,7 @@ void CSRFProtectionPrivate::reject(Context *c,
     }
 
     qCWarning(C_CSRFPROTECTION,
-              "Forbidden: (%s): /%s [%s]",
+              "Forbidden: (%s): %s [%s]",
               qPrintable(logReason),
               qPrintable(c->req()->path()),
               csrf->d_ptr->logFailedIp ? qPrintable(c->req()->addressString())
