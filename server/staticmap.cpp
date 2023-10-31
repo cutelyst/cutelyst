@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2016-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "staticmap.h"
@@ -33,8 +33,8 @@ bool StaticMap::setup(Cutelyst::Application *app)
 void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, bool append)
 {
     QString mp = mountPoint;
-    if (!mp.startsWith(QLatin1Char('/'))) {
-        mp.prepend(QLatin1Char('/'));
+    if (!mp.startsWith(u'/')) {
+        mp.prepend(u'/');
     }
 
     qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
@@ -53,7 +53,7 @@ void StaticMap::beforePrepareAction(Cutelyst::Context *c, bool *skipMethod)
         return;
     }
 
-    const QString path = QLatin1Char('/') + c->req()->path();
+    const QString path = c->req()->path();
     for (const MountPoint &mp : m_staticMaps) {
         if (path.startsWith(mp.mountPoint)) {
             if (tryToServeFile(c, mp, path)) {
@@ -69,7 +69,7 @@ bool StaticMap::tryToServeFile(Cutelyst::Context *c, const MountPoint &mp, const
     QString localPath = path;
     if (!mp.append) {
         localPath = path.mid(mp.mountPoint.size());
-        while (localPath.startsWith(QLatin1Char('/'))) {
+        while (localPath.startsWith(u'/')) {
             localPath.remove(0, 1);
         }
     }
