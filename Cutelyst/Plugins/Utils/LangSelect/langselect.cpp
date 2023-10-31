@@ -27,7 +27,8 @@ Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
 
 using namespace Cutelyst;
 
-static thread_local LangSelect *lsp = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+static thread_local LangSelect *lsp =
+    nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 #define SELECTION_TRIED u"_c_langselect_tried"_qs
 
@@ -115,7 +116,8 @@ void LangSelect::setSupportedLocales(const QStringList &locales)
         if (Q_LIKELY(locale.language() != QLocale::C)) {
             d->locales.push_back(locale);
         } else {
-            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << l << "to the list of supported locales.";
+            qCWarning(C_LANGSELECT)
+                << "Can not add invalid locale" << l << "to the list of supported locales.";
         }
     }
 }
@@ -138,7 +140,8 @@ void LangSelect::addSupportedLocale(const QString &locale)
         Q_D(LangSelect);
         d->locales.push_back(l);
     } else {
-        qCWarning(C_LANGSELECT) << "Can not add invalid locale" << locale << "to the list of supported locales.";
+        qCWarning(C_LANGSELECT) << "Can not add invalid locale" << locale
+                                << "to the list of supported locales.";
     }
 }
 
@@ -168,17 +171,20 @@ void LangSelect::setLocalesFromDir(const QString &path,
                     QLocale l(locPart);
                     if (Q_LIKELY(l.language() != QLocale::C)) {
                         d->locales.push_back(l);
-                        qCDebug(C_LANGSELECT) << "Added locale" << locPart << "to the list of supported locales.";
+                        qCDebug(C_LANGSELECT)
+                            << "Added locale" << locPart << "to the list of supported locales.";
                     } else {
                         shrinkToFit = true;
-                        qCWarning(C_LANGSELECT) << "Can not add invalid locale" << locPart << "to the list of supported locales.";
+                        qCWarning(C_LANGSELECT) << "Can not add invalid locale" << locPart
+                                                << "to the list of supported locales.";
                     }
                 }
                 if (shrinkToFit) {
                     d->locales.squeeze();
                 }
             } else {
-                qCWarning(C_LANGSELECT) << "Can not find translation files for" << filter << "in" << path;
+                qCWarning(C_LANGSELECT)
+                    << "Can not find translation files for" << filter << "in" << path;
             }
         } else {
             qCWarning(C_LANGSELECT) << "Can not set locales from not existing directory" << path;
@@ -205,10 +211,12 @@ void LangSelect::setLocalesFromDirs(const QString &path, const QString &name)
                         QLocale l(subDir);
                         if (Q_LIKELY(l.language() != QLocale::C)) {
                             d->locales.push_back(l);
-                            qCDebug(C_LANGSELECT) << "Added locale" << subDir << "to the list of supported locales.";
+                            qCDebug(C_LANGSELECT)
+                                << "Added locale" << subDir << "to the list of supported locales.";
                         } else {
                             shrinkToFit = true;
-                            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << subDir << "to the list of supported locales.";
+                            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << subDir
+                                                    << "to the list of supported locales.";
                         }
                     } else {
                         shrinkToFit = true;
@@ -732,10 +740,9 @@ void LangSelectPrivate::setContentLanguage(Context *c) const
     if (addContentLanguageHeader) {
         c->res()->setHeader("Content-Language"_qba, c->locale().bcp47Name().toLatin1());
     }
-    c->stash({{langStashKey, c->locale().bcp47Name()},
-              {dirStashKey,
-               (c->locale().textDirection() == Qt::LeftToRight ? u"ltr"_qs
-                                                               : u"rtl"_qs)}});
+    c->stash(
+        {{langStashKey, c->locale().bcp47Name()},
+         {dirStashKey, (c->locale().textDirection() == Qt::LeftToRight ? u"ltr"_qs : u"rtl"_qs)}});
 }
 
 void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod) const

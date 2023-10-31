@@ -412,7 +412,8 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    Q_REQUIRED_RESULT QString validationError(Context *c, const QVariant &errorData = QVariant()) const;
+    Q_REQUIRED_RESULT QString validationError(Context *c,
+                                              const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error mesage if validation failed.
@@ -461,7 +462,8 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    Q_REQUIRED_RESULT QString parsingError(Context *c, const QVariant &errorData = QVariant()) const;
+    Q_REQUIRED_RESULT QString parsingError(Context *c,
+                                           const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error message if an error occures while parsing input.
@@ -509,7 +511,8 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    Q_REQUIRED_RESULT QString validationDataError(Context *c, const QVariant &errorData = QVariant()) const;
+    Q_REQUIRED_RESULT QString validationDataError(Context *c,
+                                                  const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error message if any validation data is missing or invalid.
@@ -555,7 +558,8 @@ protected:
     /*!
      * \brief Returns a string that can be used for debug output if validation fails.
      *
-     * This returns something like <tt>MyValidator: Validation failed for field "my_field" at MyController::myAction:</tt>
+     * This returns something like <tt>MyValidator: Validation failed for field "my_field" at
+     * MyController::myAction:</tt>
      */
     Q_REQUIRED_RESULT QString debugString(Context *c) const;
 

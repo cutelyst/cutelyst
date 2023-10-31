@@ -9,16 +9,8 @@
 
 using namespace Cutelyst;
 
-const QStringList ValidatorBooleanPrivate::trueVals{
-    u"1"_qs,
-    u"true"_qs,
-    u"on"_qs
-};
-const QStringList ValidatorBooleanPrivate::falseVals{
-    u"0"_qs,
-    u"false"_qs,
-    u"off"_qs
-};
+const QStringList ValidatorBooleanPrivate::trueVals{u"1"_qs, u"true"_qs, u"on"_qs};
+const QStringList ValidatorBooleanPrivate::falseVals{u"0"_qs, u"false"_qs, u"off"_qs};
 
 ValidatorBoolean::ValidatorBoolean(const QString &field,
                                    const ValidatorMessages &messages,
@@ -43,8 +35,7 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
         } else {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " \"" << v << "\" can not be interpreted as boolean";
+                << debugString(c) << " \"" << v << "\" can not be interpreted as boolean";
         }
     } else {
         defaultValue(c, &result);

@@ -24,7 +24,10 @@ class ValidatorRulePrivate
 public:
     ValidatorRulePrivate() = default;
 
-    ValidatorRulePrivate(const QString &f, const ValidatorMessages &m, const QString &dvk, QByteArrayView valName)
+    ValidatorRulePrivate(const QString &f,
+                         const ValidatorMessages &m,
+                         const QString &dvk,
+                         QByteArrayView valName)
         : field(f)
         , defValKey(dvk)
         , messages(m)

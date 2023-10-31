@@ -38,14 +38,13 @@ ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c,
         if (vals.empty()) {
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "The list of comparison values is empty";
+                << debugString(c) << "The list of comparison values is empty";
         } else {
             if (vals.contains(v, d->cs)) {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " \"" << v << "\" is part of the list of not allowed values" << d->values;
+                    << debugString(c) << " \"" << v
+                    << "\" is part of the list of not allowed values" << d->values;
             } else {
                 result.value.setValue(v);
             }

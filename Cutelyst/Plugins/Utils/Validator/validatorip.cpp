@@ -11,7 +11,8 @@
 
 using namespace Cutelyst;
 
-const QRegularExpression ValidatorIpPrivate::regex{u"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"_qs};
+const QRegularExpression ValidatorIpPrivate::regex{
+    u"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"_qs};
 
 ValidatorIp::ValidatorIp(const QString &field,
                          Constraints constraints,
@@ -37,8 +38,7 @@ ValidatorReturnType ValidatorIp::validate(Cutelyst::Context *c, const ParamsMult
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR).noquote()
-                    << "Not a valid IP address";
+            qCDebug(C_VALIDATOR).noquote() << "Not a valid IP address";
         }
 
     } else {

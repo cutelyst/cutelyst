@@ -33,8 +33,7 @@ ValidatorReturnType ValidatorTime::validate(Context *c, const ParamsMultiMap &pa
         if (!time.isValid()) {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " \"" << v << "\" is not a valid time";
+                << debugString(c) << " \"" << v << "\" is not a valid time";
         } else {
             result.value.setValue(time);
         }

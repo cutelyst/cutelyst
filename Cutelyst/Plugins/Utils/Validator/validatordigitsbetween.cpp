@@ -32,16 +32,14 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     if (!ok) {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Invalid minimum length comparison data";
+            << debugString(c) << "Invalid minimum length comparison data";
         return result;
     } else {
         _max = d->extractInt(c, params, d->max, &ok);
         if (!ok) {
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "Invalid maximum length comparison data";
+                << debugString(c) << "Invalid maximum length comparison data";
             return result;
         }
     }
@@ -49,9 +47,8 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     if (_min > _max) {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Minimum comparison length" << _min << "is larger than"
-                << "maximum comparison length" << _max;
+            << debugString(c) << "Minimum comparison length" << _min << "is larger than"
+            << "maximum comparison length" << _max;
         return result;
     }
 
@@ -62,9 +59,8 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
         } else {
             result.errorMessage = validationError(c, QVariantList{_min, _max});
             qCDebug(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "Length of" << v.length() << "is not between" << _min << "and" << _max
-                    << "and/or input value contains non-digit characters";
+                << debugString(c) << "Length of" << v.length() << "is not between" << _min << "and"
+                << _max << "and/or input value contains non-digit characters";
         }
 
     } else {

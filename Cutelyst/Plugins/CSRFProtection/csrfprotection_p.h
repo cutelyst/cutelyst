@@ -8,10 +8,10 @@
 
 #include "csrfprotection.h"
 
+#include <chrono>
+
 #include <QNetworkCookie>
 #include <QRegularExpression>
-
-#include <chrono>
 
 namespace Cutelyst {
 

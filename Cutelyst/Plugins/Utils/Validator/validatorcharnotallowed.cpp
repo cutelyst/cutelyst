@@ -53,9 +53,7 @@ ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c,
                 result.errorMessage = validationError(c, foundChar);
             }
         } else {
-            qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "Empty validation data";
+            qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Empty validation data";
             result.errorMessage = validationDataError(c);
         }
     } else {

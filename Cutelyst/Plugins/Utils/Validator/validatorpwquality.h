@@ -73,10 +73,10 @@ public:
      * fails.
      */
     explicit ValidatorPwQuality(const QString &field,
-                                int threshold                     = ValidatorPwQuality::defaultThreshold,
-                                const QVariant &options           = QVariant(),
-                                const QString &userName           = QString(),
-                                const QString &oldPassword        = QString(),
+                                int threshold              = ValidatorPwQuality::defaultThreshold,
+                                const QVariant &options    = QVariant(),
+                                const QString &userName    = QString(),
+                                const QString &oldPassword = QString(),
                                 const ValidatorMessages &messages = ValidatorMessages());
 
     /*!

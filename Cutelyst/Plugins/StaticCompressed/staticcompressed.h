@@ -129,7 +129,8 @@ class StaticCompressedPrivate;
  * @since %Cutelyst 1.11.0
  * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  */
-class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT StaticCompressed : public Plugin // clazy:exclude=ctor-missing-parent-argument
+class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT StaticCompressed
+    : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticCompressed) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)

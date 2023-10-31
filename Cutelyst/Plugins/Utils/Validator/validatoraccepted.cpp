@@ -9,12 +9,7 @@
 
 using namespace Cutelyst;
 
-const QStringList ValidatorAcceptedPrivate::trueVals{
-    u"yes"_qs,
-    u"on"_qs,
-    u"1"_qs,
-    u"true"_qs
-};
+const QStringList ValidatorAcceptedPrivate::trueVals{u"yes"_qs, u"on"_qs, u"1"_qs, u"true"_qs};
 
 ValidatorAccepted::ValidatorAccepted(const QString &field,
                                      const Cutelyst::ValidatorMessages &messages)

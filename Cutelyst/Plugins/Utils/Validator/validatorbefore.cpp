@@ -49,22 +49,18 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
             const QDate odate = _comp.toDate();
             if (Q_UNLIKELY(!odate.isValid())) {
-                qCWarning(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Invalid comparison date";
+                qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison date";
                 result.errorMessage = validationDataError(c);
             } else {
                 const QDate date = d->extractDate(c, v, d->inputFormat);
                 if (Q_UNLIKELY(!date.isValid())) {
                     qCWarning(C_VALIDATOR).noquote().nospace()
-                            << debugString(c)
-                            << " Can not parse input date \"" << v << "\"";
+                        << debugString(c) << " Can not parse input date \"" << v << "\"";
                     result.errorMessage = parsingError(c, odate);
                 } else {
                     if (Q_UNLIKELY(date >= odate)) {
                         qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << "Input" << date << "is not before" << odate;
+                            << debugString(c) << "Input" << date << "is not before" << odate;
                         result.errorMessage = validationError(c, odate);
                     } else {
                         result.value.setValue(date);
@@ -76,22 +72,18 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
             const QDateTime odatetime = _comp.toDateTime();
             if (Q_UNLIKELY(!odatetime.isValid())) {
-                qCWarning(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Invalid comparison datetime";
+                qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison datetime";
                 result.errorMessage = validationDataError(c);
             } else {
                 const QDateTime datetime = d->extractDateTime(c, v, d->inputFormat, tz);
                 if (Q_UNLIKELY(!datetime.isValid())) {
                     qCWarning(C_VALIDATOR).noquote().nospace()
-                            << debugString(c)
-                            << " Can not parse input datetime \"" << v << "\"";
+                        << debugString(c) << " Can not parse input datetime \"" << v << "\"";
                     result.errorMessage = parsingError(c, odatetime);
                 } else {
                     if (Q_UNLIKELY(datetime >= odatetime)) {
-                        qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << "Input" << datetime << "is not before" << odatetime;
+                        qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Input" << datetime
+                                                       << "is not before" << odatetime;
                         result.errorMessage = validationError(c, odatetime);
                     } else {
                         result.value.setValue(datetime);
@@ -103,22 +95,18 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
             const QTime otime = _comp.toTime();
             if (Q_UNLIKELY(!otime.isValid())) {
-                qCWarning(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Invalid comparison time";
+                qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison time";
                 result.errorMessage = validationDataError(c);
             } else {
                 const QTime time = d->extractTime(c, v, d->inputFormat);
                 if (Q_UNLIKELY(!time.isValid())) {
                     qCWarning(C_VALIDATOR).noquote().nospace()
-                            << debugString(c)
-                            << " Can not parse input time \"" << v << "\"";
+                        << debugString(c) << " Can not parse input time \"" << v << "\"";
                     result.errorMessage = parsingError(c, otime);
                 } else {
                     if (Q_UNLIKELY(time >= otime)) {
                         qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << "Input" << time << "is not before" << otime;
+                            << debugString(c) << "Input" << time << "is not before" << otime;
                         result.errorMessage = validationError(c, otime);
                     } else {
                         result.value.setValue(time);
@@ -128,9 +116,7 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
         } else {
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "Invalid comparison data:"
-                    << d->comparison;
+                << debugString(c) << "Invalid comparison data:" << d->comparison;
             result.errorMessage = validationDataError(c);
         }
     } else {
@@ -151,20 +137,17 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c,
         switch (errorData.userType()) {
         case QMetaType::QDate:
             error =
-                c->translate("Cutelyst::ValidatorBefore",
-                             "Has to be before %1.")
+                c->translate("Cutelyst::ValidatorBefore", "Has to be before %1.")
                     .arg(errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
         case QMetaType::QDateTime:
-            error = c->translate("Cutelyst::ValidatorBefore",
-                                 "Has to be before %1.")
+            error = c->translate("Cutelyst::ValidatorBefore", "Has to be before %1.")
                         .arg(errorData.toDateTime().toString(
                             c->locale().dateTimeFormat(QLocale::ShortFormat)));
             break;
         case QMetaType::QTime:
             error =
-                c->translate("Cutelyst::ValidatorBefore",
-                             "Has to be before %1.")
+                c->translate("Cutelyst::ValidatorBefore", "Has to be before %1.")
                     .arg(errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
             break;
         default:

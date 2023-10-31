@@ -31,8 +31,7 @@ ValidatorReturnType ValidatorJson::validate(Cutelyst::Context *c,
         const QJsonDocument json = QJsonDocument::fromJson(v.toUtf8(), &jpe);
         if (json.isEmpty() || json.isNull()) {
             result.errorMessage = validationError(c, jpe.errorString());
-            qCDebug(C_VALIDATOR).noquote()
-                    << jpe.errorString();
+            qCDebug(C_VALIDATOR).noquote() << jpe.errorString();
         } else {
             result.value.setValue(json);
         }

@@ -42,22 +42,20 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " Can not parse input \"" << v << "\" into an integer number";
+                    << debugString(c) << " Can not parse input \"" << v
+                    << "\" into an integer number";
             } else {
                 const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, -1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << "Invalid mininum comparison value:"
-                            << d->min;
+                        << "Invalid mininum comparison value:" << d->min;
                 } else {
                     const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(c, 1);
                         qCWarning(C_VALIDATOR).noquote()
-                                << "Invalid maximum comparison value:"
-                                << d->max;
+                            << "Invalid maximum comparison value:" << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
                             result.errorMessage =
@@ -66,8 +64,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                                             {QStringLiteral("min"), min},
                                                             {QStringLiteral("max"), max}});
                             qCDebug(C_VALIDATOR).noquote()
-                                    << debugString(c)
-                                    << val << "is not between" << min << "and" << max;
+                                << debugString(c) << val << "is not between" << min << "and" << max;
                         } else {
                             valid = true;
                         }
@@ -85,24 +82,20 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " Can not parse input \"" << v << "\" into an unsigned integer number";
+                    << debugString(c) << " Can not parse input \"" << v
+                    << "\" into an unsigned integer number";
             } else {
                 const qulonglong min = d->extractULongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, -1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid mininum comparison value:"
-                            << d->min;
+                        << debugString(c) << "Invalid mininum comparison value:" << d->min;
                 } else {
                     const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(c, 1);
                         qCWarning(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << "Invalid maximum comparison value:"
-                                << d->max;
+                            << debugString(c) << "Invalid maximum comparison value:" << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
                             result.errorMessage =
@@ -111,8 +104,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                                             {QStringLiteral("min"), min},
                                                             {QStringLiteral("max"), max}});
                             qCDebug(C_VALIDATOR).noquote()
-                                    << debugString(c)
-                                    << val << "is not between" << min << "and" << max;
+                                << debugString(c) << val << "is not between" << min << "and" << max;
                         } else {
                             valid = true;
                         }
@@ -127,24 +119,20 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " Can not parse input \"" << v << "\" into a floating point number";
+                    << debugString(c) << " Can not parse input \"" << v
+                    << "\" into a floating point number";
             } else {
                 const double min = d->extractDouble(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, -1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid mininum comparison value:"
-                            << d->min;
+                        << debugString(c) << "Invalid mininum comparison value:" << d->min;
                 } else {
                     const double max = d->extractDouble(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(c, 1);
                         qCWarning(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << "Invalid maximum comparison value:"
-                                << d->max;
+                            << debugString(c) << "Invalid maximum comparison value:" << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
                             result.errorMessage =
@@ -153,8 +141,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                                             {QStringLiteral("min"), min},
                                                             {QStringLiteral("max"), max}});
                             qCDebug(C_VALIDATOR).noquote()
-                                    << debugString(c)
-                                    << val << "is not between" << min << "and" << max;
+                                << debugString(c) << val << "is not between" << min << "and" << max;
                         } else {
                             valid = true;
                         }
@@ -164,22 +151,18 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
         } break;
         case QMetaType::QString:
         {
-            const auto val = static_cast<qlonglong>(v.length());
+            const auto val      = static_cast<qlonglong>(v.length());
             const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(c, -1);
                 qCWarning(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Invalid mininum comparison value:"
-                        << d->min;
+                    << debugString(c) << "Invalid mininum comparison value:" << d->min;
             } else {
                 const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid maximum comparison value:"
-                            << d->max;
+                        << debugString(c) << "Invalid maximum comparison value:" << d->max;
                 } else {
                     if ((val < min) || (val > max)) {
                         result.errorMessage =
@@ -187,9 +170,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("min"), min},
                                                         {QStringLiteral("max"), max}});
-                        qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << "String length" << val << "is not between" << min << "and" << max;
+                        qCDebug(C_VALIDATOR).noquote() << debugString(c) << "String length" << val
+                                                       << "is not between" << min << "and" << max;
                     } else {
                         valid = true;
                     }
@@ -198,8 +180,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
         } break;
         default:
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "The comparison type" << d->type << "is not supported";
+                << debugString(c) << "The comparison type" << d->type << "is not supported";
             result.errorMessage = validationDataError(c, 0);
             break;
         }

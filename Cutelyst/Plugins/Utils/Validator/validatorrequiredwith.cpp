@@ -24,9 +24,7 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
 
     if (d->otherFields.empty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Invalid validation data";
+        qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid validation data";
     } else {
         bool containsOther = false;
         const QString v    = value(params);
@@ -36,7 +34,7 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
         QString otherField;
         for (const QString &other : ofc) {
             if (params.contains(other)) {
-                otherField = other;
+                otherField    = other;
                 containsOther = true;
                 break;
             }
@@ -48,8 +46,8 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "The field is not present or empty but the field \"" << otherField << "\" is present";
+                    << debugString(c) << "The field is not present or empty but the field \""
+                    << otherField << "\" is present";
             }
         } else {
             if (!v.isEmpty()) {

@@ -31,8 +31,8 @@ ValidatorReturnType ValidatorDifferent::validate(Context *c, const ParamsMultiMa
         if ((v == o)) {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " The value in \"" << d->otherField << "\" is not different: \"" << v << "\" == \"" << o << "\"";
+                << debugString(c) << " The value in \"" << d->otherField
+                << "\" is not different: \"" << v << "\" == \"" << o << "\"";
         } else {
             result.value.setValue(v);
         }

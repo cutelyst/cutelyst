@@ -26,8 +26,7 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c,
 
     if (d->otherField.isEmpty() || d->otherValues.empty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR).noquote()
-                << "Invalid validation data";
+        qCWarning(C_VALIDATOR).noquote() << "Invalid validation data";
     } else {
         const QString v = value(params);
         const QString ov =
@@ -38,8 +37,8 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c,
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " The field is not present or empty but \"" << d->otherField << "\" not contains " << ov;
+                    << debugString(c) << " The field is not present or empty but \""
+                    << d->otherField << "\" not contains " << ov;
             }
         } else {
             if (!v.isEmpty()) {

@@ -33,7 +33,7 @@ ValidatorReturnType ValidatorRegularExpression::validate(Context *c,
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                        << debugString(c) << " value \"" << v << "\" does not match " << d->regex;
+                    << debugString(c) << " value \"" << v << "\" does not match " << d->regex;
             }
         } else {
             defaultValue(c, &result);
@@ -41,8 +41,7 @@ ValidatorReturnType ValidatorRegularExpression::validate(Context *c,
     } else {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote().nospace()
-                << debugString(c) << " the regular expression is not valid: "
-                << d->regex.errorString();
+            << debugString(c) << " the regular expression is not valid: " << d->regex.errorString();
     }
 
     return result;
