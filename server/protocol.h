@@ -26,11 +26,16 @@ public:
         HeaderConnectionNotSet = 0,
         HeaderConnectionKeep,
         HeaderConnectionClose,
-        HeaderConnectionUpgrade
+        HeaderConnectionUpgrade,
     };
     Q_ENUM(HeaderConnection)
 
-    enum ParserState { MethodLine = 0, HeaderLine, ContentBody, H2Frames };
+    enum ParserState {
+        MethodLine = 0,
+        HeaderLine,
+        ContentBody,
+        H2Frames,
+    };
     Q_ENUM(ParserState)
 
     inline virtual void resetData()

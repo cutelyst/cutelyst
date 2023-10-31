@@ -356,7 +356,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
             it->key.compare("Connection", Qt::CaseInsensitive) == 0) {
             if (it->value.compare("close") == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnectionClose;
-            } else if (it->value.compare("upgrade") == 0) {
+            } else if (it->value.compare("Upgrade") == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
             } else {
                 headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
