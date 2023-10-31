@@ -17,8 +17,9 @@ class ValidatorRequiredWithoutPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredWithout validatorrequiredwithout.h <Cutelyst/Plugins/Utils/validatorrequiredwithout.h>
- * \brief The field under validation must be present and not empty only when any of the other specified fields are not present.
+ * \class ValidatorRequiredWithout validatorrequiredwithout.h
+ * <Cutelyst/Plugins/Utils/validatorrequiredwithout.h> \brief The field under validation must be
+ * present and not empty only when any of the other specified fields are not present.
  *
  * If \b any of the fields in the \a otherFields list is \b not part of the input parameters, the \a
  * field under validation must be present and not empty. For the other fields it will only be
@@ -68,7 +69,8 @@ protected:
                                    const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorRequiredWithout) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DECLARE_PRIVATE(
+        ValidatorRequiredWithout) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorRequiredWithout)
 };
 

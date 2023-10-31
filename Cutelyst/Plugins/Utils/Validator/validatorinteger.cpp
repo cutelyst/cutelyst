@@ -44,8 +44,7 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
         default:
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "Conversion type" << d->type << "is not an integer type";
+                << debugString(c) << "Conversion type" << d->type << "is not an integer type";
             break;
         }
 
@@ -53,9 +52,8 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
             result.value = converted;
         } else {
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " \"" << v << "\" is not parseable as integer value "
-                    << "or exceeds the limits of the selected type " << d->type;
+                << debugString(c) << " \"" << v << "\" is not parseable as integer value "
+                << "or exceeds the limits of the selected type " << d->type;
             result.errorMessage = validationError(c);
         }
     } else {

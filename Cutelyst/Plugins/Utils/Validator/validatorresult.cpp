@@ -19,9 +19,9 @@ ValidatorResult::ValidatorResult(const ValidatorResult &other) noexcept = defaul
 
 ValidatorResult::ValidatorResult(ValidatorResult &&other) noexcept = default;
 
-ValidatorResult& ValidatorResult::operator=(const ValidatorResult &other) noexcept = default;
+ValidatorResult &ValidatorResult::operator=(const ValidatorResult &other) noexcept = default;
 
-ValidatorResult& ValidatorResult::operator=(ValidatorResult &&other) noexcept = default;
+ValidatorResult &ValidatorResult::operator=(ValidatorResult &&other) noexcept = default;
 
 ValidatorResult::~ValidatorResult() noexcept = default;
 

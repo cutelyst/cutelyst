@@ -6,11 +6,10 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
+#include <chrono>
 
 #include <QDataStream>
 #include <QVersionNumber>
-
-#include <chrono>
 
 namespace Cutelyst {
 
@@ -154,7 +153,8 @@ class MemcachedPrivate;
  *
  * @since %Cutelyst 1.11.0
  */
-class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached : public Plugin // clazy:exclude=ctor-missing-parent-argument
+class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached
+    : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Memcached) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -806,13 +806,16 @@ public:
 
     /**
      * Expiration time constant that can be used in the increment/decrement with initial methods.
-     * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
+     * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial()
+     * decrementWithInitialByKey()
      */
     static const time_t expirationNotAdd;
 
     /**
-     * Expiration duration constant that can be used in the increment/decrement with initial methods.
-     * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
+     * Expiration duration constant that can be used in the increment/decrement with initial
+     * methods.
+     * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial()
+     * decrementWithInitialByKey()
      * @since %Cutelyst 4.0.0
      */
     static const std::chrono::seconds expirationNotAddDuration;
@@ -1250,7 +1253,8 @@ public:
      * @overload
      * @since %Cutelyst 4.0.0
      */
-    inline static bool flush(std::chrono::seconds expiration, MemcachedReturnType *returnType = nullptr);
+    inline static bool flush(std::chrono::seconds expiration,
+                             MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values from the server identified by a list of @a keys. If a pointer for the
@@ -1598,7 +1602,8 @@ inline bool Memcached::incrementWithInitial(QByteArrayView key,
                                             uint64_t *value,
                                             MemcachedReturnType *returnType)
 {
-    return Memcached::incrementWithInitial(key, offset, initial, expiration.count(), value, returnType);
+    return Memcached::incrementWithInitial(
+        key, offset, initial, expiration.count(), value, returnType);
 }
 
 inline bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
@@ -1609,7 +1614,8 @@ inline bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
                                                  uint64_t *value,
                                                  MemcachedReturnType *returnType)
 {
-    return Memcached::incrementWithInitialByKey(groupKey, key, offset, initial, expiration.count(), value, returnType);
+    return Memcached::incrementWithInitialByKey(
+        groupKey, key, offset, initial, expiration.count(), value, returnType);
 }
 
 inline bool Memcached::decrementWithInitial(QByteArrayView key,
@@ -1619,7 +1625,8 @@ inline bool Memcached::decrementWithInitial(QByteArrayView key,
                                             uint64_t *value,
                                             MemcachedReturnType *returnType)
 {
-    return Memcached::decrementWithInitial(key, offset, initial, expiration.count(), value, returnType);
+    return Memcached::decrementWithInitial(
+        key, offset, initial, expiration.count(), value, returnType);
 }
 
 inline bool Memcached::decrementWithInitialByKey(QByteArrayView groupKey,
@@ -1630,7 +1637,8 @@ inline bool Memcached::decrementWithInitialByKey(QByteArrayView groupKey,
                                                  uint64_t *value,
                                                  MemcachedReturnType *returnType)
 {
-    return Memcached::decrementWithInitialByKey(groupKey, key, offset, initial, expiration.count(), value, returnType);
+    return Memcached::decrementWithInitialByKey(
+        groupKey, key, offset, initial, expiration.count(), value, returnType);
 }
 
 template <typename T>

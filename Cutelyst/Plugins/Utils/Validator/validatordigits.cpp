@@ -27,9 +27,7 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
     bool ok           = false;
     const int _length = d->extractInt(c, params, d->length, &ok);
     if (!ok) {
-        qCDebug(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Invalid comparison length";
+        qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison length";
         result.errorMessage = validationDataError(c);
         return result;
     }
@@ -40,16 +38,15 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
             if ((_length > 0) && (v.length() != _length)) {
                 result.errorMessage = validationError(c, _length);
                 qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Does not contain exactly" << _length << "digits:" << v.length() << "!=" << _length;
+                    << debugString(c) << "Does not contain exactly" << _length
+                    << "digits:" << v.length() << "!=" << _length;
             } else {
                 result.value.setValue(v);
             }
         } else {
             result.errorMessage = validationError(c, _length);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " Does not only contain digits: \"" << v << "\"";
+                << debugString(c) << " Does not only contain digits: \"" << v << "\"";
         }
 
     } else {

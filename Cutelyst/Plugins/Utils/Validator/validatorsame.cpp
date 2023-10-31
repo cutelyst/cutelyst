@@ -32,9 +32,8 @@ ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &pa
         if (v != ov) {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " The value in \"" << d->otherField << "\" is not the same: "
-                    << v << " != " << ov;
+                << debugString(c) << " The value in \"" << d->otherField
+                << "\" is not the same: " << v << " != " << ov;
         } else {
             result.value.setValue(v);
         }

@@ -43,7 +43,8 @@ bool ValidatorFileSize::validate(const QString &value,
     for (const QChar &ch : value) {
         if (valid) {
             const char16_t &uc = ch.toUpper().unicode();
-            if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) || (ch == decimalPoint)) {
+            if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
+                (ch == decimalPoint)) {
                 if (startsWith == 0) {
                     startsWith = -1;
                 }
@@ -63,7 +64,8 @@ bool ValidatorFileSize::validate(const QString &value,
                     break;
                 }
             } else if ((uc != ValidatorRulePrivate::asciiTab) &&
-                       (uc != ValidatorRulePrivate::asciiSpace)) { // not a digit or decimal point and not a space or tab
+                       (uc != ValidatorRulePrivate::asciiSpace)) { // not a digit or decimal point
+                                                                   // and not a space or tab
                 if (startsWith == 0) {
                     startsWith = 1;
                 }

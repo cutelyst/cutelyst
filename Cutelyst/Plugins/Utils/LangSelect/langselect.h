@@ -326,7 +326,8 @@ class LangSelectPrivate;
  *
  * @since %Cutelyst 2.1.0
  */
-class CUTELYST_PLUGIN_UTILS_LANGSELECT_EXPORT LangSelect : public Plugin // clazy:exclude=ctor-missing-parent-argument
+class CUTELYST_PLUGIN_UTILS_LANGSELECT_EXPORT LangSelect
+    : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(LangSelect) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)

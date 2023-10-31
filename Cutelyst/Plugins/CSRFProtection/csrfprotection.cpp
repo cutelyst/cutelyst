@@ -42,7 +42,8 @@ Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection", QtWarning
 
 using namespace Cutelyst;
 
-static thread_local CSRFProtection *csrf = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+static thread_local CSRFProtection *csrf =
+    nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 const QRegularExpression CSRFProtectionPrivate::sanitizeRe{u"[^a-zA-Z0-9\\-_]"_qs};
 // Assume that anything not defined as 'safe' by RFC7231 needs protection
 const QByteArrayList CSRFProtectionPrivate::secureMethods = QByteArrayList({
@@ -51,7 +52,8 @@ const QByteArrayList CSRFProtectionPrivate::secureMethods = QByteArrayList({
     "OPTIONS",
     "TRACE",
 });
-const QByteArray CSRFProtectionPrivate::allowedChars{"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"_qba};
+const QByteArray CSRFProtectionPrivate::allowedChars{
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"_qba};
 
 CSRFProtection::CSRFProtection(Application *parent)
     : Plugin(parent)
@@ -65,20 +67,27 @@ bool CSRFProtection::setup(Application *app)
 
     app->loadTranslations(u"plugin_csrfprotection"_qs);
 
-    const QVariantMap config =
-        app->engine()->config(u"Cutelyst_CSRFProtection_Plugin"_qs);
+    const QVariantMap config = app->engine()->config(u"Cutelyst_CSRFProtection_Plugin"_qs);
 
     bool cookieExpirationOk = false;
-    const qint64 expSeconds = config.value(u"cookie_expiration"_qs, config.value(u"cookie_age"_qs, static_cast<qint64>(std::chrono::duration_cast<std::chrono::seconds>(CSRFProtectionPrivate::cookieDefaultExpiration).count()))).toLongLong(&cookieExpirationOk);
-    if  (cookieExpirationOk) {
+    const qint64 expSeconds =
+        config
+            .value(
+                u"cookie_expiration"_qs,
+                config.value(u"cookie_age"_qs,
+                             static_cast<qint64>(std::chrono::duration_cast<std::chrono::seconds>(
+                                                     CSRFProtectionPrivate::cookieDefaultExpiration)
+                                                     .count())))
+            .toLongLong(&cookieExpirationOk);
+    if (cookieExpirationOk) {
         d->cookieExpiration = std::chrono::seconds{expSeconds};
     } else {
         qCWarning(C_CSRFPROTECTION).nospace() << "Invalid value set for cookie_expiration. "
                                                  "Has to be an integer greater than 0. "
-                                                 "Using default value " << CSRFProtectionPrivate::cookieDefaultExpiration;
+                                                 "Using default value "
+                                              << CSRFProtectionPrivate::cookieDefaultExpiration;
         d->cookieExpiration = CSRFProtectionPrivate::cookieDefaultExpiration;
     }
-
 
     d->cookieDomain = config.value(u"cookie_domain"_qs).toString();
     if (d->cookieName.isEmpty()) {
@@ -267,17 +276,20 @@ QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
     QByteArray salted;
     salted.reserve(CSRFProtectionPrivate::tokenLength);
 
-    const QByteArray salt  = CSRFProtectionPrivate::getNewCsrfString();
+    const QByteArray salt = CSRFProtectionPrivate::getNewCsrfString();
     std::vector<std::pair<int, int>> pairs;
     pairs.reserve(std::min(secret.size(), salt.size()));
     for (int i = 0; i < std::min(secret.size(), salt.size()); ++i) {
-        pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(secret.at(i)), CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
+        pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(secret.at(i)),
+                           CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
     }
 
     QByteArray cipher;
     cipher.reserve(CSRFProtectionPrivate::secretLength);
     for (const auto &p : std::as_const(pairs)) {
-        cipher.append(CSRFProtectionPrivate::allowedChars[(p.first + p.second) % CSRFProtectionPrivate::allowedChars.size()]);
+        cipher.append(
+            CSRFProtectionPrivate::allowedChars[(p.first + p.second) %
+                                                CSRFProtectionPrivate::allowedChars.size()]);
     }
 
     salted = salt + cipher;
@@ -287,9 +299,9 @@ QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
 
 /**
  * @internal
- * Given a @a token (assumed to be string of CSRFProtectionPrivate::allowedChars, of length CSRFProtectionPrivate::tokenLength,
- * and that its first half is a salt), use it to decrypt the second half to produce the
- * original secret.
+ * Given a @a token (assumed to be string of CSRFProtectionPrivate::allowedChars, of length
+ * CSRFProtectionPrivate::tokenLength, and that its first half is a salt), use it to decrypt the
+ * second half to produce the original secret.
  */
 QByteArray CSRFProtectionPrivate::unsaltCipherToken(const QByteArray &token)
 {
@@ -302,7 +314,8 @@ QByteArray CSRFProtectionPrivate::unsaltCipherToken(const QByteArray &token)
     std::vector<std::pair<int, int>> pairs;
     pairs.reserve(std::min(salt.size(), _token.size()));
     for (int i = 0; i < std::min(salt.size(), _token.size()); ++i) {
-        pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(_token.at(i)), CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
+        pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(_token.at(i)),
+                           CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
     }
 
     for (const auto &p : std::as_const(pairs)) {
@@ -336,7 +349,8 @@ QByteArray CSRFProtectionPrivate::sanitizeToken(const QByteArray &token)
     QByteArray sanitized;
 
     const QString tokenString = QString::fromLatin1(token);
-    if (tokenString.contains(CSRFProtectionPrivate::sanitizeRe) || token.size() != CSRFProtectionPrivate::tokenLength) {
+    if (tokenString.contains(CSRFProtectionPrivate::sanitizeRe) ||
+        token.size() != CSRFProtectionPrivate::tokenLength) {
         sanitized = CSRFProtectionPrivate::getNewCsrfToken();
     } else {
         sanitized = token;
@@ -372,7 +386,8 @@ QByteArray CSRFProtectionPrivate::getToken(Context *c)
         }
     }
 
-    qCDebug(C_CSRFPROTECTION) << "Got token" << token << "from" << (csrf->d_ptr->useSessions ? "sessions" : "cookie");
+    qCDebug(C_CSRFPROTECTION) << "Got token" << token << "from"
+                              << (csrf->d_ptr->useSessions ? "sessions" : "cookie");
 
     return token;
 }
@@ -397,9 +412,11 @@ void CSRFProtectionPrivate::setToken(Context *c)
             cookie.setDomain(csrf->d_ptr->cookieDomain);
         }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
-        cookie.setExpirationDate(QDateTime::currentDateTime().addDuration(csrf->d_ptr->cookieExpiration));
+        cookie.setExpirationDate(
+            QDateTime::currentDateTime().addDuration(csrf->d_ptr->cookieExpiration));
 #else
-        cookie.setExpirationDate(QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieExpiration.count()));
+        cookie.setExpirationDate(
+            QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieExpiration.count()));
 #endif
         cookie.setHttpOnly(csrf->d_ptr->cookieHttpOnly);
         cookie.setPath(csrf->d_ptr->cookiePath);
@@ -409,7 +426,8 @@ void CSRFProtectionPrivate::setToken(Context *c)
         c->res()->headers().pushHeader("Vary"_qba, "Cookie"_qba);
     }
 
-    qCDebug(C_CSRFPROTECTION) << "Set token" << c->stash(CONTEXT_CSRF_COOKIE).toByteArray() << "to" << (csrf->d_ptr->useSessions ? "session" : "cookie");
+    qCDebug(C_CSRFPROTECTION) << "Set token" << c->stash(CONTEXT_CSRF_COOKIE).toByteArray() << "to"
+                              << (csrf->d_ptr->useSessions ? "session" : "cookie");
 }
 
 /**
@@ -456,7 +474,8 @@ void CSRFProtectionPrivate::reject(Context *c,
             detachToAction = c->dispatcher()->getActionByPath(detachToCsrf);
         }
         if (!detachToAction) {
-            qCWarning(C_CSRFPROTECTION) << "Can not find action for" << detachToCsrf << "to detach to";
+            qCWarning(C_CSRFPROTECTION)
+                << "Can not find action for" << detachToCsrf << "to detach to";
         }
     }
 
@@ -597,7 +616,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         CSRFProtectionPrivate::reject(
                             c,
                             u"Referer checking failed - Referer is insecure while "
-                                           "host is secure"_qs,
+                            "host is secure"_qs,
                             c->translate("Cutelyst::CSRFProtection",
                                          "Referer checking failed - Referer is insecure while host "
                                          "is secure."));
@@ -606,7 +625,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         // If there isn't a CSRF_COOKIE_DOMAIN, require an exact match on host:port.
                         // If not, obey the cookie rules (or those for the session cookie, if we
                         // use sessions
-                        constexpr int httpPort = 80;
+                        constexpr int httpPort  = 80;
                         constexpr int httpsPort = 443;
 
                         const QUrl uri = c->req()->uri();
@@ -625,9 +644,9 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         QStringList goodHosts = csrf->d_ptr->trustedOrigins;
                         goodHosts.append(goodReferer);
 
-                        QString refererHost = refererUrl.host();
-                        const int refererPort =
-                            refererUrl.port(refererUrl.scheme().compare(u"https") == 0 ? httpsPort : httpPort);
+                        QString refererHost   = refererUrl.host();
+                        const int refererPort = refererUrl.port(
+                            refererUrl.scheme().compare(u"https") == 0 ? httpsPort : httpPort);
                         if ((refererPort != httpPort) && (refererPort != httpsPort)) {
                             refererHost += u':' + QString::number(refererPort);
                         }
@@ -647,8 +666,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                             CSRFProtectionPrivate::reject(
                                 c,
                                 u"Referer checking failed - %1 does not match any "
-                                               "trusted origins"_qs
-                                    .arg(QString::fromLatin1(referer)),
+                                "trusted origins"_qs.arg(QString::fromLatin1(referer)),
                                 c->translate("Cutelyst::CSRFProtection",
                                              "Referer checking failed - %1 does not match any "
                                              "trusted origins.")
@@ -688,12 +706,15 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                 if (requestCsrfToken.isEmpty()) {
                     requestCsrfToken = c->req()->header(csrf->d_ptr->headerName);
                     if (Q_LIKELY(!requestCsrfToken.isEmpty())) {
-                        qCDebug(C_CSRFPROTECTION) << "Got token" << requestCsrfToken << "from HTTP header" << csrf->d_ptr->headerName;
+                        qCDebug(C_CSRFPROTECTION) << "Got token" << requestCsrfToken
+                                                  << "from HTTP header" << csrf->d_ptr->headerName;
                     } else {
-                        qCDebug(C_CSRFPROTECTION) << "Can not get token from HTTP header or form field.";
+                        qCDebug(C_CSRFPROTECTION)
+                            << "Can not get token from HTTP header or form field.";
                     }
                 } else {
-                    qCDebug(C_CSRFPROTECTION) << "Got token" << requestCsrfToken << "from form field" << csrf->d_ptr->formInputName;
+                    qCDebug(C_CSRFPROTECTION) << "Got token" << requestCsrfToken
+                                              << "from form field" << csrf->d_ptr->formInputName;
                 }
 
                 requestCsrfToken = CSRFProtectionPrivate::sanitizeToken(requestCsrfToken);

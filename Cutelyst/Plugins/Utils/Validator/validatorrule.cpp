@@ -156,8 +156,7 @@ QString ValidatorRule::genericValidationDataError(Context *c, const QVariant &er
     return error;
 }
 
-void ValidatorRule::defaultValue(Context *c,
-                                 ValidatorReturnType *result) const
+void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result) const
 {
     Q_ASSERT_X(c, "getting default value", "invalid context object");
     Q_ASSERT_X(result, "getting default value", "invalid result object");
@@ -165,16 +164,17 @@ void ValidatorRule::defaultValue(Context *c,
     if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
         result->value.setValue(c->stash(d->defValKey));
         qCDebug(C_VALIDATOR).noquote().nospace()
-                << d->validatorName << ": Using default value " << result->value
-                << " for field \"" << field() << "\" at " << c->controllerName() << "::"
-                << c->actionName();
+            << d->validatorName << ": Using default value " << result->value << " for field \""
+            << field() << "\" at " << c->controllerName() << "::" << c->actionName();
     }
 }
 
 QString ValidatorRule::debugString(Context *c) const
 {
     Q_D(const ValidatorRule);
-    return QString::fromLatin1(d->validatorName) + QLatin1String(": Validation failed for field \"") + field() + QLatin1String("\" at ") + c->controllerName() + QLatin1String("::") + c->actionName() + QLatin1Char(':');
+    return QString::fromLatin1(d->validatorName) +
+           QLatin1String(": Validation failed for field \"") + field() + QLatin1String("\" at ") +
+           c->controllerName() + QLatin1String("::") + c->actionName() + QLatin1Char(':');
 }
 
 bool ValidatorRule::trimBefore() const noexcept

@@ -17,8 +17,9 @@ class ValidatorRequiredWithPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredWith validatorrequiredwith.h <Cutelyst/Plugins/Utils/validatorrequiredwith.h>
- * \brief The field under validation must be present and not empty only if any of the other specified fields is present.
+ * \class ValidatorRequiredWith validatorrequiredwith.h
+ * <Cutelyst/Plugins/Utils/validatorrequiredwith.h> \brief The field under validation must be
+ * present and not empty only if any of the other specified fields is present.
  *
  * If \b any of the fields defined in the \a otherFields list is present in the input data, the \a
  * field under validation must be present and not empty. For the other fields only their presence in

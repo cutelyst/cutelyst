@@ -244,7 +244,8 @@ class CSRFProtectionPrivate;
  *
  * @since Cutelyst 1.12.0
  */
-class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection : public Plugin // clazy:exclude=ctor-missing-parent-argument
+class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection
+    : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CSRFProtection) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)

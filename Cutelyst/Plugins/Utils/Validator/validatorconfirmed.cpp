@@ -31,8 +31,8 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
         if (Q_UNLIKELY(v != ofv)) {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " The value in \"" << ofn << "\" does not fit: \"" << v << "\" != \"" << ofv << "\"";
+                << debugString(c) << " The value in \"" << ofn << "\" does not fit: \"" << v
+                << "\" != \"" << ofv << "\"";
         } else {
             result.value.setValue(v);
         }

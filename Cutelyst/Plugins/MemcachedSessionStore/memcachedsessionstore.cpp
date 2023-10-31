@@ -31,9 +31,8 @@ MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject
     Q_ASSERT_X(app,
                "construct MemachedSessionStore",
                "you have to specifiy a pointer to the Application object");
-    const QVariantMap map =
-        app->engine()->config(u"Cutelyst_MemcachedSessionStore_Plugin"_qs);
-    d->groupKey = map.value(u"group_key"_qs).toString().toLatin1();
+    const QVariantMap map = app->engine()->config(u"Cutelyst_MemcachedSessionStore_Plugin"_qs);
+    d->groupKey           = map.value(u"group_key"_qs).toString().toLatin1();
 }
 
 QVariant MemcachedSessionStore::getSessionData(Context *c,
@@ -118,7 +117,7 @@ QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteA
                 qCWarning(C_MEMCACHEDSESSIONSTORE) << "Failed to remove session from Memcached.";
             }
         } else {
-            bool ok              = false;
+            bool ok            = false;
             const auto expires = data.value(u"expires"_qs).value<time_t>();
             if (groupKey.isEmpty()) {
                 ok = Memcached::set(sessionKey, data, expires);

@@ -26,9 +26,7 @@ ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR)
-                    << debugString(c)
-                    << "Is present but empty";
+            qCDebug(C_VALIDATOR) << debugString(c) << "Is present but empty";
         }
     } else {
         defaultValue(c, &result);

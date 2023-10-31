@@ -21,9 +21,7 @@ ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c,
     ValidatorReturnType result;
 
     if (!params.contains(field())) {
-        qCDebug(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Field not found";
+        qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Field not found";
         result.errorMessage = validationError(c);
         return result;
     }
@@ -32,9 +30,7 @@ ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c,
     if (Q_LIKELY(!v.isEmpty())) {
         result.value.setValue(v);
     } else {
-        qCDebug(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "The field is not present or empty";
+        qCDebug(C_VALIDATOR).noquote() << debugString(c) << "The field is not present or empty";
         result.errorMessage = validationError(c);
     }
 

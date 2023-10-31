@@ -40,15 +40,13 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " Failed to parse \"" << v << "\" into an integer number";
+                    << debugString(c) << " Failed to parse \"" << v << "\" into an integer number";
             } else {
                 const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid maximum comparison value";
+                        << debugString(c) << "Invalid maximum comparison value";
                 } else {
                     if (val > max) {
                         result.errorMessage =
@@ -56,8 +54,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("max"), max}});
                         qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << val << "is not smaller than" << max;
+                            << debugString(c) << val << "is not smaller than" << max;
                     } else {
                         valid = true;
                     }
@@ -74,15 +71,14 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " Failed to parse \"" << v << "\" into an unsigned integer number";
+                    << debugString(c) << " Failed to parse \"" << v
+                    << "\" into an unsigned integer number";
             } else {
                 const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid maximum comparison value";
+                        << debugString(c) << "Invalid maximum comparison value";
                 } else {
                     if (val > max) {
                         result.errorMessage =
@@ -90,8 +86,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("max"), max}});
                         qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << val << "is not smaller than" << max;
+                            << debugString(c) << val << "is not smaller than" << max;
                     } else {
                         valid = true;
                     }
@@ -105,15 +100,14 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " Failed to parse \"" << v << "\" into a floating point number";
+                    << debugString(c) << " Failed to parse \"" << v
+                    << "\" into a floating point number";
             } else {
                 const double max = d->extractDouble(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid maximum comparison value";
+                        << debugString(c) << "Invalid maximum comparison value";
                 } else {
                     if (val > max) {
                         result.errorMessage =
@@ -121,8 +115,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("max"), max}});
                         qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << val << "is not smaller than" << max;
+                            << debugString(c) << val << "is not smaller than" << max;
                     } else {
                         valid = true;
                     }
@@ -131,20 +124,18 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
         } break;
         case QMetaType::QString:
         {
-            const auto      val = static_cast<qlonglong>(v.length());
+            const auto val      = static_cast<qlonglong>(v.length());
             const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(c, 1);
                 qCWarning(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Invalid maximum comparison value";
+                    << debugString(c) << "Invalid maximum comparison value";
             } else {
                 if (val > max) {
                     result.errorMessage = validationError(
                         c, QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("max"), max}});
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "String length" << val << "is not shorter than" << max;
+                        << debugString(c) << "String length" << val << "is not shorter than" << max;
                 } else {
                     valid = true;
                 }
@@ -152,8 +143,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
         } break;
         default:
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "The comparison type" << d->type << "is not supported";
+                << debugString(c) << "The comparison type" << d->type << "is not supported";
             result.errorMessage = validationDataError(c, 0);
             break;
         }

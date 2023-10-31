@@ -25,9 +25,7 @@ ValidatorReturnType ValidatorRequiredWithAll::validate(Context *c,
 
     if (d->otherFields.empty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Invalid validation data";
+        qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid validation data";
     } else {
 
         bool containsAll = true;
@@ -48,9 +46,9 @@ ValidatorReturnType ValidatorRequiredWithAll::validate(Context *c,
                 result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "The field is not present or empty but all other required fields are present";
+                qCDebug(C_VALIDATOR).noquote() << debugString(c)
+                                               << "The field is not present or empty but all other "
+                                                  "required fields are present";
             }
         } else {
             if (!v.isEmpty()) {

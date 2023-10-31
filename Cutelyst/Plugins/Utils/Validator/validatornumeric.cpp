@@ -23,14 +23,14 @@ ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap 
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        bool ok         = false;
-        const auto _v   = v.toDouble(&ok);
+        bool ok       = false;
+        const auto _v = v.toDouble(&ok);
         if (Q_LIKELY(ok)) {
             result.value.setValue(_v);
         } else {
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " Can not convert input value \"" << v << "\" into a numeric value";
+                << debugString(c) << " Can not convert input value \"" << v
+                << "\" into a numeric value";
             result.errorMessage = validationError(c);
         }
     } else {

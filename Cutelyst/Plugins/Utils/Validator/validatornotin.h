@@ -39,10 +39,9 @@ public:
     /*!
      * \brief Constructs a new not in validator.
      * \param field         Name of the input field to validate.
-     * \param values        List of values to compare against. Can be either a QStringList containing
-     *                      the not allowed values or a QString specifing a stash key containing a
-     *                      QStringList with not allowed values.
-     * \param cs            Case sensitivity when comparing the values.
+     * \param values        List of values to compare against. Can be either a QStringList
+     * containing the not allowed values or a QString specifing a stash key containing a QStringList
+     * with not allowed values. \param cs            Case sensitivity when comparing the values.
      * \param messages      Custom error message if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
      * input field is empty. This value will \b NOT be validated.

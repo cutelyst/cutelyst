@@ -40,24 +40,19 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << "Failed to parse \"" << v << "\" into an integer number";
+                    << debugString(c) << "Failed to parse \"" << v << "\" into an integer number";
             } else {
                 const qlonglong size = d->extractLongLong(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid comparison size";
+                    qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
                 } else {
                     if (val != size) {
                         result.errorMessage =
                             validationError(c,
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("size"), size}});
-                        qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << val << "!=" << size;
+                        qCDebug(C_VALIDATOR).noquote() << debugString(c) << val << "!=" << size;
                     } else {
                         valid = true;
                     }
@@ -73,24 +68,20 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << "Failed to parse \"" << v << "\" into an unsigned integer number";
+                    << debugString(c) << "Failed to parse \"" << v
+                    << "\" into an unsigned integer number";
             } else {
                 const qulonglong size = d->extractULongLong(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid comparison size";
+                    qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
                 } else {
                     if (val != size) {
                         result.errorMessage =
                             validationError(c,
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("size"), size}});
-                        qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << val << "!=" << size;
+                        qCDebug(C_VALIDATOR).noquote() << debugString(c) << val << "!=" << size;
                     } else {
                         valid = true;
                     }
@@ -104,24 +95,20 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = parsingError(c);
                 qCWarning(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << "Failed to parse \"" << v << "\" into a floating point number";
+                    << debugString(c) << "Failed to parse \"" << v
+                    << "\" into a floating point number";
             } else {
                 const double size = d->extractDouble(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
-                    qCWarning(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid comparison size";
+                    qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
                 } else {
                     if (val != size) {
                         result.errorMessage =
                             validationError(c,
                                             QVariantMap{{QStringLiteral("val"), val},
                                                         {QStringLiteral("size"), size}});
-                        qCDebug(C_VALIDATOR).noquote()
-                                << debugString(c)
-                                << val << "!=" << size;
+                        qCDebug(C_VALIDATOR).noquote() << debugString(c) << val << "!=" << size;
                     } else {
                         valid = true;
                     }
@@ -134,17 +121,14 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
             const qlonglong size = d->extractLongLong(c, params, d->size, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(c, 1);
-                qCWarning(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "Invalid comparison size";
+                qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
             } else {
                 if (val != size) {
                     result.errorMessage = validationError(
                         c,
                         QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("size"), size}});
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "string length" << val << "!=" << size;
+                        << debugString(c) << "string length" << val << "!=" << size;
                 } else {
                     valid = true;
                 }
@@ -152,8 +136,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
         } break;
         default:
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "The comparison type" << d->type << "is not supported";
+                << debugString(c) << "The comparison type" << d->type << "is not supported";
             result.errorMessage = validationDataError(c, 0);
             break;
         }

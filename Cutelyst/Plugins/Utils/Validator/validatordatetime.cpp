@@ -36,8 +36,7 @@ ValidatorReturnType ValidatorDateTime::validate(Context *c, const ParamsMultiMap
         if (!dt.isValid()) {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " \"" << v << "\" is not a valid datetime";
+                << debugString(c) << " \"" << v << "\" is not a valid datetime";
         } else {
             result.value.setValue(dt);
         }

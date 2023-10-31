@@ -53,8 +53,9 @@ bool ValidatorDomain::validate(const QString &value,
             // checking the ACE puny code
             for (const QChar &ch : tld) {
                 const ushort &uc = ch.unicode();
-                if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
-                        (uc == ValidatorRulePrivate::ascii_dash)) {
+                if (((uc >= ValidatorRulePrivate::ascii_0) &&
+                     (uc <= ValidatorRulePrivate::ascii_9)) ||
+                    (uc == ValidatorRulePrivate::ascii_dash)) {
                     diag  = InvalidTLD;
                     valid = false;
                     break;
@@ -75,13 +76,17 @@ bool ValidatorDomain::validate(const QString &value,
                                         const QString part = parts.at(i);
                                         if (!part.isEmpty()) {
                                             // labels/parts can have a maximum length of 63 chars
-                                            if (part.length() <= ValidatorDomainPrivate::maxDnsLabelLength) {
+                                            if (part.length() <=
+                                                ValidatorDomainPrivate::maxDnsLabelLength) {
                                                 bool isTld      = (i == (parts.size() - 1));
                                                 bool isPunyCode = part.startsWith(u"xn--");
                                                 for (int j = 0; j < part.size(); ++j) {
-                                                    const ushort &uc   = part.at(j).unicode();
-                                                    const bool isDigit = ((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9));
-                                                    const bool isDash  = (uc == ValidatorRulePrivate::ascii_dash);
+                                                    const ushort &uc = part.at(j).unicode();
+                                                    const bool isDigit =
+                                                        ((uc >= ValidatorRulePrivate::ascii_0) &&
+                                                         (uc <= ValidatorRulePrivate::ascii_9));
+                                                    const bool isDash =
+                                                        (uc == ValidatorRulePrivate::ascii_dash);
                                                     // no part/label can start with a digit or a
                                                     // dash
                                                     if ((j == 0) && (isDash || isDigit)) {
@@ -95,7 +100,9 @@ bool ValidatorDomain::validate(const QString &value,
                                                         diag  = DashEnd;
                                                         break;
                                                     }
-                                                    const bool isChar = ((uc >= ValidatorRulePrivate::ascii_a) && (uc <= ValidatorRulePrivate::ascii_z));
+                                                    const bool isChar =
+                                                        ((uc >= ValidatorRulePrivate::ascii_a) &&
+                                                         (uc <= ValidatorRulePrivate::ascii_z));
                                                     if (!isTld) {
                                                         // if it is not the tld, it can have a-z 0-9
                                                         // and -
@@ -174,7 +181,8 @@ bool ValidatorDomain::validate(const QString &value,
             QDnsLookup aaaaLookup(QDnsLookup::AAAA, v);
             QEventLoop aaaaLoop;
             QObject::connect(&aaaaLookup, &QDnsLookup::finished, &aaaaLoop, &QEventLoop::quit);
-            QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, &aaaaLookup, &QDnsLookup::abort);
+            QTimer::singleShot(
+                ValidatorDomainPrivate::dnsLookupTimeout, &aaaaLookup, &QDnsLookup::abort);
             aaaaLookup.lookup();
             aaaaLoop.exec();
 
@@ -377,66 +385,58 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
         } else {
             result.errorMessage = validationError(c, diag);
             if (C_VALIDATOR().isDebugEnabled()) {
-                switch(diag) {
+                switch (diag) {
                 case Valid:
                     break;
                 case MissingDNS:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Can not find valid DNS entry for" << v;
+                        << debugString(c) << "Can not find valid DNS entry for" << v;
                     break;
                 case InvalidChars:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "The domain name contains characters that are not allowed";
+                        << debugString(c)
+                        << "The domain name contains characters that are not allowed";
                     break;
                 case LabelTooLong:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "At least on of the domain name labels exceeds the maximum"
-                            << "size of" << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
+                        << debugString(c)
+                        << "At least on of the domain name labels exceeds the maximum"
+                        << "size of" << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
                     break;
                 case TooLong:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "The domain name exceeds the maximum size of" << ValidatorDomainPrivate::maxDnsNameWithLastDot
-                            << "characters";
+                        << debugString(c) << "The domain name exceeds the maximum size of"
+                        << ValidatorDomainPrivate::maxDnsNameWithLastDot << "characters";
                     break;
                 case InvalidLabelCount:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "Invalid label count. Either no labels or only TLD";
+                        << debugString(c) << "Invalid label count. Either no labels or only TLD";
                     break;
                 case EmptyLabel:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "At least one of the domain name labels is empty";
+                        << debugString(c) << "At least one of the domain name labels is empty";
                     break;
                 case InvalidTLD:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "The TLD label contains characters that are not allowed";
+                        << debugString(c)
+                        << "The TLD label contains characters that are not allowed";
                     break;
                 case DashStart:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "At least one label starts with a dash";
+                        << debugString(c) << "At least one label starts with a dash";
                     break;
                 case DashEnd:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "At least one label ends with a dash";
+                        << debugString(c) << "At least one label ends with a dash";
                     break;
                 case DigitStart:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "At least one label start with a digit";
+                        << debugString(c) << "At least one label start with a digit";
                     break;
                 case DNSTimeout:
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "The DNS lookup exceeds the timeout of"
-                            << ValidatorDomainPrivate::dnsLookupTimeout;
+                        << debugString(c) << "The DNS lookup exceeds the timeout of"
+                        << ValidatorDomainPrivate::dnsLookupTimeout;
                 }
             }
         }

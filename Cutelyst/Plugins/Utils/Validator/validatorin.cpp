@@ -37,15 +37,14 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
         if (vals.empty()) {
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "The list of comparison values is emtpy";
+                << debugString(c) << "The list of comparison values is emtpy";
         } else {
             if (vals.contains(v, d->cs)) {
                 result.value.setValue(v);
             } else {
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " \"" << v << "\" is not part of the comparison list " << vals;
+                    << debugString(c) << " \"" << v << "\" is not part of the comparison list "
+                    << vals;
                 result.errorMessage = validationError(c, vals);
             }
         }

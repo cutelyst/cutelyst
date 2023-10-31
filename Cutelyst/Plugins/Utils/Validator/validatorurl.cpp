@@ -91,9 +91,7 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
 
         if (!valid) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR).noquote()
-                    << debugString(c)
-                    << "Not a valid URL";
+            qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Not a valid URL";
         } else {
             result.value.setValue(url);
         }

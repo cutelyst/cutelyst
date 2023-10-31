@@ -28,12 +28,15 @@ public:
     Q_REQUIRED_RESULT bool compressGzip(const QString &inputPath,
                                         const QString &outputPath,
                                         const QDateTime &origLastModified) const;
-    Q_REQUIRED_RESULT bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
+    Q_REQUIRED_RESULT bool compressDeflate(const QString &inputPath,
+                                           const QString &outputPath) const;
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
-    Q_REQUIRED_RESULT bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
+    Q_REQUIRED_RESULT bool compressZopfli(const QString &inputPath,
+                                          const QString &outputPath) const;
 #endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-    Q_REQUIRED_RESULT bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
+    Q_REQUIRED_RESULT bool compressBrotli(const QString &inputPath,
+                                          const QString &outputPath) const;
 #endif
 
     QStringList dirs;

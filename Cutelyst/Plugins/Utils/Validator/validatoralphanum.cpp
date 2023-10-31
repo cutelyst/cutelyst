@@ -31,8 +31,7 @@ ValidatorReturnType ValidatorAlphaNum::validate(Context *c, const ParamsMultiMap
             result.value.setValue(v);
         } else {
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " \"" << v << "\" contains character that are not allowed";
+                << debugString(c) << " \"" << v << "\" contains character that are not allowed";
             result.errorMessage = validationError(c);
         }
 
@@ -49,9 +48,12 @@ bool ValidatorAlphaNum::validate(const QString &value, bool asciiOnly)
     if (asciiOnly) {
         for (const QChar &ch : value) {
             const ushort &uc = ch.unicode();
-            if (!(((uc >= ValidatorRulePrivate::ascii_A) && (uc <= ValidatorRulePrivate::ascii_Z)) ||
-                  ((uc >= ValidatorRulePrivate::ascii_a) && (uc <= ValidatorRulePrivate::ascii_z)) ||
-                  ((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)))) {
+            if (!(((uc >= ValidatorRulePrivate::ascii_A) &&
+                   (uc <= ValidatorRulePrivate::ascii_Z)) ||
+                  ((uc >= ValidatorRulePrivate::ascii_a) &&
+                   (uc <= ValidatorRulePrivate::ascii_z)) ||
+                  ((uc >= ValidatorRulePrivate::ascii_0) &&
+                   (uc <= ValidatorRulePrivate::ascii_9)))) {
                 valid = false;
                 break;
             }

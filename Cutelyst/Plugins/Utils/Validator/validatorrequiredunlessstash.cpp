@@ -27,8 +27,7 @@ ValidatorReturnType ValidatorRequiredUnlessStash::validate(Context *c,
 
     if (d->stashKey.isEmpty() || d->stashValues.empty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR).noquote()
-                << "Invalid validation data";
+        qCWarning(C_VALIDATOR).noquote() << "Invalid validation data";
     } else {
         const QString v   = value(params);
         const QVariant sv = c->stash(d->stashKey);
@@ -38,8 +37,8 @@ ValidatorReturnType ValidatorRequiredUnlessStash::validate(Context *c,
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                        << debugString(c)
-                        << " The field is not present or empty but stash key \"" << d->stashKey << "\" not contains " << sv;
+                    << debugString(c) << " The field is not present or empty but stash key \""
+                    << d->stashKey << "\" not contains " << sv;
             }
         } else {
             if (!v.isEmpty()) {

@@ -33,8 +33,7 @@ ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &pa
         if (!date.isValid()) {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c)
-                    << " \"" << v << "\" is not a valid date";
+                << debugString(c) << " \"" << v << "\" is not a valid date";
         } else {
             result.value.setValue(date);
         }

@@ -52,8 +52,9 @@ int ValidatorPwQuality::validate(const QString &value,
                             if (orv != 0) {
                                 QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
                                 qCWarning(C_VALIDATOR).noquote().nospace()
-                                        << "ValidatorPwQuality: Failed to set pwquality option "
-                                        << opt << ": " << pwquality_strerror(buf.data(), buf.size(), orv, nullptr);
+                                    << "ValidatorPwQuality: Failed to set pwquality option " << opt
+                                    << ": "
+                                    << pwquality_strerror(buf.data(), buf.size(), orv, nullptr);
                             }
                             ++i;
                         }
@@ -69,8 +70,9 @@ int ValidatorPwQuality::validate(const QString &value,
                             if (rcrv != 0) {
                                 QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
                                 qCWarning(C_VALIDATOR).noquote().nospace()
-                                        << "ValidatorPwQuality: Failed to read configuration file "
-                                        << configFile << ": " << pwquality_strerror(buf.data(), buf.size(), rcrv, auxerror);
+                                    << "ValidatorPwQuality: Failed to read configuration file "
+                                    << configFile << ": "
+                                    << pwquality_strerror(buf.data(), buf.size(), rcrv, auxerror);
                             }
                         } else {
                             pwquality_read_config(pwq, configFile.toUtf8().constData(), nullptr);
@@ -87,8 +89,8 @@ int ValidatorPwQuality::validate(const QString &value,
                     if (rcrv != 0) {
                         QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
                         qCWarning(C_VALIDATOR).noquote()
-                                << "VaidatorPwQuality: Failed to read default configuration file:"
-                                << pwquality_strerror(buf.data(), buf.size(), rcrv, auxerror);
+                            << "VaidatorPwQuality: Failed to read default configuration file:"
+                            << pwquality_strerror(buf.data(), buf.size(), rcrv, auxerror);
                     }
                 } else {
                     pwquality_read_config(pwq, nullptr, nullptr);
@@ -486,17 +488,16 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
                 if (rv < 0) {
                     QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
                     qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << pwquality_strerror(buf.data(), buf.size(), rv, nullptr);
+                        << debugString(c)
+                        << pwquality_strerror(buf.data(), buf.size(), rv, nullptr);
                 } else {
-                    qCDebug(C_VALIDATOR).noquote()
-                            << debugString(c)
-                            << "The quality score" << rv << "is below the threshold of" << d->threshold;
+                    qCDebug(C_VALIDATOR).noquote() << debugString(c) << "The quality score" << rv
+                                                   << "is below the threshold of" << d->threshold;
                 }
             }
         } else {
             qCDebug(C_VALIDATOR).noquote()
-                    << "ValidatorPwQuality: \"" << v << "\" got a quality score of" << rv;
+                << "ValidatorPwQuality: \"" << v << "\" got a quality score of" << rv;
             result.value = v;
         }
     }

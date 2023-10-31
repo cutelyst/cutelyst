@@ -21,9 +21,7 @@ ValidatorReturnType ValidatorPresent::validate(Context *c, const ParamsMultiMap 
 
     if (!params.contains(field())) {
         result.errorMessage = validationError(c);
-        qCDebug(C_VALIDATOR).noquote()
-                << debugString(c)
-                << "Field not found";
+        qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Field not found";
     } else {
         result.value.setValue<QString>(value(params));
     }
