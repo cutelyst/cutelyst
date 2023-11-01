@@ -85,7 +85,7 @@ public:
     /**
      * Deconstructs the MemcachedSessionStore object
      */
-    ~MemcachedSessionStore() override = default;
+    ~MemcachedSessionStore() override;
 
     QVariant getSessionData(Context *c,
                             const QByteArray &sid,
@@ -108,7 +108,7 @@ public:
     void setGroupKey(const QByteArray &groupKey);
 
 private:
-    QScopedPointer<MemcachedSessionStorePrivate> d_ptr;
+    std::unique_ptr<MemcachedSessionStorePrivate> d_ptr;
 };
 
 } // namespace Cutelyst

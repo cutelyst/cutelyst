@@ -35,6 +35,8 @@ MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject
     d->groupKey           = map.value(u"group_key"_qs).toString().toLatin1();
 }
 
+MemcachedSessionStore::~MemcachedSessionStore() = default;
+
 QVariant MemcachedSessionStore::getSessionData(Context *c,
                                                const QByteArray &sid,
                                                const QString &key,
