@@ -50,6 +50,8 @@ LangSelect::LangSelect(Application *parent)
     d->autoDetect = false;
 }
 
+LangSelect::~LangSelect() = default;
+
 bool LangSelect::setup(Application *app)
 {
     Q_D(LangSelect);
