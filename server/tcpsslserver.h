@@ -18,7 +18,7 @@ namespace Cutelyst {
 class Server;
 class Protocol;
 class SslSocket;
-class CWsgiEngine;
+class ServerEngine;
 class TcpSslServer final : public TcpServer
 {
     Q_OBJECT

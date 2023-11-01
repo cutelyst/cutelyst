@@ -14,7 +14,7 @@ namespace Cutelyst {
 
 class Server;
 class TcpServer;
-class CWsgiEngine;
+class ServerEngine;
 class Protocol;
 class TcpServerBalancer final : public QTcpServer
 {
@@ -30,7 +30,7 @@ public:
 
     void incomingConnection(qintptr handle) override;
 
-    TcpServer *createServer(CWsgiEngine *engine);
+    TcpServer *createServer(ServerEngine *engine);
 
 private:
     QHostAddress m_address;

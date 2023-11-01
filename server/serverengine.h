@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2016-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CWSGI_ENGINE_H
-#define CWSGI_ENGINE_H
+#pragma once
 
 #include <Cutelyst/Engine>
 
@@ -22,15 +21,15 @@ class ProtocolHttp;
 class ProtocolHttp2;
 class Server;
 class Socket;
-class CWsgiEngine final : public Cutelyst::Engine
+class ServerEngine final : public Cutelyst::Engine
 {
     Q_OBJECT
 public:
-    CWsgiEngine(Cutelyst::Application *localApp,
-                int workerCore,
-                const QVariantMap &opts,
-                Server *wsgi);
-    virtual ~CWsgiEngine() override;
+    ServerEngine(Cutelyst::Application *localApp,
+                 int workerCore,
+                 const QVariantMap &opts,
+                 Server *wsgi);
+    virtual ~ServerEngine() override;
 
     virtual int workerId() const override;
 
@@ -56,7 +55,7 @@ public:
 Q_SIGNALS:
     void started();
     void shutdown();
-    void shutdownCompleted(Cutelyst::CWsgiEngine *engine);
+    void shutdownCompleted(Cutelyst::ServerEngine *engine);
 
 protected:
     inline void startSocketTimeout()
@@ -107,5 +106,3 @@ private:
 };
 
 } // namespace Cutelyst
-
-#endif // CWSGI_ENGINE_H

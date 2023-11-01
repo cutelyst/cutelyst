@@ -4,9 +4,9 @@
  */
 #include "hpack.h"
 
-#include "cwsgiengine.h"
 #include "hpack_p.h"
 #include "protocolhttp2.h"
+#include "serverengine.h"
 
 #include <vector>
 
@@ -145,7 +145,7 @@ HPack::~HPack()
 {
 }
 
-void HPack::encodeHeaders(int status, const Headers &headers, QByteArray &buf, CWsgiEngine *engine)
+void HPack::encodeHeaders(int status, const Headers &headers, QByteArray &buf, ServerEngine *engine)
 {
     if (status == 200) {
         buf.append(char(0x88));

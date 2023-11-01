@@ -476,7 +476,7 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
     }
 
     if (!hasDate) {
-        headerBuffer.append(static_cast<CWsgiEngine *>(sock->engine)->lastDate());
+        headerBuffer.append(static_cast<ServerEngine *>(sock->engine)->lastDate());
     }
     headerBuffer.append("\r\n\r\n", 4);
 

@@ -6,8 +6,8 @@
 #define SOCKET_H
 
 #include "Cutelyst/enginerequest.h"
-#include "cwsgiengine.h"
 #include "protocol.h"
+#include "serverengine.h"
 
 #include <Cutelyst/Headers>
 

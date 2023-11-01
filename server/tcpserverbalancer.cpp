@@ -4,8 +4,8 @@
  */
 #include "tcpserverbalancer.h"
 
-#include "cwsgiengine.h"
 #include "server.h"
+#include "serverengine.h"
 #include "tcpserver.h"
 #include "tcpsslserver.h"
 
@@ -443,7 +443,7 @@ void TcpServerBalancer::incomingConnection(qintptr handle)
     Q_EMIT serverIdle->createConnection(handle);
 }
 
-TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
+TcpServer *TcpServerBalancer::createServer(ServerEngine *engine)
 {
     TcpServer *server;
     if (m_sslConfiguration) {
@@ -455,12 +455,12 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
     } else {
         server = new TcpServer(m_serverName, m_protocol, m_wsgi, engine);
     }
-    connect(engine, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
+    connect(engine, &ServerEngine::shutdown, server, &TcpServer::shutdown);
 
     if (m_balancer) {
         connect(
             engine,
-            &CWsgiEngine::started,
+            &ServerEngine::started,
             this,
             [this, server]() {
             m_servers.push_back(server);
@@ -478,7 +478,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
         if (m_wsgi->reusePort()) {
             connect(
                 engine,
-                &CWsgiEngine::started,
+                &ServerEngine::started,
                 this,
                 [this, server]() {
                 int socket = listenReuse(
@@ -495,7 +495,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
         if (server->setSocketDescriptor(socketDescriptor())) {
             server->pauseAccepting();
             connect(engine,
-                    &CWsgiEngine::started,
+                    &ServerEngine::started,
                     server,
                     &TcpServer::resumeAccepting,
                     Qt::DirectConnection);

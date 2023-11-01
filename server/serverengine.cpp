@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "cwsgiengine.h"
+#include "serverengine.h"
 
 #include "config.h"
 #include "localserver.h"
@@ -38,10 +38,10 @@ using namespace Cutelyst;
 
 QByteArray dateHeader();
 
-CWsgiEngine::CWsgiEngine(Application *localApp,
-                         int workerCore,
-                         const QVariantMap &opts,
-                         Server *wsgi)
+ServerEngine::ServerEngine(Application *localApp,
+                           int workerCore,
+                           const QVariantMap &opts,
+                           Server *wsgi)
     : Engine(localApp, workerCore, opts)
     , m_wsgi(wsgi)
 {
@@ -54,7 +54,7 @@ CWsgiEngine::CWsgiEngine(Application *localApp,
         m_socketTimeout->setInterval(std::chrono::seconds{m_wsgi->socketTimeout()});
     }
 
-    connect(this, &CWsgiEngine::shutdown, app(), [this] { Q_EMIT app()->shuttingDown(app()); });
+    connect(this, &ServerEngine::shutdown, app(), [this] { Q_EMIT app()->shuttingDown(app()); });
 
     const QStringList staticMap  = m_wsgi->staticMap();
     const QStringList staticMap2 = m_wsgi->staticMap2();
@@ -73,19 +73,19 @@ CWsgiEngine::CWsgiEngine(Application *localApp,
     }
 }
 
-CWsgiEngine::~CWsgiEngine()
+ServerEngine::~ServerEngine()
 {
     delete m_protoFcgi;
     delete m_protoHttp;
     delete m_protoHttp2;
 }
 
-int CWsgiEngine::workerId() const
+int ServerEngine::workerId() const
 {
     return m_workerId;
 }
 
-void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
+void ServerEngine::setServers(const std::vector<QObject *> &servers)
 {
     for (QObject *server : servers) {
         auto balancer = qobject_cast<TcpServerBalancer *>(server);
@@ -141,7 +141,7 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
     }
 }
 
-void CWsgiEngine::postFork(int workerId)
+void ServerEngine::postFork(int workerId)
 {
     m_workerId = workerId;
 
@@ -158,7 +158,7 @@ void CWsgiEngine::postFork(int workerId)
     }
 }
 
-QByteArray CWsgiEngine::dateHeader()
+QByteArray ServerEngine::dateHeader()
 {
     QString ret;
     ret = QLatin1String("\r\nDate: ") +
@@ -167,7 +167,7 @@ QByteArray CWsgiEngine::dateHeader()
     return ret.toLatin1();
 }
 
-Protocol *CWsgiEngine::getProtoHttp()
+Protocol *ServerEngine::getProtoHttp()
 {
     if (!m_protoHttp) {
         if (m_wsgi->upgradeH2c()) {
@@ -179,7 +179,7 @@ Protocol *CWsgiEngine::getProtoHttp()
     return m_protoHttp;
 }
 
-ProtocolHttp2 *CWsgiEngine::getProtoHttp2()
+ProtocolHttp2 *ServerEngine::getProtoHttp2()
 {
     if (!m_protoHttp2) {
         m_protoHttp2 = new ProtocolHttp2(m_wsgi);
@@ -187,7 +187,7 @@ ProtocolHttp2 *CWsgiEngine::getProtoHttp2()
     return m_protoHttp2;
 }
 
-Protocol *CWsgiEngine::getProtoFastCgi()
+Protocol *ServerEngine::getProtoFastCgi()
 {
     if (!m_protoFcgi) {
         m_protoFcgi = new ProtocolFastCGI(m_wsgi);
@@ -195,7 +195,7 @@ Protocol *CWsgiEngine::getProtoFastCgi()
     return m_protoFcgi;
 }
 
-bool CWsgiEngine::init()
+bool ServerEngine::init()
 {
     if (Q_LIKELY(initApplication())) {
         return true;
@@ -204,7 +204,7 @@ bool CWsgiEngine::init()
     return false;
 }
 
-void CWsgiEngine::handleSocketShutdown(Socket *socket)
+void ServerEngine::handleSocketShutdown(Socket *socket)
 {
     if (socket->processing == 0) {
         socket->connectionClose();
@@ -216,4 +216,4 @@ void CWsgiEngine::handleSocketShutdown(Socket *socket)
     }
 }
 
-#include "moc_cwsgiengine.cpp"
+#include "moc_serverengine.cpp"

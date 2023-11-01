@@ -27,7 +27,7 @@ TcpServer::TcpServer(const QByteArray &serverAddress,
     , m_wsgi(wsgi)
     , m_protocol(protocol)
 {
-    m_engine = qobject_cast<CWsgiEngine *>(parent);
+    m_engine = qobject_cast<ServerEngine *>(parent);
 
     if (m_wsgi->tcpNodelay()) {
         m_socketOptions.push_back({QAbstractSocket::LowDelayOption, 1});

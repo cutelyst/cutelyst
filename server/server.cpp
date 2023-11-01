@@ -2,13 +2,13 @@
  * SPDX-FileCopyrightText: (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "cwsgiengine.h"
 #include "localserver.h"
 #include "protocol.h"
 #include "protocolfastcgi.h"
 #include "protocolhttp.h"
 #include "protocolhttp2.h"
 #include "server_p.h"
+#include "serverengine.h"
 #include "socket.h"
 #include "tcpserverbalancer.h"
 
@@ -1587,7 +1587,7 @@ bool ServerPrivate::setupApplication()
     return true;
 }
 
-void ServerPrivate::engineShutdown(CWsgiEngine *engine)
+void ServerPrivate::engineShutdown(ServerEngine *engine)
 {
     const auto engineThread = engine->thread();
     if (QThread::currentThread() != engineThread) {
@@ -1640,7 +1640,7 @@ bool ServerPrivate::postFork(int workerId)
         qCDebug(CUTELYST_SERVER) << "Starting threads";
     }
 
-    for (CWsgiEngine *engine : engines) {
+    for (ServerEngine *engine : engines) {
         QThread *thread = engine->thread();
         if (thread != qApp->thread()) {
 #ifdef Q_OS_LINUX
@@ -1685,7 +1685,7 @@ bool ServerPrivate::writePidFile(const QString &filename)
     return true;
 }
 
-CWsgiEngine *ServerPrivate::createEngine(Application *app, int workerCore)
+ServerEngine *ServerPrivate::createEngine(Application *app, int workerCore)
 {
     Q_Q(Server);
 
@@ -1698,16 +1698,17 @@ CWsgiEngine *ServerPrivate::createEngine(Application *app, int workerCore)
         }
     }
 
-    auto engine = new CWsgiEngine(app, workerCore, opt, q);
-    connect(this, &ServerPrivate::shutdown, engine, &CWsgiEngine::shutdown, Qt::QueuedConnection);
-    connect(this, &ServerPrivate::postForked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
+    auto engine = new ServerEngine(app, workerCore, opt, q);
+    connect(this, &ServerPrivate::shutdown, engine, &ServerEngine::shutdown, Qt::QueuedConnection);
+    connect(
+        this, &ServerPrivate::postForked, engine, &ServerEngine::postFork, Qt::QueuedConnection);
     connect(engine,
-            &CWsgiEngine::shutdownCompleted,
+            &ServerEngine::shutdownCompleted,
             this,
             &ServerPrivate::engineShutdown,
             Qt::QueuedConnection);
     connect(
-        engine, &CWsgiEngine::started, this, &ServerPrivate::workerStarted, Qt::QueuedConnection);
+        engine, &ServerEngine::started, this, &ServerPrivate::workerStarted, Qt::QueuedConnection);
 
     engine->setConfig(config);
     engine->setServers(servers);

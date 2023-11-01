@@ -1,12 +1,11 @@
 /*
- * SPDX-FileCopyrightText: (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2016-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYSTSERVER_P_H
-#define CUTELYSTSERVER_P_H
+#pragma once
 
-#include "cwsgiengine.h"
 #include "server.h"
+#include "serverengine.h"
 
 #include <Cutelyst/Application>
 
@@ -35,13 +34,13 @@ public:
     bool listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
     bool setupApplication();
-    void engineShutdown(CWsgiEngine *engine);
+    void engineShutdown(ServerEngine *engine);
     void checkEngineShutdown();
     void workerStarted();
     bool postFork(int workerId);
     bool writePidFile(const QString &filename);
 
-    CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
+    ServerEngine *createEngine(Cutelyst::Application *app, int core);
 
     void loadConfig(const QString &file, bool json);
     void applyConfig(const QVariantMap &config);
@@ -53,9 +52,9 @@ public:
 
     Server *q_ptr;
     std::vector<QObject *> servers;
-    std::vector<CWsgiEngine *> engines;
+    std::vector<ServerEngine *> engines;
     Cutelyst::Application *app = nullptr;
-    CWsgiEngine *engine        = nullptr;
+    ServerEngine *engine       = nullptr;
 
     QVariantMap opt;
     QVariantMap config;
@@ -117,5 +116,3 @@ Q_SIGNALS:
 };
 
 } // namespace Cutelyst
-
-#endif // CUTELYSTSERVER_P_H

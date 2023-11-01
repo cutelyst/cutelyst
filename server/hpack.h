@@ -19,7 +19,7 @@ struct DynamicTableEntry {
 };
 
 class Headers;
-class CWsgiEngine;
+class ServerEngine;
 class H2Stream;
 class HPack
 {
@@ -27,7 +27,7 @@ public:
     HPack(int maxTableSize);
     ~HPack();
 
-    void encodeHeaders(int status, const Headers &headers, QByteArray &buf, CWsgiEngine *engine);
+    void encodeHeaders(int status, const Headers &headers, QByteArray &buf, ServerEngine *engine);
 
     int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
 

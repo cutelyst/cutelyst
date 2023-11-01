@@ -926,7 +926,7 @@ bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
     QByteArray buf;
     protoRequest->hpack->encodeHeaders(
-        status, headers, buf, static_cast<CWsgiEngine *>(protoRequest->sock->engine));
+        status, headers, buf, static_cast<ServerEngine *>(protoRequest->sock->engine));
 
     auto parser = dynamic_cast<ProtocolHttp2 *>(protoRequest->sock->proto);
 

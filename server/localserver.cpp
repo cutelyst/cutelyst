@@ -36,7 +36,7 @@ void LocalServer::setProtocol(Protocol *protocol)
     m_protocol = protocol;
 }
 
-LocalServer *LocalServer::createServer(CWsgiEngine *engine) const
+LocalServer *LocalServer::createServer(ServerEngine *engine) const
 {
     auto server = new LocalServer(m_wsgi, engine);
     server->setProtocol(m_protocol);
@@ -58,8 +58,8 @@ LocalServer *LocalServer::createServer(CWsgiEngine *engine) const
     }
 #endif
 
-    connect(engine, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
-    connect(engine, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
+    connect(engine, &ServerEngine::started, server, &LocalServer::resumeAccepting);
+    connect(engine, &ServerEngine::shutdown, server, &LocalServer::shutdown);
 
     return server;
 }

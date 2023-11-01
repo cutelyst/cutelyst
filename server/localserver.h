@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2019 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef LOCALSERVER_H
-#define LOCALSERVER_H
+#pragma once
 
 #include <QLocalServer>
 
@@ -13,7 +12,7 @@ namespace Cutelyst {
 class Server;
 class Protocol;
 class LocalSocket;
-class CWsgiEngine;
+class ServerEngine;
 class LocalServer final : public QLocalServer
 {
     Q_OBJECT
@@ -22,12 +21,12 @@ public:
 
     void setProtocol(Protocol *protocol);
 
-    LocalServer *createServer(CWsgiEngine *engine) const;
+    LocalServer *createServer(ServerEngine *engine) const;
 
     void pauseAccepting();
     void resumeAccepting();
 
-    virtual void incomingConnection(quintptr handle) override;
+    void incomingConnection(quintptr handle) override;
 
     qintptr socket() const;
 
@@ -43,7 +42,7 @@ private:
 #endif
 
     QSocketNotifier *m_socketNotifier = nullptr;
-    CWsgiEngine *m_engine             = nullptr;
+    ServerEngine *m_engine            = nullptr;
     Server *m_wsgi;
 
     Protocol *m_protocol = nullptr;
@@ -52,5 +51,3 @@ private:
 };
 
 } // namespace Cutelyst
-
-#endif // LOCALSERVER_H

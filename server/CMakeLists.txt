@@ -25,8 +25,8 @@ set(cutelyst_server_SRC
     protocolfastcgi.h
     postunbuffered.cpp
     postunbuffered.h
-    cwsgiengine.cpp
-    cwsgiengine.h
+    serverengine.cpp
+    serverengine.h
     socket.cpp
     socket.h
     tcpserverbalancer.cpp

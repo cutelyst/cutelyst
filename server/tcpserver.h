@@ -12,7 +12,7 @@ namespace Cutelyst {
 class Server;
 class Protocol;
 class TcpSocket;
-class CWsgiEngine;
+class ServerEngine;
 class TcpServer : public QTcpServer
 {
     Q_OBJECT
@@ -38,7 +38,7 @@ protected:
     friend class TcpServerBalancer;
 
     QByteArray m_serverAddress;
-    CWsgiEngine *m_engine;
+    ServerEngine *m_engine;
     Server *m_wsgi;
 
     std::vector<std::pair<QAbstractSocket::SocketOption, QVariant>> m_socketOptions;

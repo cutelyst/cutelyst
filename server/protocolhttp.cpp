@@ -342,7 +342,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     }
 
     int msgLen;
-    const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
+    const char *msg = ServerEngine::httpStatusMessage(status, &msgLen);
     QByteArray data(msg, msgLen);
 
     const auto headersData                                = headers.data();
@@ -386,7 +386,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     }
 
     if (!hasDate) {
-        data.append(static_cast<CWsgiEngine *>(sock->engine)->lastDate());
+        data.append(static_cast<ServerEngine *>(sock->engine)->lastDate());
     }
     data.append("\r\n\r\n", 4);
 
