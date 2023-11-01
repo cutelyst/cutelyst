@@ -296,8 +296,8 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
                     auto brb = reinterpret_cast<struct fcgi_begin_request_body *>(
                         request->buffer + sizeof(struct fcgi_begin_request_body));
                     request->headerConnection = (brb->flags & FCGI_KEEP_CONN)
-                                                    ? ProtoRequestFastCGI::HeaderConnectionKeep
-                                                    : ProtoRequestFastCGI::HeaderConnectionClose;
+                                                    ? ProtoRequestFastCGI::HeaderConnection::Keep
+                                                    : ProtoRequestFastCGI::HeaderConnection::Close;
                     request->contentLength    = -1;
                     request->headers          = Cutelyst::Headers();
                     request->connState        = ProtoRequestFastCGI::MethodLine;
@@ -563,7 +563,7 @@ void ProtoRequestFastCGI::processingFinished()
         return;
     }
 
-    if (headerConnection == ProtoRequestFastCGI::HeaderConnectionClose) {
+    if (headerConnection == ProtoRequestFastCGI::HeaderConnection::Close) {
         // Web server did not set FCGI_KEEP_CONN
         sock->connectionClose();
         return;

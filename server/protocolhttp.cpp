@@ -278,12 +278,12 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     }
     const auto value = QByteArray(word_boundary, int(end - word_boundary));
 
-    if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet &&
+    if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnection::NotSet &&
         key.compare("Connection", Qt::CaseInsensitive) == 0) {
         if (value.compare("close", Qt::CaseInsensitive) == 0) {
-            protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionClose;
+            protoRequest->headerConnection = ProtoRequestHttp::HeaderConnection::Close;
         } else {
-            protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
+            protoRequest->headerConnection = ProtoRequestHttp::HeaderConnection::Keep;
         }
     } else if (protoRequest->contentLength < 0 &&
                key.compare("Content-Length", Qt::CaseInsensitive) == 0) {
@@ -347,19 +347,19 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
 
     const auto headersData                                = headers.data();
     ProtoRequestHttp::HeaderConnection fallbackConnection = headerConnection;
-    headerConnection = ProtoRequestHttp::HeaderConnectionNotSet;
+    headerConnection = ProtoRequestHttp::HeaderConnection::NotSet;
 
     bool hasDate = false;
     auto it      = headersData.begin();
     while (it != headersData.end()) {
-        if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet &&
+        if (headerConnection == ProtoRequestHttp::HeaderConnection::NotSet &&
             it->key.compare("Connection", Qt::CaseInsensitive) == 0) {
             if (it->value.compare("close") == 0) {
-                headerConnection = ProtoRequestHttp::HeaderConnectionClose;
+                headerConnection = ProtoRequestHttp::HeaderConnection::Close;
             } else if (it->value.compare("Upgrade") == 0) {
-                headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
+                headerConnection = ProtoRequestHttp::HeaderConnection::Upgrade;
             } else {
-                headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
+                headerConnection = ProtoRequestHttp::HeaderConnection::Keep;
             }
         } else if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
@@ -373,14 +373,14 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
         ++it;
     }
 
-    if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
-        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep ||
-            (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose &&
+    if (headerConnection == ProtoRequestHttp::HeaderConnection::NotSet) {
+        if (fallbackConnection == ProtoRequestHttp::HeaderConnection::Keep ||
+            (fallbackConnection != ProtoRequestHttp::HeaderConnection::Close &&
              protocol.compare("HTTP/1.1") == 0)) {
-            headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
+            headerConnection = ProtoRequestHttp::HeaderConnection::Keep;
             data.append("\r\nConnection: keep-alive", 24);
         } else {
-            headerConnection = ProtoRequestHttp::HeaderConnectionClose;
+            headerConnection = ProtoRequestHttp::HeaderConnection::Close;
             data.append("\r\nConnection: close", 19);
         }
     }
@@ -413,7 +413,7 @@ void ProtoRequestHttp::processingFinished()
         return;
     }
 
-    if (headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
+    if (headerConnection == ProtoRequestHttp::HeaderConnection::Close) {
         sock->connectionClose();
         return;
     }
@@ -435,7 +435,7 @@ void ProtoRequestHttp::processingFinished()
 
 bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
 {
-    if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+    if (headerConnection != ProtoRequestHttp::HeaderConnection::Upgrade) {
         qCWarning(CWSGI_HTTP)
             << "Not sending websocket text message due connection header not upgraded"
             << headerConnection << message.size();
@@ -450,7 +450,7 @@ bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
 
 bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
 {
-    if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+    if (headerConnection != ProtoRequestHttp::HeaderConnection::Upgrade) {
         qCWarning(CWSGI_HTTP)
             << "Not sending websocket binary messagedue connection header not upgraded"
             << headerConnection << message.size();
@@ -464,7 +464,7 @@ bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
 
 bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
 {
-    if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+    if (headerConnection != ProtoRequestHttp::HeaderConnection::Upgrade) {
         qCWarning(CWSGI_HTTP) << "Not sending websocket ping due connection header not upgraded"
                               << headerConnection << payload.size();
         return false;
@@ -478,7 +478,7 @@ bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
 
 bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
 {
-    if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+    if (headerConnection != ProtoRequestHttp::HeaderConnection::Upgrade) {
         qCWarning(CWSGI_HTTP) << "Not sending websocket close due connection header not upgraded"
                               << headerConnection << code << reason;
         return false;
@@ -505,7 +505,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QByteArray &key,
                                             const QByteArray &origin,
                                             const QByteArray &protocol)
 {
-    if (headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
+    if (headerConnection == ProtoRequestHttp::HeaderConnection::Upgrade) {
         return true;
     }
 
@@ -544,7 +544,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QByteArray &key,
         QCryptographicHash::hash(wsKey, QCryptographicHash::Sha1).toBase64();
     headers.setHeader("Sec-Websocket-Accept"_qba, wsAccept);
 
-    headerConnection  = ProtoRequestHttp::HeaderConnectionUpgrade;
+    headerConnection  = ProtoRequestHttp::HeaderConnection::Upgrade;
     websocketUpgraded = true;
     auto httpProto    = static_cast<ProtocolHttp *>(sock->proto);
     sock->proto       = httpProto->m_websocketProto;

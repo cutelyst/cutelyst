@@ -212,7 +212,7 @@ void CWsgiEngine::handleSocketShutdown(Socket *socket)
         auto req = static_cast<ProtoRequestHttp *>(socket->protoData);
         req->webSocketClose(Response::CloseCode::CloseCodeGoingAway, {});
     } else {
-        socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
+        socket->protoData->headerConnection = ProtocolData::HeaderConnection::Close;
     }
 }
 

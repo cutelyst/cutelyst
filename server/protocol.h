@@ -22,11 +22,11 @@ public:
     ProtocolData(Socket *sock, int bufferSize);
     virtual ~ProtocolData();
 
-    enum HeaderConnection {
-        HeaderConnectionNotSet = 0,
-        HeaderConnectionKeep,
-        HeaderConnectionClose,
-        HeaderConnectionUpgrade,
+    enum class HeaderConnection {
+        NotSet = 0,
+        Keep,
+        Close,
+        Upgrade,
     };
     Q_ENUM(HeaderConnection)
 
@@ -42,7 +42,7 @@ public:
     {
         connState         = MethodLine;
         buf_size          = 0;
-        headerConnection  = HeaderConnectionNotSet;
+        headerConnection  = HeaderConnection::NotSet;
         headerHost        = false;
         X_Forwarded_For   = false;
         X_Forwarded_Host  = false;
@@ -58,7 +58,7 @@ public:
     ProtocolData *upgradedFrom        = nullptr;
     int buf_size                      = 0;
     ParserState connState             = MethodLine;
-    HeaderConnection headerConnection = HeaderConnectionNotSet;
+    HeaderConnection headerConnection = HeaderConnection::NotSet;
     char *buffer;
     bool headerHost        = false;
     bool X_Forwarded_For   = false;
