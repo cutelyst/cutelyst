@@ -259,7 +259,7 @@ public:
     /**
      * Deconstructs the CSRFProtection object.
      */
-    ~CSRFProtection() override = default;
+    ~CSRFProtection() override;
 
     /**
      * Sets a default action the application will @link Context::detach() detach to @endlink if
@@ -374,7 +374,7 @@ protected:
     bool setup(Application *app) override;
 
 private:
-    const QScopedPointer<CSRFProtectionPrivate> d_ptr;
+    const std::unique_ptr<CSRFProtectionPrivate> d_ptr;
 };
 
 } // namespace Cutelyst
