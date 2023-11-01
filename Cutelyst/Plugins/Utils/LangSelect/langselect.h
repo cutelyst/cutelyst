@@ -376,7 +376,7 @@ public:
     /**
      * Deconstructs the %LangSelect object.
      */
-    ~LangSelect() override = default;
+    ~LangSelect() override;
 
     /**
      * Sets the list of supported @a locales.
@@ -655,7 +655,7 @@ protected:
     bool setup(Application *app) override;
 
 private:
-    const QScopedPointer<LangSelectPrivate> d_ptr;
+    const std::unique_ptr<LangSelectPrivate> d_ptr;
 };
 
 } // namespace Cutelyst
