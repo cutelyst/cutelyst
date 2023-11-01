@@ -27,6 +27,8 @@ Memcached::Memcached(Application *parent)
 {
 }
 
+Memcached::~Memcached() = default;
+
 void Memcached::setDefaultConfig(const QVariantMap &defaultConfig)
 {
     Q_D(Memcached);
