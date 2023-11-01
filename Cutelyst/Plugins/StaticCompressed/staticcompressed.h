@@ -129,8 +129,9 @@ class StaticCompressedPrivate;
  * @since %Cutelyst 1.11.0
  * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  */
-class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT StaticCompressed
-    : public Plugin // clazy:exclude=ctor-missing-parent-argument
+class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT
+    StaticCompressed // clazy:exclude=ctor-missing-parent-argument
+    : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticCompressed) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -144,7 +145,7 @@ public:
     /**
      * Deconstructs the StaticCompressed object.
      */
-    ~StaticCompressed() override = default;
+    ~StaticCompressed() override;
 
     /**
      * Sets a list of directories in which to search for your static files.
@@ -169,7 +170,7 @@ public:
     bool setup(Application *app) override;
 
 private:
-    QScopedPointer<StaticCompressedPrivate> d_ptr;
+    std::unique_ptr<StaticCompressedPrivate> d_ptr;
 };
 
 } // namespace Cutelyst

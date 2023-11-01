@@ -42,6 +42,8 @@ StaticCompressed::StaticCompressed(Application *parent)
     d->includePaths.append(parent->config(u"root"_qs).toString());
 }
 
+StaticCompressed::~StaticCompressed() = default;
+
 void StaticCompressed::setIncludePaths(const QStringList &paths)
 {
     Q_D(StaticCompressed);
