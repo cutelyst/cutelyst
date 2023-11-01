@@ -319,7 +319,7 @@ public:
     virtual ~ValidatorRule();
 
 protected:
-    const QScopedPointer<ValidatorRulePrivate> d_ptr;
+    const std::unique_ptr<ValidatorRulePrivate> d_ptr;
     /*!
      * \internal
      * \brief Constructs a new ValidatorRule object with the given private class.

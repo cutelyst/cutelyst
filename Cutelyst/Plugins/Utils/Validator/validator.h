@@ -372,7 +372,7 @@ public:
     static void loadTranslations(Application *app);
 
 private:
-    const QScopedPointer<ValidatorPrivate> d_ptr;
+    const std::unique_ptr<ValidatorPrivate> d_ptr;
 
     Q_DECLARE_PRIVATE(Validator) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(Validator)
