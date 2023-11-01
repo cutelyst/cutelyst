@@ -61,6 +61,8 @@ CSRFProtection::CSRFProtection(Application *parent)
 {
 }
 
+CSRFProtection::~CSRFProtection() = default;
+
 bool CSRFProtection::setup(Application *app)
 {
     Q_D(CSRFProtection);
