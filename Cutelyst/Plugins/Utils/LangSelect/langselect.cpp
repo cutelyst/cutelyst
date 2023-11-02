@@ -27,10 +27,10 @@ Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
 
 using namespace Cutelyst;
 
-static thread_local LangSelect *lsp =
-    nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+static thread_local LangSelect *lsp = nullptr;
 
-#define SELECTION_TRIED u"_c_langselect_tried"_qs
+const QString LangSelectPrivate::stashKeySelectionTried{u"_c_langselect_tried"_qs};
 
 LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source)
     : Plugin(parent)
@@ -753,13 +753,13 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod) const
         return;
     }
 
-    if (!c->stash(SELECTION_TRIED).isNull()) {
+    if (!c->stash(LangSelectPrivate::stashKeySelectionTried).isNull()) {
         return;
     }
 
     detectLocale(c, source, skipMethod);
 
-    c->setStash(SELECTION_TRIED, true);
+    c->setStash(LangSelectPrivate::stashKeySelectionTried, true);
 }
 
 void LangSelectPrivate::_q_postFork(Application *app)

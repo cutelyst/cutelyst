@@ -29,6 +29,8 @@ public:
     void setFallback(Context *c) const;
     void setContentLanguage(Context *c) const;
 
+    static const QString stashKeySelectionTried;
+
     QVector<QLocale> locales;
     LangSelect::Source source = LangSelect::Fallback;
     QMap<QString, QLocale> domainMap;
