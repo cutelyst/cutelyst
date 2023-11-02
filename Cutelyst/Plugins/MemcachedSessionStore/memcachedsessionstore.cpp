@@ -17,8 +17,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore", QtWarningMsg)
 
-#define SESSION_STORE_MEMCD_SAVE u"_c_session_store_memcd_save"_qs
-#define SESSION_STORE_MEMCD_DATA u"_c_session_store_memcd_data"_qs
+const QString MemcachedSessionStorePrivate::stashKeyMemcdSave{u"_c_session_store_memcd_save"_qs};
+const QString MemcachedSessionStorePrivate::stashKeyMemcdData{u"_c_session_store_memcd_data"_qs};
 
 static QVariantHash
     loadMemcSessionData(Context *c, const QByteArray &sid, const QByteArray &groupKey);
@@ -57,8 +57,8 @@ bool MemcachedSessionStore::storeSessionData(Context *c,
     Q_D(MemcachedSessionStore);
     QVariantHash data = loadMemcSessionData(c, sid, d->groupKey);
     data.insert(key, value);
-    c->setStash(SESSION_STORE_MEMCD_DATA, data);
-    c->setStash(SESSION_STORE_MEMCD_SAVE, true);
+    c->setStash(MemcachedSessionStorePrivate::stashKeyMemcdData, data);
+    c->setStash(MemcachedSessionStorePrivate::stashKeyMemcdSave, true);
 
     return true;
 }
@@ -68,8 +68,8 @@ bool MemcachedSessionStore::deleteSessionData(Context *c, const QByteArray &sid,
     Q_D(MemcachedSessionStore);
     QVariantHash data = loadMemcSessionData(c, sid, d->groupKey);
     data.remove(key);
-    c->setStash(SESSION_STORE_MEMCD_DATA, data);
-    c->setStash(SESSION_STORE_MEMCD_SAVE, true);
+    c->setStash(MemcachedSessionStorePrivate::stashKeyMemcdData, data);
+    c->setStash(MemcachedSessionStorePrivate::stashKeyMemcdSave, true);
 
     return true;
 }
@@ -91,7 +91,7 @@ void MemcachedSessionStore::setGroupKey(const QByteArray &groupKey)
 QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteArray &groupKey)
 {
     QVariantHash data;
-    const QVariant sessionVariant = c->stash(SESSION_STORE_MEMCD_DATA);
+    const QVariant sessionVariant = c->stash(MemcachedSessionStorePrivate::stashKeyMemcdData);
     if (!sessionVariant.isNull()) {
         data = sessionVariant.toHash();
         return data;
@@ -102,11 +102,12 @@ QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteA
     const QByteArray sessionKey = sessionPrefix + sid;
 
     QObject::connect(c->app(), &Application::afterDispatch, c, [=]() {
-        if (!c->stash(SESSION_STORE_MEMCD_SAVE).toBool()) {
+        if (!c->stash(MemcachedSessionStorePrivate::stashKeyMemcdSave).toBool()) {
             return;
         }
 
-        const QVariantHash data = c->stash(SESSION_STORE_MEMCD_DATA).toHash();
+        const QVariantHash data =
+            c->stash(MemcachedSessionStorePrivate::stashKeyMemcdData).toHash();
 
         if (data.isEmpty()) {
             bool ok = false;
@@ -138,7 +139,7 @@ QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteA
         data = Memcached::getByKey<QVariantHash>(groupKey, sessionKey);
     }
 
-    c->setStash(SESSION_STORE_MEMCD_DATA, data);
+    c->setStash(MemcachedSessionStorePrivate::stashKeyMemcdData, data);
 
     return data;
 }

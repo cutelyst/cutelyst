@@ -13,6 +13,9 @@ class MemcachedSessionStorePrivate
 {
 public:
     QByteArray groupKey;
+
+    static const QString stashKeyMemcdSave;
+    static const QString stashKeyMemcdData;
 };
 
 } // namespace Cutelyst
