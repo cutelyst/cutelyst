@@ -41,11 +41,14 @@ public:
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
     static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
 
+    static constexpr uint16_t defaultPort{11211};
+    static constexpr int defaultCompressionThreshold{100};
+
     QMap<int, std::pair<QString, quint16>> servers;
     memcached_st *memc = nullptr;
 
     bool compression         = false;
-    int compressionThreshold = 100;
+    int compressionThreshold = defaultCompressionThreshold;
     int compressionLevel     = -1;
     bool saslEnabled         = false;
 

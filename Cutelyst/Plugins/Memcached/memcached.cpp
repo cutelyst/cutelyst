@@ -16,8 +16,8 @@ Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached", QtWarningMsg)
 
 using namespace Cutelyst;
 
-static thread_local Memcached *mcd =
-    nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+static thread_local Memcached *mcd = nullptr;
 const time_t Memcached::expirationNotAdd{MEMCACHED_EXPIRATION_NOT_ADD};
 const std::chrono::seconds Memcached::expirationNotAddDuration{MEMCACHED_EXPIRATION_NOT_ADD};
 
@@ -110,7 +110,7 @@ bool Memcached::setup(Application *app)
             for (const QString &server : serverList) {
                 const auto serverParts = QStringView(server).split(u',');
                 QString name;
-                uint port       = 11211;
+                uint16_t port   = MemcachedPrivate::defaultPort;
                 uint32_t weight = 1;
                 bool isSocket   = false;
                 if (!serverParts.empty()) {
@@ -176,7 +176,8 @@ bool Memcached::setup(Application *app)
                 qCWarning(C_MEMCACHED)
                     << "Failed to add any memcached server. Adding default server on localhost"
                     << "port 11211.";
-                memcached_return_t rc = memcached_server_add(new_memc, "localhost", 11211);
+                memcached_return_t rc =
+                    memcached_server_add(new_memc, "localhost", MemcachedPrivate::defaultPort);
                 if (Q_UNLIKELY(!memcached_success(rc))) {
                     qCCritical(C_MEMCACHED)
                         << "Failed to add default memcached server. Memcached plugin will not"
@@ -194,7 +195,8 @@ bool Memcached::setup(Application *app)
                 .toInt();
         d->compressionThreshold =
             map.value(u"compression_threshold"_qs,
-                      d->defaultConfig.value(u"compression_threshold"_qs, 100))
+                      d->defaultConfig.value(u"compression_threshold"_qs,
+                                             MemcachedPrivate::defaultCompressionThreshold))
                 .toInt();
         if (d->compression) {
             qCInfo(C_MEMCACHED).nospace()
@@ -527,7 +529,7 @@ QByteArray Memcached::get(QByteArrayView key,
         return retData;
     }
 
-    memcached_return_t rt;
+    memcached_return_t rt{MEMCACHED_FAILURE};
     bool ok = false;
 
     std::vector<const char *> keys;
@@ -537,7 +539,7 @@ QByteArray Memcached::get(QByteArrayView key,
     rt = memcached_mget(mcd->d_ptr->memc, &keys[0], &sizes[0], keys.size());
 
     if (memcached_success(rt)) {
-        memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+        memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, nullptr, &rt);
         if (result) {
             retData =
                 QByteArray(memcached_result_value(result),
@@ -545,14 +547,14 @@ QByteArray Memcached::get(QByteArrayView key,
             if (cas) {
                 *cas = memcached_result_cas(result);
             }
-            MemcachedPrivate::Flags flags = MemcachedPrivate::Flags(memcached_result_flags(result));
+            MemcachedPrivate::Flags flags{memcached_result_flags(result)};
             if (flags.testFlag(MemcachedPrivate::Compressed)) {
                 retData = qUncompress(retData);
             }
             ok = true;
             // fetch another result even if there is no one to get
             // a NULL for the internal of libmemcached
-            memcached_fetch_result(mcd->d_ptr->memc, NULL, NULL);
+            memcached_fetch_result(mcd->d_ptr->memc, nullptr, nullptr);
         }
         memcached_result_free(result);
     }
@@ -592,7 +594,7 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
         mcd->d_ptr->memc, groupKey.constData(), groupKey.size(), &keys[0], &sizes[0], keys.size());
 
     if (memcached_success(rt)) {
-        memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+        memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, nullptr, &rt);
         if (result) {
             retData =
                 QByteArray(memcached_result_value(result),
@@ -607,7 +609,7 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
             ok = true;
             // fetch another result even if there is no one to get
             // a NULL for the internal of libmemcached
-            memcached_fetch_result(mcd->d_ptr->memc, NULL, NULL);
+            memcached_fetch_result(mcd->d_ptr->memc, nullptr, nullptr);
         }
         memcached_result_free(result);
     }
@@ -1154,15 +1156,13 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
         return ret;
     }
 
-    std::vector<char *> _keys;
+    std::vector<const char *> _keys;
     _keys.reserve(keys.size());
     std::vector<size_t> _keysSizes;
     _keysSizes.reserve(keys.size());
 
     for (const auto &key : keys) {
-        char *data = new char[key.size() + 1];
-        qstrcpy(data, key.data());
-        _keys.push_back(data);
+        _keys.push_back(key.data());
         _keysSizes.push_back(key.size());
     }
 
@@ -1175,11 +1175,13 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
         ok = true;
         ret.reserve(keys.size());
         while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
-            memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+            memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, nullptr, &rt);
             if (result) {
-                const QByteArray rk = QByteArray(memcached_result_key_value(result),
-                                                 memcached_result_key_length(result));
-                QByteArray rd(memcached_result_value(result), memcached_result_length(result));
+                const QByteArray rk =
+                    QByteArray(memcached_result_key_value(result),
+                               static_cast<qsizetype>(memcached_result_key_length(result)));
+                QByteArray rd(memcached_result_value(result),
+                              static_cast<qsizetype>(memcached_result_length(result)));
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
                 }
@@ -1191,10 +1193,6 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
             }
             memcached_result_free(result);
         }
-    }
-
-    for (char *c : _keys) {
-        delete[] c;
     }
 
     if (!ok) {
@@ -1239,15 +1237,13 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
         return ret;
     }
 
-    std::vector<char *> _keys;
+    std::vector<const char *> _keys;
     _keys.reserve(keys.size());
     std::vector<size_t> _keysSizes;
     _keysSizes.reserve(keys.size());
 
     for (const auto &key : keys) {
-        char *data = new char[key.size() + 1];
-        strcpy(data, key.data());
-        _keys.push_back(data);
+        _keys.push_back(key.data());
         _keysSizes.push_back(key.size());
     }
 
@@ -1264,11 +1260,13 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
         ok = true;
         ret.reserve(keys.size());
         while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
-            memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+            memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, nullptr, &rt);
             if (result) {
-                const QByteArray rk = QByteArray(memcached_result_key_value(result),
-                                                 memcached_result_key_length(result));
-                QByteArray rd(memcached_result_value(result), memcached_result_length(result));
+                const QByteArray rk =
+                    QByteArray(memcached_result_key_value(result),
+                               static_cast<qsizetype>(memcached_result_key_length(result)));
+                QByteArray rd(memcached_result_value(result),
+                              static_cast<qsizetype>(memcached_result_length(result)));
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
                 }
@@ -1280,10 +1278,6 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
             }
             memcached_result_free(result);
         }
-    }
-
-    for (char *c : _keys) {
-        delete[] c;
     }
 
     if (!ok) {
@@ -1314,8 +1308,8 @@ bool Memcached::touch(QByteArrayView key, time_t expiration, MemcachedReturnType
 
     if (!ok) {
         qCWarning(C_MEMCACHED).nospace()
-            << "Failed to touch key " << key << " with new expiration time " << expiration << ": "
-            << memcached_strerror(mcd->d_ptr->memc, rt);
+            << "Failed to touch key " << key << " with new expiration time " << expiration
+            << " seconds: " << memcached_strerror(mcd->d_ptr->memc, rt);
     }
 
     MemcachedPrivate::setReturnType(returnType, rt);
@@ -1346,9 +1340,10 @@ bool Memcached::touchByKey(QByteArrayView groupKey,
     const bool ok = memcached_success(rt);
 
     if (!ok) {
-        qCWarning(C_MEMCACHED).nospace() << "Failed to touch key " << key << " in group "
-                                         << groupKey << " with new expiration time " << expiration
-                                         << ": " << memcached_strerror(mcd->d_ptr->memc, rt);
+        qCWarning(C_MEMCACHED).nospace()
+            << "Failed to touch key " << key << " in group " << groupKey
+            << " with new expiration time " << expiration
+            << " seconds: " << memcached_strerror(mcd->d_ptr->memc, rt);
     }
 
     MemcachedPrivate::setReturnType(returnType, rt);
