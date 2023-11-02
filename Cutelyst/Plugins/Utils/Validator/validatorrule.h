@@ -319,6 +319,8 @@ public:
     virtual ~ValidatorRule();
 
 protected:
+    // shared d-pointer
+    // NOLINTNEXTLINE(cppcoreguidelines-non-private-member-variables-in-classes)
     const std::unique_ptr<ValidatorRulePrivate> d_ptr;
     /*!
      * \internal
