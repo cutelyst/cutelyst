@@ -43,8 +43,139 @@ public:
 private Q_SLOTS:
     void initTestCase();
 
-    void testController_data();
-    void testController() { doTest(); }
+    void testValidator_data();
+    void testValidator() { doTest(); }
+
+    void testValidatorAccepted_data();
+    void testValidatorAccepted() { doTest(); };
+
+    void testValidatorAfter_data();
+    void testValidatorAfter() { doTest(); };
+
+    void testValidatorAlpha_data();
+    void testValidatorAlpha() { doTest(); };
+
+    void testValidatorAlphaDash_data();
+    void testValidatorAlphaDash() { doTest(); };
+
+    void testValidatorAlphaNum_data();
+    void testValidatorAlphaNum() { doTest(); };
+
+    void testValidatorBefore_data();
+    void testValidatorBefore() { doTest(); };
+
+    void testValidatorBetween_data();
+    void testValidatorBetween() { doTest(); };
+
+    void testValidatorBoolean_data();
+    void testValidatorBoolean() { doTest(); };
+
+    void testValidatorCharNotAllowed_data();
+    void testValidatorCharNotAllowed() { doTest(); }
+
+    void testValidatorConfirmed_data();
+    void testValidatorConfirmed() { doTest(); };
+
+    void testValidatorDate_data();
+    void testValidatorDate() { doTest(); };
+
+    void testValidatorDateTime_data();
+    void testValidatorDateTime() { doTest(); };
+
+    void testValidatorDifferent_data();
+    void testValidatorDifferent() { doTest(); };
+
+    void testValidatorDigits_data();
+    void testValidatorDigits() { doTest(); };
+
+    void testValidatorDigitsBetween_data();
+    void testValidatorDigitsBetween() { doTest(); };
+
+    void testValidatorDomain_data();
+    void testValidatorDomain() { doTest(); };
+
+    void testValidatorEmail_data();
+    void testValidatorEmail() { doTest(); };
+
+    void testValidatorFileSize_data();
+    void testValidatorFileSize() { doTest(); };
+
+    void testValidatorFilled_data();
+    void testValidatorFilled() { doTest(); };
+
+    void testValidatorIn_data();
+    void testValidatorIn() { doTest(); };
+
+    void testValidatorInteger_data();
+    void testValidatorInteger() { doTest(); };
+
+    void testValidatorIp_data();
+    void testValidatorIp() { doTest(); };
+
+    void testValidatorJson_data();
+    void testValidatorJson() { doTest(); };
+
+    void testValidatorMax_data();
+    void testValidatorMax() { doTest(); };
+
+    void testValidatorMin_data();
+    void testValidatorMin() { doTest(); };
+
+    void testValidatorNotIn_data();
+    void testValidatorNotIn() { doTest(); };
+
+    void testValidatorNumeric_data();
+    void testValidatorNumeric() { doTest(); };
+
+    void testValidatorPresent_data();
+    void testValidatorPresent() { doTest(); };
+
+#ifdef CUTELYST_VALIDATOR_WITH_PWQUALITY
+    void testValidatorPwQuality_data();
+    void testValidatorPwQuality() { doTest(); };
+#endif
+
+    void testValidatorRegex_data();
+    void testValidatorRegex() { doTest(); };
+
+    void testValidatorRequired_data();
+    void testValidatorRequired() { doTest(); };
+
+    void testValidatorRequiredIf_data();
+    void testValidatorRequiredIf() { doTest(); };
+
+    void testValidatorRequiredIfStash_data();
+    void testValidatorRequiredIfStash() { doTest(); };
+
+    void testValidatorRequiredUnless_data();
+    void testValidatorRequiredUnless() { doTest(); };
+
+    void testValidatorRequiredUnlessStash_data();
+    void testValidatorRequiredUnlessStash() { doTest(); };
+
+    void testValidatorRequiredWith_data();
+    void testValidatorRequiredWith() { doTest(); };
+
+    void testValidatorRequiredWithAll_data();
+    void testValidatorRequiredWithAll() { doTest(); };
+
+    void testValidatorRequiredWithout_data();
+    void testValidatorRequiredWithout() { doTest(); };
+
+    void testValidatorRequiredWithoutAll_data();
+    void testValidatorRequiredWithoutAll() { doTest(); };
+
+    void testValidatorSame_data();
+    void testValidatorSame() { doTest(); };
+
+    void testValidatorSize_data();
+    void testValidatorSize() { doTest(); };
+
+    void testValidatorTime_data();
+    void testValidatorTime() { doTest(); };
+
+    void testValidatorUrl_data();
+    void testValidatorUrl() { doTest(); };
 
     void cleanupTestCase();
 
@@ -54,6 +185,12 @@ private:
     TestEngine *getEngine();
 
     void doTest();
+
+    const QByteArray valid{"valid"};
+    const QByteArray invalid{"invalid"};
+    const QByteArray parsingError{"parsingerror"};
+    const QByteArray validationDataError{"validationdataerror"};
+    const QList<Qt::DateFormat> dateFormats{Qt::ISODate, Qt::RFC2822Date, Qt::TextDate};
 };
 
 class ValidatorTest : public Controller
@@ -1081,7 +1218,7 @@ private:
     void checkResponse(Context *c, const ValidatorResult &r)
     {
         if (r) {
-            c->response()->setBody(QByteArrayLiteral("valid"));
+            c->response()->setBody("valid"_qba);
         } else {
             c->response()->setBody(r.errorStrings().constFirst());
         }
@@ -1114,11 +1251,11 @@ void TestValidator::cleanupTestCase()
 void TestValidator::doTest()
 {
     QFETCH(QString, url);
-    QFETCH(Headers, headers);
     QFETCH(QByteArray, body);
     QFETCH(QByteArray, output);
 
     const QUrl urlAux(u"/validator/test" + url);
+    static const Headers headers{{"Content-Type"_qba, "application/x-www-form-urlencoded"_qba}};
 
     const auto result = m_engine->createRequest(
         "POST", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);
@@ -1126,37 +1263,32 @@ void TestValidator::doTest()
     QCOMPARE(result.body, output);
 }
 
-void TestValidator::testController_data()
+void TestValidator::testValidator_data()
 {
     QTest::addColumn<QString>("url");
-    QTest::addColumn<Headers>("headers");
     QTest::addColumn<QByteArray>("body");
     QTest::addColumn<QByteArray>("output");
 
-    const QByteArray valid               = QByteArrayLiteral("valid");
-    const QByteArray invalid             = QByteArrayLiteral("invalid");
-    const QByteArray parsingError        = QByteArrayLiteral("parsingerror");
-    const QByteArray validationDataError = QByteArrayLiteral("validationdataerror");
+    // **** Start testing if the correct parameters are extracted according to the validator flags
 
-    Headers headers;
-    headers.setContentType("application/x-www-form-urlencoded");
-    QUrlQuery query;
-
-    const QList<Qt::DateFormat> dateFormats({Qt::ISODate, Qt::RFC2822Date, Qt::TextDate});
-
-    // **** Start testing if the correct paramters are extracted according to the validator flags
-
-    QTest::newRow("body-params-only-valid") << QStringLiteral("/bodyParamsOnly") << headers
-                                            << QByteArrayLiteral("req_field=hallo") << valid;
+    QTest::newRow("body-params-only-valid")
+        << QStringLiteral("/bodyParamsOnly") << QByteArrayLiteral("req_field=hallo") << valid;
 
     QTest::newRow("body-params-only-invalid")
-        << QStringLiteral("/bodyParamsOnly?req_field=hallo") << headers << QByteArray() << invalid;
+        << QStringLiteral("/bodyParamsOnly?req_field=hallo") << QByteArray() << invalid;
 
     QTest::newRow("query-params-only-valid")
-        << QStringLiteral("/queryParamsOnly?req_field=hallo") << headers << QByteArray() << valid;
+        << QStringLiteral("/queryParamsOnly?req_field=hallo") << QByteArray() << valid;
 
-    QTest::newRow("query-params-only-invalid") << QStringLiteral("/queryParamsOnly") << headers
-                                               << QByteArrayLiteral("req_field=hallo") << invalid;
+    QTest::newRow("query-params-only-invalid")
+        << QStringLiteral("/queryParamsOnly") << QByteArrayLiteral("req_field=hallo") << invalid;
+}
+
+void TestValidator::testValidatorAccepted_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorAccepted *****
 
@@ -1165,67 +1297,68 @@ void TestValidator::testController_data()
                                QStringLiteral("on"),
                                QStringLiteral("1"),
                                QStringLiteral("true")}) {
-        QTest::newRow(QString(QStringLiteral("accepted-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/accepted?accepted_field=") + val << headers << QByteArray()
-            << valid;
+        QTest::newRow(QString(QStringLiteral("valid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/accepted?accepted_field=") + val << QByteArray() << valid;
         count++;
     }
 
-    QTest::newRow("accepted-invalid")
-        << QStringLiteral("/accepted?accepted_field=asdf") << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/accepted?accepted_field=asdf") << QByteArray()
+                             << invalid;
 
-    QTest::newRow("accepted-empty")
-        << QStringLiteral("/accepted?accepted_field=") << headers << QByteArray() << invalid;
+    QTest::newRow("empty") << QStringLiteral("/accepted?accepted_field=") << QByteArray()
+                           << invalid;
 
-    QTest::newRow("accepted-missing")
-        << QStringLiteral("/accepted") << headers << QByteArray() << invalid;
+    QTest::newRow("missing") << QStringLiteral("/accepted") << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorAfter_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorAfter *****
 
-    count = 0;
+    int count = 0;
     for (Qt::DateFormat df : dateFormats) {
-        query.clear();
+        QUrlQuery query;
         query.addQueryItem(QStringLiteral("after_field"),
                            QDate::currentDate().addDays(2).toString(df));
-        QTest::newRow(
-            QString(QStringLiteral("after-date-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/afterDate?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << valid;
+        QTest::newRow(QString(QStringLiteral("date-valid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/afterDate?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << valid;
 
         query.clear();
         query.addQueryItem(QStringLiteral("after_field"), QDate(1999, 9, 9).toString(df));
-        QTest::newRow(
-            QString(QStringLiteral("after-date-invalid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/afterDate?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << invalid;
+        QTest::newRow(QString(QStringLiteral("date-invalid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/afterDate?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << invalid;
 
         count++;
     }
 
-    QTest::newRow("after-date-parsingerror") << QStringLiteral("/afterDate?after_field=lökjasdfjh")
-                                             << headers << QByteArray() << parsingError;
+    QTest::newRow("date-parsingerror")
+        << QStringLiteral("/afterDate?after_field=lökjasdfjh") << QByteArray() << parsingError;
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
-        query.clear();
+        QUrlQuery query;
         query.addQueryItem(QStringLiteral("after_field"), QTime(13, 0).toString(df));
-        QTest::newRow(
-            QString(QStringLiteral("after-time-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/afterTime?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << valid;
+        QTest::newRow(QString(QStringLiteral("time-valid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/afterTime?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << valid;
 
         query.clear();
         query.addQueryItem(QStringLiteral("after_field"), QTime(11, 0).toString(df));
-        QTest::newRow(
-            QString(QStringLiteral("after-time-invalid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/afterTime?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << invalid;
+        QTest::newRow(QString(QStringLiteral("time-invalid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/afterTime?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << invalid;
 
         count++;
     }
 
-    QTest::newRow("after-time-parsingerror") << QStringLiteral("/afterTime?after_field=kjnagiuh")
-                                             << headers << QByteArray() << parsingError;
+    QTest::newRow("time-parsingerror")
+        << QStringLiteral("/afterTime?after_field=kjnagiuh") << QByteArray() << parsingError;
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
@@ -1236,7 +1369,7 @@ void TestValidator::testController_data()
                                 QByteArrayLiteral("+")));
         QTest::newRow(
             QString(QStringLiteral("after-datetime-valid0%1").arg(count)).toUtf8().constData())
-            << queryPath << headers << QByteArray() << valid;
+            << queryPath << QByteArray() << valid;
 
         queryPath = QStringLiteral("/afterDateTime?after_field=") +
                     QString::fromLatin1(QUrl::toPercentEncoding(
@@ -1245,38 +1378,36 @@ void TestValidator::testController_data()
                         QByteArrayLiteral("+")));
         QTest::newRow(
             QString(QStringLiteral("after-datetime-invalid0%1").arg(count)).toUtf8().constData())
-            << queryPath << headers << QByteArray() << invalid;
+            << queryPath << QByteArray() << invalid;
 
         count++;
     }
 
-    QTest::newRow("after-datetime-parsingerror")
-        << QStringLiteral("/afterDateTime?after_field=aio,aü") << headers << QByteArray()
-        << parsingError;
+    QTest::newRow("datetime-parsingerror")
+        << QStringLiteral("/afterDateTime?after_field=aio,aü") << QByteArray() << parsingError;
 
-    QTest::newRow("after-invalidvalidationdata00")
+    QTest::newRow("invalidvalidationdata00")
         << QStringLiteral("/afterInvalidValidationData?after_field=") +
                QDate::currentDate().addDays(2).toString(Qt::ISODate)
-        << headers << QByteArray() << validationDataError;
+        << QByteArray() << validationDataError;
 
-    QTest::newRow("after-invalidvalidationdata01")
+    QTest::newRow("invalidvalidationdata01")
         << QStringLiteral("/afterInvalidValidationData2?after_field=") +
                QDate::currentDate().addDays(2).toString(Qt::ISODate)
-        << headers << QByteArray() << validationDataError;
+        << QByteArray() << validationDataError;
 
-    QTest::newRow("after-format-valid")
-        << QStringLiteral("/afterFormat?after_field=") +
-               QDateTime::currentDateTime().addDays(2).toString(QStringLiteral("yyyy d MM HH:mm"))
-        << headers << QByteArray() << valid;
+    QTest::newRow("format-valid") << QStringLiteral("/afterFormat?after_field=") +
+                                         QDateTime::currentDateTime().addDays(2).toString(
+                                             QStringLiteral("yyyy d MM HH:mm"))
+                                  << QByteArray() << valid;
 
-    QTest::newRow("after-format-invalid") << QStringLiteral("/afterFormat?after_field=") +
-                                                 QDateTime(QDate(1999, 9, 9), QTime(19, 19))
-                                                     .toString(QStringLiteral("yyyy d MM HH:mm"))
-                                          << headers << QByteArray() << invalid;
+    QTest::newRow("format-invalid") << QStringLiteral("/afterFormat?after_field=") +
+                                           QDateTime(QDate(1999, 9, 9), QTime(19, 19))
+                                               .toString(QStringLiteral("yyyy d MM HH:mm"))
+                                    << QByteArray() << invalid;
 
-    QTest::newRow("after-format-parsingerror")
-        << QStringLiteral("/afterFormat?after_field=23590uj09") << headers << QByteArray()
-        << parsingError;
+    QTest::newRow("format-parsingerror")
+        << QStringLiteral("/afterFormat?after_field=23590uj09") << QByteArray() << parsingError;
 
     {
         const QString queryPath =
@@ -1285,7 +1416,7 @@ void TestValidator::testController_data()
                 QDateTime(QDate(2018, 1, 15), QTime(13, 0)).toString(Qt::ISODate),
                 QByteArray(),
                 QByteArrayLiteral("+")));
-        QTest::newRow("after-timezone-valid") << queryPath << headers << QByteArray() << valid;
+        QTest::newRow("timezone-valid") << queryPath << QByteArray() << valid;
     }
 
     {
@@ -1296,97 +1427,116 @@ void TestValidator::testController_data()
                 QByteArray(),
                 QByteArrayLiteral("+"))) +
             QLatin1String("&tz_field=Europe/Berlin");
-        QTest::newRow("after-timezone-fromfield-valid")
-            << queryPath << headers << QByteArray() << valid;
+        QTest::newRow("timezone-fromfield-valid") << queryPath << QByteArray() << valid;
     }
+}
+
+void TestValidator::testValidatorAlpha_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorAlpha *****
 
-    QTest::newRow("alpha-valid") << QStringLiteral("/alpha?alpha_field=adsfä") << headers
-                                 << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral("/alpha?alpha_field=adsfä") << QByteArray() << valid;
 
-    QTest::newRow("alpha-invalid")
-        << QStringLiteral("/alpha?alpha_field=ad_sf 2ä!") << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/alpha?alpha_field=ad_sf 2ä!") << QByteArray()
+                             << invalid;
 
-    QTest::newRow("alpha-empty") << QStringLiteral("/alpha?alpha_field=") << headers << QByteArray()
+    QTest::newRow("empty") << QStringLiteral("/alpha?alpha_field=") << QByteArray() << valid;
+
+    QTest::newRow("missing") << QStringLiteral("/alpha") << QByteArray() << valid;
+
+    QTest::newRow("ascii-valid") << QStringLiteral("/alphaAscii?alpha_field=basdf") << QByteArray()
                                  << valid;
 
-    QTest::newRow("alpha-missing") << QStringLiteral("/alpha") << headers << QByteArray() << valid;
+    QTest::newRow("ascii-invalid")
+        << QStringLiteral("/alphaAscii?alpha_field=asdfös") << QByteArray() << invalid;
+}
 
-    QTest::newRow("alpha-ascii-valid")
-        << QStringLiteral("/alphaAscii?alpha_field=basdf") << headers << QByteArray() << valid;
-
-    QTest::newRow("alpha-ascii-invalid")
-        << QStringLiteral("/alphaAscii?alpha_field=asdfös") << headers << QByteArray() << invalid;
+void TestValidator::testValidatorAlphaDash_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorAlphaDash *****
 
-    QTest::newRow("alphadash-valid") << QStringLiteral("/alphaDash?alphadash_field=ads2-fä_3")
-                                     << headers << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral("/alphaDash?alphadash_field=ads2-fä_3") << QByteArray()
+                           << valid;
 
-    QTest::newRow("alphadash-invalid") << QStringLiteral("/alphaDash?alphadash_field=ad sf_2ä!")
-                                       << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/alphaDash?alphadash_field=ad sf_2ä!")
+                             << QByteArray() << invalid;
 
-    QTest::newRow("alphadash-empty")
-        << QStringLiteral("/alphaDash?alphadash_field=") << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/alphaDash?alphadash_field=") << QByteArray()
+                           << valid;
 
-    QTest::newRow("alphadash-missing")
-        << QStringLiteral("/alphaDash") << headers << QByteArray() << valid;
+    QTest::newRow("missing") << QStringLiteral("/alphaDash") << QByteArray() << valid;
 
-    QTest::newRow("alphadash-ascii-valid")
-        << QStringLiteral("/alphaDashAscii?alphadash_field=s342-4d_3") << headers << QByteArray()
-        << valid;
+    QTest::newRow("ascii-valid") << QStringLiteral("/alphaDashAscii?alphadash_field=s342-4d_3")
+                                 << QByteArray() << valid;
 
-    QTest::newRow("alphadash-ascii-invalid")
-        << QStringLiteral("/alphaDashAscii?alphadash_field=s342 4ä_3") << headers << QByteArray()
-        << invalid;
+    QTest::newRow("ascii-invalid")
+        << QStringLiteral("/alphaDashAscii?alphadash_field=s342 4ä_3") << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorAlphaNum_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorAlphaNum *****
 
-    QTest::newRow("alphanum-valid")
-        << QStringLiteral("/alphaNum?alphanum_field=ads2fä3") << headers << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral("/alphaNum?alphanum_field=ads2fä3") << QByteArray()
+                           << valid;
 
-    QTest::newRow("alphanum-invalid") << QStringLiteral("/alphaNum?alphanum_field=ad sf_2ä!")
-                                      << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/alphaNum?alphanum_field=ad sf_2ä!") << QByteArray()
+                             << invalid;
 
-    QTest::newRow("alphanum-empty")
-        << QStringLiteral("/alphaNum?alphanum_field=") << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/alphaNum?alphanum_field=") << QByteArray() << valid;
 
-    QTest::newRow("alphanum-missing")
-        << QStringLiteral("/alphaNum") << headers << QByteArray() << valid;
+    QTest::newRow("missing") << QStringLiteral("/alphaNum") << QByteArray() << valid;
 
-    QTest::newRow("alphanum-ascii-valid") << QStringLiteral("/alphaNumAscii?alphanum_field=ba34sdf")
-                                          << headers << QByteArray() << valid;
+    QTest::newRow("ascii-valid") << QStringLiteral("/alphaNumAscii?alphanum_field=ba34sdf")
+                                 << QByteArray() << valid;
 
-    QTest::newRow("alphanum-ascii-invalid")
-        << QStringLiteral("/alphaNumAscii?alphanum_field=as3dfös") << headers << QByteArray()
-        << invalid;
+    QTest::newRow("ascii-invalid")
+        << QStringLiteral("/alphaNumAscii?alphanum_field=as3dfös") << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorBefore_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorBefore *****
 
-    count = 0;
+    int count = 0;
+    QUrlQuery query;
     for (Qt::DateFormat df : dateFormats) {
         query.clear();
         query.addQueryItem(QStringLiteral("before_field"), QDate(1999, 9, 9).toString(df));
         QTest::newRow(
             QString(QStringLiteral("before-date-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/beforeDate?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << valid;
+            << QStringLiteral("/beforeDate?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << valid;
 
         query.clear();
         query.addQueryItem(QStringLiteral("before_field"),
                            QDate::currentDate().addDays(2).toString(df));
         QTest::newRow(
             QString(QStringLiteral("before-date-invalid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/beforeDate?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << invalid;
+            << QStringLiteral("/beforeDate?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << invalid;
 
         count++;
     }
 
     QTest::newRow("before-date-parsingerror")
-        << QStringLiteral("/beforeDate?before_field=lökjasdfjh") << headers << QByteArray()
-        << parsingError;
+        << QStringLiteral("/beforeDate?before_field=lökjasdfjh") << QByteArray() << parsingError;
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
@@ -1394,21 +1544,21 @@ void TestValidator::testController_data()
         query.addQueryItem(QStringLiteral("before_field"), QTime(11, 0).toString(df));
         QTest::newRow(
             QString(QStringLiteral("before-time-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/beforeTime?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << valid;
+            << QStringLiteral("/beforeTime?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << valid;
 
         query.clear();
         query.addQueryItem(QStringLiteral("before_field"), QTime(13, 0).toString(df));
         QTest::newRow(
             QString(QStringLiteral("before-time-invalid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/beforeTime?") + query.toString(QUrl::FullyEncoded) << headers
-            << QByteArray() << invalid;
+            << QStringLiteral("/beforeTime?") + query.toString(QUrl::FullyEncoded) << QByteArray()
+            << invalid;
 
         count++;
     }
 
-    QTest::newRow("before-time-parsingerror") << QStringLiteral("/beforeTime?before_field=kjnagiuh")
-                                              << headers << QByteArray() << parsingError;
+    QTest::newRow("before-time-parsingerror")
+        << QStringLiteral("/beforeTime?before_field=kjnagiuh") << QByteArray() << parsingError;
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
@@ -1419,7 +1569,7 @@ void TestValidator::testController_data()
                                 QByteArrayLiteral("+")));
         QTest::newRow(
             QString(QStringLiteral("before-datetime-valid0%1").arg(count)).toUtf8().constData())
-            << pathQuery << headers << QByteArray() << valid;
+            << pathQuery << QByteArray() << valid;
 
         pathQuery = QStringLiteral("/beforeDateTime?before_field=") +
                     QString::fromLatin1(QUrl::toPercentEncoding(
@@ -1428,38 +1578,36 @@ void TestValidator::testController_data()
                         QByteArrayLiteral("+")));
         QTest::newRow(
             QString(QStringLiteral("before-datetime-invalid0%1").arg(count)).toUtf8().constData())
-            << pathQuery << headers << QByteArray() << invalid;
+            << pathQuery << QByteArray() << invalid;
 
         count++;
     }
 
     QTest::newRow("before-datetime-parsingerror")
-        << QStringLiteral("/beforeDateTime?before_field=aio,aü") << headers << QByteArray()
-        << parsingError;
+        << QStringLiteral("/beforeDateTime?before_field=aio,aü") << QByteArray() << parsingError;
 
     QTest::newRow("before-invalidvalidationdata00")
         << QStringLiteral("/beforeInvalidValidationData?before_field=") +
                QDate(1999, 9, 9).toString(Qt::ISODate)
-        << headers << QByteArray() << validationDataError;
+        << QByteArray() << validationDataError;
 
     QTest::newRow("before-invalidvalidationdata01")
         << QStringLiteral("/beforeInvalidValidationData2?before_field=") +
                QDate(1999, 9, 9).toString(Qt::ISODate)
-        << headers << QByteArray() << validationDataError;
+        << QByteArray() << validationDataError;
 
     QTest::newRow("before-format-valid") << QStringLiteral("/beforeFormat?before_field=") +
                                                 QDateTime(QDate(1999, 9, 9), QTime(19, 19))
                                                     .toString(QStringLiteral("yyyy d MM HH:mm"))
-                                         << headers << QByteArray() << valid;
+                                         << QByteArray() << valid;
 
     QTest::newRow("before-format-invalid")
         << QStringLiteral("/beforeFormat?before_field=") +
                QDateTime::currentDateTime().addDays(2).toString(QStringLiteral("yyyy d MM HH:mm"))
-        << headers << QByteArray() << invalid;
+        << QByteArray() << invalid;
 
     QTest::newRow("before-format-parsingerror")
-        << QStringLiteral("/beforeFormat?before_field=23590uj09") << headers << QByteArray()
-        << parsingError;
+        << QStringLiteral("/beforeFormat?before_field=23590uj09") << QByteArray() << parsingError;
 
     {
         const QString pathQuery =
@@ -1468,7 +1616,7 @@ void TestValidator::testController_data()
                 QDateTime(QDate(2018, 1, 15), QTime(11, 0)).toString(Qt::ISODate),
                 QByteArray(),
                 QByteArrayLiteral("+")));
-        QTest::newRow("before-timezone-valid") << pathQuery << headers << QByteArray() << valid;
+        QTest::newRow("before-timezone-valid") << pathQuery << QByteArray() << valid;
     }
 
     {
@@ -1479,61 +1627,72 @@ void TestValidator::testController_data()
                 QByteArray(),
                 QByteArrayLiteral("+"))) +
             QLatin1String("&tz_field=Europe/Berlin");
-        QTest::newRow("before-timezone-fromfield-valid")
-            << pathQuery << headers << QByteArray() << valid;
+        QTest::newRow("before-timezone-fromfield-valid") << pathQuery << QByteArray() << valid;
     }
+}
+
+void TestValidator::testValidatorBetween_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorBetween *****
 
-    QTest::newRow("between-int-valid")
-        << QStringLiteral("/betweenInt?between_field=0") << headers << QByteArray() << valid;
+    QTest::newRow("int-valid") << QStringLiteral("/betweenInt?between_field=0") << QByteArray()
+                               << valid;
 
-    QTest::newRow("between-int-invalid-lower")
-        << QStringLiteral("/betweenInt?between_field=-15") << headers << QByteArray() << invalid;
+    QTest::newRow("int-invalid-lower")
+        << QStringLiteral("/betweenInt?between_field=-15") << QByteArray() << invalid;
 
-    QTest::newRow("between-int-invalid-greater")
-        << QStringLiteral("/betweenInt?between_field=15") << headers << QByteArray() << invalid;
+    QTest::newRow("int-invalid-greater")
+        << QStringLiteral("/betweenInt?between_field=15") << QByteArray() << invalid;
 
-    QTest::newRow("between-int-empty")
-        << QStringLiteral("/betweenInt?between_field=") << headers << QByteArray() << valid;
+    QTest::newRow("int-empty") << QStringLiteral("/betweenInt?between_field=") << QByteArray()
+                               << valid;
 
-    QTest::newRow("between-uint-valid")
-        << QStringLiteral("/betweenUint?between_field=15") << headers << QByteArray() << valid;
+    QTest::newRow("uint-valid") << QStringLiteral("/betweenUint?between_field=15") << QByteArray()
+                                << valid;
 
-    QTest::newRow("between-uint-invalid-lower")
-        << QStringLiteral("/betweenUint?between_field=5") << headers << QByteArray() << invalid;
+    QTest::newRow("uint-invalid-lower")
+        << QStringLiteral("/betweenUint?between_field=5") << QByteArray() << invalid;
 
-    QTest::newRow("between-uint-invalid-greater")
-        << QStringLiteral("/betweenUint?between_field=25") << headers << QByteArray() << invalid;
+    QTest::newRow("uint-invalid-greater")
+        << QStringLiteral("/betweenUint?between_field=25") << QByteArray() << invalid;
 
-    QTest::newRow("between-uint-empty")
-        << QStringLiteral("/betweenUint?between_field=") << headers << QByteArray() << valid;
+    QTest::newRow("uint-empty") << QStringLiteral("/betweenUint?between_field=") << QByteArray()
+                                << valid;
 
-    QTest::newRow("between-float-valid")
-        << QStringLiteral("/betweenFloat?between_field=0.0") << headers << QByteArray() << valid;
+    QTest::newRow("float-valid") << QStringLiteral("/betweenFloat?between_field=0.0")
+                                 << QByteArray() << valid;
 
-    QTest::newRow("between-float-invalid-lower")
-        << QStringLiteral("/betweenFloat?between_field=-15.2") << headers << QByteArray()
-        << invalid;
+    QTest::newRow("float-invalid-lower")
+        << QStringLiteral("/betweenFloat?between_field=-15.2") << QByteArray() << invalid;
 
-    QTest::newRow("between-float-invalid-greater")
-        << QStringLiteral("/betweenFloat?between_field=15.2") << headers << QByteArray() << invalid;
+    QTest::newRow("float-invalid-greater")
+        << QStringLiteral("/betweenFloat?between_field=15.2") << QByteArray() << invalid;
 
-    QTest::newRow("between-float-empty")
-        << QStringLiteral("/betweenFloat?between_field=") << headers << QByteArray() << valid;
+    QTest::newRow("float-empty") << QStringLiteral("/betweenFloat?between_field=") << QByteArray()
+                                 << valid;
 
-    QTest::newRow("between-string-valid") << QStringLiteral("/betweenString?between_field=abcdefg")
-                                          << headers << QByteArray() << valid;
+    QTest::newRow("string-valid") << QStringLiteral("/betweenString?between_field=abcdefg")
+                                  << QByteArray() << valid;
 
-    QTest::newRow("between-string-invalid-lower")
-        << QStringLiteral("/betweenString?between_field=abc") << headers << QByteArray() << invalid;
+    QTest::newRow("string-invalid-lower")
+        << QStringLiteral("/betweenString?between_field=abc") << QByteArray() << invalid;
 
-    QTest::newRow("between-string-invalid-greater")
-        << QStringLiteral("/betweenString?between_field=abcdefghijklmn") << headers << QByteArray()
-        << invalid;
+    QTest::newRow("string-invalid-greater")
+        << QStringLiteral("/betweenString?between_field=abcdefghijklmn") << QByteArray() << invalid;
 
-    QTest::newRow("between-string-empty")
-        << QStringLiteral("/betweenString?between_field=") << headers << QByteArray() << valid;
+    QTest::newRow("string-empty") << QStringLiteral("/betweenString?between_field=") << QByteArray()
+                                  << valid;
+}
+
+void TestValidator::testValidatorBoolean_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorBoolean *****
 
@@ -1543,8 +1702,8 @@ void TestValidator::testController_data()
                               QStringLiteral("false"),
                               QStringLiteral("on"),
                               QStringLiteral("off")}) {
-        QTest::newRow(QString(QStringLiteral("boolean-valid-%1").arg(bv)).toUtf8().constData())
-            << QStringLiteral("/boolean?boolean_field=") + bv << headers << QByteArray() << valid;
+        QTest::newRow(QString(QStringLiteral("valid-%1").arg(bv)).toUtf8().constData())
+            << QStringLiteral("/boolean?boolean_field=") + bv << QByteArray() << valid;
     }
 
     for (const QString &bv : {QStringLiteral("2"),
@@ -1552,166 +1711,210 @@ void TestValidator::testController_data()
                               QStringLiteral("wahr"),
                               QStringLiteral("unwahr"),
                               QStringLiteral("ja")}) {
-        QTest::newRow(QString(QStringLiteral("boolean-invalid-%1").arg(bv)).toUtf8().constData())
-            << QStringLiteral("/boolean?boolean_field=") + bv << headers << QByteArray() << invalid;
+        QTest::newRow(QString(QStringLiteral("invalid-%1").arg(bv)).toUtf8().constData())
+            << QStringLiteral("/boolean?boolean_field=") + bv << QByteArray() << invalid;
     }
 
-    QTest::newRow("boolean-empty")
-        << QStringLiteral("/boolean?boolean_field=") << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/boolean?boolean_field=") << QByteArray() << valid;
+}
+
+void TestValidator::testValidatorCharNotAllowed_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorCharNotAllowed *****
 
-    QTest::newRow("charnotallowed-empty")
-        << QStringLiteral("/charNotAllowed?char_not_allowed_field=") << headers << QByteArray()
-        << valid;
+    QTest::newRow("empty") << QStringLiteral("/charNotAllowed?char_not_allowed_field=")
+                           << QByteArray() << valid;
 
-    QTest::newRow("charnotallowed-valid")
-        << QStringLiteral("/charNotAllowed?char_not_allowed_field=holladiewaldfee") << headers
-        << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral(
+                                  "/charNotAllowed?char_not_allowed_field=holladiewaldfee")
+                           << QByteArray() << valid;
 
-    QTest::newRow("charnotallowed-invalid")
-        << QStringLiteral("/charNotAllowed?char_not_allowed_field=holla.die.waldfee") << headers
-        << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral(
+                                    "/charNotAllowed?char_not_allowed_field=holla.die.waldfee")
+                             << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorConfirmed_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorConfirmed *****
 
-    QTest::newRow("confirmed-valid")
-        << QStringLiteral("/confirmed?pass=abcdefg&pass_confirmation=abcdefg") << headers
-        << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral("/confirmed?pass=abcdefg&pass_confirmation=abcdefg")
+                           << QByteArray() << valid;
 
-    QTest::newRow("confirmed-invalid")
-        << QStringLiteral("/confirmed?pass=abcdefg&pass_confirmation=hijklmn") << headers
-        << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/confirmed?pass=abcdefg&pass_confirmation=hijklmn")
+                             << QByteArray() << invalid;
 
-    QTest::newRow("confirmed-empty") << QStringLiteral("/confirmed?pass&pass_confirmation=abcdefg")
-                                     << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/confirmed?pass&pass_confirmation=abcdefg")
+                           << QByteArray() << valid;
 
-    QTest::newRow("confirmed-missing-confirmation")
-        << QStringLiteral("/confirmed?pass=abcdefg") << headers << QByteArray() << invalid;
+    QTest::newRow("missing-confirmation")
+        << QStringLiteral("/confirmed?pass=abcdefg") << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorDate_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorDate *****
 
-    count = 0;
+    int count = 0;
     for (Qt::DateFormat df : dateFormats) {
-        QTest::newRow(QString(QStringLiteral("date-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/date?field=") + QDate::currentDate().toString(df) << headers
-            << QByteArray() << valid;
+        QTest::newRow(QString(QStringLiteral("valid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/date?field=") + QDate::currentDate().toString(df) << QByteArray()
+            << valid;
         count++;
     }
 
-    QTest::newRow("date-invalid") << QStringLiteral("/date?field=123456789") << headers
-                                  << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/date?field=123456789") << QByteArray() << invalid;
 
-    QTest::newRow("date-empty") << QStringLiteral("/date?field=") << headers << QByteArray()
-                                << valid;
+    QTest::newRow("empty") << QStringLiteral("/date?field=") << QByteArray() << valid;
 
-    QTest::newRow("date-format-valid")
-        << QStringLiteral("/dateFormat?field=") +
-               QDate::currentDate().toString(QStringLiteral("yyyy d MM"))
-        << headers << QByteArray() << valid;
+    QTest::newRow("format-valid") << QStringLiteral("/dateFormat?field=") +
+                                         QDate::currentDate().toString(QStringLiteral("yyyy d MM"))
+                                  << QByteArray() << valid;
 
-    QTest::newRow("date-format-invalid")
+    QTest::newRow("format-invalid")
         << QStringLiteral("/dateFormat?field=") +
                QDate::currentDate().toString(QStringLiteral("MM yyyy d"))
-        << headers << QByteArray() << invalid;
+        << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorDateTime_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorDateTime *****
 
-    count = 0;
+    int count = 0;
     for (Qt::DateFormat df : dateFormats) {
         const QString pathQuery =
             QStringLiteral("/dateTime?field=") +
             QString::fromLatin1(QUrl::toPercentEncoding(
                 QDateTime::currentDateTime().toString(df), QByteArray(), QByteArrayLiteral("+")));
         QTest::newRow(QString(QStringLiteral("datetime-valid0%1").arg(count)).toUtf8().constData())
-            << pathQuery << headers << QByteArray() << valid;
+            << pathQuery << QByteArray() << valid;
         count++;
     }
 
-    QTest::newRow("datetime-invalid")
-        << QStringLiteral("/dateTime?field=123456789") << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/dateTime?field=123456789") << QByteArray()
+                             << invalid;
 
-    QTest::newRow("datetime-empty")
-        << QStringLiteral("/dateTime?field=") << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/dateTime?field=") << QByteArray() << valid;
 
-    QTest::newRow("datetime-format-valid")
-        << QStringLiteral("/dateTimeFormat?field=") +
-               QDateTime::currentDateTime().toString(QStringLiteral("yyyy d MM mm:HH"))
-        << headers << QByteArray() << valid;
+    QTest::newRow("format-valid") << QStringLiteral("/dateTimeFormat?field=") +
+                                         QDateTime::currentDateTime().toString(
+                                             QStringLiteral("yyyy d MM mm:HH"))
+                                  << QByteArray() << valid;
 
-    QTest::newRow("datetime-format-invalid")
+    QTest::newRow("format-invalid")
         << QStringLiteral("/dateTimeFormat?field=") +
                QDateTime::currentDateTime().toString(QStringLiteral("MM mm yyyy HH d"))
-        << headers << QByteArray() << invalid;
+        << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorDifferent_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorDifferent *****
 
-    QTest::newRow("different-valid") << QStringLiteral("/different?field=abcdefg&other=hijklmno")
-                                     << headers << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral("/different?field=abcdefg&other=hijklmno")
+                           << QByteArray() << valid;
 
-    QTest::newRow("different-invalid") << QStringLiteral("/different?field=abcdefg&other=abcdefg")
-                                       << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/different?field=abcdefg&other=abcdefg")
+                             << QByteArray() << invalid;
 
-    QTest::newRow("different-empty")
-        << QStringLiteral("/different?field=&other=hijklmno") << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/different?field=&other=hijklmno") << QByteArray()
+                           << valid;
 
-    QTest::newRow("different-other-missing")
-        << QStringLiteral("/different?field=abcdefg") << headers << QByteArray() << valid;
+    QTest::newRow("other-missing")
+        << QStringLiteral("/different?field=abcdefg") << QByteArray() << valid;
+}
+
+void TestValidator::testValidatorDigits_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorDigits *****
 
-    QTest::newRow("digits-valid") << QStringLiteral("/digits?field=0123456") << headers
+    QTest::newRow("valid") << QStringLiteral("/digits?field=0123456") << QByteArray() << valid;
+
+    QTest::newRow("invalid") << QStringLiteral("/digits?field=01234asdf56") << QByteArray()
+                             << invalid;
+
+    QTest::newRow("empty") << QStringLiteral("/digits?field=") << QByteArray() << valid;
+
+    QTest::newRow("length-valid") << QStringLiteral("/digitsLength?field=0123456789")
                                   << QByteArray() << valid;
 
-    QTest::newRow("digits-invalid")
-        << QStringLiteral("/digits?field=01234asdf56") << headers << QByteArray() << invalid;
+    QTest::newRow("length-invalid")
+        << QStringLiteral("/digitsLength?field=012345") << QByteArray() << invalid;
+}
 
-    QTest::newRow("digits-empty") << QStringLiteral("/digits?field=") << headers << QByteArray()
-                                  << valid;
-
-    QTest::newRow("digits-length-valid")
-        << QStringLiteral("/digitsLength?field=0123456789") << headers << QByteArray() << valid;
-
-    QTest::newRow("digits-length-invalid")
-        << QStringLiteral("/digitsLength?field=012345") << headers << QByteArray() << invalid;
+void TestValidator::testValidatorDigitsBetween_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorDigitsBetween *****
 
-    QTest::newRow("digitsbetween-valid")
-        << QStringLiteral("/digitsBetween?field=0123456") << headers << QByteArray() << valid;
+    QTest::newRow("valid") << QStringLiteral("/digitsBetween?field=0123456") << QByteArray()
+                           << valid;
 
-    QTest::newRow("digitsbetween-invalid")
-        << QStringLiteral("/digitsBetween?field=01234ad56") << headers << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/digitsBetween?field=01234ad56") << QByteArray()
+                             << invalid;
 
-    QTest::newRow("digitsbetween-empty")
-        << QStringLiteral("/digitsBetween?field=") << headers << QByteArray() << valid;
+    QTest::newRow("empty") << QStringLiteral("/digitsBetween?field=") << QByteArray() << valid;
 
-    QTest::newRow("digitsbetween-invalid-lower")
-        << QStringLiteral("/digitsBetween?field=0123") << headers << QByteArray() << invalid;
+    QTest::newRow("invalid-lower")
+        << QStringLiteral("/digitsBetween?field=0123") << QByteArray() << invalid;
 
-    QTest::newRow("digitsbetween-invalid-greater")
-        << QStringLiteral("/digitsBetween?field=0123456789123") << headers << QByteArray()
-        << invalid;
+    QTest::newRow("invalid-greater")
+        << QStringLiteral("/digitsBetween?field=0123456789123") << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorDomain_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorDomain *****
 
     QByteArray domainBody =
         QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("huessenbergnetz.de"));
-    QTest::newRow("domain-valid01") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid01") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("a.de"));
-    QTest::newRow("domain-valid02") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid02") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("a1.de"));
-    QTest::newRow("domain-valid03") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid03") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody =
         QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.com."));
-    QTest::newRow("domain-valid04") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid04") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("test-1.example.com."));
-    QTest::newRow("domain-valid05") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid05") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody =
         QByteArrayLiteral("field=") +
@@ -1719,7 +1922,7 @@ void TestValidator::testController_data()
             "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")); // label with
                                                                                      // max length
                                                                                      // of 63 chars
-    QTest::newRow("domain-valid06") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid06") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody =
         QByteArrayLiteral("field=") +
@@ -1729,39 +1932,35 @@ void TestValidator::testController_data()
             "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk."
             "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")); // total length
                                                                                      // of 253 chars
-    QTest::newRow("domain-valid07") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid07") << QStringLiteral("/domain") << domainBody << valid;
 
     // disabled on MSVC because that shit still has problems with utf8 in 2018...
 #ifndef _MSC_VER
     domainBody =
         QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("hüssenbergnetz.de"));
-    QTest::newRow("domain-valid08") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid08") << QStringLiteral("/domain") << domainBody << valid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("موقع.وزارة-الاتصالات.مصر"));
-    QTest::newRow("domain-valid09") << QStringLiteral("/domain") << headers << domainBody << valid;
+    QTest::newRow("valid09") << QStringLiteral("/domain") << domainBody << valid;
 #endif
 
     domainBody =
         QByteArrayLiteral("field=") +
         QUrl::toPercentEncoding(QStringLiteral("example.com1")); // digit in non puny code TLD
-    QTest::newRow("domain-invalid01")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("example.c")); // one char tld
-    QTest::newRow("domain-invalid02")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid02") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("example.3com")); // starts with digit
-    QTest::newRow("domain-invalid03")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid03") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("example.co3m")); // contains digit
-    QTest::newRow("domain-invalid04")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid04") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody =
         QByteArrayLiteral("field=") +
@@ -1769,8 +1968,7 @@ void TestValidator::testController_data()
             "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com")); // label too
                                                                                       // long, 64
                                                                                       // chars
-    QTest::newRow("domain-invalid05")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid05") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody =
         QByteArrayLiteral("field=") +
@@ -1780,56 +1978,54 @@ void TestValidator::testController_data()
             "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk."
             "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")); // too long,
                                                                                      // 254 chars
-    QTest::newRow("domain-invalid06")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid06") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("example.co-m")); // contains dash in tld
-    QTest::newRow("domain-invalid07")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid07") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody =
         QByteArrayLiteral("field=") +
         QUrl::toPercentEncoding(QStringLiteral("-example.com")); // contains dash at label start
-    QTest::newRow("domain-invalid08")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid08") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody =
         QByteArrayLiteral("field=") +
         QUrl::toPercentEncoding(QStringLiteral("3example.com")); // contains digit at label start
-    QTest::newRow("domain-invalid09")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid09") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody =
         QByteArrayLiteral("field=") +
         QUrl::toPercentEncoding(QStringLiteral("example-.com")); // contains dash at label end
-    QTest::newRow("domain-invalid10")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid10") << QStringLiteral("/domain") << domainBody << invalid;
 
     // disabled on MSVC because that shit still has problems with utf8 in 2018...
 #ifndef _MSC_VER
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("موقع.وزارة-الاتصالات.مصر1"));
-    QTest::newRow("domain-invalid11")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid11") << QStringLiteral("/domain") << domainBody << invalid;
 
     domainBody = QByteArrayLiteral("field=") +
                  QUrl::toPercentEncoding(QStringLiteral("موقع.وزارة-الاتصالات.مصر-"));
-    QTest::newRow("domain-invalid12")
-        << QStringLiteral("/domain") << headers << domainBody << invalid;
+    QTest::newRow("invalid12") << QStringLiteral("/domain") << domainBody << invalid;
 #endif
 
     if (qEnvironmentVariableIsSet("CUTELYST_VALIDATORS_TEST_NETWORK")) {
         domainBody =
             QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.com"));
-        QTest::newRow("domain-dns-valid")
-            << QStringLiteral("/domainDns") << headers << domainBody << valid;
+        QTest::newRow("dns-valid") << QStringLiteral("/domainDns") << domainBody << valid;
 
         domainBody = QByteArrayLiteral("field=") +
                      QUrl::toPercentEncoding(QStringLiteral("test.example.com"));
-        QTest::newRow("domain-dns-invalid")
-            << QStringLiteral("/domainDns") << headers << domainBody << invalid;
+        QTest::newRow("dns-invalid") << QStringLiteral("/domainDns") << domainBody << invalid;
     }
+}
+
+void TestValidator::testValidatorEmail_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorEmail *****
 
@@ -2427,12 +2623,11 @@ void TestValidator::testController_data()
         QStringLiteral("test@example.com\n") // expecting atext
     });
 
-    count = 0;
+    int count = 0;
     for (const QString &email : validEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-valid-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailValid") << headers << body << valid;
+        QTest::newRow(QString(QStringLiteral("valid-valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailValid") << body << valid;
         count++;
     }
 
@@ -2441,22 +2636,20 @@ void TestValidator::testController_data()
                                  QStringLiteral("täst@huessenbergnetz.de"),
                                  QStringLiteral("täst@hüssenbergnetz.de")}) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-valid-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailValid") << headers << body << invalid;
+        QTest::newRow(QString(QStringLiteral("valid-invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailValid") << body << invalid;
         count++;
     }
 
     if (qEnvironmentVariableIsSet("CUTELYST_VALIDATORS_TEST_NETWORK")) {
-        QTest::newRow("email-valid-dns")
-            << QStringLiteral("/emailDnsWarnValid") << headers
-            << QByteArrayLiteral("field=test@huessenbergnetz.de") << valid;
+        QTest::newRow("valid-dns") << QStringLiteral("/emailDnsWarnValid")
+                                   << QByteArrayLiteral("field=test@huessenbergnetz.de") << valid;
         count = 0;
         for (const QString &email : dnsWarnEmails) {
             const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
             QTest::newRow(
-                QString(QStringLiteral("email-dnswarn-valid-%1").arg(count)).toUtf8().constData())
-                << QStringLiteral("/emailDnsWarnValid") << headers << body << invalid;
+                QString(QStringLiteral("dnswarn-valid-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/emailDnsWarnValid") << body << invalid;
             count++;
         }
     }
@@ -2464,27 +2657,24 @@ void TestValidator::testController_data()
     count = 0;
     for (const QString &email : rfc5321Emails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-rfc5321-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailRfc5321Valid") << headers << body << valid;
+        QTest::newRow(QString(QStringLiteral("rfc5321-valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailRfc5321Valid") << body << valid;
         count++;
     }
 
     count = 0;
     for (const QString &email : rfc5321Emails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-rfc5321-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailRfc5321Invalid") << headers << body << invalid;
+        QTest::newRow(QString(QStringLiteral("rfc5321-invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailRfc5321Invalid") << body << invalid;
         count++;
     }
 
     count = 0;
     for (const QString &email : cfwsEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-cfws-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailCfwsValid") << headers << body << valid;
+        QTest::newRow(QString(QStringLiteral("cfws-valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailCfwsValid") << body << valid;
         count++;
     }
 
@@ -2492,8 +2682,8 @@ void TestValidator::testController_data()
     for (const QString &email : deprecatedEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
         QTest::newRow(
-            QString(QStringLiteral("email-deprecated-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailDeprecatedValid") << headers << body << valid;
+            QString(QStringLiteral("deprecated-valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailDeprecatedValid") << body << valid;
         count++;
     }
 
@@ -2501,71 +2691,66 @@ void TestValidator::testController_data()
     for (const QString &email : deprecatedEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
         QTest::newRow(
-            QString(QStringLiteral("email-deprecated-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailDeprecatedInvalid") << headers << body << invalid;
+            QString(QStringLiteral("deprecated-invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailDeprecatedInvalid") << body << invalid;
         count++;
     }
 
     count = 0;
     for (const QString &email : rfc5322Emails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-rfc5322-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailRfc5322Valid") << headers << body << valid;
+        QTest::newRow(QString(QStringLiteral("rfc5322-valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailRfc5322Valid") << body << valid;
         count++;
     }
 
     count = 0;
     for (const QString &email : rfc5322Emails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-rfc5322-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailRfc5322Invalid") << headers << body << invalid;
+        QTest::newRow(QString(QStringLiteral("rfc5322-invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailRfc5322Invalid") << body << invalid;
         count++;
     }
 
     count = 0;
     for (const QString &email : errorEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
-        QTest::newRow(
-            QString(QStringLiteral("email-errors-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailErrors") << headers << body << invalid;
+        QTest::newRow(QString(QStringLiteral("errors-invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailErrors") << body << invalid;
         count++;
     }
 
     {
         QByteArray body = QByteArrayLiteral("field=") +
                           QUrl::toPercentEncoding(QStringLiteral("test@hüssenbergnetz.de"));
-        QTest::newRow("email-idnallowed-valid")
-            << QStringLiteral("/emailIdnAllowed") << headers << body << valid;
+        QTest::newRow("idnallowed-valid") << QStringLiteral("/emailIdnAllowed") << body << valid;
 
         body = QByteArrayLiteral("field=") +
                QUrl::toPercentEncoding(QStringLiteral("täst@hüssenbergnetz.de"));
-        QTest::newRow("email-idnallowed-invalid")
-            << QStringLiteral("/emailIdnAllowed") << headers << body << invalid;
+        QTest::newRow("idnallowed-invalid")
+            << QStringLiteral("/emailIdnAllowed") << body << invalid;
 
         body = QByteArrayLiteral("field=") +
                QUrl::toPercentEncoding(QStringLiteral("täst@huessenbergnetz.de"));
-        QTest::newRow("email-utf8localallowed-valid")
-            << QStringLiteral("/emailUtf8Local") << headers << body << valid;
+        QTest::newRow("utf8localallowed-valid")
+            << QStringLiteral("/emailUtf8Local") << body << valid;
 
         body = QByteArrayLiteral("field=") +
                QUrl::toPercentEncoding(QStringLiteral("täst@hüssenbergnetz.de"));
-        QTest::newRow("email-utf8localallowed-invalid")
-            << QStringLiteral("/emailUtf8Local") << headers << body << invalid;
+        QTest::newRow("utf8localallowed-invalid")
+            << QStringLiteral("/emailUtf8Local") << body << invalid;
 
         body = QByteArrayLiteral("field=") +
                QUrl::toPercentEncoding(QStringLiteral("täst@hüssenbergnetz.de"));
-        QTest::newRow("email-utf8allowed-valid-0")
-            << QStringLiteral("/emailUtf8") << headers << body << valid;
+        QTest::newRow("utf8allowed-valid-0") << QStringLiteral("/emailUtf8") << body << valid;
     }
 
     count = 1;
     for (const QString &email : validEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
         QTest::newRow(
-            QString(QStringLiteral("email-utf8allowed-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailUtf8") << headers << body << valid;
+            QString(QStringLiteral("utf8allowed-valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailUtf8") << body << valid;
         count++;
     }
 
@@ -2580,17 +2765,23 @@ void TestValidator::testController_data()
     for (const QString &email : utf8InvalidEmails) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
         QTest::newRow(
-            QString(QStringLiteral("email-utf8allowed-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/emailUtf8") << headers << body << invalid;
+            QString(QStringLiteral("utf8allowed-invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/emailUtf8") << body << invalid;
         count++;
     }
 
-    QTest::newRow("email-empty") << QStringLiteral("/emailValid") << headers
-                                 << QByteArrayLiteral("field=") << valid;
+    QTest::newRow("empty") << QStringLiteral("/emailValid") << QByteArrayLiteral("field=") << valid;
+}
+
+void TestValidator::testValidatorFileSize_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorFileSize *****
 
-    count = 0;
+    int count = 0;
     for (const QString &size :
          {QStringLiteral("1M"),          QStringLiteral("M1"),          QStringLiteral("1 G"),
           QStringLiteral("G 1"),         QStringLiteral("1.5 G"),       QStringLiteral("G 1.5"),
@@ -2602,8 +2793,8 @@ void TestValidator::testController_data()
           QStringLiteral("YB3.67"),      QStringLiteral("1"),           QStringLiteral("1024"),
           QStringLiteral(".5MB"),        QStringLiteral("MB.5")}) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(size);
-        QTest::newRow(QString(QStringLiteral("filesize-valid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/fileSize") << headers << body << valid;
+        QTest::newRow(QString(QStringLiteral("valid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/fileSize") << body << valid;
         count++;
     }
 
@@ -2627,120 +2818,106 @@ void TestValidator::testController_data()
                                 QStringLiteral("1024iK"),
                                 QStringLiteral("iK 2048")}) {
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(size);
-        QTest::newRow(
-            QString(QStringLiteral("filesize-invalid-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/fileSize") << headers << body << invalid;
+        QTest::newRow(QString(QStringLiteral("invalid-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/fileSize") << body << invalid;
         count++;
     }
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1,5M"));
     query.addQueryItem(QStringLiteral("locale"), QStringLiteral("de"));
-    QTest::newRow("filesize-locale-de-valid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("locale-de-valid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5M"));
     query.addQueryItem(QStringLiteral("locale"), QStringLiteral("de"));
-    QTest::newRow("filesize-locale-de-invalid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("locale-de-invalid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     // disabled on MSVC because that shit still has problems with utf8 in 2018...
 #ifndef _MSC_VER
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1٫5M"));
     query.addQueryItem(QStringLiteral("locale"), QStringLiteral("ar"));
-    QTest::newRow("filesize-locale-ar-valid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("locale-ar-valid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 #endif
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5M"));
     query.addQueryItem(QStringLiteral("locale"), QStringLiteral("ar"));
-    QTest::newRow("filesize-locale-ar-invalid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("locale-ar-invalid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TiB"));
     query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyBinary"));
-    QTest::newRow("filesize-onlybinary-valid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("onlybinary-valid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TB"));
     query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyBinary"));
-    QTest::newRow("filesize-onlybinary-invalid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("onlybinary-invalid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TB"));
     query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyDecimal"));
-    QTest::newRow("filesize-onlydecimyl-valid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("onlydecimyl-valid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TiB"));
     query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyDecimal"));
-    QTest::newRow("filesize-onlydecimyl-invalid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("onlydecimyl-invalid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("2K"));
     query.addQueryItem(QStringLiteral("min"), QStringLiteral("1000"));
-    QTest::newRow("filesize-min-valid") << QStringLiteral("/fileSize") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("min-valid") << QStringLiteral("/fileSize")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("2K"));
     query.addQueryItem(QStringLiteral("min"), QStringLiteral("2048"));
-    QTest::newRow("filesize-min-invalid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("min-invalid") << QStringLiteral("/fileSize")
+                                 << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("2KiB"));
     query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
-    QTest::newRow("filesize-max-valid") << QStringLiteral("/fileSize") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("max-valid") << QStringLiteral("/fileSize")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("2KiB"));
     query.addQueryItem(QStringLiteral("max"), QStringLiteral("2047"));
-    QTest::newRow("filesize-max-invalid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("max-invalid") << QStringLiteral("/fileSize")
+                                 << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("2KiB"));
     query.addQueryItem(QStringLiteral("min"), QStringLiteral("2048"));
     query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
-    QTest::newRow("filesize-min-max-valid")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("min-max-valid")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("0.5KiB"));
     query.addQueryItem(QStringLiteral("min"), QStringLiteral("1024"));
     query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
-    QTest::newRow("filesize-min-max-invalid-1")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("min-max-invalid-1")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("3.5KiB"));
     query.addQueryItem(QStringLiteral("min"), QStringLiteral("1024"));
     query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
-    QTest::newRow("filesize-min-max-invalid-2")
-        << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("min-max-invalid-2")
+        << QStringLiteral("/fileSize") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     // **** Start testing ValidatorFileSize with return values
 
@@ -2769,108 +2946,132 @@ void TestValidator::testController_data()
     while (fileSizesIt != fileSizes.constEnd()) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), fileSizesIt.key());
-        QTest::newRow(
-            QString(QStringLiteral("filesize-return-value-%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/fileSizeValue") << headers
-            << query.toString(QUrl::FullyEncoded).toLatin1() << fileSizesIt.value().toUtf8();
+        QTest::newRow(QString(QStringLiteral("return-value-%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/fileSizeValue") << query.toString(QUrl::FullyEncoded).toLatin1()
+            << fileSizesIt.value().toUtf8();
         ++fileSizesIt;
         count++;
     }
+}
+
+void TestValidator::testValidatorFilled_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorFilled *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("toll"));
-    QTest::newRow("filled-valid") << QStringLiteral("/filled") << headers
-                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/filled")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
-    QTest::newRow("filled-missing")
-        << QStringLiteral("/filled") << headers << QByteArray() << valid;
+    QTest::newRow("missing") << QStringLiteral("/filled") << QByteArray() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("filled-invalid") << QStringLiteral("/filled") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/filled")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorIn_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorIn *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("zwei"));
-    QTest::newRow("in-valid") << QStringLiteral("/in") << headers
-                              << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/in") << query.toString(QUrl::FullyEncoded).toLatin1()
+                           << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("vier"));
-    QTest::newRow("in-invalid") << QStringLiteral("/in") << headers
-                                << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/in")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("in-empty") << QStringLiteral("/in") << headers
-                              << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("empty") << QStringLiteral("/in") << query.toString(QUrl::FullyEncoded).toLatin1()
+                           << valid;
 
-    QTest::newRow("in-missing") << QStringLiteral("/in") << headers << QByteArray() << valid;
+    QTest::newRow("missing") << QStringLiteral("/in") << QByteArray() << valid;
+}
+
+void TestValidator::testValidatorInteger_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorInteger *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("2345"));
-    QTest::newRow("integer-valid01") << QStringLiteral("/integer") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/integer")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-2345"));
-    QTest::newRow("integer-valid02") << QStringLiteral("/integer") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/integer")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QString::number(std::numeric_limits<int>::max()));
-    QTest::newRow("integer-valid03") << QStringLiteral("/integer") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid03") << QStringLiteral("/integer")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-23a45 f"));
-    QTest::newRow("integer-invalid01") << QStringLiteral("/integer") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/integer")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("a-23f45"));
-    QTest::newRow("integer-invalid02") << QStringLiteral("/integer") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid02") << QStringLiteral("/integer")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QString::number(std::numeric_limits<qlonglong>::max()));
-    QTest::newRow("integer-invalid03") << QStringLiteral("/integer") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid03") << QStringLiteral("/integer")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("integer-empty") << QStringLiteral("/integer") << headers
-                                   << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("empty") << QStringLiteral("/integer")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
-    QTest::newRow("integer-missing")
-        << QStringLiteral("/integer") << headers << QByteArray() << valid;
+    QTest::newRow("missing") << QStringLiteral("/integer") << QByteArray() << valid;
+}
+
+void TestValidator::testValidatorIp_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorIp *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("192.0.43.8"));
-    QTest::newRow("ip-v4-valid") << QStringLiteral("/ip") << headers
-                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("v4-valid") << QStringLiteral("/ip")
+                              << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     const QList<QString> invalidIpv4({QStringLiteral("192.0.s.34"),
                                       QStringLiteral("192.0.43."),
                                       QStringLiteral("192.0.43"),
                                       QStringLiteral("300.167.168.5"),
                                       QStringLiteral("192.168.178.-5")});
-    count = 0;
+    int count = 0;
     for (const QString &ipv4 : invalidIpv4) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), ipv4);
-        QTest::newRow(QString(QStringLiteral("ip-v4-invalid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-            << invalid;
+        QTest::newRow(QString(QStringLiteral("v4-invalid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
         count++;
     }
 
@@ -2900,9 +3101,8 @@ void TestValidator::testController_data()
     for (const QString &ipv6 : validIpv6) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), ipv6);
-        QTest::newRow(QString(QStringLiteral("ip-v6-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-            << valid;
+        QTest::newRow(QString(QStringLiteral("v6-valid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
         count++;
     }
 
@@ -2919,52 +3119,49 @@ void TestValidator::testController_data()
     for (const QString &ipv6 : invalidIpv6) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), ipv6);
-        QTest::newRow(QString(QStringLiteral("ip-v6-invalid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-            << invalid;
+        QTest::newRow(QString(QStringLiteral("v6-invalid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
         count++;
     }
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("192.0.43.8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("IPv4Only"));
-    QTest::newRow("ip-ipv4only-valid") << QStringLiteral("/ip") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("ipv4only-valid")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("2a02:810d:22c0:1c8c:5900:83dc:83b6:9ed8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("IPv4Only"));
-    QTest::newRow("ip-ipv4only-invalid")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("ipv4only-invalid")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("2a02:810d:22c0:1c8c:5900:83dc:83b6:9ed8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("IPv6Only"));
-    QTest::newRow("ip-ipv6only-valid") << QStringLiteral("/ip") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("ipv6only-valid")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("192.0.43.8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("IPv6Only"));
-    QTest::newRow("ip-ipv6only-invalid")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("ipv6only-invalid")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("192.0.43.8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoPrivateRange"));
-    QTest::newRow("ip-noprivate-valid00") << QStringLiteral("/ip") << headers
-                                          << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("noprivate-valid00")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("2a02:810d:22c0:1c8c:5900:83dc:83b6:9ed8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoPrivateRange"));
-    QTest::newRow("ip-noprivate-valid01") << QStringLiteral("/ip") << headers
-                                          << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("noprivate-valid01")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     const QList<QString> invalidIpNoPrivate(
         {QStringLiteral("10.1.2.3"),
@@ -2978,26 +3175,23 @@ void TestValidator::testController_data()
         query.clear();
         query.addQueryItem(QStringLiteral("field"), ip);
         query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoPrivateRange"));
-        QTest::newRow(qUtf8Printable(QStringLiteral("ip-noprivate-invalid0%1").arg(count)))
-            << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-            << invalid;
+        QTest::newRow(qUtf8Printable(QStringLiteral("noprivate-invalid0%1").arg(count)))
+            << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
         count++;
     }
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("192.0.43.8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoReservedRange"));
-    QTest::newRow("ip-noreserved-valid00")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("noreserved-valid00")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("2a02:810d:22c0:1c8c:5900:83dc:83b6:9ed8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoReservedRange"));
-    QTest::newRow("ip-noreserved-valid01")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("noreserved-valid01")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     const QList<QString> invalidIpNoReserved(
         {QStringLiteral("0.1.2.3"),
@@ -3026,53 +3220,55 @@ void TestValidator::testController_data()
         query.clear();
         query.addQueryItem(QStringLiteral("field"), ip);
         query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoReservedRange"));
-        QTest::newRow(qUtf8Printable(QStringLiteral("ip-noreserved-invalid0%1").arg(count)))
-            << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-            << invalid;
+        QTest::newRow(qUtf8Printable(QStringLiteral("noreserved-invalid0%1").arg(count)))
+            << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
         count++;
     }
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("192.0.43.8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoMultiCast"));
-    QTest::newRow("ip-nomulticast-valid00")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("nomulticast-valid00")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("2a02:810d:22c0:1c8c:5900:83dc:83b6:9ed8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoMultiCast"));
-    QTest::newRow("ip-nomulticast-valid01")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+    QTest::newRow("nomulticast-valid01")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("229.0.43.8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoMultiCast"));
-    QTest::newRow("ip-nomulticast-invalid00")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("nomulticast-invalid00")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("ff02:810d:22c0:1c8c:5900:83dc:83b6:9ed8"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoMultiCast"));
-    QTest::newRow("ip-nomulticast-invalid01")
-        << QStringLiteral("/ip") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("nomulticast-invalid01")
+        << QStringLiteral("/ip") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorJson_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorJson *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(
         QStringLiteral("field"),
         QStringLiteral("{\"Herausgeber\":\"Xema\",\"Nummer\":\"1234-5678-9012-3456\",\"Deckung\":"
                        "2e%2B6,\"Waehrung\":\"EURO\",\"Inhaber\":{\"Name\":\"Mustermann\","
                        "\"Vorname\":\"Max\",\"maennlich\":true,\"Hobbys\":[\"Reiten\",\"Golfen\","
                        "\"Lesen\"],\"Alter\":42,\"Kinder\":[],\"Partner\":null}}"));
-    QTest::newRow("json-valid") << QStringLiteral("/json") << headers
-                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/json")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(
@@ -3082,146 +3278,174 @@ void TestValidator::testController_data()
             "6,\"Waehrung\":\"EURO\",\"Inhaber\":{\"Name\":\"Mustermann\",\"Vorname\":\"Max\","
             "\"maennlich\":true,\"Hobbys\":[\"Reiten\",\"Golfen\",\"Lesen\"],\"Alter\":42,"
             "\"Kinder\":[],\"Partner\":null}}"));
-    QTest::newRow("json-invalid") << QStringLiteral("/json") << headers
-                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/json")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorMax_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorMax *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("max-sint-empty") << QStringLiteral("/max") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("sint-empty") << QStringLiteral("/max")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-5"));
-    QTest::newRow("max-sint-valid") << QStringLiteral("/max") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("sint-valid") << QStringLiteral("/max")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("15"));
-    QTest::newRow("max-sint-invalid") << QStringLiteral("/max") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("sint-invalid") << QStringLiteral("/max")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("uint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("5"));
-    QTest::newRow("max-uint-valid") << QStringLiteral("/max") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("uint-valid") << QStringLiteral("/max")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("uint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("15"));
-    QTest::newRow("max-uint-invalid") << QStringLiteral("/max") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("uint-invalid") << QStringLiteral("/max")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("float"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-5.234652435"));
-    QTest::newRow("max-uint-valid") << QStringLiteral("/max") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("uint-valid") << QStringLiteral("/max")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("float"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("15.912037"));
-    QTest::newRow("max-uint-invalid") << QStringLiteral("/max") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("uint-invalid") << QStringLiteral("/max")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("string"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghij"));
-    QTest::newRow("max-uint-valid") << QStringLiteral("/max") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("uint-valid") << QStringLiteral("/max")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("string"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghijlmnop"));
-    QTest::newRow("max-uint-invalid") << QStringLiteral("/max") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("uint-invalid") << QStringLiteral("/max")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("strsdf"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghijlmnop"));
-    QTest::newRow("max-validationdataerror")
-        << QStringLiteral("/max") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+    QTest::newRow("validationdataerror")
+        << QStringLiteral("/max") << query.toString(QUrl::FullyEncoded).toLatin1()
         << validationDataError;
+}
+
+void TestValidator::testValidatorMin_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorMin *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("min-sint-empty") << QStringLiteral("/min") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("sint-empty") << QStringLiteral("/min")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("15"));
-    QTest::newRow("min-sint-valid") << QStringLiteral("/min") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("sint-valid") << QStringLiteral("/min")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-5"));
-    QTest::newRow("min-sint-invalid") << QStringLiteral("/min") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("sint-invalid") << QStringLiteral("/min")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("uint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("15"));
-    QTest::newRow("min-uint-valid") << QStringLiteral("/min") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("uint-valid") << QStringLiteral("/min")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("uint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("5"));
-    QTest::newRow("min-uint-invalid") << QStringLiteral("/min") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("uint-invalid") << QStringLiteral("/min")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("float"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("15.912037"));
-    QTest::newRow("min-float-valid") << QStringLiteral("/min") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("float-valid") << QStringLiteral("/min")
+                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("float"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-5.234652435"));
-    QTest::newRow("min-float-invalid") << QStringLiteral("/min") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("float-invalid")
+        << QStringLiteral("/min") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("string"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghijklmnop"));
-    QTest::newRow("min-string-valid") << QStringLiteral("/min") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("string-valid") << QStringLiteral("/min")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("string"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdef"));
-    QTest::newRow("min-string-invalid") << QStringLiteral("/min") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("string-invalid")
+        << QStringLiteral("/min") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("strsdf"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghijlmnop"));
-    QTest::newRow("min-validationdataerror")
-        << QStringLiteral("/min") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+    QTest::newRow("validationdataerror")
+        << QStringLiteral("/min") << query.toString(QUrl::FullyEncoded).toLatin1()
         << validationDataError;
+}
+
+void TestValidator::testValidatorNotIn_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorNotIn *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("fünf"));
-    QTest::newRow("notin-valid") << QStringLiteral("/notIn") << headers
-                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/notIn")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("vier"));
-    QTest::newRow("notin-invalid") << QStringLiteral("/notIn") << headers
-                                   << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/notIn")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorNumeric_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorNumeric *****
 
@@ -3232,13 +3456,13 @@ void TestValidator::testController_data()
                                         QStringLiteral("23.345345e15"),
                                         QStringLiteral("-1.23e4")});
 
-    count = 0;
+    int count = 0;
+    QUrlQuery query;
     for (const QString &num : validNumerics) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), num);
-        QTest::newRow(qUtf8Printable(QStringLiteral("numeric-valid0%1").arg(count)))
-            << QStringLiteral("/numeric") << headers
-            << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+        QTest::newRow(qUtf8Printable(QStringLiteral("valid0%1").arg(count)))
+            << QStringLiteral("/numeric") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
         count++;
     }
 
@@ -3253,579 +3477,648 @@ void TestValidator::testController_data()
     for (const QString &num : invalidNumerics) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), num);
-        QTest::newRow(qUtf8Printable(QStringLiteral("numeric-invalid0%1").arg(count)))
-            << QStringLiteral("/numeric") << headers
-            << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+        QTest::newRow(qUtf8Printable(QStringLiteral("invalid0%1").arg(count)))
+            << QStringLiteral("/numeric") << query.toString(QUrl::FullyEncoded).toLatin1()
+            << invalid;
         count++;
     }
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("numeric-empty") << QStringLiteral("/numeric") << headers
-                                   << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("empty") << QStringLiteral("/numeric")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+}
+
+void TestValidator::testValidatorPresent_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorPresent *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("present-valid") << QStringLiteral("/present") << headers
-                                   << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/present")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfasdf"));
-    QTest::newRow("present-invalid") << QStringLiteral("/present") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/present")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+#ifdef CUTELYST_VALIDATOR_WITH_PWQUALITY
+void TestValidator::testValidatorPwQuality_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorPwQuality
-#ifdef CUTELYST_VALIDATOR_WITH_PWQUALITY
+
     const QList<QString> invalidPws({
         QStringLiteral("ovkaCPa"),  // too short, lower than 8
         QStringLiteral("password"), // dictionary
         QStringLiteral("aceg1234")  // score too low
     });
-    count = 0;
+    int count = 0;
+    QUrlQuery query;
     for (const QString &pw : invalidPws) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), pw);
-        QTest::newRow(qUtf8Printable(QStringLiteral("pwquality-invalid0%1").arg(count)))
-            << QStringLiteral("/pwQuality") << headers
-            << query.toString(QUrl::FullyEncoded).toUtf8() << invalid;
+        QTest::newRow(qUtf8Printable(QStringLiteral("invalid0%1").arg(count)))
+            << QStringLiteral("/pwQuality") << query.toString(QUrl::FullyEncoded).toUtf8()
+            << invalid;
         count++;
     }
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"),
                        QStringLiteral("niK3sd2eHAm@M0vZ!8sd$uJv?4AYlDaP6"));
-    QTest::newRow("pwquality-valid") << QStringLiteral("/pwQuality") << headers
-                                     << query.toString(QUrl::FullyEncoded).toUtf8() << valid;
+    QTest::newRow("valid") << QStringLiteral("/pwQuality")
+                           << query.toString(QUrl::FullyEncoded).toUtf8() << valid;
+}
 #endif
+
+void TestValidator::testValidatorRegex_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRegex *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("08/12/1985"));
-    QTest::newRow("regex-valid") << QStringLiteral("/regex") << headers
-                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/regex")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("8/2/85"));
-    QTest::newRow("regex-invalid") << QStringLiteral("/regex") << headers
-                                   << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/regex")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("regex-empty") << QStringLiteral("/regex") << headers
-                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("empty") << QStringLiteral("/regex")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+}
+
+void TestValidator::testValidatorRequired_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequired *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("08/12/1985"));
-    QTest::newRow("required-valid") << QStringLiteral("/required") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/required")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("required-empty") << QStringLiteral("/required") << headers
-                                    << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("empty") << QStringLiteral("/required")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("08/12/1985"));
-    QTest::newRow("required-missing") << QStringLiteral("/required") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("missing") << QStringLiteral("/required")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredIf_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredIf *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdfasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("eins"));
-    QTest::newRow("requiredif-valid00") << QStringLiteral("/requiredIf") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredIf")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("adfasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("vier"));
-    QTest::newRow("requiredif-valid01") << QStringLiteral("/requiredIf") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredIf")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("vier"));
-    QTest::newRow("requiredif-valid02") << QStringLiteral("/requiredIf") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredIf")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("vier"));
-    QTest::newRow("requiredif-valid03") << QStringLiteral("/requiredIf") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid03") << QStringLiteral("/requiredIf")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field3"), QStringLiteral("eins"));
-    QTest::newRow("requiredif-valid04") << QStringLiteral("/requiredIf") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid04") << QStringLiteral("/requiredIf")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("eins"));
-    QTest::newRow("requiredif-invalid00")
-        << QStringLiteral("/requiredIf") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredIf")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("eins"));
-    QTest::newRow("requiredif-invalid01")
-        << QStringLiteral("/requiredIf") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredIf")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredIfStash_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredIfStash *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
-    QTest::newRow("requiredifstash-valid01")
-        << QStringLiteral("/requiredIfStashMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredIfStashMatch")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
-    QTest::newRow("requiredifstash-valid02")
-        << QStringLiteral("/requiredIfStashNotMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredIfStashNotMatch")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
-    QTest::newRow("requiredifstash-invalid03")
-        << QStringLiteral("/requiredIfStashNotMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("invalid03") << QStringLiteral("/requiredIfStashNotMatch")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
-    QTest::newRow("requiredifstash-invalid")
-        << QStringLiteral("/requiredIfStashMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/requiredIfStashMatch")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredUnless_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredUnless *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdfasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("eins"));
-    QTest::newRow("requiredunless-valid00")
-        << QStringLiteral("/requiredUnless") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredUnless")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdfasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("vier"));
-    QTest::newRow("requiredunless-valid01")
-        << QStringLiteral("/requiredUnless") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredUnless")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("eins"));
-    QTest::newRow("requiredunless-valid02")
-        << QStringLiteral("/requiredUnless") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredUnless")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("zwei"));
-    QTest::newRow("requiredunless-valid03")
-        << QStringLiteral("/requiredUnless") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid03") << QStringLiteral("/requiredUnless")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("vier"));
-    QTest::newRow("requiredunless-invalid00")
-        << QStringLiteral("/requiredUnless") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredUnless")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("vier"));
-    QTest::newRow("requiredunless-invalid01")
-        << QStringLiteral("/requiredUnless") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredUnless")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredUnlessStash_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredUnlessStash *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdf"));
-    QTest::newRow("requiredunlessstash-valid00")
-        << QStringLiteral("/requiredUnlessStashMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredUnlessStashMatch")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
-    QTest::newRow("requiredunlessstash-valid01")
-        << QStringLiteral("/requiredUnlessStashMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredUnlessStashMatch")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdf"));
-    QTest::newRow("requiredunlessstash-valid02")
-        << QStringLiteral("/requiredUnlessStashNotMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredUnlessStashNotMatch")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
-    QTest::newRow("requiredunlessstash-invalid00")
-        << QStringLiteral("/requiredUnlessStashNotMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredUnlessStashNotMatch")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("%20"));
-    QTest::newRow("requiredunlessstash-invalid01")
-        << QStringLiteral("/requiredUnlessStashNotMatch") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredUnlessStashNotMatch")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredWith_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredWith *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwith-valid00") << QStringLiteral("/requiredWith") << headers
-                                          << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredWith")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("field3"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwith-valid01") << QStringLiteral("/requiredWith") << headers
-                                          << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredWith")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("field3"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwith-valid02") << QStringLiteral("/requiredWith") << headers
-                                          << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredWith")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwith-invalid00")
-        << QStringLiteral("/requiredWith") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredWith")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwith-invalid01")
-        << QStringLiteral("/requiredWith") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredWith")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredWithAll_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredWithAll *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field3"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfdasf"));
-    QTest::newRow("requiredwithall-valid00")
-        << QStringLiteral("/requiredWithAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredWithAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfdasf"));
-    QTest::newRow("requiredwithall-valid01")
-        << QStringLiteral("/requiredWithAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredWithAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfdasf"));
-    QTest::newRow("requiredwithall-valid02")
-        << QStringLiteral("/requiredWithAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredWithAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfdasf"));
-    QTest::newRow("requiredwithall-valid03")
-        << QStringLiteral("/requiredWithAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid03") << QStringLiteral("/requiredWithAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field3"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfdasf"));
-    QTest::newRow("requiredwithall-invalid00")
-        << QStringLiteral("/requiredWithAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredWithAll")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field3"), QStringLiteral("asdfdasf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfdasf"));
-    QTest::newRow("requiredwithall-invalid01")
-        << QStringLiteral("/requiredWithAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredWithAll")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredWithout_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredWithout *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwithout-valid00")
-        << QStringLiteral("/requiredWithout") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredWithout")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwithout-valid01")
-        << QStringLiteral("/requiredWithout") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredWithout")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("requiredwithout-invalid00")
-        << QStringLiteral("/requiredWithout") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredWithout")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("asdfasdf"));
-    QTest::newRow("requiredwithout-invalid01")
-        << QStringLiteral("/requiredWithout") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredWithout")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfasdf"));
-    QTest::newRow("requiredwithout-invalid02")
-        << QStringLiteral("/requiredWithout") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid02") << QStringLiteral("/requiredWithout")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorRequiredWithoutAll_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorRequiredWithoutAll *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwithoutall-valid00")
-        << QStringLiteral("/requiredWithoutAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid00") << QStringLiteral("/requiredWithoutAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwithoutall-valid01")
-        << QStringLiteral("/requiredWithoutAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid01") << QStringLiteral("/requiredWithoutAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwithoutall-valid02")
-        << QStringLiteral("/requiredWithoutAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid02") << QStringLiteral("/requiredWithoutAll")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
-    QTest::newRow("requiredwithoutall-invalid00")
-        << QStringLiteral("/requiredWithoutAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid00") << QStringLiteral("/requiredWithoutAll")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field4"), QStringLiteral("wlklasdf"));
-    QTest::newRow("requiredwithoutall-invalid01")
-        << QStringLiteral("/requiredWithoutAll") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid01") << QStringLiteral("/requiredWithoutAll")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+}
+
+void TestValidator::testValidatorSame_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorSame *****
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("other"), QStringLiteral("wlklasdf"));
-    QTest::newRow("same-valid") << QStringLiteral("/same") << headers
-                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("valid") << QStringLiteral("/same")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("wlklasdf"));
     query.addQueryItem(QStringLiteral("other"), QStringLiteral("wlkla"));
-    QTest::newRow("same-invalid") << QStringLiteral("/same") << headers
-                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/same")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
     query.addQueryItem(QStringLiteral("other"), QStringLiteral("wlkla"));
-    QTest::newRow("same-empty") << QStringLiteral("/same") << headers
-                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("empty") << QStringLiteral("/same")
+                           << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+}
+
+void TestValidator::testValidatorSize_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorSize *****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("size-sint-empty") << QStringLiteral("/size") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("sint-empty") << QStringLiteral("/size")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("10"));
-    QTest::newRow("size-sint-valid") << QStringLiteral("/size") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("sint-valid") << QStringLiteral("/size")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("sint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-5"));
-    QTest::newRow("size-sint-invalid") << QStringLiteral("/size") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("sint-invalid") << QStringLiteral("/size")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("uint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("10"));
-    QTest::newRow("size-uint-valid") << QStringLiteral("/size") << headers
-                                     << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("uint-valid") << QStringLiteral("/size")
+                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("uint"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("5"));
-    QTest::newRow("size-uint-invalid") << QStringLiteral("/size") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("uint-invalid") << QStringLiteral("/size")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("float"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("10.0"));
-    QTest::newRow("size-float-valid") << QStringLiteral("/size") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("float-valid") << QStringLiteral("/size")
+                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("float"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("-5.234652435"));
-    QTest::newRow("size-flost-invalid") << QStringLiteral("/size") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("flost-invalid")
+        << QStringLiteral("/size") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("string"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghij"));
-    QTest::newRow("size-string-valid") << QStringLiteral("/size") << headers
-                                       << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("string-valid") << QStringLiteral("/size")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("string"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdef"));
-    QTest::newRow("size-string-invalid")
-        << QStringLiteral("/size") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+    QTest::newRow("string-invalid")
+        << QStringLiteral("/size") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("type"), QStringLiteral("strsdf"));
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("abcdefghijlmnop"));
-    QTest::newRow("size-validationdataerror")
-        << QStringLiteral("/size") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+    QTest::newRow("validationdataerror")
+        << QStringLiteral("/size") << query.toString(QUrl::FullyEncoded).toLatin1()
         << validationDataError;
+}
+
+void TestValidator::testValidatorTime_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorTime *****
 
-    count = 0;
+    int count = 0;
     for (Qt::DateFormat df : dateFormats) {
-        QTest::newRow(QString(QStringLiteral("time-valid0%1").arg(count)).toUtf8().constData())
-            << QStringLiteral("/time?field=") + QTime::currentTime().toString(df) << headers
-            << QByteArray() << valid;
+        QTest::newRow(QString(QStringLiteral("valid0%1").arg(count)).toUtf8().constData())
+            << QStringLiteral("/time?field=") + QTime::currentTime().toString(df) << QByteArray()
+            << valid;
         count++;
     }
 
-    QTest::newRow("time-invalid") << QStringLiteral("/time?field=123456789") << headers
-                                  << QByteArray() << invalid;
+    QTest::newRow("invalid") << QStringLiteral("/time?field=123456789") << QByteArray() << invalid;
 
-    QTest::newRow("time-empty") << QStringLiteral("/time?field=%20") << headers << QByteArray()
-                                << valid;
+    QTest::newRow("empty") << QStringLiteral("/time?field=%20") << QByteArray() << valid;
 
-    QTest::newRow("time-format-valid") << QStringLiteral("/timeFormat?field=") +
-                                              QTime::currentTime().toString(QStringLiteral("m:hh"))
-                                       << headers << QByteArray() << valid;
+    QTest::newRow("format-valid") << QStringLiteral("/timeFormat?field=") +
+                                         QTime::currentTime().toString(QStringLiteral("m:hh"))
+                                  << QByteArray() << valid;
 
-    QTest::newRow("time-format-invalid")
-        << QStringLiteral("/timeFormat?field=") +
-               QTime::currentTime().toString(QStringLiteral("m:AP"))
-        << headers << QByteArray() << invalid;
+    QTest::newRow("format-invalid") << QStringLiteral("/timeFormat?field=") +
+                                           QTime::currentTime().toString(QStringLiteral("m:AP"))
+                                    << QByteArray() << invalid;
+}
+
+void TestValidator::testValidatorUrl_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
 
     // **** Start testing ValidatorUrl*****
 
-    query.clear();
+    QUrlQuery query;
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("http://www.example.org"));
-    QTest::newRow("url-valid00") << QStringLiteral("/url") << headers
+    QTest::newRow("url-valid00") << QStringLiteral("/url")
                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("/home/user"));
-    QTest::newRow("url-valid01") << QStringLiteral("/url") << headers
+    QTest::newRow("url-valid01") << QStringLiteral("/url")
                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("user"));
-    QTest::newRow("url-valid02") << QStringLiteral("/url") << headers
+    QTest::newRow("url-valid02") << QStringLiteral("/url")
                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("file:///home/user/test.txt"));
-    QTest::newRow("url-valid03") << QStringLiteral("/url") << headers
+    QTest::newRow("url-valid03") << QStringLiteral("/url")
                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("%20"));
-    QTest::newRow("url-empty") << QStringLiteral("/url") << headers
+    QTest::newRow("url-empty") << QStringLiteral("/url")
                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("http://www.example.org"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoRelative"));
-    QTest::newRow("url-norelative-valid") << QStringLiteral("/url") << headers
-                                          << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("url-norelative-valid")
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("/home/user"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoRelative"));
     QTest::newRow("url-norelative-invalid")
-        << QStringLiteral("/url") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("http://www.example.org"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoLocalFile"));
     QTest::newRow("url-nolocalfile-valid00")
-        << QStringLiteral("/url") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("/home/user/test.txt"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoLocalFile"));
     QTest::newRow("url-nolocalfile-valid01")
-        << QStringLiteral("/url") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("file:///home/user/test.txt"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("NoLocalFile"));
     QTest::newRow("url-nolocalfile-invalid")
-        << QStringLiteral("/url") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << invalid;
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("http://www.example.org"));
     query.addQueryItem(QStringLiteral("schemes"), QStringLiteral("HTTP,https"));
-    QTest::newRow("url-scheme-valid") << QStringLiteral("/url") << headers
-                                      << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+    QTest::newRow("url-scheme-valid")
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("ftp://www.example.org"));
     query.addQueryItem(QStringLiteral("schemes"), QStringLiteral("HTTP,https"));
-    QTest::newRow("url-scheme-invalid") << QStringLiteral("/url") << headers
-                                        << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("url-scheme-invalid")
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("http://www.example.org"));
     query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("WebsiteOnly"));
     QTest::newRow("url-websiteonly-valid")
-        << QStringLiteral("/url") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << valid;
+        << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     const QStringList invalidWebsiteUrls({QStringLiteral("ftp://www.example.org"),
                                           QStringLiteral("file:///home/user/test.txt"),
                                           QStringLiteral("/home/user")});
-    count = 0;
+    int count = 0;
     for (const QString &invalidWebsite : invalidWebsiteUrls) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), invalidWebsite);
         query.addQueryItem(QStringLiteral("constraints"), QStringLiteral("WebsiteOnly"));
         QTest::newRow(qUtf8Printable(QStringLiteral("url-websiteonly-invalid0%1").arg(count)))
-            << QStringLiteral("/url") << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-            << invalid;
+            << QStringLiteral("/url") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
         count++;
     }
 }
