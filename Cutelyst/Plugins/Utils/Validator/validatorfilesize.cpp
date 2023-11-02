@@ -29,190 +29,225 @@ bool ValidatorFileSize::validate(const QString &value,
                                  const QLocale &locale,
                                  double *fileSize)
 {
-    bool valid = true;
+    const QString str = value.trimmed();
 
-    QString digitPart;
-    QString symbolPart;
-    bool decimalPointFound = false;
-    const QString decimalPoint(locale.decimalPoint());
-    int multiplier     = 0;
-    bool binary        = false;
-    bool byteSignFound = false;
-    qint8 startsWith   = 0; // 0 not set, -1 digit part, 1 symbol part
+    if (str.isEmpty()) {
+        qCDebug(C_VALIDATOR) << "ValidatorFileSize: empty string";
+        return false;
+    }
 
-    for (const QChar &ch : value) {
-        if (valid) {
-            const char16_t &uc = ch.toUpper().unicode();
-            if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
-                (ch == decimalPoint)) {
-                if (startsWith == 0) {
-                    startsWith = -1;
-                }
-                if (ch == decimalPoint) {
-                    if (decimalPointFound) {
-                        valid = false;
-                        break;
-                    } else {
-                        decimalPointFound = true;
-                    }
-                }
-                if ((symbolPart.isEmpty() && (startsWith < 0)) ||
-                    (!symbolPart.isEmpty() && (startsWith > 0))) {
-                    digitPart.append(ch);
-                } else {
-                    valid = false;
-                    break;
-                }
-            } else if ((uc != ValidatorRulePrivate::asciiTab) &&
-                       (uc != ValidatorRulePrivate::asciiSpace)) { // not a digit or decimal point
-                                                                   // and not a space or tab
-                if (startsWith == 0) {
-                    startsWith = 1;
-                }
-                if ((digitPart.isEmpty() && (startsWith > 0)) ||
-                    (!digitPart.isEmpty() && (startsWith < 0))) {
-                    switch (uc) {
-                    case ValidatorFileSizePrivate::ascii_K:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 1;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_M:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 2;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_G:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 3;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_T:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 4;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_P:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 5;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_E:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 6;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorRulePrivate::ascii_Z:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 7;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_Y:
-                    {
-                        if (multiplier > 0) {
-                            valid = false;
-                        } else {
-                            multiplier = 8;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_I:
-                    {
-                        if ((multiplier == 0) || binary) {
-                            valid = false;
-                        } else {
-                            binary = true;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorFileSizePrivate::ascii_B:
-                    {
-                        if (byteSignFound) {
-                            valid = false;
-                        } else {
-                            byteSignFound = true;
-                            symbolPart.append(ch);
-                        }
-                    } break;
-                    case ValidatorRulePrivate::asciiTab:
-                    case ValidatorRulePrivate::asciiSpace:
-                        break;
-                    default:
-                        valid = false;
-                        break;
-                    }
-                } else {
-                    valid = false;
-                    break;
-                }
-            }
-        } else {
-            break;
+    bool ok  = false;
+    double v = locale.toDouble(str, &ok);
+    if (ok) {
+        qCDebug(C_VALIDATOR) << "ValidatorFileSize: No unit available, directly converting to" << v
+                             << "bytes";
+
+        if (fileSize) {
+            *fileSize = v;
         }
+        return true;
     }
 
-    if ((option == OnlyBinary) && !binary) {
-        valid = false;
-    } else if ((option == OnlyDecimal) && binary) {
-        valid = false;
-    } else if (option == ForceBinary) {
-        binary = true;
-    } else if (option == ForceDecimal) {
-        binary = false;
+    QString sizePart;
+    QString unitPart;
+
+    // left to right writing
+    if (str.front().isDigit()) {
+
+    } else {
     }
 
-    if (valid) {
-        bool ok     = false;
-        double size = locale.toDouble(digitPart, &ok);
-        if (!ok) {
-            valid = false;
-        } else {
-            if (multiplier > 0) {
-                const double _mult =
-                    binary ? std::exp2(multiplier * 10) : std::pow(10.0, multiplier * 3);
-                size *= _mult;
-            }
-            if ((min >= 1.0) && (size < min)) {
-                valid = false;
-            }
-            if ((max >= 1.0) && (size > max)) {
-                valid = false;
-            }
-            if (valid && fileSize) {
-                *fileSize = size;
-            }
-        }
-    }
+    qCDebug(C_VALIDATOR).noquote()
+        << "ValidatorFileSize: Found size:" << sizePart << "Found unit:" << unitPart;
 
-    return valid;
+    return true;
+
+    //    bool valid = true;
+
+    //    QString digitPart;
+    //    QString symbolPart;
+    //    bool decimalPointFound = false;
+    //    const QString decimalPoint(locale.decimalPoint());
+    //    int multiplier     = 0;
+    //    bool binary        = false;
+    //    bool byteSignFound = false;
+    //    qint8 startsWith   = 0; // 0 not set, -1 digit part, 1 symbol part
+
+    //    for (const QChar &ch : value) {
+    //        if (valid) {
+    //            const char16_t &uc = ch.toUpper().unicode();
+    //            if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <=
+    //            ValidatorRulePrivate::ascii_9)) ||
+    //                (ch == decimalPoint)) {
+    //                if (startsWith == 0) {
+    //                    startsWith = -1;
+    //                }
+    //                if (ch == decimalPoint) {
+    //                    if (decimalPointFound) {
+    //                        valid = false;
+    //                        break;
+    //                    } else {
+    //                        decimalPointFound = true;
+    //                    }
+    //                }
+    //                if ((symbolPart.isEmpty() && (startsWith < 0)) ||
+    //                    (!symbolPart.isEmpty() && (startsWith > 0))) {
+    //                    digitPart.append(ch);
+    //                } else {
+    //                    valid = false;
+    //                    break;
+    //                }
+    //            } else if ((uc != ValidatorRulePrivate::asciiTab) &&
+    //                       (uc != ValidatorRulePrivate::asciiSpace)) { // not a digit or decimal
+    //                       point
+    //                                                                   // and not a space or tab
+    //                if (startsWith == 0) {
+    //                    startsWith = 1;
+    //                }
+    //                if ((digitPart.isEmpty() && (startsWith > 0)) ||
+    //                    (!digitPart.isEmpty() && (startsWith < 0))) {
+    //                    switch (uc) {
+    //                    case ValidatorFileSizePrivate::ascii_K:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 1;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_M:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 2;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_G:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 3;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_T:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 4;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_P:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 5;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_E:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 6;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorRulePrivate::ascii_Z:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 7;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_Y:
+    //                    {
+    //                        if (multiplier > 0) {
+    //                            valid = false;
+    //                        } else {
+    //                            multiplier = 8;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_I:
+    //                    {
+    //                        if ((multiplier == 0) || binary) {
+    //                            valid = false;
+    //                        } else {
+    //                            binary = true;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorFileSizePrivate::ascii_B:
+    //                    {
+    //                        if (byteSignFound) {
+    //                            valid = false;
+    //                        } else {
+    //                            byteSignFound = true;
+    //                            symbolPart.append(ch);
+    //                        }
+    //                    } break;
+    //                    case ValidatorRulePrivate::asciiTab:
+    //                    case ValidatorRulePrivate::asciiSpace:
+    //                        break;
+    //                    default:
+    //                        valid = false;
+    //                        break;
+    //                    }
+    //                } else {
+    //                    valid = false;
+    //                    break;
+    //                }
+    //            }
+    //        } else {
+    //            break;
+    //        }
+    //    }
+
+    //    if ((option == OnlyBinary) && !binary) {
+    //        valid = false;
+    //    } else if ((option == OnlyDecimal) && binary) {
+    //        valid = false;
+    //    } else if (option == ForceBinary) {
+    //        binary = true;
+    //    } else if (option == ForceDecimal) {
+    //        binary = false;
+    //    }
+
+    //    if (valid) {
+    //        bool ok     = false;
+    //        double size = locale.toDouble(digitPart, &ok);
+    //        if (!ok) {
+    //            valid = false;
+    //        } else {
+    //            if (multiplier > 0) {
+    //                const double _mult =
+    //                    binary ? std::exp2(multiplier * 10) : std::pow(10.0, multiplier * 3);
+    //                size *= _mult;
+    //            }
+    //            if ((min >= 1.0) && (size < min)) {
+    //                valid = false;
+    //            }
+    //            if ((max >= 1.0) && (size > max)) {
+    //                valid = false;
+    //            }
+    //            if (valid && fileSize) {
+    //                *fileSize = size;
+    //            }
+    //        }
+    //    }
+
+    //    return valid;
 }
 
 ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap &params) const
