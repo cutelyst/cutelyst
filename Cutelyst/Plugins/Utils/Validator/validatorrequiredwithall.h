@@ -69,8 +69,8 @@ protected:
                                    const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(
-        ValidatorRequiredWithAll) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DECLARE_PRIVATE(ValidatorRequiredWithAll)
     Q_DISABLE_COPY(ValidatorRequiredWithAll)
 };
 
