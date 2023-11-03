@@ -31,6 +31,7 @@ bool ValidatorFileSize::validate(const QString &value,
 {
     bool valid = true;
 
+    const QString str = value.simplified();
     QString digitPart;
     QString symbolPart;
     bool decimalPointFound = false;
@@ -40,7 +41,7 @@ bool ValidatorFileSize::validate(const QString &value,
     bool byteSignFound = false;
     ValidatorFileSizePrivate::StartsWith startsWith{ValidatorFileSizePrivate::StartsWith::NotSet};
 
-    for (const QChar &ch : value) {
+    for (const QChar &ch : str) {
         if (valid) {
             const char16_t &uc = ch.toUpper().unicode();
             if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
