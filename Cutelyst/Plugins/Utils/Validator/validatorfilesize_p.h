@@ -27,6 +27,8 @@ public:
     {
     }
 
+    enum class StartsWith : quint8 { NotSet, DigitPart, SymbolPart };
+
     static constexpr char16_t ascii_B{66};
     static constexpr char16_t ascii_E{69};
     static constexpr char16_t ascii_G{71};
