@@ -38,15 +38,15 @@ bool ValidatorFileSize::validate(const QString &value,
     int multiplier     = 0;
     bool binary        = false;
     bool byteSignFound = false;
-    qint8 startsWith   = 0; // 0 not set, -1 digit part, 1 symbol part
+    ValidatorFileSizePrivate::StartsWith startsWith{ValidatorFileSizePrivate::StartsWith::NotSet};
 
     for (const QChar &ch : value) {
         if (valid) {
             const char16_t &uc = ch.toUpper().unicode();
             if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
                 (ch == decimalPoint)) {
-                if (startsWith == 0) {
-                    startsWith = -1;
+                if (startsWith == ValidatorFileSizePrivate::StartsWith::NotSet) {
+                    startsWith = ValidatorFileSizePrivate::StartsWith::DigitPart;
                 }
                 if (ch == decimalPoint) {
                     if (decimalPointFound) {
@@ -56,8 +56,10 @@ bool ValidatorFileSize::validate(const QString &value,
                         decimalPointFound = true;
                     }
                 }
-                if ((symbolPart.isEmpty() && (startsWith < 0)) ||
-                    (!symbolPart.isEmpty() && (startsWith > 0))) {
+                if ((symbolPart.isEmpty() &&
+                     (startsWith == ValidatorFileSizePrivate::StartsWith::DigitPart)) ||
+                    (!symbolPart.isEmpty() &&
+                     (startsWith == ValidatorFileSizePrivate::StartsWith::SymbolPart))) {
                     digitPart.append(ch);
                 } else {
                     valid = false;
@@ -66,11 +68,13 @@ bool ValidatorFileSize::validate(const QString &value,
             } else if ((uc != ValidatorRulePrivate::asciiTab) &&
                        (uc != ValidatorRulePrivate::asciiSpace)) { // not a digit or decimal point
                                                                    // and not a space or tab
-                if (startsWith == 0) {
-                    startsWith = 1;
+                if (startsWith == ValidatorFileSizePrivate::StartsWith::NotSet) {
+                    startsWith = ValidatorFileSizePrivate::StartsWith::SymbolPart;
                 }
-                if ((digitPart.isEmpty() && (startsWith > 0)) ||
-                    (!digitPart.isEmpty() && (startsWith < 0))) {
+                if ((digitPart.isEmpty() &&
+                     (startsWith == ValidatorFileSizePrivate::StartsWith::SymbolPart)) ||
+                    (!digitPart.isEmpty() &&
+                     (startsWith == ValidatorFileSizePrivate::StartsWith::DigitPart))) {
                     switch (uc) {
                     case ValidatorFileSizePrivate::ascii_K:
                     {
