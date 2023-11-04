@@ -51,6 +51,9 @@ bool ValidatorFileSize::validate(const QString &value,
                 }
                 if (ch == decimalPoint) {
                     if (decimalPointFound) {
+                        qCDebug(C_VALIDATOR).nospace()
+                            << "ValidatorFileSize: Validation failed for " << value << ": "
+                            << "two decimal seperators in a row";
                         valid = false;
                         break;
                     } else {
@@ -63,6 +66,9 @@ bool ValidatorFileSize::validate(const QString &value,
                      (startsWith == ValidatorFileSizePrivate::StartsWith::SymbolPart))) {
                     digitPart.append(ch);
                 } else {
+                    qCDebug(C_VALIDATOR).nospace()
+                        << "ValidatorFileSize: Validation failed for " << value << ": "
+                        << "symbol inside digit part";
                     valid = false;
                     break;
                 }
@@ -81,6 +87,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol K already found";
                         } else {
                             multiplier = 1;
                             symbolPart.append(ch);
@@ -90,6 +99,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol M already found";
                         } else {
                             multiplier = 2;
                             symbolPart.append(ch);
@@ -99,6 +111,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol G already found";
                         } else {
                             multiplier = 3;
                             symbolPart.append(ch);
@@ -108,6 +123,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol T already found";
                         } else {
                             multiplier = 4;
                             symbolPart.append(ch);
@@ -117,6 +135,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol P already found";
                         } else {
                             multiplier = 5;
                             symbolPart.append(ch);
@@ -126,6 +147,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol E already found";
                         } else {
                             multiplier = 6;
                             symbolPart.append(ch);
@@ -135,6 +159,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol Z already found";
                         } else {
                             multiplier = 7;
                             symbolPart.append(ch);
@@ -144,6 +171,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (multiplier > 0) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "unit symbol Y already found";
                         } else {
                             multiplier = 8;
                             symbolPart.append(ch);
@@ -153,6 +183,10 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if ((multiplier == 0) || binary) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "binary indicator I already found or no unit symbol given "
+                                   "before";
                         } else {
                             binary = true;
                             symbolPart.append(ch);
@@ -162,6 +196,9 @@ bool ValidatorFileSize::validate(const QString &value,
                     {
                         if (byteSignFound) {
                             valid = false;
+                            qCDebug(C_VALIDATOR).nospace()
+                                << "ValdatorFileSize: Validation failed for " << value << ": "
+                                << "byte symbol B already found";
                         } else {
                             byteSignFound = true;
                             symbolPart.append(ch);
@@ -172,6 +209,9 @@ bool ValidatorFileSize::validate(const QString &value,
                         break;
                     default:
                         valid = false;
+                        qCDebug(C_VALIDATOR).nospace()
+                            << "ValdatorFileSize: Validation failed for " << value << ": "
+                            << "invalid character in symbol part";
                         break;
                     }
                 } else {
@@ -236,6 +276,8 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
         if (d->min.isValid()) {
             min = d->extractDouble(c, params, d->min, &ok);
             if (!ok) {
+                qCWarning(C_VALIDATOR).noquote()
+                    << debugString(c) << "Invalid minimum size comparison data";
                 result.errorMessage = validationDataError(c, 0);
             }
         }
@@ -243,6 +285,8 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
         if (ok && d->max.isValid()) {
             max = d->extractDouble(c, params, d->max, &ok);
             if (!ok) {
+                qCWarning(C_VALIDATOR).noquote()
+                    << debugString(c) << "Invalid maximum size comparison data";
                 result.errorMessage = validationDataError(c, 1);
             }
         }
@@ -257,6 +301,8 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
                 }
             } else {
                 result.errorMessage = validationError(c);
+                qCWarning(C_VALIDATOR).noquote()
+                    << debugString(c) << v << "is not a valid data size string";
             }
         }
 
