@@ -4,7 +4,6 @@
  */
 #include "utils.h"
 
-#include <QDebug>
 #include <QTextStream>
 #include <QVector>
 
