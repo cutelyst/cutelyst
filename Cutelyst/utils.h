@@ -12,6 +12,9 @@
 
 namespace Cutelyst {
 
+/**
+ * Helper functions used all over %Cutelyst.
+ */
 namespace Utils {
 CUTELYST_LIBRARY QByteArray buildTable(const QVector<QStringList> &table,
                                        const QStringList &headers = {},
@@ -23,6 +26,33 @@ CUTELYST_LIBRARY ParamsMultiMap decodePercentEncoding(char *data, int len);
 
 CUTELYST_LIBRARY QString decodePercentEncoding(QByteArray *ba);
 
+/**
+ * Reads a time span from @a str and parses it into a duration value.
+ *
+ * The following time units are understood:
+ * @li usec, us
+ * @li msec, ms
+ * @li seconds, second, sec, s
+ * @li minutes, minute, min, m
+ * @li hours, hour, hr, h
+ * @li days, day, d
+ * @li weeks, week, w
+ * @li months, month, M
+ * @li years, year, y
+ *
+ * If no time unit is specified, seconds are assumed.
+ *
+ * Examples for valid time span specifications:
+ * @li 2 h
+ * @li 2hours
+ * @li 48hr
+ * @li 1y 12month
+ * @li 55s500ms
+ * @li 300ms20s 5day
+ *
+ * If @a ok is not @c nullptr, failure is reported by setting @a *ok to @c false,
+ * and success by setting @a *ok to @c true.
+ */
 CUTELYST_LIBRARY std::chrono::microseconds durationFromString(const QString &str,
                                                               bool *ok = nullptr);
 } // namespace Utils
