@@ -53,8 +53,7 @@ CUTELYST_LIBRARY QString decodePercentEncoding(QByteArray *ba);
  * If @a ok is not @c nullptr, failure is reported by setting @a *ok to @c false,
  * and success by setting @a *ok to @c true.
  */
-CUTELYST_LIBRARY std::chrono::microseconds durationFromString(const QString &str,
-                                                              bool *ok = nullptr);
+CUTELYST_LIBRARY std::chrono::microseconds durationFromString(QStringView str, bool *ok = nullptr);
 } // namespace Utils
 
 } // namespace Cutelyst
