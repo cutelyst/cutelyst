@@ -46,6 +46,8 @@ private:
     TestEngine *getEngine();
 
     void performTest();
+
+    void invalidateToken(QChar &ch);
 };
 
 class CsrfprotectionTest : public Controller
@@ -93,7 +95,7 @@ public:
     {
         c->res()->setContentType("text/plain");
         c->res()->setBody(QByteArrayLiteral("detachdenied"));
-        c->detach();
+        c->finalize();
     }
 };
 
@@ -184,6 +186,27 @@ void TestCsrfProtection::cleanupTest()
     m_fieldValue.clear();
 }
 
+void TestCsrfProtection::invalidateToken(QChar &ch)
+{
+    if (ch.isDigit()) {
+        if (ch < QLatin1Char('9')) {
+            ch.unicode()++;
+        } else {
+            ch.unicode()--;
+        }
+    } else if (ch.isLetter()) {
+        if (ch.isUpper()) {
+            ch = ch.toLower();
+        } else {
+            ch = ch.toUpper();
+        }
+    } else if (ch == QLatin1Char('-')) {
+        ch = QLatin1Char('_');
+    } else if (ch == QLatin1Char('_')) {
+        ch = QLatin1Char('-');
+    }
+}
+
 void TestCsrfProtection::doTest()
 {
     QFETCH(QByteArray, method);
@@ -215,36 +238,10 @@ void TestCsrfProtection::doTest_data()
          }) {
         const auto cookieValid = m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly);
         auto cookieInvalid     = QString::fromLatin1(cookieValid);
-        auto &cookieLast       = cookieInvalid[cookieInvalid.size() - 1];
-        if (cookieLast.isDigit()) {
-            if (cookieLast.unicode() < 57) {
-                cookieLast.unicode()++;
-            } else {
-                cookieLast.unicode()--;
-            }
-        } else {
-            if (cookieLast.isUpper()) {
-                cookieLast = cookieLast.toLower();
-            } else {
-                cookieLast = cookieLast.toUpper();
-            }
-        }
+        invalidateToken(cookieInvalid[cookieInvalid.size() - 1]);
 
         auto fieldValueInvalid = QString::fromLatin1(m_fieldValue);
-        auto &fieldLast        = fieldValueInvalid[fieldValueInvalid.size() - 2];
-        if (fieldLast.isDigit()) {
-            if (fieldLast.unicode() < 57) {
-                fieldLast.unicode()++;
-            } else {
-                fieldLast.unicode()--;
-            }
-        } else {
-            if (fieldLast.isUpper()) {
-                fieldLast = fieldLast.toLower();
-            } else {
-                fieldLast = fieldLast.toUpper();
-            }
-        }
+        invalidateToken(fieldValueInvalid[fieldValueInvalid.size() - 2]);
 
         const QByteArray fieldValid   = m_fieldName + '=' + m_fieldValue;
         const QByteArray fieldInvalid = m_fieldName + '=' + fieldValueInvalid.toLatin1();
