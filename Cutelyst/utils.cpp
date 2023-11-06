@@ -362,49 +362,46 @@ std::chrono::microseconds Utils::durationFromString(QStringView str, bool *ok)
             break;
         }
 
-        if (p.second == QLatin1StringView("usec") || p.second == QLatin1StringView("us")) {
+        if (p.second == QLatin1String("usec") || p.second == QLatin1String("us")) {
             ms += std::chrono::microseconds{dur};
-        } else if (p.second == QLatin1StringView("msec") || p.second == QLatin1StringView("ms")) {
+        } else if (p.second == QLatin1String("msec") || p.second == QLatin1String("ms")) {
             ms += std::chrono::milliseconds{dur};
-        } else if (p.second == QLatin1StringView("seconds") ||
-                   p.second == QLatin1StringView("second") ||
-                   p.second == QLatin1StringView("sec") || p.second == QLatin1StringView("s") ||
+        } else if (p.second == QLatin1String("seconds") || p.second == QLatin1String("second") ||
+                   p.second == QLatin1String("sec") || p.second == QLatin1String("s") ||
                    p.second.isEmpty()) {
             ms += std::chrono::seconds{dur};
-        } else if (p.second == QLatin1StringView("minutes") ||
-                   p.second == QLatin1StringView("minute") ||
-                   p.second == QLatin1StringView("min") || p.second == QLatin1StringView("m")) {
+        } else if (p.second == QLatin1String("minutes") || p.second == QLatin1String("minute") ||
+                   p.second == QLatin1String("min") || p.second == QLatin1String("m")) {
             ms += std::chrono::minutes{dur};
-        } else if (p.second == QLatin1StringView("hours") ||
-                   p.second == QLatin1StringView("hour") || p.second == QLatin1StringView("hr") ||
-                   p.second == QLatin1StringView("h")) {
+        } else if (p.second == QLatin1String("hours") || p.second == QLatin1String("hour") ||
+                   p.second == QLatin1String("hr") || p.second == QLatin1String("h")) {
             ms += std::chrono::hours{dur};
 #if __cplusplus > 201703L
-        } else if (p.second == QLatin1StringView("days") || p.second == QLatin1StringView("day") ||
-                   p.second == QLatin1StringView("d")) {
+        } else if (p.second == QLatin1String("days") || p.second == QLatin1String("day") ||
+                   p.second == QLatin1String("d")) {
             ms += std::chrono::days{dur};
-        } else if (p.second == QLatin1StringView("weeks") ||
-                   p.second == QLatin1StringView("week") || p.second == QLatin1StringView("w")) {
+        } else if (p.second == QLatin1String("weeks") || p.second == QLatin1String("week") ||
+                   p.second == QLatin1String("w")) {
             ms += std::chrono::weeks{dur};
-        } else if (p.second == QLatin1StringView("months") ||
-                   p.second == QLatin1StringView("month") || p.second == QLatin1StringView("M")) {
+        } else if (p.second == QLatin1String("months") || p.second == QLatin1String("month") ||
+                   p.second == QLatin1String("M")) {
             ms += std::chrono::months{dur};
-        } else if (p.second == QLatin1StringView("years") ||
-                   p.second == QLatin1StringView("year") || p.second == QLatin1StringView("y")) {
+        } else if (p.second == QLatin1String("years") || p.second == QLatin1String("year") ||
+                   p.second == QLatin1String("y")) {
             ms += std::chrono::years{dur};
         }
 #else
-        } else if (p.second == QLatin1StringView("days") || p.second == QLatin1StringView("day") ||
-                   p.second == QLatin1StringView("d")) {
+        } else if (p.second == QLatin1String("days") || p.second == QLatin1String("day") ||
+                   p.second == QLatin1String("d")) {
             ms += std::chrono::duration<qulonglong, std::ratio<86400>>{dur};
-        } else if (p.second == QLatin1StringView("weeks") ||
-                   p.second == QLatin1StringView("week") || p.second == QLatin1StringView("w")) {
+        } else if (p.second == QLatin1String("weeks") || p.second == QLatin1String("week") ||
+                   p.second == QLatin1String("w")) {
             ms += std::chrono::duration<qulonglong, std::ratio<604800>>{dur};
-        } else if (p.second == QLatin1StringView("months") ||
-                   p.second == QLatin1StringView("month") || p.second == QLatin1StringView("M")) {
+        } else if (p.second == QLatin1String("months") || p.second == QLatin1String("month") ||
+                   p.second == QLatin1String("M")) {
             ms += std::chrono::duration<qulonglong, std::ratio<2629746>>{dur};
-        } else if (p.second == QLatin1StringView("years") ||
-                   p.second == QLatin1StringView("year") || p.second == QLatin1StringView("y")) {
+        } else if (p.second == QLatin1String("years") || p.second == QLatin1String("year") ||
+                   p.second == QLatin1String("y")) {
             ms += std::chrono::duration<qulonglong, std::ratio<31556952>>{dur};
         }
 #endif
