@@ -288,16 +288,14 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
     }
 }
 
-std::chrono::microseconds Utils::durationFromString(const QString &str, bool *ok)
+std::chrono::microseconds Utils::durationFromString(QStringView str, bool *ok)
 {
-    const QByteArray ba = str.simplified().toLatin1();
-
-    QList<std::pair<QByteArray, QByteArray>> parts;
-    QByteArray digitPart;
-    QByteArray unitPart;
+    QList<std::pair<QString, QString>> parts;
+    QString digitPart;
+    QString unitPart;
     bool valid = true;
-    for (const char ch : ba) {
-        if (ch >= '0' && ch <= '9') {
+    for (const QChar ch : str) {
+        if (ch >= QLatin1Char('0') && ch <= QLatin1Char('9')) {
             // NOLINTNEXTLINE(bugprone-branch-clone)
             if (digitPart.isEmpty() && unitPart.isEmpty()) {
                 // we are at the beginning of a new part
@@ -316,14 +314,14 @@ std::chrono::microseconds Utils::durationFromString(const QString &str, bool *ok
                 unitPart.clear();
                 digitPart.append(ch);
             }
-        } else if ((ch >= 'a' && ch <= 'z') || ch == 'M') {
+        } else if ((ch >= QLatin1Char('a') && ch <= QLatin1Char('z')) || ch == QLatin1Char('M')) {
             // NOLINTNEXTLINE(bugprone-branch-clone)
             if (digitPart.isEmpty() && unitPart.isEmpty()) {
                 // something is wrong with a digitless unit
                 valid = false;
                 break;
             } else if (digitPart.isEmpty() && !unitPart.isEmpty()) {
-                // it should not be possible to be herer
+                // it should not be possible to be here
                 valid = false;
                 break;
             } else if (!digitPart.isEmpty() && unitPart.isEmpty()) {
@@ -356,7 +354,7 @@ std::chrono::microseconds Utils::durationFromString(const QString &str, bool *ok
 
     std::chrono::microseconds ms = std::chrono::microseconds::zero();
 
-    for (const std::pair<QByteArray, QByteArray> &p : parts) {
+    for (const std::pair<QString, QString> &p : parts) {
         bool _ok             = false;
         const qulonglong dur = p.first.toULongLong(&_ok);
         if (!_ok) {
@@ -364,37 +362,49 @@ std::chrono::microseconds Utils::durationFromString(const QString &str, bool *ok
             break;
         }
 
-        const QByteArray unit = p.second;
-
-        if (unit == "usec" || unit == "us") {
+        if (p.second == QLatin1StringView("usec") || p.second == QLatin1StringView("us")) {
             ms += std::chrono::microseconds{dur};
-        } else if (unit == "msec" || unit == "ms") {
+        } else if (p.second == QLatin1StringView("msec") || p.second == QLatin1StringView("ms")) {
             ms += std::chrono::milliseconds{dur};
-        } else if (unit == "seconds" || unit == "second" || unit == "sec" || unit == "s" ||
-                   unit.isEmpty()) {
+        } else if (p.second == QLatin1StringView("seconds") ||
+                   p.second == QLatin1StringView("second") ||
+                   p.second == QLatin1StringView("sec") || p.second == QLatin1StringView("s") ||
+                   p.second.isEmpty()) {
             ms += std::chrono::seconds{dur};
-        } else if (unit == "minutes" || unit == "minute" || unit == "min" || unit == "m") {
+        } else if (p.second == QLatin1StringView("minutes") ||
+                   p.second == QLatin1StringView("minute") ||
+                   p.second == QLatin1StringView("min") || p.second == QLatin1StringView("m")) {
             ms += std::chrono::minutes{dur};
-        } else if (unit == "hours" || unit == "hour" || unit == "hr" || unit == "h") {
+        } else if (p.second == QLatin1StringView("hours") ||
+                   p.second == QLatin1StringView("hour") || p.second == QLatin1StringView("hr") ||
+                   p.second == QLatin1StringView("h")) {
             ms += std::chrono::hours{dur};
 #if __cplusplus > 201703L
-        } else if (unit == "days" || unit == "day" || unit == "d") {
+        } else if (p.second == QLatin1StringView("days") || p.second == QLatin1StringView("day") ||
+                   p.second == QLatin1StringView("d")) {
             ms += std::chrono::days{dur};
-        } else if (unit == "weeks" || unit == "week" || unit == "w") {
+        } else if (p.second == QLatin1StringView("weeks") ||
+                   p.second == QLatin1StringView("week") || p.second == QLatin1StringView("w")) {
             ms += std::chrono::weeks{dur};
-        } else if (unit == "months" || unit == "month" || unit == "M") {
+        } else if (p.second == QLatin1StringView("months") ||
+                   p.second == QLatin1StringView("month") || p.second == QLatin1StringView("M")) {
             ms += std::chrono::months{dur};
-        } else if (unit == "years" || unit == "year" || unit == "y") {
+        } else if (p.second == QLatin1StringView("years") ||
+                   p.second == QLatin1StringView("year") || p.second == QLatin1StringView("y")) {
             ms += std::chrono::years{dur};
         }
 #else
-        } else if (unit == "days" || unit == "day" || unit == "d") {
+        } else if (p.second == QLatin1StringView("days") || p.second == QLatin1StringView("day") ||
+                   p.second == QLatin1StringView("d")) {
             ms += std::chrono::duration<qulonglong, std::ratio<86400>>{dur};
-        } else if (unit == "weeks" || unit == "week" || unit == "w") {
+        } else if (p.second == QLatin1StringView("weeks") ||
+                   p.second == QLatin1StringView("week") || p.second == QLatin1StringView("w")) {
             ms += std::chrono::duration<qulonglong, std::ratio<604800>>{dur};
-        } else if (unit == "months" || unit == "month" || unit == "M") {
+        } else if (p.second == QLatin1StringView("months") ||
+                   p.second == QLatin1StringView("month") || p.second == QLatin1StringView("M")) {
             ms += std::chrono::duration<qulonglong, std::ratio<2629746>>{dur};
-        } else if (unit == "years" || unit == "year" || unit == "y") {
+        } else if (p.second == QLatin1StringView("years") ||
+                   p.second == QLatin1StringView("year") || p.second == QLatin1StringView("y")) {
             ms += std::chrono::duration<qulonglong, std::ratio<31556952>>{dur};
         }
 #endif
