@@ -316,7 +316,7 @@ std::chrono::microseconds Utils::durationFromString(const QString &str, bool *ok
                 unitPart.clear();
                 digitPart.append(ch);
             }
-        } else if (ch >= 'a' && ch <= 'z' || ch == 'M') {
+        } else if ((ch >= 'a' && ch <= 'z') || ch == 'M') {
             // NOLINTNEXTLINE(bugprone-branch-clone)
             if (digitPart.isEmpty() && unitPart.isEmpty()) {
                 // something is wrong with a digitless unit
