@@ -13,7 +13,7 @@ set(QT_VERSION_MAJOR 6)
 # TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
 find_package(Qt${QT_VERSION_MAJOR} 6.2 COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
-set(CUTELYST_API_LEVEL "3")
+set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)
