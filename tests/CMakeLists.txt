@@ -71,3 +71,4 @@ cute_test(testlangselectmanual Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MA
 if (PLUGIN_CSRFPROTECTION)
     cute_test(testcsrfprotection Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::CSRFProtection "" "")
 endif(PLUGIN_CSRFPROTECTION)
+cute_test(testutils "" "" "")

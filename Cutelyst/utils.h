@@ -6,6 +6,7 @@
 
 #include <Cutelyst/ParamsMultiMap>
 #include <Cutelyst/cutelyst_global.h>
+#include <chrono>
 
 #include <QtCore/QStringList>
 
@@ -21,6 +22,9 @@ CUTELYST_LIBRARY QString decodePercentEncoding(QString *s);
 CUTELYST_LIBRARY ParamsMultiMap decodePercentEncoding(char *data, int len);
 
 CUTELYST_LIBRARY QString decodePercentEncoding(QByteArray *ba);
+
+CUTELYST_LIBRARY std::chrono::microseconds durationFromString(const QString &str,
+                                                              bool *ok = nullptr);
 } // namespace Utils
 
 } // namespace Cutelyst

@@ -4,6 +4,7 @@
  */
 #include "utils.h"
 
+#include <QDebug>
 #include <QTextStream>
 #include <QVector>
 
@@ -286,4 +287,134 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
     } else {
         return QString::fromUtf8(ba->data(), outlen);
     }
+}
+
+std::chrono::microseconds Utils::durationFromString(const QString &str, bool *ok)
+{
+    const QByteArray ba = str.simplified().toLatin1();
+
+    QList<std::pair<QByteArray, QByteArray>> parts;
+    QByteArray digitPart;
+    QByteArray unitPart;
+    bool valid = true;
+    for (const char ch : ba) {
+        if (ch >= '0' && ch <= '9') {
+            // NOLINTNEXTLINE(bugprone-branch-clone)
+            if (digitPart.isEmpty() && unitPart.isEmpty()) {
+                // we are at the beginning of a new part
+                digitPart.append(ch);
+            } else if (digitPart.isEmpty() && !unitPart.isEmpty()) {
+                // wrong order
+                valid = false;
+                break;
+            } else if (!digitPart.isEmpty() && unitPart.isEmpty()) {
+                // we are still in the digit part
+                digitPart.append(ch);
+            } else if (!digitPart.isEmpty() && !unitPart.isEmpty()) {
+                // we start a new part
+                parts.emplace_back(digitPart, unitPart);
+                digitPart.clear();
+                unitPart.clear();
+                digitPart.append(ch);
+            }
+        } else if (ch >= 'a' && ch <= 'z' || ch == 'M') {
+            // NOLINTNEXTLINE(bugprone-branch-clone)
+            if (digitPart.isEmpty() && unitPart.isEmpty()) {
+                // something is wrong with a digitless unit
+                valid = false;
+                break;
+            } else if (digitPart.isEmpty() && !unitPart.isEmpty()) {
+                // it should not be possible to be herer
+                valid = false;
+                break;
+            } else if (!digitPart.isEmpty() && unitPart.isEmpty()) {
+                // we start adding the unit
+                unitPart.append(ch);
+            } else if (!digitPart.isEmpty() && !unitPart.isEmpty()) {
+                // normal operation
+                unitPart.append(ch);
+            }
+        }
+    }
+
+    if (!valid) {
+        if (ok) {
+            *ok = false;
+        }
+        return std::chrono::microseconds::zero();
+    }
+
+    if (!digitPart.isEmpty()) {
+        parts.emplace_back(digitPart, unitPart);
+    }
+
+    if (parts.empty()) {
+        if (ok) {
+            *ok = false;
+        }
+        return std::chrono::microseconds::zero();
+    }
+
+    std::chrono::microseconds ms = std::chrono::microseconds::zero();
+
+    for (const std::pair<QByteArray, QByteArray> &p : parts) {
+        bool _ok             = false;
+        const qulonglong dur = p.first.toULongLong(&_ok);
+        if (!_ok) {
+            valid = false;
+            break;
+        }
+
+        const QByteArray unit = p.second;
+
+        if (unit == "usec" || unit == "us") {
+            ms += std::chrono::microseconds{dur};
+        } else if (unit == "msec" || unit == "ms") {
+            ms += std::chrono::milliseconds{dur};
+        } else if (unit == "seconds" || unit == "second" || unit == "sec" || unit == "s" ||
+                   unit.isEmpty()) {
+            ms += std::chrono::seconds{dur};
+        } else if (unit == "minutes" || unit == "minute" || unit == "min" || unit == "m") {
+            ms += std::chrono::minutes{dur};
+        } else if (unit == "hours" || unit == "hour" || unit == "hr" || unit == "h") {
+            ms += std::chrono::hours{dur};
+#if __cplusplus > 201703L
+        } else if (unit == "days" || unit == "day" || unit == "d") {
+            ms += std::chrono::days{dur};
+        } else if (unit == "weeks" || unit == "week" || unit == "w") {
+            ms += std::chrono::weeks{dur};
+        } else if (unit == "months" || unit == "month" || unit == "M") {
+            ms += std::chrono::months{dur};
+        } else if (unit == "years" || unit == "year" || unit == "y") {
+            ms += std::chrono::years{dur};
+        }
+#else
+        } else if (unit == "days" || unit == "day" || unit == "d") {
+            ms += std::chrono::duration<qulonglong, std::ratio<86400>>{dur};
+        } else if (unit == "weeks" || unit == "week" || unit == "w") {
+            ms += std::chrono::duration<qulonglong, std::ratio<604800>>{dur};
+        } else if (unit == "months" || unit == "month" || unit == "M") {
+            ms += std::chrono::duration<qulonglong, std::ratio<2629746>>{dur};
+        } else if (unit == "years" || unit == "year" || unit == "y") {
+            ms += std::chrono::duration<qulonglong, std::ratio<31556952>>{dur};
+        }
+#endif
+        else {
+            valid = false;
+            break;
+        }
+    }
+
+    if (!valid) {
+        if (ok) {
+            *ok = false;
+        }
+        return std::chrono::microseconds::zero();
+    }
+
+    if (ok) {
+        *ok = true;
+    }
+
+    return ms;
 }
