@@ -1,11 +1,11 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=@CMAKE_INSTALL_LIBDIR@
-includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt5
+includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 
-Name: Cutelyst Qt5 CSRF Protection Plugin
+Name: Cutelyst Qt@QT_VERSION_MAJOR@ CSRF Protection Plugin
 Description: Cutelyst CSRF Protection plugin
 Version: @PROJECT_VERSION@
-Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Session
-Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection
+Requires: Qt@QT_VERSION_MAJOR@Core Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Core Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Session
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection
 Cflags: -I${includedir}/Cutelyst -I${includedir}
