@@ -41,7 +41,6 @@ void Action::setController(Controller *controller)
 {
     Q_D(Action);
     d->controller = controller;
-    d->className  = QString::fromLatin1(controller->metaObject()->className());
 }
 
 void Action::setupAction(const QVariantHash &args, Application *app)
@@ -87,7 +86,7 @@ void Action::setAttributes(const ParamsMultiMap &attributes)
 QString Action::className() const noexcept
 {
     Q_D(const Action);
-    return d->className;
+    return d->controller->objectName();
 }
 
 Controller *Action::controller() const noexcept

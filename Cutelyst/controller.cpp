@@ -75,6 +75,8 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
 {
     Q_Q(Controller);
 
+    q->setObjectName(QString::fromLatin1(q->metaObject()->className()));
+
     dispatcher  = _dispatcher;
     application = app;
 
