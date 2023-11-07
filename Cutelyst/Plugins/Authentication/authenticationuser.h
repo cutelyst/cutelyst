@@ -33,7 +33,7 @@ public:
     /**
      * A unique ID by which a AuthenticationUser can be retrieved from the store.
      */
-    QVariant id() const;
+    [[nodiscard]] QVariant id() const;
 
     /*!
      * Sets the unique user id restored from the store
@@ -43,25 +43,26 @@ public:
     /*!
      * Returns true if the object is null
      */
-    bool isNull() const;
+    [[nodiscard]] bool isNull() const;
 
     /*!
      * Returns the authentication realm from which this user was retrieved
      */
-    QString authRealm();
+    [[nodiscard]] QString authRealm();
 
     /*!
      * Sets the authentication realm from which this user was retrieved
      */
     void setAuthRealm(const QString &authRealm);
 
-    inline QVariantMap data() const;
+    [[nodiscard]] inline QVariantMap data() const;
 
     inline void setData(const QVariantMap &data);
 
     inline void insert(const QString &key, const QVariant &value);
 
-    inline QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    [[nodiscard]] inline QVariant value(const QString &key,
+                                        const QVariant &defaultValue = QVariant()) const;
 
     inline operator QVariant() const { return QVariant::fromValue(m_data); }
 

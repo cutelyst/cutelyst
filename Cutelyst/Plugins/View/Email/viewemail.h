@@ -52,7 +52,7 @@ public:
     /**
      * Returns the stash key that will contain the email data
      */
-    QString stashKey() const;
+    [[nodiscard]] QString stashKey() const;
 
     /**
      * Defines the stash key that will contain the email data
@@ -62,7 +62,7 @@ public:
     /**
      * Returns the default content type (mime type).
      */
-    QByteArray defaultContentType() const;
+    [[nodiscard]] QByteArray defaultContentType() const;
 
     /**
      * Defines the default content type (mime type).
@@ -73,7 +73,7 @@ public:
      * Returns the default charset for every MIME part with the
      * content type text.
      */
-    QByteArray defaultCharset() const;
+    [[nodiscard]] QByteArray defaultCharset() const;
 
     /**
      * Defines the default charset for every MIME part with the
@@ -88,7 +88,7 @@ public:
     /**
      * Returns the default encoding set
      */
-    QByteArray defaultEncoding() const;
+    [[nodiscard]] QByteArray defaultEncoding() const;
 
     /**
      * Defines the default encoding to be used when sending mails
@@ -98,7 +98,7 @@ public:
     /**
      * Returns the hostname of the SMTP server
      */
-    QString senderHost() const;
+    [[nodiscard]] QString senderHost() const;
 
     /**
      * Defines the hostname of the SMTP server
@@ -108,7 +108,7 @@ public:
     /**
      * Returns the port of the SMTP server
      */
-    int senderPort() const;
+    [[nodiscard]] int senderPort() const;
 
     /**
      * Defines the port of the SMTP server
@@ -118,7 +118,7 @@ public:
     /**
      * Defines the connection type of the SMTP server
      */
-    ConnectionType senderConnectionType() const;
+    [[nodiscard]] ConnectionType senderConnectionType() const;
 
     /**
      * Returns the username that will authenticate on the SMTP server
@@ -128,7 +128,7 @@ public:
     /**
      * Returns the authenticaion method of the SMTP server
      */
-    AuthMethod senderAuthMethod() const;
+    [[nodiscard]] AuthMethod senderAuthMethod() const;
 
     /**
      * Defines the authenticaion method of the SMTP server
@@ -138,7 +138,7 @@ public:
     /**
      * Returns the username that will authenticate on the SMTP server
      */
-    QString senderUser() const;
+    [[nodiscard]] QString senderUser() const;
 
     /**
      * Defines the username that will authenticate on the SMTP server
@@ -148,7 +148,7 @@ public:
     /**
      * Returns the password that will authenticate on the SMTP server
      */
-    QString senderPassword() const;
+    [[nodiscard]] QString senderPassword() const;
 
     /**
      * Defines the password that will authenticate on the SMTP server
@@ -158,7 +158,7 @@ public:
     /**
      * Returns true if async mode is on.
      */
-    bool async() const;
+    [[nodiscard]] bool async() const;
 
     /**
      * Enable sending mails in async mode, it will use SimpleMail::Server class,
@@ -169,7 +169,7 @@ public:
     /**
      * Renders the EMail
      */
-    virtual QByteArray render(Context *c) const override;
+    QByteArray render(Context *c) const override;
 
 protected:
     /*!

@@ -49,7 +49,7 @@ StatusMessage::~StatusMessage()
     delete d_ptr;
 }
 
-QString StatusMessage::sessionPrefix() const
+QString StatusMessage::sessionPrefix() const noexcept
 {
     Q_D(const StatusMessage);
     return d->sessionPrefix;
@@ -61,7 +61,7 @@ void StatusMessage::setSessionPrefix(const QString &sessionPrefix)
     d->sessionPrefix = sessionPrefix;
 }
 
-QString StatusMessage::tokenParam() const
+QString StatusMessage::tokenParam() const noexcept
 {
     Q_D(const StatusMessage);
     return d->tokenParam;
@@ -73,7 +73,7 @@ void StatusMessage::setTokenParam(const QString &tokenParam)
     d->tokenParam = tokenParam;
 }
 
-QString StatusMessage::statusMsgStashKey() const
+QString StatusMessage::statusMsgStashKey() const noexcept
 {
     Q_D(const StatusMessage);
     return d->statusMsgStashKey;
@@ -85,7 +85,7 @@ void StatusMessage::setStatusMsgStashKey(const QString &statusMsgStashKey)
     d->statusMsgStashKey = statusMsgStashKey;
 }
 
-QString StatusMessage::errorMgStashKey() const
+QString StatusMessage::errorMgStashKey() const noexcept
 {
     Q_D(const StatusMessage);
     return d->errorMsgStashKey;
@@ -111,14 +111,14 @@ void StatusMessage::load(Context *c)
     }
 
     QStringList deleteKeys;
-    const QString statusKey    = priv->sessionPrefix + QLatin1String("status") + token;
+    const QString statusKey    = priv->sessionPrefix + u"status" + token;
     const QVariant statusValue = Session::value(c, statusKey);
     if (!statusValue.isNull()) {
         deleteKeys.append(statusKey);
         c->setStash(priv->statusMsgStashKey, statusValue);
     }
 
-    const QString errorKey    = priv->sessionPrefix + QLatin1String("error") + token;
+    const QString errorKey    = priv->sessionPrefix + u"error" + token;
     const QVariant errorValue = Session::value(c, errorKey);
     if (!errorValue.isNull()) {
         deleteKeys.append(errorKey);
@@ -145,7 +145,7 @@ QString StatusMessage::error(Context *c, const QString &msg)
     }
 
     token = createToken();
-    Session::setValue(c, m_instance->d_ptr->sessionPrefix + QLatin1String("error") + token, msg);
+    Session::setValue(c, m_instance->d_ptr->sessionPrefix + u"error" + token, msg);
     return token;
 }
 
@@ -159,7 +159,7 @@ ParamsMultiMap StatusMessage::errorQuery(Context *c, const QString &msg, ParamsM
     StatusMessagePrivate *priv = m_instance->d_ptr;
 
     const QString token = createToken();
-    Session::setValue(c, priv->sessionPrefix + QLatin1String("error") + token, msg);
+    Session::setValue(c, priv->sessionPrefix + u"error" + token, msg);
     map.insert(priv->tokenParam, token);
     return map;
 }
@@ -173,7 +173,7 @@ QString StatusMessage::status(Context *c, const QString &msg)
     }
 
     token = createToken();
-    Session::setValue(c, m_instance->d_ptr->sessionPrefix + QLatin1String("status") + token, msg);
+    Session::setValue(c, m_instance->d_ptr->sessionPrefix + u"status" + token, msg);
     return token;
 }
 
@@ -187,7 +187,7 @@ ParamsMultiMap StatusMessage::statusQuery(Context *c, const QString &msg, Params
     StatusMessagePrivate *priv = m_instance->d_ptr;
 
     const QString token = createToken();
-    Session::setValue(c, priv->sessionPrefix + QLatin1String("status") + token, msg);
+    Session::setValue(c, priv->sessionPrefix + u"status" + token, msg);
     map.insert(priv->tokenParam, token);
     return map;
 }

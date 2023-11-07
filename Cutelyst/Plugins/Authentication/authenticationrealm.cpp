@@ -17,15 +17,14 @@ Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm", QtWarni
 #define SESSION_AUTHENTICATION_USER "__authentication_user"
 #define SESSION_AUTHENTICATION_USER_REALM "__authentication_user_realm" // in authentication.cpp
 
-AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store,
-                                         AuthenticationCredential *credential,
+AuthenticationRealm::AuthenticationRealm(std::shared_ptr<AuthenticationStore> store,
+                                         std::shared_ptr<AuthenticationCredential> credential,
                                          const QString &name,
                                          QObject *parent)
     : Component(parent)
     , m_store(store)
     , m_credential(credential)
 {
-    m_store->setParent(this);
     m_credential->setParent(this);
     setObjectName(name);
     setName(name);
@@ -35,12 +34,12 @@ AuthenticationRealm::~AuthenticationRealm()
 {
 }
 
-AuthenticationStore *AuthenticationRealm::store() const
+std::shared_ptr<AuthenticationStore> AuthenticationRealm::store() const noexcept
 {
     return m_store;
 }
 
-AuthenticationCredential *AuthenticationRealm::credential() const
+std::shared_ptr<AuthenticationCredential> AuthenticationRealm::credential() const noexcept
 {
     return m_credential;
 }

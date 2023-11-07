@@ -26,7 +26,7 @@ public:
     /**
      * Returns the key prefix inside Session where messages will be stored.
      */
-    QString sessionPrefix() const;
+    [[nodiscard]] QString sessionPrefix() const noexcept;
 
     /**
      * Sets the key prefix inside Session where messages will be stored. Defaults to "status_msg".
@@ -37,7 +37,7 @@ public:
      * Returns the name of the URL param that holds the token on the page where you want to
      * retrieve/display the status message.
      */
-    QString tokenParam() const;
+    [[nodiscard]] QString tokenParam() const noexcept;
 
     /**
      * Sets the name of the URL param that holds the token on the page where you want to
@@ -49,7 +49,7 @@ public:
      * Returns the name of the stash key where "success" status messages are loaded when load() is
      * called. Defaults to status_msg.
      */
-    QString statusMsgStashKey() const;
+    [[nodiscard]] QString statusMsgStashKey() const noexcept;
 
     /**
      * Sets the name of the stash key where "success" status messages are loaded when load() is
@@ -60,7 +60,7 @@ public:
     /**
      * Returns the name of the stash key where error messages are loaded when load() is called.
      */
-    QString errorMgStashKey() const;
+    [[nodiscard]] QString errorMgStashKey() const noexcept;
 
     /**
      * Sets the name of the stash key where error messages are loaded when load() is called.
@@ -77,26 +77,26 @@ public:
     /**
      * Saves an error message returning the generated message id (mid)
      */
-    static QString error(Context *c, const QString &msg);
+    [[nodiscard]] static QString error(Context *c, const QString &msg);
 
     /**
      * Saves an error message returning query parameters with the generated message id (mid) and
      * it's token
      */
-    static ParamsMultiMap
-        errorQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
+    [[nodiscard]] static ParamsMultiMap
+        errorQuery(Context *c, const QString &msg, ParamsMultiMap query = {});
 
     /**
      * Saves a status message returning the generated message id (mid)
      */
-    static QString status(Context *c, const QString &msg);
+    [[nodiscard]] static QString status(Context *c, const QString &msg);
 
     /**
      * Saves an status message returning query parameters with the generated message id (mid) and
      * it's token
      */
-    static ParamsMultiMap
-        statusQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
+    [[nodiscard]] static ParamsMultiMap
+        statusQuery(Context *c, const QString &msg, ParamsMultiMap query = {});
 
 protected:
     /**

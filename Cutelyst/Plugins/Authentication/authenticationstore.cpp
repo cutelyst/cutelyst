@@ -8,8 +8,7 @@
 
 using namespace Cutelyst;
 
-AuthenticationStore::AuthenticationStore(QObject *parent)
-    : QObject(parent)
+AuthenticationStore::AuthenticationStore()
 {
 }
 
@@ -54,5 +53,3 @@ AuthenticationUser AuthenticationStore::fromSession(Context *c, const QVariant &
     Q_UNUSED(c)
     return frozenUser.value<AuthenticationUser>();
 }
-
-#include "moc_authenticationstore.cpp"

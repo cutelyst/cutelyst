@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2016-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYSTSERVER_H
-#define CUTELYSTSERVER_H
+#pragma once
 
 #include <Cutelyst/cutelyst_global.h>
 
@@ -87,7 +86,7 @@ public:
      */
     Q_PROPERTY(QString application READ application WRITE setApplication NOTIFY changed)
     void setApplication(const QString &application);
-    QString application() const;
+    [[nodiscard]] QString application() const;
 
     /**
      * Defines the number of threads to use, if set to "auto" the ideal thread count is used
@@ -103,7 +102,7 @@ public:
      */
     Q_PROPERTY(QString threads READ threads WRITE setThreads NOTIFY changed)
     void setThreads(const QString &threads);
-    QString threads() const;
+    [[nodiscard]] QString threads() const;
 
     /**
      * Defines the number of processes to use, if set to "auto" the ideal processes count is used
@@ -112,7 +111,7 @@ public:
      */
     Q_PROPERTY(QString processes READ processes WRITE setProcesses NOTIFY changed)
     void setProcesses(const QString &process);
-    QString processes() const;
+    [[nodiscard]] QString processes() const;
 
     /**
      * Defines directory to chdir to before application loading
@@ -120,7 +119,7 @@ public:
      */
     Q_PROPERTY(QString chdir READ chdir WRITE setChdir NOTIFY changed)
     void setChdir(const QString &chdir);
-    QString chdir() const;
+    [[nodiscard]] QString chdir() const;
 
     /**
      * Defines how an HTTP socket should be binded
@@ -128,7 +127,7 @@ public:
      */
     Q_PROPERTY(QStringList http_socket READ httpSocket WRITE setHttpSocket NOTIFY changed)
     void setHttpSocket(const QStringList &httpSocket);
-    QStringList httpSocket() const;
+    [[nodiscard]] QStringList httpSocket() const;
 
     /**
      * Defines how an HTTP2 socket should be binded
@@ -136,7 +135,7 @@ public:
      */
     Q_PROPERTY(QStringList http2_socket READ http2Socket WRITE setHttp2Socket NOTIFY changed)
     void setHttp2Socket(const QStringList &http2Socket);
-    QStringList http2Socket() const;
+    [[nodiscard]] QStringList http2Socket() const;
 
     /**
      * Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
@@ -145,7 +144,7 @@ public:
     Q_PROPERTY(quint32 http2_header_table_size READ http2HeaderTableSize WRITE
                    setHttp2HeaderTableSize NOTIFY changed)
     void setHttp2HeaderTableSize(quint32 headerTableSize);
-    quint32 http2HeaderTableSize() const;
+    [[nodiscard]] quint32 http2HeaderTableSize() const;
 
     /**
      * Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text)
@@ -154,7 +153,7 @@ public:
      */
     Q_PROPERTY(bool upgrade_h2c READ upgradeH2c WRITE setUpgradeH2c NOTIFY changed)
     void setUpgradeH2c(bool enable);
-    bool upgradeH2c() const;
+    [[nodiscard]] bool upgradeH2c() const;
 
     /**
      * Defines if HTTPS sockect should use ALPN to negotiate HTTP/2
@@ -163,7 +162,7 @@ public:
      */
     Q_PROPERTY(bool https_h2 READ httpsH2 WRITE setHttpsH2 NOTIFY changed)
     void setHttpsH2(bool enable);
-    bool httpsH2() const;
+    [[nodiscard]] bool httpsH2() const;
 
     /**
      * Defines how an HTTPS socket should be binded
@@ -171,7 +170,7 @@ public:
      */
     Q_PROPERTY(QStringList https_socket READ httpsSocket WRITE setHttpsSocket NOTIFY changed)
     void setHttpsSocket(const QStringList &httpsSocket);
-    QStringList httpsSocket() const;
+    [[nodiscard]] QStringList httpsSocket() const;
 
     /**
      * Defines how an FastCGI socket should be binded
@@ -179,7 +178,7 @@ public:
      */
     Q_PROPERTY(QStringList fastcgi_socket READ fastcgiSocket WRITE setFastcgiSocket NOTIFY changed)
     void setFastcgiSocket(const QStringList &fastcgiSocket);
-    QStringList fastcgiSocket() const;
+    [[nodiscard]] QStringList fastcgiSocket() const;
 
     /**
      * Defines the file permissions of a local socket, u = user, g = group, o = others
@@ -187,7 +186,7 @@ public:
      */
     Q_PROPERTY(QString socket_access READ socketAccess WRITE setSocketAccess NOTIFY changed)
     void setSocketAccess(const QString &socketAccess);
-    QString socketAccess() const;
+    [[nodiscard]] QString socketAccess() const;
 
     /**
      * Defines set internal socket timeout
@@ -195,7 +194,7 @@ public:
      */
     Q_PROPERTY(int socket_timeout READ socketTimeout WRITE setSocketTimeout NOTIFY changed)
     void setSocketTimeout(int timeout);
-    int socketTimeout() const;
+    [[nodiscard]] int socketTimeout() const;
 
     /**
      * Defines directory to chdir to after application loading
@@ -203,7 +202,7 @@ public:
      */
     Q_PROPERTY(QString chdir2 READ chdir2 WRITE setChdir2 NOTIFY changed)
     void setChdir2(const QString &chdir2);
-    QString chdir2() const;
+    [[nodiscard]] QString chdir2() const;
 
     /**
      * Load config from ini file
@@ -211,7 +210,7 @@ public:
      */
     Q_PROPERTY(QStringList ini READ ini WRITE setIni NOTIFY changed)
     void setIni(const QStringList &files);
-    QStringList ini() const;
+    [[nodiscard]] QStringList ini() const;
 
     /**
      * Load config from JSON file
@@ -219,7 +218,7 @@ public:
      */
     Q_PROPERTY(QStringList json READ json WRITE setJson NOTIFY changed)
     void setJson(const QStringList &files);
-    QStringList json() const;
+    [[nodiscard]] QStringList json() const;
 
     /**
      * Map the mountpoint to static directory (or file)
@@ -227,7 +226,7 @@ public:
      */
     Q_PROPERTY(QStringList static_map READ staticMap WRITE setStaticMap NOTIFY changed)
     void setStaticMap(const QStringList &staticMap);
-    QStringList staticMap() const;
+    [[nodiscard]] QStringList staticMap() const;
 
     /**
      * Map the mountpoint to static directory (or file), completely appending the requested resource
@@ -236,7 +235,7 @@ public:
      */
     Q_PROPERTY(QStringList static_map2 READ staticMap2 WRITE setStaticMap2 NOTIFY changed)
     void setStaticMap2(const QStringList &staticMap);
-    QStringList staticMap2() const;
+    [[nodiscard]] QStringList staticMap2() const;
 
     /**
      * Defines if a master process should be created to watch for it's
@@ -245,7 +244,7 @@ public:
      */
     Q_PROPERTY(bool master READ master WRITE setMaster NOTIFY changed)
     void setMaster(bool enable);
-    bool master() const;
+    [[nodiscard]] bool master() const;
 
     /**
      * Reload application if the application file is modified or touched
@@ -253,7 +252,7 @@ public:
      */
     Q_PROPERTY(bool auto_reload READ autoReload WRITE setAutoReload NOTIFY changed)
     void setAutoReload(bool enable);
-    bool autoReload() const;
+    [[nodiscard]] bool autoReload() const;
 
     /**
      * Reload application if the specified file is modified or touched
@@ -261,7 +260,7 @@ public:
      */
     Q_PROPERTY(QStringList touch_reload READ touchReload WRITE setTouchReload NOTIFY changed)
     void setTouchReload(const QStringList &files);
-    QStringList touchReload() const;
+    [[nodiscard]] QStringList touchReload() const;
 
     /**
      * Defines the socket listen queue size.
@@ -271,7 +270,7 @@ public:
      */
     Q_PROPERTY(int listen READ listenQueue WRITE setListenQueue NOTIFY changed)
     void setListenQueue(int size);
-    int listenQueue() const;
+    [[nodiscard]] int listenQueue() const;
 
     /**
      * Defines the buffer size used when parsing requests
@@ -279,7 +278,7 @@ public:
      */
     Q_PROPERTY(int buffer_size READ bufferSize WRITE setBufferSize NOTIFY changed)
     void setBufferSize(int size);
-    int bufferSize() const;
+    [[nodiscard]] int bufferSize() const;
 
     /**
      * Defines the maximum buffer size of POST request, if a request has a content length
@@ -288,7 +287,7 @@ public:
      */
     Q_PROPERTY(qint64 post_buffering READ postBuffering WRITE setPostBuffering NOTIFY changed)
     void setPostBuffering(qint64 size);
-    qint64 postBuffering() const;
+    [[nodiscard]] qint64 postBuffering() const;
 
     /**
      * Defines the buffer size when reading a POST request
@@ -297,7 +296,7 @@ public:
     Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize
                    NOTIFY changed)
     void setPostBufferingBufsize(qint64 size);
-    qint64 postBufferingBufsize() const;
+    [[nodiscard]] qint64 postBufferingBufsize() const;
 
     /**
      * Enable TCP NODELAY on each request
@@ -305,7 +304,7 @@ public:
      */
     Q_PROPERTY(bool tcp_nodelay READ tcpNodelay WRITE setTcpNodelay NOTIFY changed)
     void setTcpNodelay(bool enable);
-    bool tcpNodelay() const;
+    [[nodiscard]] bool tcpNodelay() const;
 
     /**
      * Enable SO_KEEPALIVE for the sockets
@@ -313,7 +312,7 @@ public:
      */
     Q_PROPERTY(bool so_keepalive READ soKeepalive WRITE setSoKeepalive NOTIFY changed)
     void setSoKeepalive(bool enable);
-    bool soKeepalive() const;
+    [[nodiscard]] bool soKeepalive() const;
 
     /**
      * Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket
@@ -322,7 +321,7 @@ public:
      */
     Q_PROPERTY(int socket_sndbuf READ socketSndbuf WRITE setSocketSndbuf NOTIFY changed)
     void setSocketSndbuf(int value);
-    int socketSndbuf() const;
+    [[nodiscard]] int socketSndbuf() const;
 
     /**
      * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF
@@ -331,7 +330,7 @@ public:
      */
     Q_PROPERTY(int socket_rcvbuf READ socketRcvbuf WRITE setSocketRcvbuf NOTIFY changed)
     void setSocketRcvbuf(int value);
-    int socketRcvbuf() const;
+    [[nodiscard]] int socketRcvbuf() const;
 
     /**
      * Sets the maximum allowed size of websocket messages (in Kbytes, default 1024)
@@ -340,7 +339,7 @@ public:
     Q_PROPERTY(
         int websocket_max_size READ websocketMaxSize WRITE setWebsocketMaxSize NOTIFY changed)
     void setWebsocketMaxSize(int value);
-    int websocketMaxSize() const;
+    [[nodiscard]] int websocketMaxSize() const;
 
     /**
      * Defines the pid file to be written before privileges drop
@@ -348,7 +347,7 @@ public:
      */
     Q_PROPERTY(QString pidfile READ pidfile WRITE setPidfile NOTIFY changed)
     void setPidfile(const QString &file);
-    QString pidfile() const;
+    [[nodiscard]] QString pidfile() const;
 
     /**
      * Defines the pid file to be written before privileges drop
@@ -356,7 +355,7 @@ public:
      */
     Q_PROPERTY(QString pidfile2 READ pidfile2 WRITE setPidfile2 NOTIFY changed)
     void setPidfile2(const QString &file);
-    QString pidfile2() const;
+    [[nodiscard]] QString pidfile2() const;
 
     /**
      * Defines user id of the process.
@@ -365,7 +364,7 @@ public:
      */
     Q_PROPERTY(QString uid READ uid WRITE setUid NOTIFY changed)
     void setUid(const QString &uid);
-    QString uid() const;
+    [[nodiscard]] QString uid() const;
 
     /**
      * Defines group id of the process.
@@ -374,7 +373,7 @@ public:
      */
     Q_PROPERTY(QString gid READ gid WRITE setGid NOTIFY changed)
     void setGid(const QString &gid);
-    QString gid() const;
+    [[nodiscard]] QString gid() const;
 
     /**
      * Disable additional groups set via initgroups()
@@ -383,7 +382,7 @@ public:
      */
     Q_PROPERTY(bool no_initgroups READ noInitgroups WRITE setNoInitgroups NOTIFY changed)
     void setNoInitgroups(bool enable);
-    bool noInitgroups() const;
+    [[nodiscard]] bool noInitgroups() const;
 
     /**
      * Defines owner of UNIX sockets.
@@ -392,7 +391,7 @@ public:
      */
     Q_PROPERTY(QString chown_socket READ chownSocket WRITE setChownSocket NOTIFY changed)
     void setChownSocket(const QString &chownSocket);
-    QString chownSocket() const;
+    [[nodiscard]] QString chownSocket() const;
 
     /**
      * Defines file mode creation mask
@@ -401,7 +400,7 @@ public:
      */
     Q_PROPERTY(QString umask READ umask WRITE setUmask NOTIFY changed)
     void setUmask(const QString &value);
-    QString umask() const;
+    [[nodiscard]] QString umask() const;
 
     /**
      * Defines CPU affinity
@@ -410,7 +409,7 @@ public:
      */
     Q_PROPERTY(int cpu_affinity READ cpuAffinity WRITE setCpuAffinity NOTIFY changed)
     void setCpuAffinity(int value);
-    int cpuAffinity() const;
+    [[nodiscard]] int cpuAffinity() const;
 
     /**
      * Enable SO_REUSEPORT for the sockets
@@ -419,7 +418,7 @@ public:
      */
     Q_PROPERTY(bool reuse_port READ reusePort WRITE setReusePort NOTIFY changed)
     void setReusePort(bool enable);
-    bool reusePort() const;
+    [[nodiscard]] bool reusePort() const;
 
     /**
      * Defines is the Application should be lazy loaded.
@@ -427,7 +426,7 @@ public:
      */
     Q_PROPERTY(bool lazy READ lazy WRITE setLazy NOTIFY changed)
     void setLazy(bool enable);
-    bool lazy() const;
+    [[nodiscard]] bool lazy() const;
 
     /**
      * Defines if a reverse proxy operates in front of this application server.
@@ -438,7 +437,7 @@ public:
     Q_PROPERTY(bool using_frontend_proxy READ usingFrontendProxy WRITE setUsingFrontendProxy NOTIFY
                    changed)
     void setUsingFrontendProxy(bool enable);
-    bool usingFrontendProxy() const;
+    [[nodiscard]] bool usingFrontendProxy() const;
 
 Q_SIGNALS:
     /**
@@ -463,5 +462,3 @@ protected:
 };
 
 } // namespace Cutelyst
-
-#endif // CUTELYSTSERVER_H

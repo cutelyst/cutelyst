@@ -70,7 +70,7 @@ public:
     /*!
      * Returns the template wrapper.
      */
-    QString wrapper() const;
+    [[nodiscard]] QString wrapper() const;
 
     /*!
      * Sets the template wrapper name, the template will be rendered into
@@ -93,14 +93,14 @@ public:
     /**
      * Returns the Cutelee::Engine pointer that is used by this engine.
      */
-    Cutelee::Engine *engine() const;
+    [[nodiscard]] Cutelee::Engine *engine() const;
 
     /**
      * When called cache is set to true and templates are loaded.
      */
     void preloadTemplates();
 
-    QByteArray render(Context *c) const final;
+    QByteArray render(Context *c) const override final;
 
     /**
      * Adds a \a translator for the specified \a locale to the list of translators.

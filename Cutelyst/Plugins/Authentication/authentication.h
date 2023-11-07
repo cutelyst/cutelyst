@@ -52,46 +52,49 @@ public:
      * Adds the \p realm with \p name.
      * \note This class will take ownership of realm.
      */
-    void addRealm(AuthenticationRealm *realm);
+    void addRealm(std::shared_ptr<AuthenticationRealm> realm);
 
     /*!
      * Creates a new AuthenticationRealm using \p store, \p credential and \p name to build it.
      * \note This class will take ownership of realm, store and credential.
      */
-    void addRealm(AuthenticationStore *store,
-                  AuthenticationCredential *credential,
+    void addRealm(std::shared_ptr<AuthenticationStore> store,
+                  std::shared_ptr<AuthenticationCredential> credential,
                   const QString &name = QLatin1String(defaultRealm));
 
     /*!
      * Returns an AuthenticationRealm object that was registered with \p name.
      */
-    AuthenticationRealm *realm(const QString &name = QLatin1String(defaultRealm)) const;
+    [[nodiscard]] std::shared_ptr<AuthenticationRealm>
+        realm(const QString &name = QLatin1String(defaultRealm)) const;
 
     /**
      * Returns true if the userinfo could be validated against a realm.
      */
-    static bool authenticate(Context *c,
-                             const ParamsMultiMap &userinfo,
-                             const QString &realm = QLatin1String(defaultRealm));
+    [[nodiscard]] static bool authenticate(Context *c,
+                                           const ParamsMultiMap &userinfo,
+                                           const QString &realm = QLatin1String(defaultRealm));
 
     /**
      * Returns true if the request information could be validated against a realm.
      */
-    inline static bool authenticate(Context *c, const QString &realm = QLatin1String(defaultRealm));
+    [[nodiscard]] inline static bool
+        authenticate(Context *c, const QString &realm = QLatin1String(defaultRealm));
 
     /*!
      * Tries to find the user with \p userinfo using the \p realm, returning a non null
      * AuthenticationUser on success
      */
-    static AuthenticationUser findUser(Context *c,
-                                       const ParamsMultiMap &userinfo,
-                                       const QString &realm = QLatin1String(defaultRealm));
+    [[nodiscard]] static AuthenticationUser
+        findUser(Context *c,
+                 const ParamsMultiMap &userinfo,
+                 const QString &realm = QLatin1String(defaultRealm));
 
     /**
      * Returns the authenticated user if any, if you only need to know if the user is
      * authenticated (rather than retrieving it's ID) use userExists instead which is faster.
      */
-    static AuthenticationUser user(Context *c);
+    [[nodiscard]] static AuthenticationUser user(Context *c);
 
     /**
      * Returns true if a user is logged in right now. The difference between
@@ -101,13 +104,14 @@ public:
      * can be much more efficient.
      * userExists() only looks into the session while user() is trying to restore the user.
      */
-    static bool userExists(Context *c);
+    [[nodiscard]] static bool userExists(Context *c);
 
     /**
      * Works like user_exists, except that it only returns true if a user is both logged
      * in right now and was retrieved from the realm provided.
      */
-    static bool userInRealm(Context *c, const QString &realmName = QLatin1String(defaultRealm));
+    [[nodiscard]] static bool userInRealm(Context *c,
+                                          const QString &realmName = QLatin1String(defaultRealm));
 
     /**
      * Logs the user out. Deletes the currently logged in user from the Context and the session.

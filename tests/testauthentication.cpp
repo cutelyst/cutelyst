@@ -164,7 +164,7 @@ TestEngine *TestAuthentication::getEngine()
 
     auto auth = new Authentication(app);
 
-    auto clearStore = new StoreMinimal(QStringLiteral("id"));
+    auto clearStore = std::make_shared<StoreMinimal>(QStringLiteral("id"));
     {
         AuthenticationUser fooUser(QStringLiteral("foo"));
         fooUser.insert(QStringLiteral("password"), QStringLiteral("123"));
@@ -174,15 +174,15 @@ TestEngine *TestAuthentication::getEngine()
         barUser.insert(QStringLiteral("password"), QStringLiteral("321"));
         clearStore->addUser(barUser);
     }
-    auto clearPassword = new CredentialPassword;
+    auto clearPassword = std::make_shared<CredentialPassword>();
     clearPassword->setPasswordField(QStringLiteral("password"));
     clearPassword->setPasswordType(CredentialPassword::Clear);
-    auth->addRealm(new AuthenticationRealm(clearStore, clearPassword));
+    auth->addRealm(std::make_shared<AuthenticationRealm>(clearStore, clearPassword));
 
     const auto preSalt  = u"preSalt"_qs;
     const auto postSalt = u"postSalt"_qs;
 
-    auto hashedStore = new StoreMinimal(QStringLiteral("id"));
+    auto hashedStore = std::make_shared<StoreMinimal>(QStringLiteral("id"));
     {
         AuthenticationUser fooUser(QStringLiteral("foo"));
         fooUser.insert(QStringLiteral("password"),
@@ -195,34 +195,35 @@ TestEngine *TestAuthentication::getEngine()
         hashedStore->addUser(barUser);
     }
 
-    auto hashedPassword = new CredentialPassword;
+    auto hashedPassword = std::make_shared<CredentialPassword>();
     hashedPassword->setPasswordField(QStringLiteral("password"));
     hashedPassword->setPasswordType(CredentialPassword::Hashed);
     hashedPassword->setPasswordPreSalt(preSalt);
     hashedPassword->setPasswordPostSalt(postSalt);
 
-    auth->addRealm(new AuthenticationRealm(hashedStore, hashedPassword, QStringLiteral("hashed")));
+    auth->addRealm(std::make_shared<AuthenticationRealm>(
+        hashedStore, hashedPassword, QStringLiteral("hashed")));
 
-    auto nonePassword = new CredentialPassword;
+    auto nonePassword = std::make_shared<CredentialPassword>();
     nonePassword->setPasswordField(QStringLiteral("password"));
     nonePassword->setPasswordType(CredentialPassword::None);
-    auth->addRealm(new AuthenticationRealm(clearStore, nonePassword, QStringLiteral("none")));
+    auth->addRealm(
+        std::make_shared<AuthenticationRealm>(clearStore, nonePassword, QStringLiteral("none")));
 
-    auto clearHttpCredential = new CredentialHttp;
+    auto clearHttpCredential = std::make_shared<CredentialHttp>();
     clearHttpCredential->setPasswordType(CredentialHttp::Clear);
     clearHttpCredential->setUsernameField(QStringLiteral("id"));
-    auth->addRealm(
-        new AuthenticationRealm(clearStore, clearHttpCredential, QStringLiteral("httpClear")));
+    auth->addRealm(std::make_shared<AuthenticationRealm>(
+        clearStore, clearHttpCredential, QStringLiteral("httpClear")));
 
-    auto hashedHttpCredential = new CredentialHttp;
+    auto hashedHttpCredential = std::make_shared<CredentialHttp>();
     hashedHttpCredential->setPasswordType(CredentialHttp::Hashed);
     hashedHttpCredential->setUsernameField(QStringLiteral("id"));
     hashedHttpCredential->setPasswordPreSalt(preSalt);
     hashedHttpCredential->setPasswordPostSalt(postSalt);
-    auth->addRealm(
-        new AuthenticationRealm(hashedStore, hashedHttpCredential, QStringLiteral("httpHashed")));
+    auth->addRealm(hashedStore, hashedHttpCredential, QStringLiteral("httpHashed"));
 
-    auto noneHttpCredential = new CredentialHttp;
+    auto noneHttpCredential = std::make_shared<CredentialHttp>();
     noneHttpCredential->setPasswordType(CredentialHttp::None);
     noneHttpCredential->setUsernameField(QStringLiteral("id"));
     auth->addRealm(clearStore, noneHttpCredential, QStringLiteral("httpNone"));

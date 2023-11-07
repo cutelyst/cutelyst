@@ -32,7 +32,7 @@ public:
      * Returns the output format of JSON,
      * defaults to Compact
      */
-    JsonFormat outputFormat() const;
+    [[nodiscard]] JsonFormat outputFormat() const;
 
     /**
      * Defines the output format of JSON
@@ -47,7 +47,7 @@ public:
      * Returns the expose mode of the stash keys,
      * defaults to everything (All)
      */
-    ExposeMode exposeStashMode() const;
+    [[nodiscard]] ExposeMode exposeStashMode() const;
 
     /**
      * Specify which stash key is exposed as a JSON response,
@@ -77,7 +77,7 @@ public:
     /**
      * Returns true if the X-JSON header should be sent
      */
-    bool xJsonHeader() const;
+    [[nodiscard]] bool xJsonHeader() const;
 
     QByteArray render(Context *c) const final;
 };

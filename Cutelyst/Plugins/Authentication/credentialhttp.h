@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CREDENTIALHTTP_H
-#define CREDENTIALHTTP_H
+#pragma once
 
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/cutelyst_global.h>
@@ -55,7 +54,7 @@ public:
     /*!
      * Returns the field to look for when authenticating the user. \sa authenticate().
      */
-    QString usernameField() const;
+    [[nodiscard]] QString usernameField() const;
 
     /*!
      * Sets the field to look for when authenticating the user. \sa authenticate().
@@ -65,7 +64,7 @@ public:
     /*!
      * Returns the field to look for when authenticating the user. \sa authenticate().
      */
-    QString passwordField() const;
+    [[nodiscard]] QString passwordField() const;
 
     /*!
      * Sets the field to look for when authenticating the user. \sa authenticate().
@@ -75,7 +74,7 @@ public:
     /*!
      * Returns the type of password this class will be dealing with.
      */
-    PasswordType passwordType() const;
+    [[nodiscard]] PasswordType passwordType() const;
 
     /*!
      * Sets the type of password this class will be dealing with.
@@ -85,7 +84,7 @@ public:
     /*!
      * Returns the salt string to be prepended to the password
      */
-    QString passwordPreSalt() const;
+    [[nodiscard]] QString passwordPreSalt() const;
 
     /*!
      * Sets the salt string to be prepended to the password
@@ -95,7 +94,7 @@ public:
     /*!
      * Returns the salt string to be appended to the password
      */
-    QString passwordPostSalt() const;
+    [[nodiscard]] QString passwordPostSalt() const;
 
     /*!
      * Sets the salt string to be appended to the password
@@ -109,7 +108,7 @@ public:
      */
     void setRequireSsl(bool require);
 
-    AuthenticationUser
+    [[nodiscard]] AuthenticationUser
         authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 
 protected:
@@ -117,5 +116,3 @@ protected:
 };
 
 } // namespace Cutelyst
-
-#endif // CREDENTIALHTTP_H
