@@ -244,9 +244,9 @@ public:
      * @since Cuteylst 2.0.0
      */
     void loadTranslations(const QString &filename,
-                          const QString &directory = QString(),
-                          const QString &prefix    = QString(),
-                          const QString &suffix    = QString());
+                          const QString &directory = {},
+                          const QString &prefix    = {},
+                          const QString &suffix    = {});
 
     /**
      * Loads translations for a specific @a filename from a single directory and returns a list of

@@ -27,7 +27,7 @@ Controller::~Controller()
     delete d_ptr;
 }
 
-QString Controller::ns() const
+QString Controller::ns() const noexcept
 {
     Q_D(const Controller);
     return d->pathPrefix;
@@ -43,7 +43,7 @@ Action *Controller::actionFor(QStringView name) const
     return d->dispatcher->getAction(name.toString(), d->pathPrefix);
 }
 
-ActionList Controller::actions() const
+ActionList Controller::actions() const noexcept
 {
     Q_D(const Controller);
     return d->actionList;

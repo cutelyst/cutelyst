@@ -41,6 +41,7 @@ void Action::setController(Controller *controller)
 {
     Q_D(Action);
     d->controller = controller;
+    d->className  = QString::fromLatin1(controller->metaObject()->className());
 }
 
 void Action::setupAction(const QVariantHash &args, Application *app)
@@ -49,17 +50,17 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     init(app, args);
 
-    d->ns = args.value(QLatin1String("namespace")).toString();
+    d->ns = args.value(u"namespace"_qs).toString();
 
-    const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
+    const auto attributes = args.value(u"attributes"_qs).value<ParamsMultiMap>();
     d->attributes         = attributes;
 
-    const QString argsAttr = attributes.value(QLatin1String("Args"));
+    const QString argsAttr = attributes.value(u"Args"_qs);
     if (!argsAttr.isEmpty()) {
         d->numberOfArgs = qint8(argsAttr.toInt());
     }
 
-    const QString capturesAttr = attributes.value(QLatin1String("CaptureArgs"));
+    const QString capturesAttr = attributes.value(u"CaptureArgs"_qs);
     if (!capturesAttr.isEmpty()) {
         d->numberOfCaptures = qint8(capturesAttr.toInt());
     }
@@ -83,13 +84,13 @@ void Action::setAttributes(const ParamsMultiMap &attributes)
     d->attributes = attributes;
 }
 
-QString Action::className() const
+QString Action::className() const noexcept
 {
     Q_D(const Action);
-    return QString::fromLatin1(d->controller->metaObject()->className());
+    return d->className;
 }
 
-Controller *Action::controller() const
+Controller *Action::controller() const noexcept
 {
     Q_D(const Action);
     return d->controller;
@@ -121,13 +122,13 @@ QString Action::ns() const noexcept
     return d->ns;
 }
 
-qint8 Action::numberOfArgs() const noexcept
+qint8 Action::numberOfArgs() const
 {
     Q_D(const Action);
     return d->numberOfArgs;
 }
 
-qint8 Action::numberOfCaptures() const noexcept
+qint8 Action::numberOfCaptures() const
 {
     Q_D(const Action);
     return d->numberOfCaptures;

@@ -32,7 +32,7 @@ public:
     /**
      * The default implementation returns Component::OnlyExecute
      */
-    virtual Modifiers modifiers() const override;
+    Modifiers modifiers() const override;
 
     /**
      * All subclasses must reimplement this when doing it's rendering.
@@ -40,7 +40,7 @@ public:
      * with the returned value, this is useful if the view is not
      * meant to be used as a body.
      */
-    virtual QByteArray render(Context *c) const = 0;
+    [[nodiscard]] virtual QByteArray render(Context *c) const = 0;
 
     /**
      * Set deflate minimal size to @p minSize.

@@ -35,7 +35,6 @@ public:
      */
     Headers(const Headers &other) noexcept;
 
-#ifdef Q_COMPILER_INITIALIZER_LISTS
     /**
      * Construct a header from a std::initializer_list given by list.
      */
@@ -47,14 +46,13 @@ public:
              ++it)
             m_data.emplace_back(HeaderKeyValue{it->first, it->second});
     }
-#endif
 
     /**
      * The Content-Disposition header field indicates if the content is expected
      * to be displayed inline in the browser, that is, as a Web page or as part
      * of a Web page, or as an attachment, that is downloaded and saved locally
      */
-    QByteArray contentDisposition() const noexcept;
+    [[nodiscard]] QByteArray contentDisposition() const noexcept;
 
     /**
      * Defines the Cache-Control header
@@ -79,7 +77,7 @@ public:
      * When present, its value indicates what additional encoding mechanism has been applied to the
      * resource.
      */
-    QByteArray contentEncoding() const noexcept;
+    [[nodiscard]] QByteArray contentEncoding() const noexcept;
 
     /**
      * Defines the Content-Encoding header
@@ -93,7 +91,7 @@ public:
      * The value returned will be converted to lower case, and potential parameters
      * will be ignored. If there is no such header field, then the empty string is returned.
      */
-    QByteArray contentType() const;
+    [[nodiscard]] QByteArray contentType() const;
 
     /**
      * Defines the Content-Encoding header
@@ -104,7 +102,7 @@ public:
     /**
      * Returns the upper-cased charset specified in the Content-Type header.
      */
-    QByteArray contentTypeCharset() const;
+    [[nodiscard]] QByteArray contentTypeCharset() const;
 
     /**
      * The Content-Type header field indicates the media type of the message content.
@@ -115,33 +113,33 @@ public:
     /**
      * Returns TRUE if the Content-Type header field indicate that the content is textual.
      */
-    bool contentIsText() const;
+    [[nodiscard]] bool contentIsText() const;
 
     /**
      * Returns TRUE if the Content-Type header field indicate that the
      * content is some kind of HTML (including XHTML).
      */
-    bool contentIsHtml() const;
+    [[nodiscard]] bool contentIsHtml() const;
 
     /**
      * Returns TRUE if the Content-Type header field indicate that the content is XHTML.
      */
-    bool contentIsXHtml() const;
+    [[nodiscard]] bool contentIsXHtml() const;
 
     /**
      * Returns TRUE if the Content-Type header field indicate that the content is XML.
      */
-    bool contentIsXml() const;
+    [[nodiscard]] bool contentIsXml() const;
 
     /**
      * Returns TRUE if the Content-Type header field indicate that the content is JSON.
      */
-    bool contentIsJson() const;
+    [[nodiscard]] bool contentIsJson() const;
 
     /**
      * Returns the size in bytes of the message content
      */
-    qint64 contentLength() const;
+    [[nodiscard]] qint64 contentLength() const;
 
     /**
      * Defines the size in bytes of the message content
@@ -156,14 +154,14 @@ public:
     /**
      * Returns the date header as QDateTime
      */
-    QDateTime date() const;
+    [[nodiscard]] QDateTime date() const;
 
     /**
      * This header fields is used to make a request conditional. If the requested resource has
      * (or has not) been modified since the time specified in this field,
      * then the server will return a 304 Not Modified response instead of the document itself.
      */
-    QByteArray ifModifiedSince() const noexcept;
+    [[nodiscard]] QByteArray ifModifiedSince() const noexcept;
 
     /**
      * This header fields is used to make a request conditional. If the requested resource has
@@ -172,13 +170,13 @@ public:
      * This method parses the header and convert to QDateTime assuming the date is in GMT
      * timezone.
      */
-    QDateTime ifModifiedSinceDateTime() const;
+    [[nodiscard]] QDateTime ifModifiedSinceDateTime() const;
 
     /**
      * Checks if Last-Modified's content has changed in comparison to the
      * If-Modified-Since header.
      */
-    bool ifModifiedSince(const QDateTime &lastModified) const;
+    [[nodiscard]] bool ifModifiedSince(const QDateTime &lastModified) const;
 
     /**
      * Checks for If-Match header usually used on POST to avoid mid-air collisions, making sure
@@ -189,7 +187,7 @@ public:
      * In case of false client should usually discard posted data and return
      * status code of 412 - Response::PreconditionFailed
      */
-    bool ifMatch(const QByteArray &etag) const;
+    [[nodiscard]] bool ifMatch(const QByteArray &etag) const;
 
     /**
      * Checks for If-None-Match header to see if the client has the most recent
@@ -199,7 +197,7 @@ public:
      * In case of true client should usually return an empty body along with a
      * status code of 304 - Response::NotModified.
      */
-    bool ifNoneMatch(const QByteArray &etag) const;
+    [[nodiscard]] bool ifNoneMatch(const QByteArray &etag) const;
 
     /**
      * Sets the ETag header in strong form by not prepending a 'W/' (weak etag)
@@ -211,7 +209,7 @@ public:
     /**
      * This header indicates the date and time at which the resource was last modified.
      */
-    QByteArray lastModified() const noexcept;
+    [[nodiscard]] QByteArray lastModified() const noexcept;
 
     /**
      * Defines the date and time at which the resource was last modified.
@@ -228,7 +226,7 @@ public:
      * Returns the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    QByteArray server() const noexcept;
+    [[nodiscard]] QByteArray server() const noexcept;
 
     /**
      * Defines the server header field contains information about the software
@@ -240,26 +238,26 @@ public:
      * Returns the 'Connection' header field that indicates how it should be handled after a
      * request has been processed, like 'close'.
      */
-    QByteArray connection() const noexcept;
+    [[nodiscard]] QByteArray connection() const noexcept;
 
     /**
      * Returns the 'Host' header field used in request messages, containing information about which
      * host the client would like to talk to, this is especially useful for building URIs and for
      * VirtualHosts.
      */
-    QByteArray host() const noexcept;
+    [[nodiscard]] QByteArray host() const noexcept;
 
     /**
      * Returns the header field used in request messages, containing information about the user
      * agent originating the request.
      */
-    QByteArray userAgent() const noexcept;
+    [[nodiscard]] QByteArray userAgent() const noexcept;
 
     /**
      * Used to specify the address (URI) of the document from which the requested resource address
      * was obtained.
      */
-    QByteArray referer() const noexcept;
+    [[nodiscard]] QByteArray referer() const noexcept;
 
     /**
      * Sets the referrer (Referer) header.
@@ -284,19 +282,19 @@ public:
     /**
      * This method is used to get an authorization header without any decoding.
      */
-    QByteArray authorization() const noexcept;
+    [[nodiscard]] QByteArray authorization() const noexcept;
 
     /**
      * This method is used to get an authorization token
      */
-    QByteArray authorizationBearer() const;
+    [[nodiscard]] QByteArray authorizationBearer() const;
 
     /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme".
      * It will return "username:password" as a single string value.
      */
-    QByteArray authorizationBasic() const;
+    [[nodiscard]] QByteArray authorizationBasic() const;
 
     struct Authorization {
         QString user;
@@ -308,7 +306,7 @@ public:
      * "Basic Authentication Scheme".
      * It will return a pair of username and password respectively.
      */
-    Authorization authorizationBasicObject() const;
+    [[nodiscard]] Authorization authorizationBasicObject() const;
 
     /**
      * This method is used to set an authorization header that use the
@@ -321,54 +319,55 @@ public:
      * A user agent that wishes to authenticate itself with a server or a proxy, may do so by
      * including these headers.
      */
-    QByteArray proxyAuthorization() const noexcept;
+    [[nodiscard]] QByteArray proxyAuthorization() const noexcept;
 
     /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
      * It will return "username:password" as a single string value.
      */
-    QByteArray proxyAuthorizationBasic() const;
+    [[nodiscard]] QByteArray proxyAuthorizationBasic() const;
 
     /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
      * It will return a pair of username and password respectively.
      */
-    Authorization proxyAuthorizationBasicObject() const;
+    [[nodiscard]] Authorization proxyAuthorizationBasicObject() const;
 
     /**
      * Returns the value associated with \p key
      */
-    QByteArray header(QByteArrayView key) const noexcept;
+    [[nodiscard]] QByteArray header(QByteArrayView key) const noexcept;
 
     /**
      * Returns the value associated with \p key from latin1
      * \note This allocates memory so avoid when possible
      */
-    QString headerAsString(QByteArrayView key) const;
+    [[nodiscard]] QString headerAsString(QByteArrayView key) const;
 
     /**
      * Returns the value associated with \p key, if field is not set \p defaultValue is returned
      */
-    QByteArray header(QByteArrayView key, const QByteArray &defaultValue) const noexcept;
+    [[nodiscard]] QByteArray header(QByteArrayView key,
+                                    const QByteArray &defaultValue) const noexcept;
 
     /**
      * Returns the value associated with \p key from latin1, if field is not set \p defaultValue is
      * returned \note This allocates memory so avoid when possible
      */
-    QString headerAsString(QByteArrayView key, const QByteArray &defaultValue) const;
+    [[nodiscard]] QString headerAsString(QByteArrayView key, const QByteArray &defaultValue) const;
 
     /**
      * Returns all values associated with \p key
      */
-    QByteArrayList headers(QByteArrayView key) const;
+    [[nodiscard]] QByteArrayList headers(QByteArrayView key) const;
 
     /**
      * Returns all values associated with \p key
      * \note This allocates memory so avoid when possible
      */
-    QStringList headersAsStrings(QByteArrayView key) const;
+    [[nodiscard]] QStringList headersAsStrings(QByteArrayView key) const;
 
     /**
      * Sets the header field to value
@@ -403,14 +402,14 @@ public:
     /**
      * Returns the internal structure of headers, to be used by Engine subclasses.
      */
-    inline QVector<HeaderKeyValue> data() const { return m_data; }
+    [[nodiscard]] inline QVector<HeaderKeyValue> data() const { return m_data; }
 
     /**
      * Returns true if the header field is defined.
      */
-    bool contains(QByteArrayView key) const noexcept;
+    [[nodiscard]] bool contains(QByteArrayView key) const noexcept;
 
-    QByteArrayList keys() const;
+    [[nodiscard]] QByteArrayList keys() const;
 
     /**
      * Returns the value associated with key.

@@ -12,9 +12,8 @@
 
 using namespace Cutelyst;
 
-StoreHtpasswd::StoreHtpasswd(const QString &name, QObject *parent)
-    : AuthenticationStore(parent)
-    , m_filename(name)
+StoreHtpasswd::StoreHtpasswd(const QString &name)
+    : m_filename(name)
 {
 }
 

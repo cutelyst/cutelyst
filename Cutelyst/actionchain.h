@@ -35,15 +35,15 @@ public:
      * The action chain
      * @return a list of Cutelyst::Action objects encapsulated by this chain.
      */
-    ActionList chain() const noexcept;
+    [[nodiscard]] ActionList chain() const noexcept;
 
     /**
      * Reimplemented from Action::numberOfCaptures()
      */
-    virtual qint8 numberOfCaptures() const noexcept override;
+    qint8 numberOfCaptures() const noexcept override;
 
 protected:
-    virtual bool doExecute(Context *c) override;
+    bool doExecute(Context *c) override;
 };
 
 } // namespace Cutelyst

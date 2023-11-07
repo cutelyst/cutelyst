@@ -80,15 +80,16 @@ bool Upload::save(const QString &newName)
     return !error;
 }
 
-QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
+std::unique_ptr<QTemporaryFile> Upload::createTemporaryFile(const QString &templateName)
 {
+    std::unique_ptr<QTemporaryFile> ret;
+
 #ifndef QT_NO_TEMPORARYFILE
     Q_D(Upload);
-    QTemporaryFile *ret;
     if (templateName.isEmpty()) {
-        ret = new QTemporaryFile(this);
+        ret = std::make_unique<QTemporaryFile>();
     } else {
-        ret = new QTemporaryFile(templateName, this);
+        ret = std::make_unique<QTemporaryFile>(templateName);
     }
 
     if (ret->open()) {
@@ -120,12 +121,12 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
     } else {
         qCWarning(CUTELYST_UPLOAD) << "Failed to open temporary file.";
     }
-    delete ret;
+    ret.reset();
 #else
-    Q_UNUSED(templateName)
+    Q_UNUSED(templateName);
 #endif
 
-    return nullptr;
+    return ret;
 }
 
 qint64 Upload::pos() const

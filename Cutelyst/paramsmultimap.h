@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2014-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef PARAMSMULTIMAP_H
-#define PARAMSMULTIMAP_H
+#pragma once
 
 #include <QMetaType>
 #include <QMultiMap>
@@ -25,5 +24,3 @@ using ParamsMultiMap = QMultiMap<QString, QString>;
 } // namespace Cutelyst
 
 Q_DECLARE_METATYPE(Cutelyst::ParamsMultiMap)
-
-#endif // PARAMSMULTIMAP_H

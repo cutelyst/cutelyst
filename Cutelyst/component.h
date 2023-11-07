@@ -50,12 +50,12 @@ public:
     /**
      * Reimplement to return custom Modifiers, default is None
      */
-    virtual Modifiers modifiers() const;
+    [[nodiscard]] virtual Modifiers modifiers() const;
 
     /**
      * Returns the sub name of this Component.
      */
-    QString name() const;
+    [[nodiscard]] QString name() const noexcept;
 
     /**
      * Defines the sub name of this Component.
@@ -65,7 +65,7 @@ public:
     /**
      * Returns the private name of this component.
      */
-    QString reverse() const;
+    [[nodiscard]] QString reverse() const noexcept;
 
     /**
      * Defines the private name of this Component.

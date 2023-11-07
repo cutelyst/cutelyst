@@ -32,22 +32,22 @@ public:
     /**
      * Returns the name of the form field
      */
-    QString name() const;
+    [[nodiscard]] QString name() const;
 
     /**
      * Returns the file name provided by the user agent
      */
-    QString filename() const;
+    [[nodiscard]] QString filename() const;
 
     /**
      * Returns the content type provided by the user agent
      */
-    QByteArray contentType() const;
+    [[nodiscard]] QByteArray contentType() const;
 
     /**
      * Returns the headers provided by the user agent
      */
-    Headers headers() const;
+    [[nodiscard]] Headers headers() const;
 
     /**
      * Saves this upload to the following location.
@@ -59,38 +59,39 @@ public:
      * the content of this upload.
      * Returns zero if an error occours.
      */
-    QTemporaryFile *createTemporaryFile(const QString &templateName = {});
+    [[nodiscard]] std::unique_ptr<QTemporaryFile>
+        createTemporaryFile(const QString &templateName = {});
 
     /**
      * Reimplemented from QIODevice::pos().
      */
-    virtual qint64 pos() const override;
+    qint64 pos() const override;
 
     /**
      * Reimplemented from QIODevice::size().
      */
-    virtual qint64 size() const override;
+    qint64 size() const override;
 
     /**
      * Reimplemented from QIODevice::seek().
      */
-    virtual bool seek(qint64 pos) override;
+    bool seek(qint64 pos) override;
 
 protected:
     /**
      * Reimplemented from QIODevice::readData().
      */
-    virtual qint64 readData(char *data, qint64 maxlen) override;
+    qint64 readData(char *data, qint64 maxlen) override;
 
     /**
      * Reimplemented from QIODevice::readLineData().
      */
-    virtual qint64 readLineData(char *data, qint64 maxlen) override;
+    qint64 readLineData(char *data, qint64 maxlen) override;
 
     /**
      * Reimplemented from QIODevice::writeData().
      */
-    virtual qint64 writeData(const char *data, qint64 maxSize) override;
+    qint64 writeData(const char *data, qint64 maxSize) override;
 
     UploadPrivate *d_ptr;
 };

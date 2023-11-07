@@ -13,7 +13,7 @@ set(QT_VERSION_MAJOR 6)
 # TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
 find_package(Qt${QT_VERSION_MAJOR} 6.2 COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
-set(CUTELYST_API_LEVEL "3")
+set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)
@@ -286,7 +286,7 @@ if (BUILD_DOCS)
         # Configuration options related to the preprocessor
         set(DOXYGEN_MACRO_EXPANSION "YES")
         set(DOXYGEN_EXPAND_ONLY_PREDEF "YES")
-        set(DOXYGEN_PREDEFINED "Q_QDOC" "Q_COMPILER_INITIALIZER_LISTS" "Q_OS_UNIX" "DOXYGEN_SHOULD_SKIP_THIS")
+        set(DOXYGEN_PREDEFINED "Q_QDOC" "Q_OS_UNIX" "DOXYGEN_SHOULD_SKIP_THIS")
         set(DOXYGEN_EXPAND_AS_DEFINED "TemplateImpl")
         # Configuration options related to external references
         set(DOXYGEN_GENERATE_TAGFILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}.tags)

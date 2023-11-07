@@ -278,13 +278,18 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
 {
     Q_D(const Dispatcher);
     QString ret;
-    for (DispatchType *dispatch : d->dispatchers) {
-        ret = dispatch->uriForAction(action, captures);
-        if (!ret.isNull()) {
-            if (ret.isEmpty()) {
-                ret = QStringLiteral("/");
+    if (Q_UNLIKELY(action == nullptr)) {
+        qCCritical(CUTELYST_DISPATCHER) << "Dispatcher::uriForAction called with null action";
+        ret = u"/"_qs;
+    } else {
+        for (DispatchType *dispatch : d->dispatchers) {
+            ret = dispatch->uriForAction(action, captures);
+            if (!ret.isNull()) {
+                if (ret.isEmpty()) {
+                    ret = u"/"_qs;
+                }
+                break;
             }
-            break;
         }
     }
     return ret;

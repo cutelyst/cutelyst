@@ -25,32 +25,33 @@ public:
      * Constructs a new AuthenticationRealm object with the given parent.
      * \note This class will take ownership of store and credential.
      */
-    explicit AuthenticationRealm(AuthenticationStore *store,
-                                 AuthenticationCredential *credential,
+    explicit AuthenticationRealm(std::shared_ptr<AuthenticationStore> store,
+                                 std::shared_ptr<AuthenticationCredential> credential,
                                  const QString &name = QLatin1String(defaultRealm),
                                  QObject *parent     = nullptr);
-    virtual ~AuthenticationRealm() override;
+    ~AuthenticationRealm() override;
 
     /*!
      * Returns the authentication store object
      */
-    AuthenticationStore *store() const;
+    [[nodiscard]] std::shared_ptr<AuthenticationStore> store() const noexcept;
 
     /*!
      * Returns the authentication credential object
      */
-    AuthenticationCredential *credential() const;
+    [[nodiscard]] std::shared_ptr<AuthenticationCredential> credential() const noexcept;
 
     /*!
      * Tries to find the user with \p authinfo returning a non null AuthenticationUser on success
      */
-    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo);
+    [[nodiscard]] virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo);
 
     /*!
      * Tries to authenticate the user with \p authinfo returning a non null AuthenticationUser on
      * success
      */
-    virtual AuthenticationUser authenticate(Context *c, const ParamsMultiMap &authinfo);
+    [[nodiscard]] virtual AuthenticationUser authenticate(Context *c,
+                                                          const ParamsMultiMap &authinfo);
 
     /*!
      * Removes the user from the session
@@ -65,19 +66,19 @@ public:
     /*!
      * Retrieves the user from the store
      */
-    AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser);
+    [[nodiscard]] AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser);
 
     /*!
      * Checks if user can be retrieved
      */
-    QVariant userIsRestorable(Context *c);
+    [[nodiscard]] QVariant userIsRestorable(Context *c);
 
 private:
     friend class Authentication;
     friend class AuthenticationPrivate;
 
-    AuthenticationStore *m_store;
-    AuthenticationCredential *m_credential;
+    std::shared_ptr<AuthenticationStore> m_store;
+    std::shared_ptr<AuthenticationCredential> m_credential;
 };
 
 } // namespace Cutelyst

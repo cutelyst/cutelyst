@@ -38,22 +38,23 @@ Authentication::~Authentication()
     delete d_ptr;
 }
 
-void Authentication::addRealm(Cutelyst::AuthenticationRealm *realm)
+void Authentication::addRealm(std::shared_ptr<Cutelyst::AuthenticationRealm> realm)
 {
     Q_D(Authentication);
-    realm->setParent(this);
+    realm->setParent(nullptr);
     d->realms.insert(realm->objectName(), realm);
     d->realmsOrder.append(realm->objectName());
 }
 
-void Cutelyst::Authentication::addRealm(Cutelyst::AuthenticationStore *store,
-                                        Cutelyst::AuthenticationCredential *credential,
-                                        const QString &name)
+void Cutelyst::Authentication::addRealm(
+    std::shared_ptr<Cutelyst::AuthenticationStore> store,
+    std::shared_ptr<Cutelyst::AuthenticationCredential> credential,
+    const QString &name)
 {
-    addRealm(new AuthenticationRealm(store, credential, name, this));
+    addRealm(std::make_shared<AuthenticationRealm>(store, credential, name));
 }
 
-AuthenticationRealm *Authentication::realm(const QString &name) const
+std::shared_ptr<Cutelyst::AuthenticationRealm> Authentication::realm(const QString &name) const
 {
     Q_D(const Authentication);
     return d->realms.value(name);
@@ -68,7 +69,7 @@ bool Authentication::authenticate(Cutelyst::Context *c,
         return false;
     }
 
-    AuthenticationRealm *realmPtr = auth->d_ptr->realm(realm);
+    std::shared_ptr<AuthenticationRealm> realmPtr = auth->d_ptr->realm(realm);
     if (realmPtr) {
         const AuthenticationUser user = realmPtr->authenticate(c, userinfo);
         if (!user.isNull()) {
@@ -92,7 +93,7 @@ AuthenticationUser Authentication::findUser(Cutelyst::Context *c,
         return ret;
     }
 
-    AuthenticationRealm *realmPtr = auth->d_ptr->realm(realm);
+    auto realmPtr = auth->d_ptr->realm(realm);
     if (!realmPtr) {
         qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
         return ret;
@@ -142,7 +143,7 @@ bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realmName)
             return false;
         }
 
-        AuthenticationRealm *realm = AuthenticationPrivate::findRealmForPersistedUser(
+        auto realm = AuthenticationPrivate::findRealmForPersistedUser(
             c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
         if (realm) {
             return realm->name() == realmName;
@@ -157,7 +158,7 @@ void Authentication::logout(Context *c)
     AuthenticationPrivate::setUser(c, AuthenticationUser());
 
     if (auth) {
-        AuthenticationRealm *realm = AuthenticationPrivate::findRealmForPersistedUser(
+        auto realm = AuthenticationPrivate::findRealmForPersistedUser(
             c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
         if (realm) {
             realm->removePersistedUser(c);
@@ -172,7 +173,7 @@ bool Authentication::setup(Application *app)
     return connect(app, &Application::postForked, this, [this] { auth = this; });
 }
 
-AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) const
+std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::realm(const QString &realmName) const
 {
     return realms.value(realmName.isNull() ? defaultRealm : realmName);
 }
@@ -187,7 +188,7 @@ AuthenticationUser AuthenticationPrivate::restoreUser(Context *c,
         return ret;
     }
 
-    AuthenticationRealm *realmPtr = auth->d_ptr->realm(realmName);
+    auto realmPtr = auth->d_ptr->realm(realmName);
     if (!realmPtr) {
         realmPtr = AuthenticationPrivate::findRealmForPersistedUser(
             c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
@@ -204,21 +205,21 @@ AuthenticationUser AuthenticationPrivate::restoreUser(Context *c,
     return ret;
 }
 
-AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(
+std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::findRealmForPersistedUser(
     Context *c,
-    const QMap<QString, AuthenticationRealm *> &realms,
+    const QMap<QString, std::shared_ptr<AuthenticationRealm>> &realms,
     const QStringList &realmsOrder)
 {
     const QVariant realmVariant = Session::value(c, AUTHENTICATION_USER_REALM);
     if (!realmVariant.isNull()) {
-        AuthenticationRealm *realm = realms.value(realmVariant.toString());
+        std::shared_ptr<AuthenticationRealm> realm = realms.value(realmVariant.toString());
         if (realm && !realm->userIsRestorable(c).isNull()) {
             return realm;
         }
     } else {
         // we have no choice but to ask each realm whether it has a persisted user.
         for (const QString &realmName : realmsOrder) {
-            AuthenticationRealm *realm = realms.value(realmName);
+            std::shared_ptr<AuthenticationRealm> realm = realms.value(realmName);
             if (realm && !realm->userIsRestorable(c).isNull()) {
                 return realm;
             }
@@ -231,7 +232,7 @@ AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(
 void AuthenticationPrivate::setAuthenticated(Context *c,
                                              const AuthenticationUser &user,
                                              const QString &realmName,
-                                             AuthenticationRealm *realm)
+                                             std::shared_ptr<AuthenticationRealm> realm)
 {
     AuthenticationPrivate::setUser(c, user, realmName);
 
@@ -258,7 +259,7 @@ void AuthenticationPrivate::setUser(Context *c,
 void AuthenticationPrivate::persistUser(Context *c,
                                         const AuthenticationUser &user,
                                         const QString &realmName,
-                                        AuthenticationRealm *realm)
+                                        std::shared_ptr<AuthenticationRealm> realm)
 {
     if (Authentication::userInRealm(c, realmName)) {
         Session::setValue(c, AUTHENTICATION_USER_REALM, realmName);

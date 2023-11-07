@@ -14,12 +14,11 @@ namespace Cutelyst {
 
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreMinimal : public AuthenticationStore
 {
-    Q_OBJECT
 public:
     /**
      * Constructs a new minimal authentication store object with the given parent.
      */
-    explicit StoreMinimal(const QString &idField, QObject *parent = nullptr);
+    explicit StoreMinimal(const QString &idField);
     virtual ~StoreMinimal() override;
 
     /**
@@ -30,17 +29,17 @@ public:
     /**
      * Reimplemented from AuthenticationStore::findUser().
      */
-    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) final;
+    AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) override final;
 
     /**
      * Reimplemented from AuthenticationStore::forSession().
      */
-    virtual QVariant forSession(Context *c, const AuthenticationUser &user) final;
+    QVariant forSession(Context *c, const AuthenticationUser &user) override final;
 
     /**
      * Reimplemented from AuthenticationStore::fromSession().
      */
-    virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) final;
+    AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) override final;
 
 private:
     QString m_idField;

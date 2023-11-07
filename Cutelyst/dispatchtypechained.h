@@ -20,19 +20,19 @@ public:
      * Constructs a DispatchTypeChained object with the given \p parent.
      */
     explicit DispatchTypeChained(QObject *parent = nullptr);
-    virtual ~DispatchTypeChained() override;
+    ~DispatchTypeChained() override;
 
-    virtual QByteArray list() const override;
+    QByteArray list() const override;
 
-    virtual MatchType match(Context *c, QStringView path, const QStringList &args) const override;
+    MatchType match(Context *c, QStringView path, const QStringList &args) const override;
 
-    virtual bool registerAction(Action *action) override;
+    bool registerAction(Action *action) override;
 
-    virtual QString uriForAction(Action *action, const QStringList &captures) const override;
+    QString uriForAction(Action *action, const QStringList &captures) const override;
 
     Action *expandAction(const Context *c, Action *action) const final;
 
-    virtual bool inUse() override;
+    bool inUse() override;
 
 private:
     DispatchTypeChainedPrivate *d_ptr;

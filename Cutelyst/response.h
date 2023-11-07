@@ -113,7 +113,7 @@ public:
      * device to a QBuffer, even if one was already
      * set.
      */
-    Q_REQUIRED_RESULT QByteArray &body();
+    [[nodiscard]] QByteArray &body();
 
     /**
      * Returns the body IO device (if any) of this response.

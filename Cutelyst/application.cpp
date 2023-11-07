@@ -212,13 +212,13 @@ QVariantMap Application::config() const noexcept
 
 QString Application::pathTo(const QString &path) const
 {
-    QDir home = config(QStringLiteral("home")).toString();
+    QDir home = config(u"home"_qs).toString();
     return home.absoluteFilePath(path);
 }
 
 QString Cutelyst::Application::pathTo(const QStringList &path) const
 {
-    QDir home = config(QStringLiteral("home")).toString();
+    QDir home = config(u"home"_qs).toString();
     return home.absoluteFilePath(path.join(u'/'));
 }
 
@@ -281,9 +281,9 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore) {
             QVector<QStringList> tableDataHandlers;
-            tableDataHandlers.append({QLatin1String("application/x-www-form-urlencoded")});
-            tableDataHandlers.append({QLatin1String("application/json")});
-            tableDataHandlers.append({QLatin1String("multipart/form-data")});
+            tableDataHandlers.append({u"application/x-www-form-urlencoded"_qs});
+            tableDataHandlers.append({u"application/json"_qs});
+            tableDataHandlers.append({u"multipart/form-data"_qs});
             qCDebug(CUTELYST_CORE)
                 << Utils::buildTable(tableDataHandlers,
                                      QStringList(),
@@ -296,7 +296,7 @@ bool Application::setup(Engine *engine)
                 << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
         }
 
-        QString home = d->config.value(QLatin1String("home")).toString();
+        QString home = d->config.value(u"home"_qs).toString();
         if (home.isEmpty()) {
             if (zeroCore) {
                 qCDebug(CUTELYST_CORE) << "Couldn't find home";

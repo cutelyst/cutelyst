@@ -470,7 +470,7 @@ public:
      * LangSelect::getSupportedLocales().
      * @sa setSupportedLocales(), addSupportedLocale(), setLocalesFromDir(), setLocalesFromDirs()
      */
-    Q_REQUIRED_RESULT QVector<QLocale> supportedLocales() const;
+    [[nodiscard]] QVector<QLocale> supportedLocales() const;
 
     /**
      * Sets a @a key used in the URL query to store and retrieve the locale.

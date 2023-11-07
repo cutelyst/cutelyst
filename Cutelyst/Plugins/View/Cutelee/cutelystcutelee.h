@@ -24,10 +24,9 @@ class CutelystCutelee final
 public:
     explicit CutelystCutelee(QObject *parent = nullptr);
 
-    virtual QHash<QString, Cutelee::AbstractNodeFactory *>
-        nodeFactories(const QString &name = QString()) override;
+    QHash<QString, Cutelee::AbstractNodeFactory *> nodeFactories(const QString &name = {}) override;
 
-    virtual QHash<QString, Cutelee::Filter *> filters(const QString &name = QString()) override;
+    QHash<QString, Cutelee::Filter *> filters(const QString &name = {}) override;
 };
 
 #endif

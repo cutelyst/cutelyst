@@ -306,17 +306,13 @@ public:
      */
     explicit Validator(QLatin1String translationContext = QLatin1String());
 
-#ifdef Q_COMPILER_INITIALIZER_LISTS
     /*!
      * \brief Constructs a new %Validator using the defined \a validators.
      * \param validators List of validators that should be performed on the input fields. The
      * %Validator will take ownerhip of them and will destroy them on it's own destruction.
-     *
-     * This constructor is only available if the compiler supports C++11 std::initializer_list.
      */
     explicit Validator(std::initializer_list<ValidatorRule *> validators,
                        QLatin1String translationContext = QLatin1String());
-#endif
 
     /*!
      * \brief Desconstructs the Validator and all added ValidatorRule objects.

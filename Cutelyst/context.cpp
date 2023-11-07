@@ -282,9 +282,8 @@ QUrl Context::uriFor(Action *action,
     Q_D(const Context);
 
     QUrl uri;
-    Action *localAction = action;
-    if (!localAction) {
-        localAction = d->action;
+    if (action == nullptr) {
+        action = d->action;
     }
 
     QStringList localArgs     = args;
@@ -302,9 +301,9 @@ QUrl Context::uriFor(Action *action,
         localCaptures = QStringList();
     }
 
-    const QString path = d->dispatcher->uriForAction(localAction, localCaptures);
+    const QString path = d->dispatcher->uriForAction(action, localCaptures);
     if (path.isEmpty()) {
-        qCWarning(CUTELYST_CORE) << "Can not find action for" << localAction << localCaptures;
+        qCWarning(CUTELYST_CORE) << "Can not find action for" << action << localCaptures;
         return uri;
     }
 

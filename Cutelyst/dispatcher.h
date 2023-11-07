@@ -36,28 +36,28 @@ public:
     /**
      * Returns a named action from a given namespace.
      */
-    Action *getAction(QStringView name, QStringView nameSpace = {}) const;
+    [[nodiscard]] Action *getAction(QStringView name, QStringView nameSpace = {}) const;
 
     /**
      * Returns the named action by its full private path.
      */
-    Action *getActionByPath(QStringView path) const;
+    [[nodiscard]] Action *getActionByPath(QStringView path) const;
 
     /**
      * Returns a list of actions that match \p name on
      * the desired namespace \p nameSpace
      */
-    ActionList getActions(QStringView name, QStringView nameSpace) const;
+    [[nodiscard]] ActionList getActions(QStringView name, QStringView nameSpace) const;
 
     /**
      * Returns a Controller given it's name
      */
-    Controller *controller(QStringView name) const;
+    [[nodiscard]] Controller *controller(QStringView name) const;
 
     /**
      * Returns a list of registered controllers
      */
-    QList<Controller *> controllers() const;
+    [[nodiscard]] QList<Controller *> controllers() const;
 
     /**
      * Takes a Catalyst::Action object and action parameters and returns a URI
@@ -67,20 +67,20 @@ public:
      * If the action object is not available for external dispatch or the dispatcher
      * cannot determine an appropriate URI, this method will return a null byte array.
      */
-    QString uriForAction(Action *action, const QStringList &captures) const;
+    [[nodiscard]] QString uriForAction(Action *action, const QStringList &captures) const;
 
     /**
      * Expand an action into a full representation of the dispatch. mostly useful for chained where
      * the returned Action will be of ActionChain type, other actions will just return a single
      * action.
      */
-    Action *expandAction(const Context *c, Action *action) const;
+    [[nodiscard]] Action *expandAction(const Context *c, Action *action) const;
 
     /**
      * Returns a list of all dispatchers currently in use, if the dispatcher doesn't successfuly
      * register an Action it's removed from the list.
      */
-    QVector<DispatchType *> dispatchers() const;
+    [[nodiscard]] QVector<DispatchType *> dispatchers() const;
 
 protected:
     /**

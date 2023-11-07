@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYST_CONTROLLER_H
-#define CUTELYST_CONTROLLER_H
+#pragma once
 
 #include <Cutelyst/action.h>
 #include <Cutelyst/context.h>
@@ -103,7 +102,7 @@ public:
      * The default Root controller is an example of setting
      * namespace to '' (the null string).
      */
-    QString ns() const;
+    [[nodiscard]] QString ns() const noexcept;
 
     /**
      * Returns the Cutelyst::Action object (if any) for a given method name in
@@ -117,7 +116,7 @@ public:
      * Returns the Cutelyst::ActionList containing all actions which belongs to
      * this controller.
      */
-    ActionList actions() const;
+    [[nodiscard]] ActionList actions() const noexcept;
 
     /**
      * Return TRUE if className is equal to this Controller's name
@@ -161,5 +160,3 @@ private:
 };
 
 } // namespace Cutelyst
-
-#endif // CUTELYST_CONTROLLER_H

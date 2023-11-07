@@ -43,7 +43,7 @@ bool ValidatorFileSize::validate(const QString &value,
 
     for (const QChar &ch : str) {
         if (valid) {
-            const char16_t &uc = ch.toUpper().unicode();
+            const char16_t uc = ch.toUpper().unicode();
             if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
                 (ch == decimalPoint)) {
                 if (startsWith == ValidatorFileSizePrivate::StartsWith::NotSet) {

@@ -38,33 +38,33 @@ public:
     /**
      * Returns the number os items per page
      */
-    int limit() const;
+    [[nodiscard]] int limit() const;
 
     /**
      * Returns the current page offset for use in SQL
      */
-    int offset() const;
+    [[nodiscard]] int offset() const;
 
     /**
      * Returns the current page offset for use in SQL taking the number of items per page and the
      * current page
      */
-    static int offset(int itemsPerPage, int currentPage);
+    [[nodiscard]] static int offset(int itemsPerPage, int currentPage);
 
     /**
      * Returns the current page number
      */
-    int currentPage() const;
+    [[nodiscard]] int currentPage() const;
 
     /**
      * Returns the number of the last page
      */
-    int lastPage() const;
+    [[nodiscard]] int lastPage() const;
 
     /**
      * Returns the total number of items
      */
-    int numberOfItems() const;
+    [[nodiscard]] int numberOfItems() const;
 
     /**
      * Returns true if the first page link should be enabled
@@ -79,7 +79,7 @@ public:
     /**
      * Returns the list of pages, with each page number as the integer
      */
-    QVector<int> pages() const;
+    [[nodiscard]] QVector<int> pages() const;
 };
 
 } // namespace Cutelyst

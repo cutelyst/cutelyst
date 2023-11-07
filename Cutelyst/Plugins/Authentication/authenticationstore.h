@@ -1,23 +1,21 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef AUTHENTICATION_STORE_H
-#define AUTHENTICATION_STORE_H
+#pragma once
 
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
-class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationStore : public QObject
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationStore
 {
-    Q_OBJECT
 public:
     /**
      * Constructs a new authentication store object with the given parent.
      */
-    explicit AuthenticationStore(QObject *parent = nullptr);
+    AuthenticationStore();
     virtual ~AuthenticationStore();
 
 public:
@@ -37,7 +35,7 @@ public:
      * Reimplement this if your store supports
      * automatic user update
      */
-    virtual bool canAutoUpdateUser() const;
+    [[nodiscard]] virtual bool canAutoUpdateUser() const;
 
     /**
      * Reimplement this if your store supports
@@ -48,7 +46,8 @@ public:
     /**
      * Retrieve the user that matches the user info
      */
-    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo) = 0;
+    [[nodiscard]] virtual AuthenticationUser findUser(Context *c,
+                                                      const ParamsMultiMap &userinfo) = 0;
 
     /**
      * Reimplement this so that you return a
@@ -66,9 +65,7 @@ public:
      * The default implementation just returns
      * the user.
      */
-    virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser);
+    [[nodiscard]] virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser);
 };
 
 } // namespace Cutelyst
-
-#endif // AUTHENTICATIONSTORE_H

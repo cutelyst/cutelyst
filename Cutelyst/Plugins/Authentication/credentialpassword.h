@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
-#define CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
+#pragma once
 
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/cutelyst_global.h>
@@ -31,13 +30,13 @@ public:
     explicit CredentialPassword(QObject *parent = nullptr);
     virtual ~CredentialPassword() override;
 
-    AuthenticationUser
+    [[nodiscard]] AuthenticationUser
         authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 
     /*!
      * Returns the field to look for when authenticating the user. \sa authenticate().
      */
-    QString passwordField() const;
+    [[nodiscard]] QString passwordField() const;
 
     /*!
      * Sets the field to look for when authenticating the user. \sa authenticate().
@@ -47,7 +46,7 @@ public:
     /*!
      * Returns the type of password this class will be dealing with.
      */
-    PasswordType passwordType() const;
+    [[nodiscard]] PasswordType passwordType() const;
 
     /*!
      * Sets the type of password this class will be dealing with.
@@ -57,7 +56,7 @@ public:
     /*!
      * Returns the salt string to be prepended to the password
      */
-    QString passwordPreSalt() const;
+    [[nodiscard]] QString passwordPreSalt() const;
 
     /*!
      * Sets the salt string to be prepended to the password
@@ -67,7 +66,7 @@ public:
     /*!
      * Returns the salt string to be appended to the password
      */
-    QString passwordPostSalt() const;
+    [[nodiscard]] QString passwordPostSalt() const;
 
     /*!
      * Sets the salt string to be appended to the password
@@ -77,12 +76,13 @@ public:
     /*!
      * Validates the given password against the correct hash.
      */
-    static bool validatePassword(const QByteArray &password, const QByteArray &correctHash);
+    [[nodiscard]] static bool validatePassword(const QByteArray &password,
+                                               const QByteArray &correctHash);
 
     /*!
      * Validates the given password string against the correct hash string.
      */
-    static bool validatePassword(const QString &password, const QString &correctHash);
+    [[nodiscard]] static bool validatePassword(const QString &password, const QString &correctHash);
 
     /*!
      * Creates a password hash string.
@@ -94,11 +94,11 @@ public:
      * \param hashByteSize
      * \return the pbkdf2 representation of the password
      */
-    static QByteArray createPassword(const QByteArray &password,
-                                     QCryptographicHash::Algorithm method,
-                                     int iterations,
-                                     int saltByteSize,
-                                     int hashByteSize);
+    [[nodiscard]] static QByteArray createPassword(const QByteArray &password,
+                                                   QCryptographicHash::Algorithm method,
+                                                   int iterations,
+                                                   int saltByteSize,
+                                                   int hashByteSize);
 
     /*!
      * Creates a password hash string using sensible defaults
@@ -106,7 +106,7 @@ public:
      * \param password
      * \return the pbkdf2 representation of the password
      */
-    static QByteArray createPassword(const QByteArray &password);
+    [[nodiscard]] static QByteArray createPassword(const QByteArray &password);
 
     /*!
      * Creates a password hash string using sensible defaults
@@ -114,7 +114,7 @@ public:
      * \param password
      * \return the pbkdf2 representation of the password
      */
-    inline static QString createPassword(const QString &password);
+    [[nodiscard]] inline static QString createPassword(const QString &password);
 
     /*!
      * \brief Generates a pbkdf2 string for the given \p password
@@ -125,18 +125,18 @@ public:
      * \param keyLength
      * \return
      */
-    static QByteArray pbkdf2(QCryptographicHash::Algorithm method,
-                             const QByteArray &password,
-                             const QByteArray &salt,
-                             int rounds,
-                             int keyLength);
+    [[nodiscard]] static QByteArray pbkdf2(QCryptographicHash::Algorithm method,
+                                           const QByteArray &password,
+                                           const QByteArray &salt,
+                                           int rounds,
+                                           int keyLength);
 
     /*!
      * Generates the Hash-based message authentication code.
      */
-    static QByteArray hmac(QCryptographicHash::Algorithm method,
-                           const QByteArray &key,
-                           const QByteArray &message);
+    [[nodiscard]] static QByteArray hmac(QCryptographicHash::Algorithm method,
+                                         const QByteArray &key,
+                                         const QByteArray &message);
 
 protected:
     CredentialPasswordPrivate *d_ptr;
@@ -154,5 +154,3 @@ QString CredentialPassword::createPassword(const QString &password)
 }
 
 } // namespace Cutelyst
-
-#endif // CUTELYSTPLUGIN_CREDENTIALPASSWORD_H

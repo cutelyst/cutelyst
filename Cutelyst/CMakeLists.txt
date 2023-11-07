@@ -1,32 +1,21 @@
 configure_file(cutelyst_global.h.in cutelyst_global.h @ONLY)
 
 set(cutelystqt_SRC
-    utils.cpp
-    upload.cpp
-    upload_p.h
-    multipartformdataparser.cpp
-    multipartformdataparser.h
-    multipartformdataparser_p.h
-    stats.cpp
-    stats_p.h
-    headers.cpp
-    request.cpp
-    request_p.h
-    response.cpp
-    response_p.h
-    async.cpp
-    context.cpp
-    context_p.h
     action.cpp
+    action_p.h
     actionchain.cpp
     actionchain_p.h
-    action_p.h
-    enginerequest.cpp
-    enginerequest.h
-    engine.cpp
-    engine_p.h
+    application.cpp
+    application_p.h
+    async.cpp
+    component.cpp
+    component_p.h
+    context.cpp
+    context_p.h
     controller.cpp
     controller_p.h
+    dispatcher.cpp
+    dispatcher_p.h
     dispatchtype.cpp
     dispatchtypechained.cpp
     dispatchtypechained.h
@@ -34,56 +23,71 @@ set(cutelystqt_SRC
     dispatchtypepath.cpp
     dispatchtypepath.h
     dispatchtypepath_p.h
-    dispatcher.cpp
-    dispatcher_p.h
-    component.cpp
-    component_p.h
-    view.cpp
-    application.cpp
-    application_p.h
+    engine.cpp
+    engine_p.h
+    enginerequest.cpp
+    enginerequest.h
+    headers.cpp
+    multipartformdataparser.cpp
+    multipartformdataparser.h
+    multipartformdataparser_p.h
     plugin.cpp
+    request.cpp
+    request_p.h
+    response.cpp
+    response_p.h
+    stats.cpp
+    stats_p.h
+    testengine.cpp
+    testengine_p.h
+    upload.cpp
+    upload_p.h
+    utils.cpp
+    view.cpp
 )
 
 set(cutelystqt_HEADERS
-    paramsmultimap.h
-    ParamsMultiMap
-    action.h
     Action
-    actionchain.h
     ActionChain
-    application.h
     Application
-    async.h
-    context.h
-    Context
-    controller.h
-    Controller
-    ComponentFactory
-    componentfactory.h
-    component.h
     Component
-    dispatcher.h
-    Dispatcher
-    dispatchtype.h
+    ComponentFactory
+    Context
+    Controller
     DispatchType
+    Dispatcher
+    Engine
+    Headers
+    ParamsMultiMap
+    Plugin
+    Request
+    Response
+    TestEngine
+    Upload
+    View
+    action.h
+    actionchain.h
+    application.h
+    async.h
+    component.h
+    componentfactory.h
+    context.h
+    controller.h
+    dispatcher.h
+    dispatchtype.h
     engine.h
     enginerequest.h
-    Engine
     headers.h
-    Headers
+    paramsmultimap.h
+    plugin.h
     request.h
-    Request
     response.h
-    Response
     stats.h
+    testengine.hpp
     upload.h
-    Upload
+    utils.h
     view.h
     view_p.h
-    View
-    plugin.h
-    Plugin
-    utils.h
 )
 
 set(cutelystqt_HEADERS_PRIVATE

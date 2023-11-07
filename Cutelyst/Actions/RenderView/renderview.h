@@ -25,10 +25,10 @@ public:
     /**
      * Reimplemented from Plugin::init()
      */
-    virtual bool init(Application *application, const QVariantHash &args) override;
+    bool init(Application *application, const QVariantHash &args) override;
 
 protected:
-    virtual bool doExecute(Cutelyst::Context *c) override;
+    bool doExecute(Cutelyst::Context *c) override;
 };
 
 class RenderViewFactory final

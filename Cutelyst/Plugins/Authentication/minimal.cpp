@@ -8,9 +8,8 @@
 
 using namespace Cutelyst;
 
-StoreMinimal::StoreMinimal(const QString &idField, QObject *parent)
-    : AuthenticationStore(parent)
-    , m_idField(idField)
+StoreMinimal::StoreMinimal(const QString &idField)
+    : m_idField(idField)
 {
 }
 

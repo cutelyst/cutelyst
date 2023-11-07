@@ -188,7 +188,7 @@ TestEngine *TestActionRoleACL::getEngine()
     new DeniedRoleACL(app);
     new ActionRoleACL(app);
 
-    auto clearStore = new StoreMinimal(QStringLiteral("id"));
+    auto clearStore = std::make_shared<StoreMinimal>(u"id"_qs);
 
     AuthenticationUser fooUser(QStringLiteral("foo"));
     fooUser.insert(QStringLiteral("roles"), QStringList{QStringLiteral("admin")});
@@ -203,11 +203,11 @@ TestEngine *TestActionRoleACL::getEngine()
     bazUser.insert(QStringLiteral("roles"), QStringList{QStringLiteral("editor")});
     clearStore->addUser(bazUser);
 
-    auto clearPassword = new CredentialPassword;
+    auto clearPassword = std::make_shared<CredentialPassword>();
     clearPassword->setPasswordType(CredentialPassword::None);
 
     auto auth = new Authentication(app);
-    auth->addRealm(new AuthenticationRealm(clearStore, clearPassword));
+    auth->addRealm(clearStore, clearPassword);
 
     new Session(app);
 

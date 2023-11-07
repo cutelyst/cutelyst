@@ -28,22 +28,22 @@ public:
     /**
      * Reimplemented from Component::modifiers().
      */
-    virtual Modifiers modifiers() const override;
+    Modifiers modifiers() const override;
 
     /**
      * Reimplemented from Component::init().
      */
-    virtual bool init(Application *application, const QVariantHash &args) override;
+    bool init(Application *application, const QVariantHash &args) override;
 
     /**
      * Reimplemented from Component::aroundExecute().
      */
-    virtual bool aroundExecute(Context *c, QStack<Component *> stack) override;
+    bool aroundExecute(Context *c, QStack<Component *> stack) override;
 
     /**
      * Returns true if the action can be visited by the context c.
      */
-    bool canVisit(Context *c) const;
+    [[nodiscard]] bool canVisit(Context *c) const;
 
 protected:
     /**

@@ -33,7 +33,7 @@ public:
      * Returns the optional prefix to look somewhere under the existing configured
      * template  paths.
      */
-    QString templatePrefix() const;
+    [[nodiscard]] QString templatePrefix() const;
 
     /**
      * Defines the optional prefix to look somewhere under the existing configured
@@ -44,7 +44,7 @@ public:
     /**
      * Returns the default view used to render the templates.
      */
-    QString defaultView() const;
+    [[nodiscard]] QString defaultView() const;
 
     /**
      * Defines the default view used to render the templates.
@@ -55,7 +55,7 @@ public:
      */
     void setDefaultView(const QString &view);
 
-    virtual QByteArray render(Context *c) const override;
+    QByteArray render(Context *c) const override;
 
 Q_SIGNALS:
     void changedProp();
