@@ -71,7 +71,7 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
      * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link
      * QString::isNull() null string\endlink, indicating that the validation has succeeded.
      */
-    Q_REQUIRED_RESULT bool isValid() const noexcept { return errorMessage.isNull(); }
+    [[nodiscard]] bool isValid() const noexcept { return errorMessage.isNull(); }
 };
 
 /*!
@@ -378,19 +378,19 @@ protected:
      * \brief Returns the name of the field to validate.
      * \return The name of the field to validate that has been set in the constructor.
      */
-    Q_REQUIRED_RESULT QString field() const noexcept;
+    [[nodiscard]] QString field() const noexcept;
 
     /*!
      * \brief Returns the human readable field label used for generic error messages.
      * The label can be set in the ValidatorMessages on the constructor.
      * \return Human readable field label used for generic error messages.
      */
-    Q_REQUIRED_RESULT QString label(Context *c) const;
+    [[nodiscard]] QString label(Context *c) const;
 
     /*!
      * \brief Returns the value of the field from the input \a params.
      */
-    Q_REQUIRED_RESULT QString value(const ParamsMultiMap &params) const;
+    [[nodiscard]] QString value(const ParamsMultiMap &params) const;
 
     /*!
      * \brief Returns true if the field value should be trimmed before validation.
@@ -398,7 +398,7 @@ protected:
      * By default, this will return \c true and all input values will be trimmed before validation
      * to remove whitespaces from the beginning and the end.
      */
-    Q_REQUIRED_RESULT bool trimBefore() const noexcept;
+    [[nodiscard]] bool trimBefore() const noexcept;
 
     /*!
      * \brief Returns a descriptive error message if validation failed.
@@ -414,8 +414,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    Q_REQUIRED_RESULT QString validationError(Context *c,
-                                              const QVariant &errorData = QVariant()) const;
+    [[nodiscard]] QString validationError(Context *c, const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error mesage if validation failed.
@@ -464,8 +463,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    Q_REQUIRED_RESULT QString parsingError(Context *c,
-                                           const QVariant &errorData = QVariant()) const;
+    [[nodiscard]] QString parsingError(Context *c, const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error message if an error occures while parsing input.
@@ -513,8 +511,8 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    Q_REQUIRED_RESULT QString validationDataError(Context *c,
-                                                  const QVariant &errorData = QVariant()) const;
+    [[nodiscard]] QString validationDataError(Context *c,
+                                              const QVariant &errorData = QVariant()) const;
 
     /*!
      * \brief Returns a generic error message if any validation data is missing or invalid.
@@ -563,7 +561,7 @@ protected:
      * This returns something like <tt>MyValidator: Validation failed for field "my_field" at
      * MyController::myAction:</tt>
      */
-    Q_REQUIRED_RESULT QString debugString(Context *c) const;
+    [[nodiscard]] QString debugString(Context *c) const;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRule) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)

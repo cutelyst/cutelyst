@@ -20,13 +20,11 @@ Validator::Validator(QLatin1String translationContext)
 {
 }
 
-#ifdef Q_COMPILER_INITIALIZER_LISTS
 Validator::Validator(std::initializer_list<ValidatorRule *> validators,
                      QLatin1String translationContext)
     : d_ptr(new ValidatorPrivate(validators, translationContext))
 {
 }
-#endif
 
 Validator::~Validator() = default;
 

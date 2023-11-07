@@ -22,21 +22,18 @@ public:
 
     void beforePrepareAction(Context *c, bool *skipMethod);
     bool locateCompressedFile(Context *c, const QString &relPath) const;
-    Q_REQUIRED_RESULT QString locateCacheFile(const QString &origPath,
-                                              const QDateTime &origLastModified,
-                                              Compression compression) const;
-    Q_REQUIRED_RESULT bool compressGzip(const QString &inputPath,
-                                        const QString &outputPath,
-                                        const QDateTime &origLastModified) const;
-    Q_REQUIRED_RESULT bool compressDeflate(const QString &inputPath,
-                                           const QString &outputPath) const;
+    [[nodiscard]] QString locateCacheFile(const QString &origPath,
+                                          const QDateTime &origLastModified,
+                                          Compression compression) const;
+    [[nodiscard]] bool compressGzip(const QString &inputPath,
+                                    const QString &outputPath,
+                                    const QDateTime &origLastModified) const;
+    [[nodiscard]] bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
-    Q_REQUIRED_RESULT bool compressZopfli(const QString &inputPath,
-                                          const QString &outputPath) const;
+    [[nodiscard]] bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
 #endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-    Q_REQUIRED_RESULT bool compressBrotli(const QString &inputPath,
-                                          const QString &outputPath) const;
+    [[nodiscard]] bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
 #endif
 
     QStringList dirs;

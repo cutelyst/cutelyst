@@ -21,7 +21,6 @@ public:
     {
     }
 
-#ifdef Q_COMPILER_INITIALIZER_LISTS
     ValidatorPrivate(std::initializer_list<ValidatorRule *> vals, QLatin1String trContext)
         : translationContext(trContext)
         , validators(vals)
@@ -32,7 +31,6 @@ public:
             }
         }
     }
-#endif
 
     ~ValidatorPrivate()
     {

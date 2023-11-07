@@ -30,7 +30,7 @@ Component::Modifiers Component::modifiers() const
     return Component::None;
 }
 
-QString Component::name() const
+QString Component::name() const noexcept
 {
     Q_D(const Component);
     return d->name;
@@ -42,7 +42,7 @@ void Component::setName(const QString &name)
     d->name = name;
 }
 
-QString Component::reverse() const
+QString Component::reverse() const noexcept
 {
     Q_D(const Component);
     return d->reverse;

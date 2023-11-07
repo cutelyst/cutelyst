@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2014-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef MULTIPARTFORMDATAINTERNAL_H
-#define MULTIPARTFORMDATAINTERNAL_H
+#pragma once
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/upload.h>
@@ -19,9 +18,8 @@ public:
      * @param contentType can be the whole HTTP Content-Type header or just it's value
      * @param bufferSize is the internal buffer size used to parse
      */
-    static Uploads parse(QIODevice *body, QByteArrayView contentType, int bufferSize = 4096);
+    [[nodiscard]] static Uploads
+        parse(QIODevice *body, QByteArrayView contentType, int bufferSize = 4096);
 };
 
 } // namespace Cutelyst
-
-#endif // MULTIPARTFORMDATAINTERNAL_H

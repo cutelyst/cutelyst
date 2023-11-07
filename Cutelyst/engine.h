@@ -31,18 +31,18 @@ public:
     /**
      * Returns the application associated with this engine.
      */
-    Application *app() const;
+    [[nodiscard]] Application *app() const;
 
     /**
      * Reimplement this to get the workerId of the engine subclass, this is
      * the same as processes id.
      */
-    virtual int workerId() const = 0;
+    [[nodiscard]] virtual int workerId() const = 0;
 
     /**
      * Returns the worker core set when constructing the engine
      */
-    int workerCore() const;
+    [[nodiscard]] int workerCore() const;
 
     /**
      * Returns true if this is the Zero worker,
@@ -51,19 +51,19 @@ public:
      * \note the value returned from this function is
      * only valid when postFork() is issued.
      */
-    inline bool isZeroWorker() const;
+    [[nodiscard]] inline bool isZeroWorker() const;
 
     /**
      * Engine options
      */
-    QVariantMap opts() const;
+    [[nodiscard]] QVariantMap opts() const;
 
     /**
      * @brief user configuration for the application
      * @param entity the entity you are interested in
      * @return the configuration settings
      */
-    QVariantMap config(const QString &entity) const;
+    [[nodiscard]] QVariantMap config(const QString &entity) const;
 
     /**
      * Sets the configuration to be used by Application
@@ -73,12 +73,12 @@ public:
     /**
      * Returns a QVariantMap with the INI parsed from \p filename.
      */
-    static QVariantMap loadIniConfig(const QString &filename);
+    [[nodiscard]] static QVariantMap loadIniConfig(const QString &filename);
 
     /**
      * Returns a QVariantMap with the JSON parsed from \p filename.
      */
-    static QVariantMap loadJsonConfig(const QString &filename);
+    [[nodiscard]] static QVariantMap loadJsonConfig(const QString &filename);
 
     /**
      * @return current micro seconds time to be used for stats, the default implementation returns
@@ -140,7 +140,7 @@ protected:
     /**
      * This is the HTTP default response headers that each request gets
      */
-    Headers &defaultHeaders();
+    [[nodiscard]] Headers &defaultHeaders();
 
     EnginePrivate *d_ptr;
 

@@ -41,17 +41,19 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual MatchType match(Context *c, QStringView path, const QStringList &args) const = 0;
+    [[nodiscard]] virtual MatchType
+        match(Context *c, QStringView path, const QStringList &args) const = 0;
 
     /**
      * Returns an uri for an action
      */
-    virtual QString uriForAction(Action *action, const QStringList &captures) const = 0;
+    [[nodiscard]] virtual QString uriForAction(Action *action,
+                                               const QStringList &captures) const = 0;
 
     /**
      * Expand the action to a list of actions which is used in chained
      */
-    virtual Action *expandAction(const Context *c, Action *action) const;
+    [[nodiscard]] virtual Action *expandAction(const Context *c, Action *action) const;
 
     /**
      * @brief registerAction
