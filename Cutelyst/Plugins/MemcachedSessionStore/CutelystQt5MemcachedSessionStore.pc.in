@@ -1,11 +1,11 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=@CMAKE_INSTALL_LIBDIR@
-includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt5
+includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 
-Name: Cutelyst Qt5 Memcached Session Store Plugin
+Name: Cutelyst Qt@QT_VERSION_MAJOR@ Memcached Session Store Plugin
 Description: Cutelyst Memcached Session Store plugin
 Version: @PROJECT_VERSION@
-Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core
-Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore
+Requires: Qt@QT_VERSION_MAJOR@Core Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Core
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@MemcachedSessionStore
 Cflags: -I${includedir}/Cutelyst -I${includedir}
