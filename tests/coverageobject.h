@@ -5,6 +5,7 @@
 #include <Cutelyst/Context>
 #include <Cutelyst/Controller>
 #include <Cutelyst/Engine>
+#include <Cutelyst/TestEngine>
 
 #include <QBuffer>
 #include <QObject>
@@ -28,58 +29,6 @@ protected Q_SLOTS:
 private:
     void saveCoverageData();
     QString generateTestName() const;
-};
-
-class TestEngine : public Engine
-{
-    Q_OBJECT
-public:
-    explicit TestEngine(Application *app, const QVariantMap &opts);
-
-    virtual int workerId() const override;
-
-    struct TestResponse {
-        QByteArray body;
-        Headers headers;
-        QByteArray status;
-        quint16 statusCode;
-    };
-
-    TestResponse createRequest(const QByteArray &method,
-                               const QByteArray &path,
-                               const QByteArray &query,
-                               const Headers &headers,
-                               QByteArray *body);
-
-    TestResponse createRequest(const QByteArray &method,
-                               const QString &path,
-                               const QByteArray &query,
-                               const Headers &headers,
-                               QByteArray *body);
-
-    virtual bool init() override;
-
-    inline static const char *httpStatusMessage(quint16 status, int *len = nullptr)
-    {
-        return Engine::httpStatusMessage(status, len);
-    }
-};
-
-class SequentialBuffer : public QIODevice
-{
-    Q_OBJECT
-public:
-    SequentialBuffer(QByteArray *buffer);
-    virtual bool isSequential() const override;
-
-    virtual qint64 bytesAvailable() const override;
-
-protected:
-    qint64 readData(char *data, qint64 maxlen) override;
-    qint64 writeData(const char *data, qint64 len) override;
-
-private:
-    QByteArray *buf;
 };
 
 class RootController : public Controller
