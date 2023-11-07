@@ -50,16 +50,15 @@ using namespace Cutelyst;
 RenderView::RenderView(QObject *parent)
     : Action(new RenderViewPrivate, parent)
 {
-    setObjectName(QString::fromLatin1(metaObject()->className()) + QLatin1String("->execute"));
+    setObjectName(QString::fromLatin1(metaObject()->className()) + u"->execute");
 }
 
 bool RenderView::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_D(RenderView);
 
-    const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
-    qDebug() << "render view" << attributes;
-    d->view = application->view(attributes.value(QLatin1String("View")));
+    const auto attributes = args.value(u"attributes"_qs).value<ParamsMultiMap>();
+    d->view               = application->view(attributes.value(u"View"_qs));
 
     return Action::init(application, args);
 }

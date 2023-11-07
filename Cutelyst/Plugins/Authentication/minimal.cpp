@@ -52,5 +52,3 @@ AuthenticationUser StoreMinimal::fromSession(Context *c, const QVariant &frozenU
                         {m_idField, frozenUser.toString()},
                     });
 }
-
-#include "moc_minimal.cpp"

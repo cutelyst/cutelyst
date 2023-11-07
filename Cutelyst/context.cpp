@@ -141,10 +141,10 @@ Dispatcher *Context::dispatcher() const noexcept
     return d->dispatcher;
 }
 
-QString Cutelyst::Context::controllerName() const
+QString Cutelyst::Context::controllerName() const noexcept
 {
     Q_D(const Context);
-    return QString::fromLatin1(d->action->controller()->metaObject()->className());
+    return d->action->className();
 }
 
 Controller *Context::controller() const noexcept

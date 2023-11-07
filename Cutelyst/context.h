@@ -140,7 +140,7 @@ public:
     /**
      * The current controller name
      */
-    [[nodiscard]] QString controllerName() const;
+    [[nodiscard]] QString controllerName() const noexcept;
 
     /**
      * Returns the current controller
