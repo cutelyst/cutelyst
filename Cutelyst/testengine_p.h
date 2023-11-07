@@ -32,7 +32,7 @@ public:
 protected:
     qint64 doWrite(const char *data, qint64 len) override;
     bool writeHeaders(quint16 status, const Headers &headers) override;
-    void processingFinished();
+    void processingFinished() override;
 
 public:
     QEventLoop m_eventLoop;
