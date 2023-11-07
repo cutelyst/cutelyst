@@ -254,7 +254,7 @@ void TestResponse::doTest()
     auto result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);
 
-    QCOMPARE(result.status, responseStatus);
+    QCOMPARE(TestEngine::httpStatus(result.statusCode), responseStatus);
     auto resultHeaders = result.headers;
     if (responseHeaders != resultHeaders) {
         qDebug() << resultHeaders << responseHeaders;

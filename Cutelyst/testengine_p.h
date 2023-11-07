@@ -37,7 +37,6 @@ protected:
 public:
     QEventLoop m_eventLoop;
     QByteArray m_responseData;
-    QByteArray m_status;
     Headers m_headers;
     quint16 m_statusCode;
 };

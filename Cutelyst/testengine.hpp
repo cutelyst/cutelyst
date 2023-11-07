@@ -22,7 +22,6 @@ public:
     struct TestResponse {
         QByteArray body;
         Headers headers;
-        QByteArray status;
         quint16 statusCode;
     };
 
@@ -40,10 +39,7 @@ public:
 
     bool init() override;
 
-    inline static const char *httpStatusMessage(quint16 status, int *len = nullptr)
-    {
-        return Engine::httpStatusMessage(status, len);
-    }
+    [[nodiscard]] static QByteArray httpStatus(quint16 status);
 };
 
 } // namespace Cutelyst

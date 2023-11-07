@@ -57,7 +57,6 @@ TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
 
     TestResponse ret;
     ret.body       = req.m_responseData;
-    ret.status     = req.m_status;
     ret.statusCode = req.m_statusCode;
     ret.headers    = req.m_headers;
 
@@ -76,6 +75,13 @@ TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
 bool TestEngine::init()
 {
     return initApplication() && postForkApplication();
+}
+
+QByteArray TestEngine::httpStatus(quint16 status)
+{
+    int len;
+    const auto *statusChar = httpStatusMessage(status, &len);
+    return QByteArray(statusChar + 9, len - 9);
 }
 
 SequentialBuffer::SequentialBuffer(QByteArray *buffer)
@@ -117,11 +123,8 @@ qint64 TestEngineConnection::doWrite(const char *data, qint64 len)
 
 bool TestEngineConnection::writeHeaders(quint16 status, const Headers &headers)
 {
-    int len;
-    const auto *statusChar = TestEngine::httpStatusMessage(status, &len);
-    m_statusCode           = status;
-    m_status               = QByteArray(statusChar + 9, len - 9);
-    m_headers              = headers;
+    m_statusCode = status;
+    m_headers    = headers;
 
     return true;
 }
