@@ -18,8 +18,9 @@ using namespace Cutelyst;
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static thread_local Memcached *mcd = nullptr;
-const time_t Memcached::expirationNotAdd{MEMCACHED_EXPIRATION_NOT_ADD};
-const std::chrono::seconds Memcached::expirationNotAddDuration{MEMCACHED_EXPIRATION_NOT_ADD};
+const time_t Memcached::expirationNotAdd{static_cast<time_t>(MEMCACHED_EXPIRATION_NOT_ADD)};
+const std::chrono::seconds Memcached::expirationNotAddDuration{
+    static_cast<std::chrono::seconds::rep>(MEMCACHED_EXPIRATION_NOT_ADD)};
 
 Memcached::Memcached(Application *parent)
     : Plugin(parent)
