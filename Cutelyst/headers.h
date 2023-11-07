@@ -313,8 +313,7 @@ public:
      * "Basic Authentication Scheme".
      * It won't set the values if username contains a colon ':'.
      */
-    [[nodiscard]] QByteArray setAuthorizationBasic(const QString &username,
-                                                   const QString &password);
+    QByteArray setAuthorizationBasic(const QString &username, const QString &password);
 
     /**
      * A user agent that wishes to authenticate itself with a server or a proxy, may do so by

@@ -138,7 +138,7 @@ public:
     C_ATTR(authenticate_user_cookie, :Local :AutoArgs)
     void authenticate_user_cookie(Context *c, const QString &realm)
     {
-        Authentication::authenticate(c, c->request()->queryParameters(), realm);
+        std::ignore       = Authentication::authenticate(c, c->request()->queryParameters(), realm);
         const auto cookie = c->response()
                                 ->cookie(QByteArrayLiteral("testauthentication_exec_session"))
                                 .value<QNetworkCookie>();
