@@ -72,6 +72,24 @@ Whether to use a secure cookie for the CSRF cookie. If this is set to
 the cookie will be marked as secure, which means browsers may ensure that the cookie is only sent with an HTTPS connection.
 .RE
 .PP
+.I cookie_same_site
+(string value, default: strict)
+.RS 4
+Defines the SameSite attribute of the CSRF cookie. Read the
+.UR https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+MDN article
+.UE
+to learn more about SameSite cookies. This configuration key is available since Cutelyst 3.8.0. Acceptable values are:
+.IP \(bu 4n
+default - SameSite is not set. Can be interpreted as None or Lax by the browser.
+.IP \(bu
+none - Cookies can be sent in all contexts. This used to be default, but recent browsers made Lax default, and will now require the cookie to be both secure and to set SameSite=None.
+.IP \(bu
+lax - Cookies are sent on first party requests and GET requests initiated by third party website. This is the default in modern browsers (since mid 2020).
+.IP \(bu
+strict - Cookies will only be sent in a first-party context.
+.RE
+.PP
 .I trusted_origins
 (string list, default: empty)
 .RS 4
