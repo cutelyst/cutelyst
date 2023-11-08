@@ -165,11 +165,12 @@ class CSRFProtectionPrivate;
  * There are some options you can set in your application configuration file in the @c
  * Cutelyst_CSRFProtection_Plugin section.
  *
- * @par cookie_age
+ * @par cookie_expiration
  * @parblock
- * Integer value, default: 31449600
+ * Integer or string, default: 1 year
  *
- * The age/expiration time of the cookie in seconds.
+ * The expiration time of the cookie. The value will be parsed by Utils::durationFromString(),
+ * so you can use one of the supported human readable time spans.
  *
  * The reason for setting a long-lived expiration time is to avoid problems in the case of a user
  * closing a browser or bookmarking a page and then loading that page from a browser cache. Without
@@ -210,8 +211,7 @@ class CSRFProtectionPrivate;
  *
  * Defines the SameSite attribute of the CSRF cookie. See <A
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN</A> to
- * learn more about SameSite cookies. This configuration key is available since Cutelyst 3.8.0 and
- * is only available if Cutelyst is compiled against Qt 6.1.0 or newer.
+ * learn more about SameSite cookies. This configuration key is available since Cutelyst 3.8.0.
  * @endparblock
  *
  * @par trusted_origins

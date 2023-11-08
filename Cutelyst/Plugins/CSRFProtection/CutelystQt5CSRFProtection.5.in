@@ -1,4 +1,4 @@
-.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection 5 "2021-09-01" "Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection @PROJECT_VERSION@"
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection 5 "2023-11-08" "Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection @PROJECT_VERSION@"
 
 .SH NAME
 Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection - Configuration of the CSRFProtection Plugin for the Cutelyst Web Framework
@@ -13,14 +13,45 @@ There are some options you can set in your application configuration file in the
 .I Cutelyst_CSRFProtection_Plugin
 section.
 .PP
-.I cookie_age
-(integer value, default: 31449600)
+.I cookie_expiration
+(integer or string value, default: 1 year)
 .RS 4
-The age/expiration time of the cookie in seconds.
+The expiration time of the cookie. Can be given as time span where the following time units are understood:
+.IP \(bu 4n
+usec, us
+.IP \(bu
+msec, ms
+.IP \(bu
+seconds, second, sec, s
+.IP \(bu
+minutes, minute, min, m
+.IP \(bu
+hours, hour, hr, h
+.IP \(bu
+days, day, d
+.IP \(bu
+weeks, week, w
+.IP \(bu
+months, month, M (defined as 30.44 days)
+.IP \(bu
+years, year, y (defined as 365.25 days)
+.PP
+If no time unit is specified, generally seconds are assumed. Examples for valid time span specifications:
+.PP
+.RS 4
+.EX
+2 h
+2hours
+48hr
+1y 12month
+55s500ms
+300ms20s 5day
+.EE
+.RE
 .PP
 The reason for setting a long-lived expiration time is to avoid problems in the case of a user closing a browser or bookmarking a page and then loading that page from a browser cache. Without persistent cookies, the form submission would fail in this case.
 .PP
-Some browsers (specifically Internet Explorer) can disallow the use of persistent cookies or can have the indexes to the cookie jar corrupted on disk, thereby causing CSRF protection checks to (sometimes intermittently) fail. Change this setting to @c 0 to use session-based CSRF cookies, which keep the cookies in-memory instead of on persistent storage.
+Some browsers (specifically Internet Explorer) can disallow the use of persistent cookies or can have the indexes to the cookie jar corrupted on disk, thereby causing CSRF protection checks to (sometimes intermittently) fail. Change this setting to 0 to use session-based CSRF cookies, which keep the cookies in-memory instead of on persistent storage.
 .RE
 .PP
 .I cookie_domain
