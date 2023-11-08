@@ -16,6 +16,7 @@
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
 #include <Cutelyst/Upload>
+#include <Cutelyst/utils.h>
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -66,7 +67,7 @@ bool CSRFProtection::setup(Application *app)
     const QVariantMap config = app->engine()->config(u"Cutelyst_CSRFProtection_Plugin"_qs);
 
     bool cookieExpirationOk = false;
-    const qint64 expSeconds =
+    const QString cookieExpireStr =
         config
             .value(
                 u"cookie_expiration"_qs,
@@ -74,10 +75,10 @@ bool CSRFProtection::setup(Application *app)
                              static_cast<qint64>(std::chrono::duration_cast<std::chrono::seconds>(
                                                      CSRFProtectionPrivate::cookieDefaultExpiration)
                                                      .count())))
-            .toLongLong(&cookieExpirationOk);
-    if (cookieExpirationOk) {
-        d->cookieExpiration = std::chrono::seconds{expSeconds};
-    } else {
+            .toString();
+    d->cookieExpiration = std::chrono::duration_cast<std::chrono::seconds>(
+        Utils::durationFromString(cookieExpireStr, &cookieExpirationOk));
+    if (!cookieExpirationOk) {
         qCWarning(C_CSRFPROTECTION).nospace() << "Invalid value set for cookie_expiration. "
                                                  "Has to be an integer greater than 0. "
                                                  "Using default value "
@@ -406,13 +407,17 @@ void CSRFProtectionPrivate::setToken(Context *c)
         if (!csrf->d_ptr->cookieDomain.isEmpty()) {
             cookie.setDomain(csrf->d_ptr->cookieDomain);
         }
+        if (csrf->d_ptr->cookieExpiration.count() == 0) {
+            cookie.setExpirationDate(QDateTime());
+        } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
-        cookie.setExpirationDate(
-            QDateTime::currentDateTime().addDuration(csrf->d_ptr->cookieExpiration));
+            cookie.setExpirationDate(
+                QDateTime::currentDateTime().addDuration(csrf->d_ptr->cookieExpiration));
 #else
-        cookie.setExpirationDate(
-            QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieExpiration.count()));
+            cookie.setExpirationDate(
+                QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieExpiration.count()));
 #endif
+        }
         cookie.setHttpOnly(csrf->d_ptr->cookieHttpOnly);
         cookie.setPath(csrf->d_ptr->cookiePath);
         cookie.setSecure(csrf->d_ptr->cookieSecure);
