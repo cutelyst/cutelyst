@@ -7,15 +7,16 @@
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Context>
+#include <Cutelyst/Engine>
 #include <Cutelyst/Plugins/Session/Session>
 #include <Cutelyst/Response>
+#include <Cutelyst/utils.h>
 #include <map>
 #include <utility>
 
 #include <QDir>
 #include <QFileInfo>
 #include <QLoggingCategory>
-#include <QNetworkCookie>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -55,6 +56,53 @@ LangSelect::~LangSelect() = default;
 bool LangSelect::setup(Application *app)
 {
     Q_D(LangSelect);
+
+    const QVariantMap config = app->engine()->config(u"Cutelyst_LangSelect_Plugin"_qs);
+
+    bool cookieExpirationOk = false;
+    const QString cookieExpireStr =
+        config.value(u"cookie_expiration"_qs, static_cast<qint64>(d->cookieExpiration.count()))
+            .toString();
+    d->cookieExpiration = std::chrono::duration_cast<std::chrono::seconds>(
+        Utils::durationFromString(cookieExpireStr, &cookieExpirationOk));
+    if (!cookieExpirationOk) {
+        qCWarning(C_LANGSELECT).nospace() << "Invalid value set for cookie_expiration. "
+                                             "Using default value "
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+                                          << LangSelectPrivate::cookieDefaultExpiration;
+#else
+                                          << "1 month";
+#endif
+        d->cookieExpiration = LangSelectPrivate::cookieDefaultExpiration;
+    }
+
+    d->cookieDomain = config.value(u"cookie_domain"_qs).toString();
+
+    const QString _sameSite = config.value(u"cookie_same_site"_qs, u"lax"_qs).toString();
+    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Default;
+    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::None;
+    } else if (_sameSite.compare(u"stric", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Lax;
+    } else {
+        qCWarning(C_LANGSELECT).nospace() << "Invalid value set for cookie_same_site. "
+                                             "Using default value "
+                                          << QNetworkCookie::SameSite::Lax;
+        d->cookieSameSite = QNetworkCookie::SameSite::Lax;
+    }
+
+    d->cookieSecure = config.value(u"cookie_secure"_qs).toBool();
+
+    if ((d->cookieSameSite == QNetworkCookie::SameSite::None) && !d->cookieSecure) {
+        qCWarning(C_LANGSELECT) << "cookie_same_site has been set to None but cookie_secure is "
+                                   "not set to true. Implicitely setting cookie_secure to true. "
+                                   "Please check your configuration.";
+        d->cookieSecure = true;
+    }
+
     if (d->fallbackLocale.language() == QLocale::C) {
         qCCritical(C_LANGSELECT) << "We need a valid fallback locale.";
         return false;
@@ -713,21 +761,34 @@ void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
     }
     query.addQueryItem(key, c->locale().bcp47Name().toLower());
     uri.setQuery(query);
-    qCDebug(C_LANGSELECT) << "Storing selected locale in URL query by redirecting to" << uri;
+    qCDebug(C_LANGSELECT) << "Storing selected" << c->locale() << "in URL query by redirecting to"
+                          << uri;
     c->res()->redirect(uri, Response::TemporaryRedirect);
 }
 
 void LangSelectPrivate::setToCookie(Context *c, const QByteArray &name) const
 {
-    qCDebug(C_LANGSELECT) << "Storing selected locale in cookie with name" << name;
+    qCDebug(C_LANGSELECT) << "Storing selected" << c->locale() << "in cookie with name" << name;
     QNetworkCookie cookie(name, c->locale().bcp47Name().toLatin1());
     cookie.setSameSitePolicy(QNetworkCookie::SameSite::Lax);
+    if (cookieExpiration.count() == 0) {
+        cookie.setExpirationDate(QDateTime());
+    } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+        cookie.setExpirationDate(QDateTime::currentDateTime().addDuration(cookieExpiration));
+#else
+        cookie.setExpirationDate(QDateTime::currentDateTime().addSecs(cookieExpiration.count()));
+#endif
+    }
+    cookie.setDomain(cookieDomain);
+    cookie.setSecure(cookieSecure);
+    cookie.setSameSitePolicy(cookieSameSite);
     c->res()->setCookie(cookie);
 }
 
 void LangSelectPrivate::setToSession(Context *c, const QString &key) const
 {
-    qCDebug(C_LANGSELECT) << "Storing selected locale in session key" << key;
+    qCDebug(C_LANGSELECT) << "Storing selected" << c->locale() << "in session key" << key;
     Session::setValue(c, key, c->locale());
 }
 

@@ -45,3 +45,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsLangSelect.pc.in
     @ONLY
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsLangSelect.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
+if(UNIX)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtLangSelect.5.in
+        ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}LangSelect.5
+        @ONLY
+    )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}LangSelect.5 DESTINATION ${MANDIR}/man5)
+endif()
