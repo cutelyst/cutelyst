@@ -210,9 +210,9 @@ class CSRFProtectionPrivate;
  * String value, default: strict; acceptable values: default, none, lax, strict
  *
  * Defines the SameSite attribute of the CSRF cookie. See <A
- * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN</A> to
- * learn more about SameSite cookies. See also QNetworkCookie::SameSite. This configuration key is
- * available since Cutelyst 3.8.0.
+ * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value">MDN</A>
+ * to learn more about SameSite cookies. See also QNetworkCookie::SameSite. This configuration key
+ * is available since Cutelyst 3.8.0.
  * @endparblock
  *
  * @par trusted_origins

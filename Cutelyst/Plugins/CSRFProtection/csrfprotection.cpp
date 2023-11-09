@@ -80,7 +80,6 @@ bool CSRFProtection::setup(Application *app)
         Utils::durationFromString(cookieExpireStr, &cookieExpirationOk));
     if (!cookieExpirationOk) {
         qCWarning(C_CSRFPROTECTION).nospace() << "Invalid value set for cookie_expiration. "
-                                                 "Has to be an integer greater than 0. "
                                                  "Using default value "
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
                                               << CSRFProtectionPrivate::cookieDefaultExpiration;
@@ -94,11 +93,8 @@ bool CSRFProtection::setup(Application *app)
     if (d->cookieName.isEmpty()) {
         d->cookieName = "csrftoken";
     }
-    d->cookiePath   = u"/"_qs;
-    d->cookieSecure = config.value(u"cookie_secure"_qs, false).toBool();
-    if (d->headerName.isEmpty()) {
-        d->headerName = "X_CSRFTOKEN";
-    }
+    d->cookiePath = u"/"_qs;
+
     const QString _sameSite = config.value(u"cookie_same_site"_qs, u"strict"_qs).toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
@@ -106,8 +102,27 @@ bool CSRFProtection::setup(Application *app)
         d->cookieSameSite = QNetworkCookie::SameSite::None;
     } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Lax;
-    } else {
+    } else if (_sameSite.compare(u"strict", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    } else {
+        qCWarning(C_CSRFPROTECTION).nospace() << "Invalid value set for cookie_same_site. "
+                                                 "Using default value "
+                                              << QNetworkCookie::SameSite::Strict;
+        d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    }
+
+    d->cookieSecure = config.value(u"cookie_secure"_qs, false).toBool();
+
+    if ((d->cookieSameSite == QNetworkCookie::SameSite::None) && !d->cookieSecure) {
+        qCWarning(C_CSRFPROTECTION)
+            << "cookie_same_site has been set to None but cookie_secure is "
+               "not set to true. Implicitely setting cookie_secure to true. "
+               "Please check your configuration.";
+        d->cookieSecure = true;
+    }
+
+    if (d->headerName.isEmpty()) {
+        d->headerName = "X_CSRFTOKEN";
     }
 
     d->trustedOrigins =
