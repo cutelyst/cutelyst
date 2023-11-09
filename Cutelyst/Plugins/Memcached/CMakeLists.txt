@@ -39,14 +39,14 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached
     PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Memcached COMPONENT devel
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Memcached.pc.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtMemcached.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached.pc
     @ONLY
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 if(UNIX)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Memcached.5.in
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtMemcached.5.in
         ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached.5
         @ONLY
     )

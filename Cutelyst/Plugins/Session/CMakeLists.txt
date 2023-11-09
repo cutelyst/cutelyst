@@ -34,13 +34,13 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session
     PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Session COMPONENT devel
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Session.pc.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtSession.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.pc
     @ONLY
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Session.5.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtSession.5.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.5
     @ONLY
 )
