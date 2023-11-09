@@ -157,7 +157,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
             request->headerHost    = true;
             request->headers.pushHeader("Host"_qba, value);
         } else {
-            const auto keyStr = QByteArray(key + 5, keylen - 5);
+            const auto keyStr = QByteArray(key + 5, keylen - 5).replace('_', '-');
             request->headers.pushHeader(keyStr, value);
         }
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {

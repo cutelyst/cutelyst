@@ -102,8 +102,6 @@ install(TARGETS ${target_name_server}
 
 add_executable(cutelystd main.cpp)
 
-
-
 if (USE_MIMALLOC)
     target_link_libraries(cutelystd PRIVATE mimalloc-static)
 elseif (JEMALLOC_FOUND)
