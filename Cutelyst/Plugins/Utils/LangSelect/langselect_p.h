@@ -8,6 +8,10 @@
 
 #include "langselect.h"
 
+#include <chrono>
+
+#include <QNetworkCookie>
+
 namespace Cutelyst {
 
 class LangSelectPrivate
@@ -31,6 +35,12 @@ public:
 
     static const QString stashKeySelectionTried;
 
+#if __cplusplus >= 202002L
+    static constexpr std::chrono::months cookieDefaultExpiration{1};
+#else
+    static constexpr std::chrono::hours cookieDefaultExpiration{730};
+#endif
+
     QVector<QLocale> locales;
     LangSelect::Source source = LangSelect::Fallback;
     QMap<QString, QLocale> domainMap;
@@ -40,12 +50,16 @@ public:
     QString queryKey;
     QString sessionKey;
     QByteArray cookieName;
+    QString cookieDomain;
     QString langStashKey = QStringLiteral("c_langselect_lang");
     QString dirStashKey  = QStringLiteral("c_langselect_dir");
     QLocale fallbackLocale;
-    bool addContentLanguageHeader = true;
-    bool autoDetect               = true;
-    bool detectFromHeader         = true;
+    std::chrono::seconds cookieExpiration   = cookieDefaultExpiration;
+    QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Lax;
+    bool addContentLanguageHeader           = true;
+    bool autoDetect                         = true;
+    bool detectFromHeader                   = true;
+    bool cookieSecure                       = false;
 };
 
 } // namespace Cutelyst

@@ -1,0 +1,88 @@
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@LangSelect 5 "2023-11-09" "Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@LangSelect @PROJECT_VERSION@"
+
+.SH NAME
+Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@LangSelect - Configuration of the LangSelect Plugin for the Cutelyst Web Framework
+.SH DESCRIPTION
+The LangSelect plugin can set the locale based on different definable input parameters like cookie or session values, URL query parameters and parts of the path or the domain. It will check if the language requested by the user agent is supported by the application. If the language is not supported, it will use a fallback language. As another fallback it will try to get the locale from the @a Accept-Language header.
+.SH CONFIGURATION
+There are some options you can set in your application configuration file in the
+.I Cutelyst_LangSelect_Plugin
+section.
+.PP
+.I cookie_expiration
+(integer or string value, default: 1 month)
+.RS 4
+The expiration time of the cookie. Can be given as time span where the following time units are understood:
+.IP \(bu 4n
+usec, us
+.IP \(bu
+msec, ms
+.IP \(bu
+seconds, second, sec, s
+.IP \(bu
+minutes, minute, min, m
+.IP \(bu
+hours, hour, hr, h
+.IP \(bu
+days, day, d
+.IP \(bu
+weeks, week, w
+.IP \(bu
+months, month, M (defined as 30.44 days)
+.IP \(bu
+years, year, y (defined as 365.25 days)
+.PP
+If no time unit is specified, generally seconds are assumed. Examples for valid time span specifications:
+.PP
+.RS 4
+.EX
+2 h
+2hours
+48hr
+1y 12month
+55s500ms
+300ms20s 5day
+.EE
+.RE
+.RE
+.PP
+.I cookie_domain
+(string value, default: empty)
+.RS 4
+The domain to be used when setting the cookie. When empty, the browser will set the current domain.
+.RE
+.PP
+.I cookie_secure
+(boolean value, default: false)
+.RS 4
+Whether to use a secure cookie. If this is set to
+.IR true ,
+the cookie will be marked as secure, which means browsers may ensure that the cookie is only sent with an HTTPS connection.
+.RE
+.PP
+.I cookie_same_site
+(string value, default: lax)
+.RS 4
+Defines the SameSite attribute of the cookie. Read the
+.UR https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
+MDN article
+.UE
+to learn more about SameSite cookies. Acceptable values are:
+.IP \(bu 4n
+default - SameSite is not set. Can be interpreted as None or Lax by the browser.
+.IP \(bu
+none - Cookies can be sent in all contexts. This used to be default, but recent browsers made Lax default, and will now require the cookie to be both secure and to set SameSite=None.
+.IP \(bu
+lax - Cookies are sent on first party requests and GET requests initiated by third party website. This is the default in modern browsers (since mid 2020).
+.IP \(bu
+strict - Cookies will only be sent in a first-party context.
+.RE
+.SH EXAMPLES
+.RS 0
+[Cutelyst_LangSelect_Plugin]
+.RE
+.RS 0
+cookie_secure=true
+.RE
+.SH LOGGING CATEGORY
+cutelyst.plugin.langselect

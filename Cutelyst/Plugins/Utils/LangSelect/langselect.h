@@ -324,6 +324,46 @@ class LangSelectPrivate;
  * c_langselect_lang "otherArg" QUERY c.request.queryParams "foo=bar" %}</code>. If you use the
  * domain or subdomain to set the locale, simply use relative paths in your internal links.
  *
+ * <H3 id="config-file-options">Configuration file options</H3>
+ *
+ * There are some options you can set in your application configuration file in the @c
+ * Cutelyst_LangSelect_Plugin section. The configuration file options are available since
+ * %Cutelyst 4.0.0.
+ *
+ * @par cookie_expiration
+ * @parblock
+ * Integer or string, default: 1 month
+ *
+ * The expiration time of the cookie. The value will be parsed by Utils::durationFromString(),
+ * so you can use one of the supported human readable time spans.
+ * @endparblock
+ *
+ * @par cookie_domain
+ * @parblock
+ * String value, default: empty
+ *
+ * The domain to be used when setting the cookie. When empty, the browser will set the current
+ * domain.
+ * @endparblock
+ *
+ * @par cookie_secure
+ * @parblock
+ * Boolean value, default: @c false
+ *
+ * Whether to use a secure cookie. If this is set to @c true, the cookie will be marked as
+ * @a secure, which means browsers may ensure that the cookie is only sent with an HTTPS
+ * connection.
+ * @endparblock
+ *
+ * @par cookie_same_site
+ * @parblock
+ * String value, default: strict; acceptable values: default, none, lax, strict
+ *
+ * Defines the SameSite attribute of the CSRF cookie. See <A
+ * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value">MDN</A>
+ * to learn more about SameSite cookies. See also QNetworkCookie::SameSite.
+ * @endparblock
+ *
  * @since %Cutelyst 2.1.0
  */
 class CUTELYST_PLUGIN_UTILS_LANGSELECT_EXPORT LangSelect
