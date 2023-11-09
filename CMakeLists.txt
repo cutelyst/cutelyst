@@ -48,7 +48,6 @@ option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
 option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 option(BUILD_DOCS "Add the make docs target to build the documentationn. Requires doxygen and dot" ${BUILD_ALL})
 cmake_dependent_option(BUILD_DOCS_QUIET "Tell doxygen to be quiet while building the documentation." OFF "BUILD_DOCS" OFF)
-cmake_dependent_option(BUILD_DOCS_TIMESTAMP "Tell doxygen to insert a build timestamp on every HTML page." ON "BUILD_DOCS" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
@@ -93,7 +92,6 @@ set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_CURRENT_BINARY_DIR}")
 set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
 message(STATUS "CUTELYST_PLUGINS_DIR: ${CUTELYST_PLUGINS_DIR}")
-set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
 set (I18NDIR "${CMAKE_INSTALL_FULL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
@@ -220,7 +218,7 @@ endif()
 # and libstdc++, this will be created into the directory "webdocs" in the CMAKE_BINARY_DIR.
 # A second html documentation will be created that is linked to local available html
 # documentation, this will be created into the directory "htmldocs" in the CMAKE_BINARY_DIR.
-# The third documentation is a QCH file, that will be created as cutelyst3.qch in the
+# The third documentation is a QCH file, that will be created as cutelystX.qch in the
 # CMAKE_BINARY_DIR. The QCH documentation will only be created if qhelpgenerator can be found.
 # Linkage to third party documentation will only be available if the appropriate tag files
 # can be found.
