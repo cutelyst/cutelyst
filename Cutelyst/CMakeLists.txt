@@ -148,7 +148,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_global.h
         DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtCore.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Core.pc
   @ONLY
 )

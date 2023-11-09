@@ -152,11 +152,11 @@ include_directories(
 )
 
 # cmake config files
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt5-config.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
     @ONLY
 )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt5-config-version.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt-config-version.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
     @ONLY
 )

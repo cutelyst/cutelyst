@@ -33,7 +33,7 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UserAgent
     PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/ COMPONENT devel
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UserAgent.pc.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtUserAgent.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UserAgent.pc
     @ONLY
 )

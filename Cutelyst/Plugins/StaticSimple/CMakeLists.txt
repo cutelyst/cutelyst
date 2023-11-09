@@ -33,7 +33,7 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticSimpl
     PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/StaticSimple COMPONENT devel
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5StaticSimple.pc.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtStaticSimple.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticSimple.pc
     @ONLY
 )
