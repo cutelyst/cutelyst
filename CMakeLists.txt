@@ -91,7 +91,6 @@ set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_CURRENT_BINARY_DIR}")
 set (PLUGINSDIR "${CMAKE_INSTALL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
-set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
 set (I18NDIR "${CMAKE_INSTALL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
 if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.20.0)
