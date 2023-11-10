@@ -139,7 +139,7 @@ bool UnixFork::createProcess(bool respawn)
                 std::cout << "CHEAPING worker: " << worker.id << std::endl;
                 --m_processes;
             }
-            m_recreateWorker.erase(it);
+            it = m_recreateWorker.erase(it);
         }
     } else {
         for (int i = 0; i < m_processes; ++i) {
@@ -294,18 +294,18 @@ bool UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
                 return false;
             }
         } else {
-            char *uidname = nullptr;
-            uint uidInt   = uid.toUInt(&ok);
+            QByteArray uidname;
+            uint uidInt = uid.toUInt(&ok);
             if (ok) {
                 struct passwd *pw = getpwuid(uidInt);
                 if (pw) {
                     uidname = pw->pw_name;
                 }
             } else {
-                uidname = uid.toUtf8().data();
+                uidname = uid.toUtf8();
             }
 
-            if (initgroups(uidname, gidInt)) {
+            if (initgroups(uidname.constData(), gidInt)) {
                 std::cerr << "Failed to setgroups()" << std::endl;
                 return false;
             }
