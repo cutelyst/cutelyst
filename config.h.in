@@ -15,7 +15,7 @@
 #define DATADIR "@DATADIR@"
 #define LIBDIR "@LIBDIR@"
 #define BUILDDIR "@BUILDDIR@"
-#define I18NDIR "@I18NDIR@"
+#define I18NDIR "@CUTELYST_I18N_FULL_DIR@"
 
 /* Name of package */
 #define PACKAGE_NAME "cutelyst"
@@ -28,6 +28,6 @@
 #define CUTELYST_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
 /* Directory where the plugins are located */
-#define CUTELYST_PLUGINS_DIR "@CUTELYST_PLUGINS_DIR@"
+#define CUTELYST_PLUGINS_DIR "@CUTELYST_PLUGINS_FULL_DIR@"
 
 #endif /*CONFIG_H*/
