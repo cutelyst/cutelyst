@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     if (appTranslator.load(QLocale(),
                            QStringLiteral("cutelystserver"),
                            QStringLiteral("."),
-                           QStringLiteral(I18NDIR))) {
+                           QStringLiteral(CUTELYST_I18N_DIR))) {
         QCoreApplication::installTranslator(&appTranslator);
     }
 
