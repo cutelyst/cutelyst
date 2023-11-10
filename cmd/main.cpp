@@ -544,7 +544,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
     QCoreApplication::setApplicationName(QStringLiteral("cutelyst"));
-    QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
+    QCoreApplication::setApplicationVersion(QStringLiteral(CUTELYST_VERSION));
 
     QTranslator qtTranslator;
     bool loadedTr = qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),

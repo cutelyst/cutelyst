@@ -86,7 +86,7 @@ Headers &Application::defaultHeaders() noexcept
 void Application::addXCutelystVersionHeader()
 {
     Q_D(Application);
-    d->headers.setHeader("X-Cutelyst"_qba, QByteArrayLiteral(VERSION));
+    d->headers.setHeader("X-Cutelyst"_qba, QByteArrayLiteral(CUTELYST_VERSION));
 }
 
 bool Application::registerPlugin(Plugin *plugin)
@@ -161,7 +161,7 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
 
 const char *Application::cutelystVersion() noexcept
 {
-    return VERSION;
+    return CUTELYST_VERSION;
 }
 
 QVector<Cutelyst::Controller *> Application::controllers() const noexcept

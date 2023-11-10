@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
     QCoreApplication::setApplicationName(QStringLiteral("cutelystd"));
-    QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
+    QCoreApplication::setApplicationVersion(QStringLiteral(CUTELYST_VERSION));
 
     Cutelyst::Server server;
 
