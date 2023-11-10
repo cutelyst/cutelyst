@@ -80,16 +80,6 @@ endif()
 #
 # Configure files
 #
-set (PREFIXDIR "${CMAKE_INSTALL_PREFIX}")
-set (CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${LIBNAME}/")
-set (DATADIR "${CMAKE_INSTALL_DATADIR}")
-set (PKGDATADIR "${CMAKE_INSTALL_DATADIR}")
-set (LIBDIR "${CMAKE_INSTALL_LIBDIR}")
-set (PKGLIBDIR "${LIBDIR}/cutelyst")
-set (GETTEXT_PACKAGE "cutelyst")
-set (LOCALE_DIR "${DATADIR}/locale")
-set (VERSION "${CUTELYST_VERSION}")
-set (BUILDDIR "${CMAKE_CURRENT_BINARY_DIR}")
 set (PLUGINSDIR "${CMAKE_INSTALL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
 set (I18NDIR "${CMAKE_INSTALL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
