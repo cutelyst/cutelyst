@@ -341,9 +341,11 @@ QByteArray Headers::authorization() const noexcept
 QByteArray Headers::authorizationBearer() const
 {
     QByteArray ret;
-    auto auth = header("AUTHORIZATION");
-    if (auth.startsWith("Bearer ")) {
-        ret = auth.mid(7);
+    auto auth = authorization();
+    int pos   = auth.indexOf("Bearer ");
+    if (pos != -1) {
+        pos += 7;
+        ret = auth.mid(pos, auth.indexOf(',', pos) - pos);
     }
     return ret;
 }
@@ -361,7 +363,7 @@ Headers::Authorization Headers::authorizationBasicObject() const
 QByteArray Headers::setAuthorizationBasic(const QString &username, const QString &password)
 {
     QByteArray ret;
-    if (username.contains(QLatin1Char(':'))) {
+    if (username.contains(u':')) {
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
         return ret;
     }
@@ -520,11 +522,11 @@ bool Headers::operator==(const Headers &other) const noexcept
 QByteArray decodeBasicAuth(const QByteArray &auth)
 {
     QByteArray ret;
-    if (!auth.isEmpty() && auth.startsWith("Basic ")) {
-        int pos = auth.lastIndexOf(' ');
-        if (pos != -1) {
-            ret = QByteArray::fromBase64(auth.sliced(pos));
-        }
+    int pos = auth.indexOf("Basic ");
+    if (pos != -1) {
+        pos += 6;
+        ret = auth.mid(pos, auth.indexOf(',', pos) - pos);
+        ret = QByteArray::fromBase64(ret);
     }
     return ret;
 }
