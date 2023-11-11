@@ -66,7 +66,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer,
     Uploads ret;
     QByteArray headerLine;
     Headers headers;
-    qint64 startOffset;
+    qint64 startOffset   = 0;
     qint64 pos           = 0;
     qint64 contentLength = body->size();
     int bufferSkip       = 0;
