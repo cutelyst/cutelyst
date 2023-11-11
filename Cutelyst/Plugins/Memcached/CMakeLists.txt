@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 find_package(PkgConfig REQUIRED)
-pkg_search_module(MEMCACHED REQUIRED libmemcached)
+pkg_search_module(Memcached REQUIRED IMPORTED_TARGET libmemcached)
 
 set(plugin_memcached_SRC
     memcached.cpp
@@ -27,8 +27,8 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memca
 )
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    ${MEMCACHED_LIBRARIES}
+    PUBLIC Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE PkgConfig::Memcached
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached PROPERTY PUBLIC_HEADER ${plugin_memcached_HEADERS})
