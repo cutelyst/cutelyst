@@ -1,11 +1,12 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=@CMAKE_INSTALL_LIBDIR@
-includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt5
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 
-Name: Cutelyst Qt5 Sql Utils Plugin
+Name: Cutelyst@PROJECT_VERSION_MAJOR@ Qt@QT_VERSION_MAJOR@ Sql Utils Plugin
 Description: Cutelyst Sql Utils Plugin
+URL: @PROJECT_HOMEPAGE_URL@
 Version: @PROJECT_VERSION@
-Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core
-Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5UtilsSql
+Requires: Qt@QT_VERSION_MAJOR@Sql >= @QT_MINIMUM_VERSION@ Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Core >= @PROJECT_VERSION@
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@UtilsSql
 Cflags: -I${includedir}/Cutelyst -I${includedir}
