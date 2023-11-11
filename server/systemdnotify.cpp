@@ -43,9 +43,6 @@ systemdNotify::systemdNotify(QObject *parent)
 {
     Q_D(systemdNotify);
 
-    struct sockaddr_un *sd_sun;
-    struct msghdr *msghdr;
-
     d->notification_fd = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (d->notification_fd < 0) {
         qCWarning(C_SYSTEMD, "socket()");
@@ -53,24 +50,29 @@ systemdNotify::systemdNotify(QObject *parent)
     }
 
     auto systemd_socket = getenv("NOTIFY_SOCKET");
-    size_t len          = strlen(systemd_socket);
-    sd_sun              = new struct sockaddr_un;
-    memset(sd_sun, 0, sizeof(struct sockaddr_un));
-    sd_sun->sun_family = AF_UNIX;
-    strncpy(sd_sun->sun_path, systemd_socket, qMin(len, sizeof(sd_sun->sun_path)));
-    if (sd_sun->sun_path[0] == '@')
-        sd_sun->sun_path[0] = 0;
+    if (systemd_socket) {
+        struct sockaddr_un *sd_sun;
+        struct msghdr *msghdr;
 
-    msghdr = new struct msghdr;
-    memset(msghdr, 0, sizeof(struct msghdr));
+        size_t len = strlen(systemd_socket);
+        sd_sun     = new struct sockaddr_un;
+        memset(sd_sun, 0, sizeof(struct sockaddr_un));
+        sd_sun->sun_family = AF_UNIX;
+        strncpy(sd_sun->sun_path, systemd_socket, qMin(len, sizeof(sd_sun->sun_path)));
+        if (sd_sun->sun_path[0] == '@')
+            sd_sun->sun_path[0] = 0;
 
-    msghdr->msg_iov = new struct iovec[3];
-    memset(msghdr->msg_iov, 0, sizeof(struct iovec) * 3);
+        msghdr = new struct msghdr;
+        memset(msghdr, 0, sizeof(struct msghdr));
 
-    msghdr->msg_name    = sd_sun;
-    msghdr->msg_namelen = sizeof(struct sockaddr_un) - (sizeof(sd_sun->sun_path) - len);
+        msghdr->msg_iov = new struct iovec[3];
+        memset(msghdr->msg_iov, 0, sizeof(struct iovec) * 3);
 
-    d->notification_object = msghdr;
+        msghdr->msg_name    = sd_sun;
+        msghdr->msg_namelen = sizeof(struct sockaddr_un) - (sizeof(sd_sun->sun_path) - len);
+
+        d->notification_object = msghdr;
+    }
 }
 
 systemdNotify::~systemdNotify()

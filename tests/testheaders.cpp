@@ -106,6 +106,14 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.authorizationBasic(), "user:pass");
     QCOMPARE(headers.authorizationBasicObject().user, u"user"_qs);
 
+    const auto authorizationHeader = "Basic dXNlcjpwYXNz, Bearer xyz"_qba;
+    headers.setHeader("Authorization"_qba, authorizationHeader);
+    QCOMPARE(headers.authorization(), authorizationHeader);
+    QCOMPARE(headers.authorizationBearer(), "xyz"_qba);
+    QCOMPARE(headers.authorizationBasic(), "user:pass");
+    QCOMPARE(headers.authorizationBasic(), "user:pass");
+    QCOMPARE(headers.authorizationBasicObject().user, u"user"_qs);
+
     Headers copy = headers;
     QCOMPARE(copy, headers);
 
