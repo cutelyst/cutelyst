@@ -9,9 +9,10 @@ project(cutelyst
 include(GNUInstallDirs)
 
 set(QT_VERSION_MAJOR 6)
+set(QT_MINIMUM_VERSION 6.2)
 #find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
 # TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
-find_package(Qt${QT_VERSION_MAJOR} 6.2 COMPONENTS Core Network Sql LinguistTools REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
 set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})
 
