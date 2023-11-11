@@ -46,6 +46,12 @@ private:
     TestEngine *getEngine();
 
     void performTest();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    void invalidateToken(QChar &ch);
+#else
+    void invalidateToken(QCharRef ch);
+#endif
 };
 
 class CsrfprotectionTest : public Controller
@@ -195,6 +201,31 @@ void TestCsrfProtection::cleanupTest()
     m_fieldValue.clear();
 }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+void TestCsrfProtection::invalidateToken(QChar &ch)
+#else
+void TestCsrfProtection::invalidateToken(QCharRef ch)
+#endif
+{
+    if (ch.isDigit()) {
+        if (ch < QLatin1Char('9')) {
+            ch.unicode()++;
+        } else {
+            ch.unicode()--;
+        }
+    } else if (ch.isLetter()) {
+        if (ch.isUpper()) {
+            ch = ch.toLower();
+        } else {
+            ch = ch.toUpper();
+        }
+    } else if (ch == QLatin1Char('-')) {
+        ch = QLatin1Char('_');
+    } else if (ch == QLatin1Char('_')) {
+        ch = QLatin1Char('-');
+    }
+}
+
 void TestCsrfProtection::doTest()
 {
     QFETCH(QString, method);
@@ -225,44 +256,10 @@ void TestCsrfProtection::doTest_data()
         const QString cookieValid =
             QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly));
         QString cookieInvalid = cookieValid;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        auto &cookieLast = cookieInvalid[cookieInvalid.size() - 1];
-#else
-        QCharRef cookieLast = cookieInvalid[cookieInvalid.size() - 1];
-#endif
-        if (cookieLast.isDigit()) {
-            if (cookieLast.unicode() < 57) {
-                cookieLast.unicode()++;
-            } else {
-                cookieLast.unicode()--;
-            }
-        } else {
-            if (cookieLast.isUpper()) {
-                cookieLast = cookieLast.toLower();
-            } else {
-                cookieLast = cookieLast.toUpper();
-            }
-        }
+        invalidateToken(cookieInvalid[cookieInvalid.size() - 1]);
 
         QString fieldValueInvalid = m_fieldValue;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        auto &fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
-#else
-        QCharRef fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
-#endif
-        if (fieldLast.isDigit()) {
-            if (fieldLast.unicode() < 57) {
-                fieldLast.unicode()++;
-            } else {
-                fieldLast.unicode()--;
-            }
-        } else {
-            if (fieldLast.isUpper()) {
-                fieldLast = fieldLast.toLower();
-            } else {
-                fieldLast = fieldLast.toUpper();
-            }
-        }
+        invalidateToken(fieldValueInvalid[fieldValueInvalid.size() - 2]);
 
         const QString fieldValid   = m_fieldName + QLatin1Char('=') + m_fieldValue;
         const QString fieldInvalid = m_fieldName + QLatin1Char('=') + fieldValueInvalid;
