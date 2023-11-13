@@ -66,6 +66,7 @@ qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached
 qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memcached
     TS_FILES ${plugin_memcached_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_memcached_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${plugin_memcached_QM_FILES} DESTINATION ${I18NDIR})
