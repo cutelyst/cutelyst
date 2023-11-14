@@ -63,6 +63,7 @@ qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}CSRFProtecti
 qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}CSRFProtection
     TS_FILES ${plugin_csrfprotection_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_csrfprotection_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${plugin_csrfprotection_QM_FILES} DESTINATION ${I18NDIR})
