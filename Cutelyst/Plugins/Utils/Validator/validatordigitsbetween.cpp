@@ -26,16 +26,16 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
 
     const QString v = value(params);
 
-    bool ok  = false;
-    int _max = 0;
-    int _min = d->extractInt(c, params, d->min, &ok);
+    bool ok        = false;
+    qsizetype _max = 0;
+    qsizetype _min = d->extractSizeType(c, params, d->min, &ok);
     if (!ok) {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote()
             << debugString(c) << "Invalid minimum length comparison data";
         return result;
     } else {
-        _max = d->extractInt(c, params, d->max, &ok);
+        _max = d->extractSizeType(c, params, d->max, &ok);
         if (!ok) {
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
@@ -72,42 +72,33 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
 
 bool ValidatorDigitsBetween::validate(const QString &value, int min, int max)
 {
-    bool valid = true;
-
     for (const QChar &ch : value) {
         const ushort &uc = ch.unicode();
         if (!((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9))) {
-            valid = false;
-            break;
+            return false;
         }
     }
 
-    if (valid && ((value.length() < min) || (value.length() > max))) {
-        valid = false;
+    if ((value.length() < min) || (value.length() > max)) {
+        return false;
     }
 
-    return valid;
+    return true;
 }
 
 QString ValidatorDigitsBetween::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     const QVariantList list = errorData.toList();
     const QString min       = list.at(0).toString();
     const QString max       = list.at(1).toString();
     const QString _label    = label(c);
 
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorDigitsBetween",
-                             "Must contain between %1 and %2 digits.")
-                    .arg(min, max);
+        //% "Must contain between %1 and %2 digits."
+        return c->qtTrId("cutelyst-valdigitsbetween-genvalerr").arg(min, max);
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorDigitsBetween",
-                             "The “%1” field must contain between %2 and %3 digits.")
-                    .arg(_label, min, max);
+        //% "The “%1” field must contain between %2 and %3 digits."
+        return c->qtTrId("cutelyst-valdigitsbetween-genvalerr-label").arg(_label, min, max);
     }
-
-    return error;
 }

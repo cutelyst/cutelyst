@@ -44,10 +44,9 @@ public:
         Q_ASSERT(c);
 
         if (format) {
-            const QString _format = translationContext.size()
-                                        ? c->translate(translationContext.data(), format)
-                                        : QString::fromUtf8(format);
-            d                     = QDate::fromString(date, _format);
+            const QString _format =
+                translationContext ? c->translate(translationContext, format) : c->qtTrId(format);
+            d = QDate::fromString(date, _format);
             if (d.isValid()) {
                 return d;
             }
@@ -81,10 +80,9 @@ public:
         Q_ASSERT(c);
 
         if (format) {
-            const QString _format = translationContext.size()
-                                        ? c->translate(translationContext.data(), format)
-                                        : QString::fromUtf8(format);
-            t                     = QTime::fromString(time, _format);
+            const QString _format =
+                translationContext ? c->translate(translationContext, format) : c->qtTrId(format);
+            t = QTime::fromString(time, _format);
             if (t.isValid()) {
                 return t;
             }
@@ -121,10 +119,9 @@ public:
         Q_ASSERT(c);
 
         if (format) {
-            const QString _format = translationContext.size()
-                                        ? c->translate(translationContext.data(), format)
-                                        : QString::fromUtf8(format);
-            dt                    = QDateTime::fromString(dateTime, _format);
+            const QString _format =
+                translationContext ? c->translate(translationContext, format) : c->qtTrId(format);
+            dt = QDateTime::fromString(dateTime, _format);
             if (dt.isValid()) {
                 if (tz.isValid()) {
                     dt.setTimeZone(tz);
@@ -349,6 +346,12 @@ public:
         return val;
     }
 
+    static qsizetype
+        extractSizeType(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
+    {
+        return extractLongLong(c, params, value, ok);
+    }
+
     static QVariant valueToNumber(Context *c, const QString &value, QMetaType::Type type)
     {
         QVariant var;
@@ -496,7 +499,10 @@ public:
     static constexpr char16_t ascii_a{97};
     static constexpr char16_t ascii_z{122};
 
-    QLatin1String translationContext;
+    // used by some validators for generic data errors
+    enum class ErrorType : int { InvalidMin, InvalidMax, InvalidType };
+
+    const char *translationContext{nullptr};
     QString field;
     QString defValKey;
     ValidatorMessages messages;

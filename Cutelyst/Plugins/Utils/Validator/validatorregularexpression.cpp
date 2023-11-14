@@ -50,17 +50,14 @@ ValidatorReturnType ValidatorRegularExpression::validate(Context *c,
 QString ValidatorRegularExpression::genericValidationError(Context *c,
                                                            const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorRegularExpression",
-                             "Does not match the desired format.");
+        //% "Does not match the desired format."
+        return c->qtTrId("cutelyst-valregex-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorRegularExpression",
-                             "The “%1” field does not match the desired format.")
-                    .arg(_label);
+        //% "The “%1” field does not match the desired format."
+        return c->qtTrId("cutelyst-valregex-genvalerr-label").arg(_label);
     }
-    return error;
 }

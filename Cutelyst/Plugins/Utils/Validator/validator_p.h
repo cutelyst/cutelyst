@@ -16,12 +16,12 @@ class ValidatorPrivate
 {
     Q_DISABLE_COPY(ValidatorPrivate)
 public:
-    ValidatorPrivate(QLatin1String trContext)
+    ValidatorPrivate(const char *trContext)
         : translationContext(trContext)
     {
     }
 
-    ValidatorPrivate(std::initializer_list<ValidatorRule *> vals, QLatin1String trContext)
+    ValidatorPrivate(std::initializer_list<ValidatorRule *> vals, const char *trContext)
         : translationContext(trContext)
         , validators(vals)
     {
@@ -34,13 +34,11 @@ public:
 
     ~ValidatorPrivate()
     {
-        if (!validators.empty()) {
-            qDeleteAll(validators.begin(), validators.end());
-            validators.clear();
-        }
+        qDeleteAll(validators);
+        validators.clear();
     }
 
-    QLatin1String translationContext;
+    const char *translationContext{nullptr};
     ParamsMultiMap params;
     std::vector<ValidatorRule *> validators;
 };

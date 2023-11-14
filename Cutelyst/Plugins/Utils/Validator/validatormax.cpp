@@ -5,6 +5,8 @@
 
 #include "validatormax_p.h"
 
+#include <QMetaType>
+
 using namespace Cutelyst;
 
 ValidatorMax::ValidatorMax(const QString &field,
@@ -44,15 +46,13 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             } else {
                 const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, 1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid maximum comparison value";
                 } else {
                     if (val > max) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("max"), max}});
+                        result.errorMessage = validationError(c, max);
                         qCDebug(C_VALIDATOR).noquote()
                             << debugString(c) << val << "is not smaller than" << max;
                     } else {
@@ -76,15 +76,13 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             } else {
                 const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, 1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid maximum comparison value";
                 } else {
                     if (val > max) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("max"), max}});
+                        result.errorMessage = validationError(c, max);
                         qCDebug(C_VALIDATOR).noquote()
                             << debugString(c) << val << "is not smaller than" << max;
                     } else {
@@ -105,15 +103,13 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             } else {
                 const double max = d->extractDouble(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, 1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid maximum comparison value";
                 } else {
                     if (val > max) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("max"), max}});
+                        result.errorMessage = validationError(c, max);
                         qCDebug(C_VALIDATOR).noquote()
                             << debugString(c) << val << "is not smaller than" << max;
                     } else {
@@ -127,13 +123,13 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             const auto val      = static_cast<qlonglong>(v.length());
             const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
             if (Q_UNLIKELY(!ok)) {
-                result.errorMessage = validationDataError(c, 1);
+                result.errorMessage = validationDataError(
+                    c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid maximum comparison value";
             } else {
                 if (val > max) {
-                    result.errorMessage = validationError(
-                        c, QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("max"), max}});
+                    result.errorMessage = validationError(c, max);
                     qCDebug(C_VALIDATOR).noquote()
                         << debugString(c) << "String length" << val << "is not shorter than" << max;
                 } else {
@@ -144,7 +140,8 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
         default:
             qCWarning(C_VALIDATOR).noquote()
                 << debugString(c) << "The comparison type" << d->type << "is not supported";
-            result.errorMessage = validationDataError(c, 0);
+            result.errorMessage = validationDataError(
+                c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidType));
             break;
         }
 
@@ -169,11 +166,8 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
 
 QString ValidatorMax::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorMax);
 
-    const QVariantMap map = errorData.toMap();
     QString max;
     switch (d->type) {
     case QMetaType::Char:
@@ -182,112 +176,109 @@ QString ValidatorMax::genericValidationError(Cutelyst::Context *c, const QVarian
     case QMetaType::Long:
     case QMetaType::LongLong:
     case QMetaType::QString:
-        max = c->locale().toString(map.value(QStringLiteral("max")).toLongLong());
+        max = c->locale().toString(errorData.toLongLong());
         break;
     case QMetaType::UChar:
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:
     case QMetaType::ULongLong:
-        max = c->locale().toString(map.value(QStringLiteral("max")).toULongLong());
+        max = c->locale().toString(errorData.toULongLong());
         break;
     case QMetaType::Float:
     case QMetaType::Double:
-        max = c->locale().toString(map.value(QStringLiteral("max")).toDouble());
+        max = c->locale().toString(errorData.toDouble());
         break;
     default:
-        error = validationDataError(c);
-        return error;
+        return validationDataError(c,
+                                   static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidType));
     }
 
     const QString _label = label(c);
 
     if (_label.isEmpty()) {
         if (d->type == QMetaType::QString) {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "The text must be shorter than %1 characters.")
-                        .arg(max);
+            //% "The text must be shorter than %1 characters."
+            return c->qtTrId("cutelyst-valmax-genvalerr-str").arg(max);
         } else {
-            error =
-                c->translate("Cutelyst::ValidatorMax", "The value must be lower than %1.").arg(max);
+            //% "The value must be lower than %1."
+            return c->qtTrId("cutelyst-valmax-genvalerr-num").arg(max);
         }
     } else {
         if (d->type == QMetaType::QString) {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "The text in the “%1“ field must be shorter than %2 characters.")
-                        .arg(_label, max);
+            //% "The text in the “%1“ field must be shorter than %2 characters."
+            return c->qtTrId("cutelyst-valmax-genvalerr-str-label").arg(_label, max);
         } else {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "The value in the “%1” field must be lower than %2.")
-                        .arg(_label, max);
+            //% "The value in the “%1” field must be lower than %2."
+            return c->qtTrId("cutelyst-valmax-genvalerr-num-label").arg(_label, max);
         }
     }
-
-    return error;
 }
 
 QString ValidatorMax::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
-    int field            = errorData.toInt();
     const QString _label = label(c);
+    const auto errorType = static_cast<ValidatorRulePrivate::ErrorType>(errorData.toInt());
 
-    if (field == 0) {
-        Q_D(const ValidatorMax);
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "The comparison type with ID %1 is not supported.")
-                        .arg(static_cast<int>(d->type));
-        } else {
-            error =
-                c->translate("Cutelyst::ValidatorMax",
-                             "The comparison type with ID %1 for the “%2” field is not supported.")
-                    .arg(QString::number(static_cast<int>(d->type)), _label);
+    // translation strings are defined in ValidatorBetween
+
+    if (_label.isEmpty()) {
+        switch (errorType) {
+        case ValidatorRulePrivate::ErrorType::InvalidType:
+        {
+            Q_D(const ValidatorMax);
+            const QMetaType _type(d->type);
+            return c->qtTrId("cutelyst-validator-genvaldataerr-type")
+                .arg(QString::fromLatin1(_type.name()));
         }
-    } else if (field == 1) {
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "The maximum comparison value is not valid.");
-        } else {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "The maximum comparison value for the “%1” field is not valid.")
-                        .arg(_label);
+        case ValidatorRulePrivate::ErrorType::InvalidMax:
+            return c->qtTrId("cutelyst-validator-genvaldataerr-max");
+        case ValidatorRulePrivate::ErrorType::InvalidMin:
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+            Q_UNREACHABLE();
+            return {};
+        }
+    } else {
+        switch (errorType) {
+        case ValidatorRulePrivate::ErrorType::InvalidType:
+        {
+            Q_D(const ValidatorMax);
+            const QMetaType _type(d->type);
+            return c->qtTrId("cutelyst-validator-genvaldataerr-type-label")
+                .arg(QString::fromLatin1(_type.name()), _label);
+        }
+        case ValidatorRulePrivate::ErrorType::InvalidMax:
+            return c->qtTrId("cutelyst-validator-genvaldataerr-max-label").arg(_label);
+        case ValidatorRulePrivate::ErrorType::InvalidMin:
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+            Q_UNREACHABLE();
+            return {};
         }
     }
 
-    return error;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+    Q_UNREACHABLE_RETURN({});
 }
 
 QString ValidatorMax::genericParsingError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     Q_D(const ValidatorMax);
+
+    // translation strings are defined in ValidatorBetween
 
     const QString _label = label(c);
     if ((d->type == QMetaType::Float) || (d->type == QMetaType::Double)) {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "Failed to parse the input value into a floating point number.");
+            return c->qtTrId("cutelyst-validator-genparseerr-float");
         } else {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "Failed to parse the input value for the “%1” field into a "
-                                 "floating point number.")
-                        .arg(_label);
+            return c->qtTrId("cutelyst-validator-genparseerr-float-label").arg(_label);
         }
     } else {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorMax",
-                                 "Failed to parse the input value into an integer number.");
+            return c->qtTrId("cutelyst-validator-genparseerr-int");
         } else {
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorMax",
-                     "Failed to parse the input value for the “%1” field into an integer number.")
-                    .arg(_label);
+            return c->qtTrId("cutelyst-validator-genparseerr-int-label").arg(_label);
         }
     }
-
-    return error;
 }

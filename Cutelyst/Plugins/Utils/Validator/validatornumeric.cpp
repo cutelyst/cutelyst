@@ -42,19 +42,14 @@ ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap 
 
 QString ValidatorNumeric::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error =
-            c->translate("Cutelyst::ValidatorNumeric", "Must be numeric, like 1, -2.5 or 3.454e3.");
+        //% "Must be numeric, like 1, -2.5 or 3.454e3."
+        return c->qtTrId("cutelyst-valnumeric-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error =
-            c->translate(
-                 "Cutelyst::ValidatorNumeric",
-                 "You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3.")
-                .arg(_label);
+        //% "You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3."
+        return c->qtTrId("cutelyst-valnumeric-genvalerr-label").arg(_label);
     }
-    return error;
 }

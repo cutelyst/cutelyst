@@ -44,28 +44,26 @@ ValidatorReturnType ValidatorJson::validate(Cutelyst::Context *c,
 
 QString ValidatorJson::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     const QString _label    = label(c);
     const QString jsonError = errorData.toString();
     if (_label.isEmpty()) {
         if (!jsonError.isEmpty()) {
             //: %1 will contain the json error
-            error = c->translate("Cutelyst::ValidatorJson", "Invalid JSON data: %1").arg(jsonError);
+            //% "Invalid JSON data: %1"
+            return c->qtTrId("cutelyst-valjson-genvalerr-data").arg(jsonError);
         } else {
-            error = c->translate("Cutelyst::ValidatorJson", "Invalid JSON data.");
+            //% "Invalid JSON data."
+            return c->qtTrId("cutelyst-valjson-genvalerr");
         }
     } else {
         if (!jsonError.isEmpty()) {
             //: %1 will contain the field label, %2 will contain the json error
-            error = c->translate("Cutelyst::ValidatorJson",
-                                 "The data entered in the “%1” field is not valid JSON: %2")
-                        .arg(_label, jsonError);
+            //% "The data entered in the “%1” field is not valid JSON: %2"
+            return c->qtTrId("cutelyst-valjson-genvalerr-data-label").arg(_label, jsonError);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorJson",
-                                 "The data entered in the “%1” field is not valid JSON.")
-                        .arg(_label);
+            //% "The data entered in the “%1” field is not valid JSON."
+            return c->qtTrId("cutelyst-valjson-genvalerr-label").arg(_label);
         }
     }
-    return error;
 }

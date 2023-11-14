@@ -15,13 +15,13 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator", QtWarningMsg)
 
-Validator::Validator(QLatin1String translationContext)
+Validator::Validator(const char *translationContext)
     : d_ptr(new ValidatorPrivate(translationContext))
 {
 }
 
 Validator::Validator(std::initializer_list<ValidatorRule *> validators,
-                     QLatin1String translationContext)
+                     const char *translationContext)
     : d_ptr(new ValidatorPrivate(validators, translationContext))
 {
 }

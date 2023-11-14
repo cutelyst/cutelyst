@@ -26,7 +26,7 @@ namespace Cutelyst {
  * the rules. If you want to write your own validator rule, create a new class that is derived from
  * ValidatorRule and reimplement the validate function.
  *
- * There are three constructor arguments that are common to almos all validator rules: the name of
+ * There are three constructor arguments that are common to almost all validator rules: the name of
  * the field to validate (mandatory), a struct containing translatable ValidatorMessages (optional)
  * and a \link Context::stash() stash\endlink key name that contains a default value if the input
  * field is not available (optional available where it makes sense).
@@ -52,24 +52,24 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
                              QString::isNull() returns \c true for this, the validation has
                              succeeded and isValid() will alsor return \c true. */
     QVariant value;       /**< Might contain the extracted and possibly converted value of the \link
-                             ValidatorRule::value() input parameter\endlink if validation succeeded. For
-                             information about the possible values see the documentation of the respective
-                             \link plugins-utils-validator-rules validator\endlink. */
+                             ValidatorRule::value() input parameter\endlink if validation succeeded.
+                             For information about the possible values see the documentation of the
+                             respective \link plugins-utils-validator-rules validator\endlink. */
     QVariant extra; /**< Might contain extra data provided by the validator. For information about
                        the possible values see the documentation of the respective \link
                        plugins-utils-validator-rules validator\endlink. */
 
     /*!
      * \brief Returns \c true if validation succeeded.
-     * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link
-     * QString::isNull() null string\endlink, indicating that the validation has succeeded.
+     * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a
+     * \link QString::isNull() null string\endlink, indicating that the validation has succeeded.
      */
     explicit operator bool() const noexcept { return errorMessage.isNull(); }
 
     /*!
      * \brief Returns \c true if validation succeeded.
-     * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link
-     * QString::isNull() null string\endlink, indicating that the validation has succeeded.
+     * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a
+     * \link QString::isNull() null string\endlink, indicating that the validation has succeeded.
      */
     [[nodiscard]] bool isValid() const noexcept { return errorMessage.isNull(); }
 };
@@ -80,61 +80,64 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
  * \brief Stores custom error messages and the input field label.
  *
  * This struct is used by ValidatorRule derived classes to store custom error messages
- * that are also translatable. To make the messages translatable, use QT_TRANSLATE_NOOP() so
- * that the message can be dynamically translated by the current \link Context::translate() Context
- * \endlink. If you want to omit a custom message, simply use a \c nullptr for it. For custom
- * messages that are not set, the ValidatorRule class will return a generic message that will also
- * be translated if %Cutelyst has a translation file for the \link Context::locale() current
- * language in the context\endlink.
+ * that are also translatable. To make the messages translatable, use QT_TRANSLATE_NOOP()
+ * or QT_TRID_NOOP() so that the message can be dynamically translated by the current Context
+ * either via Context::translate() or Context::qtTrId(). If you want to omit a custom message,
+ * simply use a \c nullptr for it. For custom messages that are not set, the ValidatorRule class
+ * will return a generic message that will also be translated if %Cutelyst has a translation
+ * file for the \link Context::locale() current language in the context\endlink.
  *
- * The translation context used in the QT_TRANSLATE_NOOP() definition has to be the same that has
- * been set on the Validator contstructor. If you dont want to use translation for the messages and
- * the label, simply don't use QT_TRANSLATE_NOOP() when adding the string but simply use a C string
- * literal and also leave the translation context on the Validator constructor empty.
+ * Note that you should not mix id based and non-id based translations, so you should not mix
+ * QT_TRID_NOOP and QT_TRANSLATE_NOOP.
+ *
+ * If using QT_TRANSLATE_NOOP you have to set the translation context to the constructor of
+ * Validator. Id based translations do not use a translation context. So, if you omit the
+ * translation context on the constructor of Validator, internally Context::qtTrId() will be
+ * used to find the translated string.
  *
  * <h3>Usage example</h3>
  * \code{.cpp}
  * void MyController::do_form(Context *c)
  * {
- *     static Validator v1({
- *                         new ValidatorAccepted(QStringLiteral("usage_terms"),
- *                                               // empty label and translatable validation error
- * message ValidatorMessages(nullptr, QT_TRANSLATE_NOOP("MyController", "Please accept our terms of
- * usage to finish your registration.")),
+ *   static Validator v1({
+ *     new ValidatorAccepted(QStringLiteral("usage_terms"),
+ *                           // empty label and translatable validation error message
+ *                           ValidatorMessages(nullptr,
+ *                                             QT_TRANSLATE_NOOP("MyController",
+ *                                                               "Please accept our terms of "
+ *                                                               "usage to finish your "
+ *                                                               "registration.")
+ *                                            ),
  *
- *                         new ValidatorEmail(QStringLiteral("email"), false, ValidatorEmail::Valid,
- *                                            // only the label will be translated and inserted into
- * generic error messages of the validator rule ValidatorMessages(QT_TRANSLATE_NOOP("MyController",
- * "Your Email Address"))
+ *     new ValidatorEmail(QStringLiteral("email"), false, ValidatorEmail::Valid,
+ *                       // only the label will be translated and inserted into generic error
+ *                       // messages of the validator rule
+ *                       ValidatorMessages(QT_TRANSLATE_NOOP("MyController",
+ *                                                           "Your Email Address"))
+ *                       ),
  *
- *                         new ValidatorDate(QStringLiteral("birthday"),
- *                                           // here we also use a translatable version of the date
- * format QT_TRANSLATE_NOOP("MyControler", "yyyy-MM-dd"),
- *                                           // this one will use a translated label for generic
- * parsing and validation data
- *                                           // error messages and a custom translatable error
- * message for failed validations ValidatorMessages(QT_TRANSLATE_NOOP("MyController", "You day of
- * birth"), QT_TRANSLATE_NOOP("MyController", "Please enter a valid date of birth"))
+ *     new ValidatorDate(QStringLiteral("birthday"),
+ *                       // here we also use a translatable version of the date format
+ *                       QT_TRANSLATE_NOOP("MyControler", "yyyy-MM-dd"),
+ *                       // this one will use a translated label for generic parsing and validation
+ *                       // data error messages and a custom translatable error message for failed
+ *                       // validations
+ *                       ValidatorMessages(QT_TRANSLATE_NOOP("MyController",
+ *                                                           "Your day of birth"),
+ *                                         QT_TRANSLATE_NOOP("MyController",
+ *                                                           "Please enter a valid date of birth"))
+ *                       ),
  *
- *                         // this uses a default constructed ValidatorMessages struct where
- *                         // no custom messages have been set, so all error messages will come
- *                         // from the generic validator messages without a label
- *                         new ValidatorRequired(QStringLiteral("password"));
+ *     // this uses a default constructed ValidatorMessages struct where no custom messages
+ *     // have been set, so all error messages will come from the generic validator messages
+ *     // without a label
+ *     new ValidatorRequired(QStringLiteral("password"));
  *
- *                          // this is the context that will be used to obtain translations,
- *                          // it has to be the same one you use in your validator messages
- *                          // QT_TRANSLATE_NOOP()
- *                        }, QLatin1String("MyController"));
- *
- *
- *     // this validator does not specify a translation context and will therefore not translate
- * error messages,
- *     // even if they were added with QT_TRANSLATE_NOOP()
- *     static Validator v2({
- *                         new ValidatorRequired(QStringLiteral("required_field"),
- *                                               ValidatorMessages("Required Field", "This field is
- * required, please enter data."))
- *                        });
+ *     // this is the context that will be used to obtain translations,
+ *     // it has to be the same one you use in your validator messages
+ *     // QT_TRANSLATE_NOOP(). If you used QT_TRID_NOOP() you can omit
+ *     // this
+ *   }, "MyController");
  * }
  * \endcode
  */
@@ -147,11 +150,12 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorMessages {
      * \brief Constructs a new %ValidatorMessages object with the given parameters.
      *
      * \param customLabel               User visible label for the input field. Should be the same
-     * as used on the frontend visible to the user. Will be used by generic error messages if set.
+     *                                  as used on the frontend visible to the user. Will be used
+     *                                  by generic error messages if set.
      * \param customValidationError     Custom error message if the validation fails.
      * \param customParsingError        Custom error message if the input value could not be parsed.
      * \param customValidationDataError Custom error message if validation data is missing or
-     * invalid.
+     *                                  invalid.
      */
     ValidatorMessages(const char *customLabel,
                       const char *customValidationError     = nullptr,
@@ -176,36 +180,36 @@ class ValidatorRulePrivate;
  * \class ValidatorRule validatorrule.h <Cutelyst/Plugins/Utils/ValidatorRule>
  * \brief Base class for all validator \link plugins-utils-validator-rules rules\endlink.
  *
- * This class can not be used on it's own, you have to create a derived class from it that
+ * This class can not be used on it’s own, you have to create a derived class from it that
  * implements your validator logic. Or use one of the \link plugins-utils-validator-rules already
- * existing derived validator rules\endlink.
+ * existing validator rules\endlink.
  *
  * \par Writing a custom validator
  *
  * If you want to implement your own validator logic to use with Validator, you have to create a
- * class that derives from ValidatorRule. The simplest implementation only needs a constructor and a
- * reimplementation of the validate() function. But for more comfort and usability, you should also
- * reimplement genericValidationError(). If your validator parses the input into a specific type to
- * validate it and/or if you are using additional parameters, you may also want to reimplement
- * genericParsingError() and genericValidationDataError() to return more appropriate generic error
- * messages.
+ * class that derives from ValidatorRule. The simplest implementation only needs a constructor and
+ * a reimplementation of the validate() function. But for more comfort and usability, you should
+ * also reimplement genericValidationError(). If your validator parses the input into a specific
+ * type to validate it and/or if you are using additional parameters, you may also want to
+ * reimplement genericParsingError() and genericValidationDataError() to return more appropriate
+ * generic error messages.
  *
- * The most important parameter for every validator rule is the name of the \a field to validate. So
- * your own validator should require that field in the constructor. For better error messages you
- * should also add an optional paramter to set custom ValidatorMessages if validation fails.
+ * The most important parameter for every validator rule is the name of the \a field to validate.
+ * So your own validator should require that field in the constructor. For better error messages
+ * you should also add an optional paramter to set custom ValidatorMessages if validation fails.
  *
  * In the validation logic implemented in the validate() function you have to return a
  * ValidatorReturnType struct that contains information about the validation. It has three members,
- * \link ValidatorReturnType::errorMessages errorMessages\endlink is the most important one. If that
- * returns \c true for QString::isNull(), the validation has succeeded.
+ * \link ValidatorReturnType::errorMessages errorMessages\endlink is the most important one. If
+ * that returns \c true for QString::isNull(), the validation has succeeded.
  *
- * So lets implement a custom validator that can check for a specific value to be set. (Maybe not a
- * realistic example, but it should be enough for demonstration.)
+ * So lets implement a custom validator that can check for a specific value to be set. (Maybe not
+ * a realistic example, but it should be enough for demonstration.)
  *
  * \code{.cpp}
  * #include <Cutelyst/Plugins/Utils/ValidatorRule>
  *
- * namespace Cutelyst {
+ * using namespace Cutelyst;
  *
  * class MyValidator : public ValidatorRule
  * {
@@ -213,11 +217,12 @@ class ValidatorRulePrivate;
  *     // field: name of the input field
  *     // compareValue: our custom value we want compare
  *     // messages: struct containing custom messages
- *     // defValKey: name of a stash key containing a default value if input field is empty
+ *     // defValKey: name of a stash key containing an optional default value if input field
+ *     //            is empty
  *     MyValidator::MyValidator(const QString &field,
  *                              const QString &compareValue,
- *                              const ValidatorMessages &messages = ValidatorMessages(),
- *                              const QString &defValKey = QString());
+ *                              const ValidatorMessages &messages = {},
+ *                              const QString &defValKey = {});
  *
  *     ~MyValidator();
  *
@@ -234,19 +239,17 @@ class ValidatorRulePrivate;
  *     QString m_compareValue;
  * };
  *
- * }
  *
- * using namespace Cutelyst;
- *
- * MyValidator::MyValidator(const QString &field, const QString &compareValue, const
- * ValidatorMessages &messages, const QString &defValKey) : Cutelyst::ValidatorRule(field, messages,
- * defValKey, "MyValidator"), m_compareValue(compareValue)
+ * MyValidator::MyValidator(const QString &field,
+ *                          const QString &compareValue,
+ *                          const ValidatorMessages &messages,
+ *                          const QString &defValKey)
+ *      : ValidatorRule(field, messages, defValKey, "MyValidator"),
+ *        m_compareValue(compareValue)
  * {
  * }
  *
- * MyValidator::~MyValidator()
- * {
- * }
+ * MyValidator::~MyValidator() = default;
  *
  * // when reimplementing the validate function, keep in mind, that a null errorMessage
  * // string in the ValidatorReturnType is seen as successful validation, everything
@@ -275,8 +278,9 @@ class ValidatorRulePrivate;
  *         }
  *     }
  *
- *     // now let's return our result, if the errorMessage member is null, validation was
- * successfull return result;
+ *     // now let's return our result, if the errorMessage member is null,
+ *     // validation was successfull
+ *     return result;
  * }
  *
  *
@@ -288,8 +292,9 @@ class ValidatorRulePrivate;
  *     if (_label.isEmpty()) {
  *          c->translate("MyValidator", "Must contain this value: %1").arg(m_compareValue);
  *     } else {
- *          c->translate("MyValidator", "The %1 field must contain the following value:
- * %2").arg(_label, m_compareValue);
+ *          c->translate("MyValidator",
+ *                       "The %1 field must contain the following value: %2")
+ *            .arg(_label, m_compareValue);
  *     }
  *     return error;
  * }
@@ -305,12 +310,12 @@ public:
      * \param field         Name of the field to validate.
      * \param messages      Custom error messages if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                      input field is empty. This value will \b NOT be validated.
      * \param vaidatorName  Name of the validator used for debug output.
      */
     ValidatorRule(const QString &field,
-                  const ValidatorMessages &messages = ValidatorMessages(),
-                  const QString &defValKey          = QString(),
+                  const ValidatorMessages &messages = {},
+                  const QString &defValKey          = {},
                   QByteArrayView validatorName      = nullptr);
 
     /*!
@@ -414,7 +419,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    [[nodiscard]] QString validationError(Context *c, const QVariant &errorData = QVariant()) const;
+    [[nodiscard]] QString validationError(Context *c, const QVariant &errorData = {}) const;
 
     /*!
      * \brief Returns a generic error mesage if validation failed.
@@ -433,21 +438,20 @@ protected:
      * \code{.cpp}
      * QString MyValidator::genericValidationError(Context *c) const
      * {
-     *     QString error;
      *     const QString _label = label(c);
      *     // if no label is set, we will return a shorter error message
      *     if (_label.isEmpty()) {
-     *          c->translate("MyValidator", "Must contain this value: %1").arg(m_compareValue);
+     *          return c->translate("MyValidator", "Must contain this value: %1")
+     *                   .arg(m_compareValue);
      *     } else {
-     *          c->translate("MyValidator", "The %1 field must contain the following value:
-     * %2").arg(_label, m_compareValue);
+     *          return c->translate("MyValidator", "The %1 field must contain the following "
+     *                                             "value: %2")
+     *                   .arg(_label, m_compareValue);
      *     }
-     *     return error;
      * }
      * \endcode
      */
-    virtual QString genericValidationError(Context *c,
-                                           const QVariant &errorData = QVariant()) const;
+    virtual QString genericValidationError(Context *c, const QVariant &errorData = {}) const;
 
     /*!
      * \brief Returns an error message if an error occurred while parsing input.
@@ -463,7 +467,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    [[nodiscard]] QString parsingError(Context *c, const QVariant &errorData = QVariant()) const;
+    [[nodiscard]] QString parsingError(Context *c, const QVariant &errorData = {}) const;
 
     /*!
      * \brief Returns a generic error message if an error occures while parsing input.
@@ -482,20 +486,20 @@ protected:
      * \code{.cpp}
      * QString MyValidator::genericParsingError(Context *c) const
      * {
-     *     QString error;
      *     const QString _label = label(c);
      *     // if no label is set, we will return a shorter error message
      *     if (_label.isEmpty()) {
-     *          c->translate("MyValidator", "Could not be parsed into a valid date.");
+     *          return c->translate("MyValidator", "Could not be parsed into a valid date.");
      *     } else {
-     *          c->translate("MyValidator", "The value of the %1 field could not be parsed into a
-     * valid date.").arg(_label);
+     *          return c->translate("MyValidator",
+     *                              "The value of the %1 field could not be parsed into "
+     *                              "a valid date.")
+     *                   .arg(_label);
      *     }
-     *     return error;
      * }
      * \endcode
      */
-    virtual QString genericParsingError(Context *c, const QVariant &errorData = QVariant()) const;
+    virtual QString genericParsingError(Context *c, const QVariant &errorData = {}) const;
 
     /*!
      * \brief Returns an error message if any validation data is missing or invalid.
@@ -511,8 +515,7 @@ protected:
      * error strings\endlink. If you have some more data to use for the error messages, put them
      * into \a errorData.
      */
-    [[nodiscard]] QString validationDataError(Context *c,
-                                              const QVariant &errorData = QVariant()) const;
+    [[nodiscard]] QString validationDataError(Context *c, const QVariant &errorData = {}) const;
 
     /*!
      * \brief Returns a generic error message if any validation data is missing or invalid.
@@ -531,21 +534,19 @@ protected:
      * \code{.cpp}
      * QString MyValidator::genericValidationDataError(Context *c) const
      * {
-     *     QString error;
      *     const QString _label = label(c);
      *     // if no label is set, we will return a shorter error message
      *     if (_label.isEmpty()) {
-     *          c->translate("MyValidator", "There is no value to compare against.");
+     *          return c->translate("MyValidator", "There is no value to compare against.");
      *     } else {
-     *          c->translate("MyValidator", "For the “%1” field there is no value to compare
-     * against.").arg(_label);
+     *          return c->translate("MyValidator",
+     *                              "For the “%1” field there is no value to compare against.")
+     *                   .arg(_label);
      *     }
-     *     return error;
      * }
      * \endcode
      */
-    virtual QString genericValidationDataError(Context *c,
-                                               const QVariant &errorData = QVariant()) const;
+    virtual QString genericValidationDataError(Context *c, const QVariant &errorData = {}) const;
 
     /*!
      * \brief I a \a defValKey has been set in the constructor, this will try to get the default
@@ -572,15 +573,15 @@ private:
      * \brief Sets the translation context used for custom messages.
      * \param trContext The name of the context.
      */
-    void setTranslationContext(QLatin1String trContext) noexcept;
+    void setTranslationContext(const char *trContext) noexcept;
 
     /*!
      * \internal
      * \brief Set to \c false to not trim input value before validation.
      *
      * By default, this value is set to \c true and all input values will be \link
-     * QString::trimmed() trimmed\endlink before validation to remove whitespaces from the beginning
-     * and the end.
+     * QString::trimmed() trimmed\endlink before validation to remove whitespaces from the
+     * beginning and the end.
      *
      * \sa trimBefore()
      */

@@ -5,6 +5,8 @@
 
 #include "validatorbetween_p.h"
 
+#include <QMetaType>
+
 using namespace Cutelyst;
 
 ValidatorBetween::ValidatorBetween(const QString &field,
@@ -47,13 +49,15 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             } else {
                 const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, -1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                     qCWarning(C_VALIDATOR).noquote()
                         << "Invalid mininum comparison value:" << d->min;
                 } else {
                     const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
-                        result.errorMessage = validationDataError(c, 1);
+                        result.errorMessage = validationDataError(
+                            c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                         qCWarning(C_VALIDATOR).noquote()
                             << "Invalid maximum comparison value:" << d->max;
                     } else {
@@ -87,13 +91,15 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             } else {
                 const qulonglong min = d->extractULongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, -1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid mininum comparison value:" << d->min;
                 } else {
                     const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
-                        result.errorMessage = validationDataError(c, 1);
+                        result.errorMessage = validationDataError(
+                            c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                         qCWarning(C_VALIDATOR).noquote()
                             << debugString(c) << "Invalid maximum comparison value:" << d->max;
                     } else {
@@ -124,13 +130,15 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             } else {
                 const double min = d->extractDouble(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, -1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid mininum comparison value:" << d->min;
                 } else {
                     const double max = d->extractDouble(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
-                        result.errorMessage = validationDataError(c, 1);
+                        result.errorMessage = validationDataError(
+                            c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                         qCWarning(C_VALIDATOR).noquote()
                             << debugString(c) << "Invalid maximum comparison value:" << d->max;
                     } else {
@@ -154,13 +162,15 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             const auto val      = static_cast<qlonglong>(v.length());
             const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
             if (Q_UNLIKELY(!ok)) {
-                result.errorMessage = validationDataError(c, -1);
+                result.errorMessage = validationDataError(
+                    c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid mininum comparison value:" << d->min;
             } else {
                 const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
-                    result.errorMessage = validationDataError(c, 1);
+                    result.errorMessage = validationDataError(
+                        c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid maximum comparison value:" << d->max;
                 } else {
@@ -181,7 +191,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
         default:
             qCWarning(C_VALIDATOR).noquote()
                 << debugString(c) << "The comparison type" << d->type << "is not supported";
-            result.errorMessage = validationDataError(c, 0);
+            result.errorMessage = validationDataError(
+                c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidType));
             break;
         }
 
@@ -237,32 +248,32 @@ QString ValidatorBetween::genericValidationError(Cutelyst::Context *c,
         max = c->locale().toString(map.value(QStringLiteral("max")).toDouble());
         break;
     default:
-        error = validationDataError(c);
-        return error;
+        return validationDataError(c);
     }
 
     const QString _label = label(c);
 
     if (_label.isEmpty()) {
         if (d->type == QMetaType::QString) {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The text must be between %1 and %2 characters long.")
-                        .arg(min, max);
+            //: %1 will be replaced by the minimum, %2 by the maximum value
+            //% "The text must be between %1 and %2 characters long."
+            return c->qtTrId("cutelyst-valbetween-genvalerr-string").arg(min, max);
         } else {
-            error =
-                c->translate("Cutelyst::ValidatorBetween", "The value must be between %1 and %2.")
-                    .arg(min, max);
+            //: %1 will be replaced by the minimum, %2 by the maximum value
+            //% "The value must be between %1 and %2."
+            return c->qtTrId("cutelyst-valbetween-genvalerr-num").arg(min, max);
         }
     } else {
         if (d->type == QMetaType::QString) {
-            error = c->translate(
-                         "Cutelyst::ValidatorBetween",
-                         "The text in the “%1“ field must be between %2 and %3 characters long.")
-                        .arg(_label, min, max);
+            //: %1 will be replaced by the field label, %2 by the minimum and %3 by the
+            //: maximum value
+            //% "The text in the “%1“ field must be between %2 and %3 characters long."
+            return c->qtTrId("cutelyst-valbetween-genvalerr-string-label").arg(_label, min, max);
         } else {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The value in the “%1” field must be between %2 and %3.")
-                        .arg(_label, min, max);
+            //: %1 will be replaced by the field label, %2 by the minimum and %3 by the
+            //: maximum value
+            //% "The value in the “%1” field must be between %2 and %3."
+            return c->qtTrId("cutelyst-valbetween-genvalerr-num-label").arg(_label, min, max);
         }
     }
 
@@ -271,80 +282,76 @@ QString ValidatorBetween::genericValidationError(Cutelyst::Context *c,
 
 QString ValidatorBetween::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
-    int field            = errorData.toInt();
+    const auto errorType = static_cast<ValidatorRulePrivate::ErrorType>(errorData.toInt());
     const QString _label = label(c);
 
-    if (field == -1) {
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The minimum comparison value is not valid.");
-        } else {
-            //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The minimum comparison value for the “%1” field is not valid.")
-                        .arg(_label);
+    if (_label.isEmpty()) {
+        switch (errorType) {
+        case ValidatorRulePrivate::ErrorType::InvalidMin:
+            //% "The minimum comparison value is not valid."
+            return c->qtTrId("cutelyst-validator-genvaldataerr-min");
+        case ValidatorRulePrivate::ErrorType::InvalidType:
+        {
+            Q_D(const ValidatorBetween);
+            QMetaType _type(d->type);
+            //: %1 will be replaced by the name of the comparison type
+            //% "The comparison type %1 is not supported."
+            return c->qtTrId("cutelyst-validator-genvaldataerr-type")
+                .arg(QString::fromLatin1(_type.name()));
         }
-    } else if (field == 0) {
-        Q_D(const ValidatorBetween);
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The comparison type with ID %1 is not supported.")
-                        .arg(static_cast<int>(d->type));
-        } else {
-            //: %1 will be replaced by the type id, %2 will be replaced by the field label
-            error =
-                c->translate("Cutelyst::ValidatorBetween",
-                             "The comparison type with ID %1 for the “%2” field is not supported.")
-                    .arg(QString::number(static_cast<int>(d->type)), _label);
+        case ValidatorRulePrivate::ErrorType::InvalidMax:
+            //% "The maximum comparison value is not valid."
+            return c->qtTrId("cutelyst-validator-genvaldataerr-max");
         }
-    } else if (field == 1) {
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The maximum comparison value is not valid.");
-        } else {
+    } else {
+        switch (errorType) {
+        case ValidatorRulePrivate::ErrorType::InvalidMin:
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "The maximum comparison value for the “%1” field is not valid.")
-                        .arg(_label);
+            //% "The minimum comparison value for the “%1” field is not valid."
+            return c->qtTrId("cutelyst-validator-genvaldataerr-min-label").arg(_label);
+        case ValidatorRulePrivate::ErrorType::InvalidType:
+        {
+            Q_D(const ValidatorBetween);
+            QMetaType _type(d->type);
+            //: %1 will be replaced by the type name, %2 will be replaced by the field label
+            //% "The comparison type %1 for the “%2” field is not supported."
+            return c->qtTrId("cutelyst-validator-genvaldataerr-type-label")
+                .arg(QString::fromLatin1(_type.name()), _label);
+        }
+        case ValidatorRulePrivate::ErrorType::InvalidMax:
+            //: %1 will be replaced by the field label
+            //% "The maximum comparison value for the “%1” field is not valid."
+            return c->qtTrId("cutelyst-validator-genvaldataerr-max-label").arg(_label);
         }
     }
 
-    return error;
+    return {};
 }
 
 QString ValidatorBetween::genericParsingError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     Q_D(const ValidatorBetween);
 
     const QString _label = label(c);
     if ((d->type == QMetaType::Float) || (d->type == QMetaType::Double)) {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "Failed to parse the input value into a floating point number.");
+            //% "Failed to parse the input value into a floating point number."
+            return c->qtTrId("cutelyst-validator-genparseerr-float");
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "Failed to parse the input value for the “%1” field into a "
-                                 "floating point number.")
-                        .arg(_label);
+            //% "Failed to parse the input value for the “%1” field into a "
+            //% "floating point number."
+            return c->qtTrId("cutelyst-validator-genparseerr-float-label").arg(_label);
         }
     } else {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorBetween",
-                                 "Failed to parse the input value into an integer number.");
+            //% "Failed to parse the input value into an integer number."
+            return c->qtTrId("cutelyst-validator-genparseerr-int");
         } else {
             //: %1 will be replaced by the field label
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorBetween",
-                     "Failed to parse the input value for the “%1” field into an integer number.")
-                    .arg(_label);
+            //% "Failed to parse the input value for the “%1” field into an integer number."
+            return c->qtTrId("cutelyst-validator-genparseerr-int-label").arg(_label);
         }
     }
-
-    return error;
 }

@@ -23,9 +23,9 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
 
     Q_D(const ValidatorDigits);
 
-    const QString v   = value(params);
-    bool ok           = false;
-    const int _length = d->extractInt(c, params, d->length, &ok);
+    const QString v         = value(params);
+    bool ok                 = false;
+    const qlonglong _length = d->extractLongLong(c, params, d->length, &ok);
     if (!ok) {
         qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison length";
         result.errorMessage = validationDataError(c);
@@ -56,54 +56,44 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
     return result;
 }
 
-bool ValidatorDigits::validate(const QString &value, int length)
+bool ValidatorDigits::validate(const QString &value, qsizetype length)
 {
-    bool valid = true;
-
     for (const QChar &ch : value) {
         const ushort &uc = ch.unicode();
         if (!((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9))) {
-            valid = false;
-            break;
+            return false;
         }
     }
 
-    if (valid && (length > 0) && (length != value.length())) {
-        valid = false;
+    if ((length > 0) && (length != value.length())) {
+        return false;
     }
 
-    return valid;
+    return true;
 }
 
 QString ValidatorDigits::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     const QString _label = label(c);
     const int _length    = errorData.toInt();
 
     if (_label.isEmpty()) {
         if (_length > 0) {
-            error = c->translate(
-                "Cutelyst::ValidatorDigits", "Must contain exactly %n digit(s).", "", _length);
+            //% "Must contain exactly %n digit(s)."
+            return c->qtTrId("cutelyst-valdigits-genvalerr-length", _length);
         } else {
-            error = c->translate("Cutelyst::ValidatorDigits", "Must only contain digits.");
+            //% "Must only contain digits."
+            return c->qtTrId("cutelyst-valdigits-genvalerr");
         }
     } else {
         if (_length > 0) {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDigits",
-                                 "The “%1” field must contain exactly %n digit(s).",
-                                 "",
-                                 _length)
-                        .arg(_label);
+            //% "The “%1” field must contain exactly %n digit(s)."
+            return c->qtTrId("cutelyst-valdigits-genvalerr-length-label", _length).arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDigits",
-                                 "The “%1” field must only contain digits.")
-                        .arg(_label);
+            //% "The “%1” field must only contain digits."
+            return c->qtTrId("cutelyst-valdigits-genvalerr-label").arg(_label);
         }
     }
-
-    return error;
 }

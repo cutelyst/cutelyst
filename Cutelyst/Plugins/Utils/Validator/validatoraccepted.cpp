@@ -43,14 +43,14 @@ bool ValidatorAccepted::validate(const QString &value)
 QString ValidatorAccepted::genericValidationError(Cutelyst::Context *c,
                                                   const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorAccepted", "Has to be accepted.");
+        //% "Has to be accepted."
+        return c->qtTrId("cutelyst-valaccepted-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorAccepted", "“%1” has to be accepted.");
+        //% "“%1” has to be accepted."
+        return c->qtTrId("cutelyst-valaccepted-genvalerr-label").arg(_label);
     }
-    return error;
 }

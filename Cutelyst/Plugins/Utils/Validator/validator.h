@@ -304,7 +304,7 @@ public:
     /*!
      * \brief Constructs a new %Validator.
      */
-    explicit Validator(QLatin1String translationContext = QLatin1String());
+    explicit Validator(const char *translationContext = nullptr);
 
     /*!
      * \brief Constructs a new %Validator using the defined \a validators.
@@ -312,7 +312,7 @@ public:
      * %Validator will take ownerhip of them and will destroy them on it's own destruction.
      */
     explicit Validator(std::initializer_list<ValidatorRule *> validators,
-                       QLatin1String translationContext = QLatin1String());
+                       const char *translationContext = nullptr);
 
     /*!
      * \brief Desconstructs the Validator and all added ValidatorRule objects.

@@ -47,12 +47,12 @@ QString ValidatorConfirmed::genericValidationError(Context *c, const QVariant &e
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorConfirmed", "Confirmation failed.");
+        //% "Confirmation failed."
+        return c->qtTrId("cutelyst-valconfirmed-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorConfirmed",
-                             "The value in the “%1“ field has not been confirmed.")
-                    .arg(_label);
+        //% "The value in the “%1“ field has not been confirmed."
+        return c->qtTrId("cutelyst-valconfirmed-genvalerr-label").arg(_label);
     }
     return error;
 }

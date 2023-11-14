@@ -47,18 +47,14 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
 QString ValidatorBoolean::genericValidationError(Cutelyst::Context *c,
                                                  const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error =
-            c->translate("Cutelyst::ValidatorBoolean", "Can not be interpreted as boolean value.");
+        //% "Can not be interpreted as boolean value."
+        return c->qtTrId("cutelyst-vaboolean-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error =
-            c->translate("Cutelyst::ValidatorBoolean",
-                         "The value in the “%1” field can not be interpreted as a boolean value.")
-                .arg(_label);
+        //% "The value in the “%1” field can not be interpreted as a boolean value."
+        return c->qtTrId("cutelyst-vaboolean-genvalerr-label").arg(_label);
     }
-    return error;
 }

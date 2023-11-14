@@ -48,10 +48,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                     qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
                 } else {
                     if (val != size) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("size"), size}});
+                        result.errorMessage = validationError(c, size);
                         qCDebug(C_VALIDATOR).noquote() << debugString(c) << val << "!=" << size;
                     } else {
                         valid = true;
@@ -77,10 +74,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                     qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
                 } else {
                     if (val != size) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("size"), size}});
+                        result.errorMessage = validationError(c, size);
                         qCDebug(C_VALIDATOR).noquote() << debugString(c) << val << "!=" << size;
                     } else {
                         valid = true;
@@ -104,10 +98,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                     qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
                 } else {
                     if (val != size) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("size"), size}});
+                        result.errorMessage = validationError(c, size);
                         qCDebug(C_VALIDATOR).noquote() << debugString(c) << val << "!=" << size;
                     } else {
                         valid = true;
@@ -124,9 +115,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                 qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
             } else {
                 if (val != size) {
-                    result.errorMessage = validationError(
-                        c,
-                        QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("size"), size}});
+                    result.errorMessage = validationError(c, size);
                     qCDebug(C_VALIDATOR).noquote()
                         << debugString(c) << "string length" << val << "!=" << size;
                 } else {
@@ -162,11 +151,8 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
 
 QString ValidatorSize::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorSize);
 
-    const QVariantMap map = errorData.toMap();
     QString size;
     switch (d->type) {
     case QMetaType::Short:
@@ -174,118 +160,93 @@ QString ValidatorSize::genericValidationError(Context *c, const QVariant &errorD
     case QMetaType::Long:
     case QMetaType::LongLong:
     case QMetaType::QString:
-        size = c->locale().toString(map.value(u"size"_qs).toLongLong());
+        size = c->locale().toString(errorData.toLongLong());
         break;
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:
     case QMetaType::ULongLong:
-        size = c->locale().toString(map.value(u"size"_qs).toULongLong());
+        size = c->locale().toString(errorData.toULongLong());
         break;
     case QMetaType::Float:
     case QMetaType::Double:
-        size = c->locale().toString(map.value(u"size"_qs).toDouble());
+        size = c->locale().toString(errorData.toDouble());
         break;
     default:
-        error = validationDataError(c);
-        return error;
+        return validationDataError(c, 0);
     }
 
     const QString _label = label(c);
 
     if (_label.isEmpty()) {
         if (d->type == QMetaType::QString) {
-            //: %1 will be replaced by the required string size
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "The text must be exactly %1 characters long.")
-                        .arg(size);
+            //% "The text must be exactly %1 characters long."
+            return c->qtTrId("cutelyst-valsize-genvalerr-str").arg(size);
         } else {
-            //: %1 will be replaced by the required size/value
-            error = c->translate("Cutelyst::ValidatorSize", "The value must be %1.").arg(size);
+            //% "The value must be %1."
+            return c->qtTrId("cutelyst-valsize-genvalerr-num").arg(size);
         }
     } else {
         if (d->type == QMetaType::QString) {
             //: %1 will be replaced by the field label, %2 will be replaced by the required string
             //: size
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "The text in the “%1“ field must be exactly %2 characters long.")
-                        .arg(_label, size);
+            //% "The text in the “%1“ field must be exactly %2 characters long."
+            return c->qtTrId("cutelyst-valsize-genvalerr-str-label").arg(_label, size);
         } else {
             //: %1 will be replaced by the field label, %2 will be replaced by the required
             //: size/value
-            error =
-                c->translate("Cutelyst::ValidatorSize", "The value in the “%1” field must be %2.")
-                    .arg(_label, size);
+            //% "The value in the “%1” field must be %2."
+            return c->qtTrId("cutelyst-valsize-genvalerr-num-label").arg(_label, size);
         }
     }
-
-    return error;
 }
 
 QString ValidatorSize::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     int field            = errorData.toInt();
     const QString _label = label(c);
 
     if (field == 0) {
         Q_D(const ValidatorSize);
+        const QMetaType _type(d->type);
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "The comparison type with ID %1 is not supported.")
-                        .arg(static_cast<int>(d->type));
+            return c->qtTrId("cutelyst-validator-genvaldataerr-type")
+                .arg(QString::fromLatin1(_type.name()));
         } else {
-            error =
-                c->translate("Cutelyst::ValidatorSize",
-                             "The comparison type with ID %1 for the “%2” field is not supported.")
-                    .arg(QString::number(static_cast<int>(d->type)), _label);
+            return c->qtTrId("cutelyst-validator-genvaldataerr-type-label")
+                .arg(QString::fromLatin1(_type.name()), _label);
         }
-    } else if (field == 1) {
+    } else {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorSize", "The comparison value is not valid.");
+            //% "The comparison value is not valid."
+            return c->qtTrId("cutelyst-valsize-genvaldataerr-size");
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "The comparison value for the “%1” field is not valid.")
-                        .arg(_label);
+            //% "The comparison value for the “%1” field is not valid."
+            return c->qtTrId("cutelyst-valsize-genvaldataerr-size-label").arg(_label);
         }
     }
-
-    return error;
 }
 
 QString ValidatorSize::genericParsingError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     Q_D(const ValidatorSize);
+
+    // translation strings are defined in ValidatorBetween
 
     const QString _label = label(c);
     if ((d->type == QMetaType::Float) || (d->type == QMetaType::Double)) {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "Failed to parse the input value into a floating point number.");
+            return c->qtTrId("cutelyst-validator-genparseerr-float");
         } else {
-            //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "Failed to parse the input value for the “%1” field into a "
-                                 "floating point number.")
-                        .arg(_label);
+            return c->qtTrId("cutelyst-validator-genparseerr-float-label").arg(_label);
         }
     } else {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorSize",
-                                 "Failed to parse the input value into an integer number.");
+            return c->qtTrId("cutelyst-validator-genparseerr-int");
         } else {
-            //: %1 will be replaced by the field label
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorSize",
-                     "Failed to parse the input value for the “%1” field into an integer number.")
-                    .arg(_label);
+            return c->qtTrId("cutelyst-validator-genparseerr-int-label").arg(_label);
         }
     }
-
-    return error;
 }

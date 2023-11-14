@@ -66,33 +66,28 @@ bool ValidatorAlpha::validate(const QString &value, bool asciiOnly)
 
 QString ValidatorAlpha::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     Q_D(const ValidatorAlpha);
     const QString _label = label(c);
     if (_label.isEmpty()) {
         if (d->asciiOnly) {
-            error = c->translate("Cutelyst::ValidatorAlhpa",
-                                 "Must only contain alphabetical latin characters.");
+            //% "Must only contain alphabetical characters from the ASCII character "
+            //% "encoding (a-z and A-Z)."
+            return c->qtTrId("cutelyst-valalpha-genvalerr-asciionly");
         } else {
-            error = c->translate("Cutelyst::ValidatorAlhpa",
-                                 "Must only contain alphabetical characters.");
+            //% "Must only contain alphabetical characters."
+            return c->qtTrId("cutelyst-valalpha-genvalerr");
         }
     } else {
         if (d->asciiOnly) {
             //: %1 will be replaced by the field label
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorAlhpa",
-                     "The text in the “%1” field must only contain alphabetical latin characters.")
-                    .arg(_label);
+            //% "The text in the “%1” field must only contain alphabetical characters "
+            //% "from the ASCII character encoding (a-z and A-Z)."
+            return c->qtTrId("cutelyst-valalpha-genvalerr-asciionly-label").arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate(
-                         "Cutelyst::ValidatorAlhpa",
-                         "The text in the “%1” field must only contain alphabetical characters.")
-                        .arg(_label);
+            //% "The text in the “%1” field must only contain alphabetical characters."
+            return c->qtTrId("cutelyst-valalpha-genvalerr-label").arg(_label);
         }
     }
-    return error;
 }

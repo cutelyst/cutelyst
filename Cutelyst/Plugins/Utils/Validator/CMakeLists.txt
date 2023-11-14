@@ -224,6 +224,7 @@ qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidat
 qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
     TS_FILES ${plugin_utils_validator_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_utils_validator_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${plugin_utils_validator_QM_FILES} DESTINATION ${I18NDIR})
