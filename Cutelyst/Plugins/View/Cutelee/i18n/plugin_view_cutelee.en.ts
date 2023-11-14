@@ -2,8 +2,8 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en" sourcelanguage="en">
 <context>
-    <name>Cutelyst::CuteleeView</name>
-    <message>
+    <name></name>
+    <message id="cutelyst-cuteleeview-err-internal-server">
         <source>Internal server error.</source>
         <translation type="unfinished"></translation>
     </message>
