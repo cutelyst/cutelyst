@@ -169,6 +169,7 @@ qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
 qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
     TS_FILES ${cutelystcore_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE cutelystcore_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${cutelystcore_QM_FILES} DESTINATION ${I18NDIR})
