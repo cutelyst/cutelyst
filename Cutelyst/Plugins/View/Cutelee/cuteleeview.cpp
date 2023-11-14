@@ -211,14 +211,15 @@ QByteArray CuteleeView::render(Context *c) const
 
     Cutelee::Template tmpl = d->engine->loadByName(templateFile);
     if (tmpl->error() != Cutelee::NoError) {
-        c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
+        //% "Internal server error."
+        c->res()->setBody(c->qtTrId("cutelyst-cuteleeview-err-internal-server"));
         c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
         return ret;
     }
 
     QString content = tmpl->render(&gc);
     if (tmpl->error() != Cutelee::NoError) {
-        c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
+        c->res()->setBody(c->qtTrId("cutelyst-cuteleeview-err-internal-server"));
         c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
         return ret;
     }
@@ -226,7 +227,7 @@ QByteArray CuteleeView::render(Context *c) const
     if (!d->wrapper.isEmpty()) {
         Cutelee::Template wrapper = d->engine->loadByName(d->wrapper);
         if (tmpl->error() != Cutelee::NoError) {
-            c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
+            c->res()->setBody(c->qtTrId("cutelyst-cuteleeview-err-internal-server"));
             c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
             return ret;
         }
@@ -236,7 +237,7 @@ QByteArray CuteleeView::render(Context *c) const
         content = wrapper->render(&gc);
 
         if (wrapper->error() != Cutelee::NoError) {
-            c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
+            c->res()->setBody(c->qtTrId("cutelyst-cuteleeview-err-internal-server"));
             c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
             return ret;
         }

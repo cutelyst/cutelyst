@@ -71,6 +71,7 @@ qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
 qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
     TS_FILES ${plugin_view_cutelee_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_view_cutelee_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${plugin_view_cutelee_QM_FILES} DESTINATION ${I18NDIR})
