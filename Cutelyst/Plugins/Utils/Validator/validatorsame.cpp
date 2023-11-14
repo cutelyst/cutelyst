@@ -46,31 +46,25 @@ ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &pa
 
 QString ValidatorSame::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorSame);
     Q_UNUSED(errorData)
     const QString _label = label(c);
     QString _olabel;
     if (d->otherLabel) {
-        _olabel = d->translationContext.size()
-                      ? c->translate(d->translationContext.data(), d->otherLabel)
-                      : QString::fromUtf8(d->otherLabel);
+        _olabel = d->translationContext ? c->translate(d->translationContext, d->otherLabel)
+                                        : c->qtTrId(d->otherLabel);
     } else {
         _olabel = d->otherField;
     }
 
     if (_label.isEmpty()) {
         //: %1 will be replaced by the label of the other field
-        error = c->translate("Cutelyst::ValidatorSame", "Must be the same as in the “%1” field.")
-                    .arg(_olabel);
+        //% "Must be the same as in the “%1” field."
+        return c->qtTrId("cutelyst-valsame-genvalerr").arg(_olabel);
     } else {
-        //: %1 will be replaced by the field label, %2 will be replaced by the label of the other
-        //: field
-        error = c->translate("Cutelyst::ValidatorSame",
-                             "The “%1” field must have the same value as the “%2” field.")
-                    .arg(_label, _olabel);
+        //: %1 will be replaced by the field label, %2 will be replaced by the label
+        //: of the other field
+        //% "The “%1” field must have the same value as the “%2” field."
+        return c->qtTrId("cutelyst-valsame-genvalerr-label").arg(_label, _olabel);
     }
-
-    return error;
 }

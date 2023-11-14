@@ -52,15 +52,12 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c,
 
 QString ValidatorRequiredUnless::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
+    // translation strings are defined in ValidatorRequired
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorRequiredUnless", "This is required.");
+        return c->qtTrId("cutelyst-validator-genvalerr-req");
     } else {
-        //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorRequiredUnless", "The “%1” field is required.")
-                    .arg(_label);
+        return c->qtTrId("cutelyst-validator-genvalerr-req-label").arg(_label);
     }
-    return error;
 }

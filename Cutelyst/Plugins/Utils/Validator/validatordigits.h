@@ -68,7 +68,7 @@ public:
      * \param length    Exact length of the digits, defaults to \c -1. A value lower \c 1 disables
      * the length check. \return \c true if the \a value only contains digits
      */
-    static bool validate(const QString &value, int length = -1);
+    static bool validate(const QString &value, qsizetype length = -1);
 
 protected:
     /*!

@@ -255,16 +255,14 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
 QString ValidatorIp::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorIp", "IP address is invalid or not acceptable.");
+        //% "IP address is invalid or not acceptable."
+        return c->qtTrId("cutelyst-valip-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorIp",
-                             "The IP address in the “%1” field is invalid or not acceptable.")
-                    .arg(_label);
+        //% "The IP address in the “%1” field is invalid or not acceptable."
+        return c->qtTrId("cutelyst-valip-genvalerr-label").arg(_label);
     }
-    return error;
 }

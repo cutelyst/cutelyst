@@ -47,41 +47,30 @@ ValidatorReturnType ValidatorTime::validate(Context *c, const ParamsMultiMap &pa
 
 QString ValidatorTime::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorTime);
-
     Q_UNUSED(errorData)
-
     const QString _label = label(c);
 
-    if (_label.isEmpty()) {
-
-        if (d->format) {
-            //: %1 will be replaced by the erquired time format
-            error = c->translate("Cutelyst::ValidatorTime",
-                                 "Not a valid time according to the following date format: %1")
-                        .arg(c->translate(d->translationContext.data(), d->format));
+    if (d->format) {
+        const QString _formatTranslated = d->translationContext
+                                              ? c->translate(d->translationContext, d->format)
+                                              : c->qtTrId(d->format);
+        if (_label.isEmpty()) {
+            //% "Not a valid time according to the following format: %1"
+            return c->qtTrId("cutelyst-valtime-genvalerr-format").arg(_formatTranslated);
         } else {
-            error = c->translate("Cutelyst::ValidatorTime", "Not a valid time.");
+            //% "The value in the “%1” field can not be parsed as time according "
+            //% "to the following format: %2"
+            return c->qtTrId("cutelyst-valtime-genvalerr-format-label")
+                .arg(_label, _formatTranslated);
         }
-
     } else {
-
-        if (d->format) {
-            //: %1 will be replaced by the field label, %2 will be replaced by the required time
-            //: format
-            error = c->translate("Cutelyst::ValidatorTime",
-                                 "The value in the “%1” field can not be parsed as time according "
-                                 "to the following scheme: %2")
-                        .arg(_label, c->translate(d->translationContext.data(), d->format));
+        if (_label.isEmpty()) {
+            //% "Not a valid time."
+            return c->qtTrId("cutelyst-valtime-genvalerr");
         } else {
-            //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorTime",
-                                 "The value in the “%1” field can not be parsed as time.")
-                        .arg(_label);
+            //% "The value in the “%1” field can not be parsed as time."
+            return c->qtTrId("cutelyst-valtime-genvalerr-label").arg(_label);
         }
     }
-
-    return error;
 }

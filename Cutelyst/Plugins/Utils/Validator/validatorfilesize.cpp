@@ -278,7 +278,8 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
             if (!ok) {
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid minimum size comparison data";
-                result.errorMessage = validationDataError(c, 0);
+                result.errorMessage = validationDataError(
+                    c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
             }
         }
 
@@ -287,7 +288,8 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
             if (!ok) {
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid maximum size comparison data";
-                result.errorMessage = validationDataError(c, 1);
+                result.errorMessage = validationDataError(
+                    c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
             }
         }
 
@@ -315,64 +317,65 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
 
 QString ValidatorFileSize::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_D(const ValidatorFileSize);
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (d->min.isValid() || d->max.isValid()) {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorFileSize",
-                                 "Invalid file size or file size not within the allowed limits.");
+            //% "Invalid file size or file size not within the allowed limits."
+            return c->qtTrId("cutelyst-valfilesize-genvalerr-minmax");
         } else {
-            error = c->translate("Cutelyst::ValidatorFileSize",
-                                 "The value in the “%1” field is either not a valid file size or "
-                                 "not within the allowed limits.")
-                        .arg(_label);
+            //% "The value in the “%1” field is either not a valid file size or "
+            //% "not within the allowed limits."
+            return c->qtTrId("cutelyst-valfilesize-genvalerr-minmax-label").arg(_label);
         }
     } else {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorFileSize", "Invalid file size.");
+            //% "Invalid file size."
+            return c->qtTrId("cutelyst-valfilesize-genvalerr");
         } else {
-            error = c->translate("Cutelyst::ValidatorFileSize",
-                                 "The “%1” field does not contain a valid file size.")
-                        .arg(_label);
+            //% "The “%1” field does not contain a valid file size."
+            return c->qtTrId("cutelyst-valfilesize-genvalerr-label").arg(_label);
         }
     }
-
-    return error;
 }
 
 QString ValidatorFileSize::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     const QString _label = label(c);
 
-    const int sizeType = errorData.toInt();
+    const auto errorType = static_cast<ValidatorRulePrivate::ErrorType>(errorData.toInt());
 
-    if (sizeType == 0) { // minimum file size
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorFileSize",
-                                 "The minimum file size comparison value is not valid.");
-        } else {
-            error = c->translate(
-                         "Cutelyst::ValidatorFileSize",
-                         "The minimum file size comparison value for the “%1” field is not valid.")
-                        .arg(_label);
+    if (_label.isEmpty()) {
+        switch (errorType) {
+        case ValidatorRulePrivate::ErrorType::InvalidMin:
+            //% "The minimum file size comparison value is not valid."
+            return c->qtTrId("cutelyst-valfilesize-genvaldataerr-min");
+        case ValidatorRulePrivate::ErrorType::InvalidMax:
+            //% "The maximum file size comparison value is not valid."
+            return c->qtTrId("cutelyst-valfilesize-genvaldataerr-max");
+        case ValidatorRulePrivate::ErrorType::InvalidType:
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+            Q_UNREACHABLE();
+            return {};
         }
     } else {
-        if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorFileSize",
-                                 "The maximum file size comparison value is not valid.");
-        } else {
-            error = c->translate(
-                         "Cutelyst::ValidatorFileSize",
-                         "The maximum file size comparison value for the “%1” field is not valid.")
-                        .arg(_label);
+        switch (errorType) {
+        case ValidatorRulePrivate::ErrorType::InvalidMin:
+            //% "The minimum file size comparison value for the “%1” field is not valid."
+            return c->qtTrId("cutelyst-valfilesize-genvaldataerr-min-label").arg(_label);
+        case ValidatorRulePrivate::ErrorType::InvalidMax:
+            //% "The maximum file size comparison value for the “%1” field is not valid."
+            return c->qtTrId("cutelyst-valfilesize-genvaldataerr-max-label").arg(_label);
+        case ValidatorRulePrivate::ErrorType::InvalidType:
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+            Q_UNREACHABLE();
+            return {};
         }
     }
 
-    return error;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
+    Q_UNREACHABLE_RETURN({});
 }
 
 void ValidatorFileSize::inputPattern(Context *c, const QString &stashKey)

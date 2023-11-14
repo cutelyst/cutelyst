@@ -123,327 +123,228 @@ QString ValidatorPwQuality::errorString(Context *c,
                                         const QString &label,
                                         int threshold)
 {
-    QString error;
-
     if (label.isEmpty()) {
         switch (returnValue) {
         case PWQ_ERROR_MEM_ALLOC:
-            error =
-                c->translate("Cutelyst::ValidatorPwQuality",
-                             "Password quality check failed because of a memory allocation error.");
-            break;
+            //% "Password quality check failed because of a memory allocation error."
+            return c->qtTrId("cutelyst-valpwq-err-memalloc");
         case PWQ_ERROR_SAME_PASSWORD:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password is the same as the old one.");
-            break;
+            //% "The password is the same as the old one."
+            return c->qtTrId("cutelyst-valpwq-err-samepass");
         case PWQ_ERROR_PALINDROME:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password is a palindrome.");
-            break;
+            //% "The password is a palindrome."
+            return c->qtTrId("cutelyst-valpwq-err-palindrome");
         case PWQ_ERROR_CASE_CHANGES_ONLY:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password differs with case changes only.");
-            break;
+            //% "The password differs with case changes only from the old one."
+            return c->qtTrId("cutelyst-valpwq-err-casechangesonly");
         case PWQ_ERROR_TOO_SIMILAR:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password is too similar to the old one.");
-            break;
+            //% "The password is too similar to the old one."
+            return c->qtTrId("cutelyst-valpwq-err-toosimilar");
         case PWQ_ERROR_USER_CHECK:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains the user name in some form.");
-            break;
+            //% "The password contains the user name in some form."
+            return c->qtTrId("cutelyst-valpwq-err-usercheck");
         case PWQ_ERROR_GECOS_CHECK:
-            error = c->translate(
-                "Cutelyst::ValidatorPwQuality",
-                "The password contains words from the real name of the user in some form.");
-            break;
+            //% "The password contains words from the real name of the user in some form."
+            return c->qtTrId("cutelyst-valpwq-err-gecoscheck");
         case PWQ_ERROR_BAD_WORDS:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains forbidden words in some form.");
-            break;
+            //% "The password contains forbidden words in some form."
+            return c->qtTrId("cutelyst-valpwq-err-badwords");
         case PWQ_ERROR_MIN_DIGITS:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains too few digits.");
-            break;
+            //% "The password does not contain enough digits."
+            return c->qtTrId("cutelyst-valpwq-err-mindigits");
         case PWQ_ERROR_MIN_UPPERS:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains too few uppercase letters.");
-            break;
+            //% "The password does not contain enough uppercase letters."
+            return c->qtTrId("cutelyst-valpwq-err-minuppers");
         case PWQ_ERROR_MIN_LOWERS:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains too few lowercase letters.");
-            break;
+            //% "The password does not contain enough lowercase letters."
+            return c->qtTrId("cutelyst-valpwq-err-minlowers");
         case PWQ_ERROR_MIN_OTHERS:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains too few non-alphanumeric characters.");
-            break;
+            //% "The password does not contain enough non-alphanumeric characters."
+            return c->qtTrId("cutelyst-valpwq-err-minothers");
         case PWQ_ERROR_MIN_LENGTH:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password is too short.");
-            break;
+            //% "The password is too short."
+            return c->qtTrId("cutelyst-valpwq-err-minlength");
         case PWQ_ERROR_ROTATED:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password is just the rotated old one.");
-            break;
+            //% "The password is just the rotated old one."
+            return c->qtTrId("cutelyst-valpwq-err-rotated");
         case PWQ_ERROR_MIN_CLASSES:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password does not contain enough different character types.");
-            break;
+            //% "The password does not contain enough different character types."
+            return c->qtTrId("cutelyst-valpwq-err-minclasses");
         case PWQ_ERROR_MAX_CONSECUTIVE:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains too many same characters consecutively.");
-            break;
+            //% "The password contains too many same characters consecutively."
+            return c->qtTrId("cutelyst-valpwq-err-maxconsecutive");
         case PWQ_ERROR_MAX_CLASS_REPEAT:
-            error = c->translate(
-                "Cutelyst::ValidatorPwQuality",
-                "The password contains too many characters of the same type consecutively.");
-            break;
+            //% "The password contains too many characters of the same type consecutively."
+            return c->qtTrId("cutelyst-valpwq-err-maxclassrepeat");
         case PWQ_ERROR_MAX_SEQUENCE:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password contains too long a monotonous string.");
-            break;
+            //% "The password contains too long a monotonous string."
+            return c->qtTrId("cutelyst-valpwq-err-maxsequence");
         case PWQ_ERROR_EMPTY_PASSWORD:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "No password supplied.");
-            break;
+            //% "No password supplied."
+            return c->qtTrId("cutelyst-valpwq-err-emptypw");
         case PWQ_ERROR_RNG:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check failed because we cannot obtain random "
-                                 "numbers from the RNG device.");
-            break;
+            //% "Password quality check failed because we cannot obtain random "
+            //% "numbers from the RNG device."
+            return c->qtTrId("cutelyst-valpwq-err-rng");
         case PWQ_ERROR_CRACKLIB_CHECK:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password fails the dictionary check.");
-            break;
+            //% "The password fails the dictionary check."
+            return c->qtTrId("cutelyst-valpwq-err-cracklibcheck");
         case PWQ_ERROR_UNKNOWN_SETTING:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check failed because of an unknown setting.");
-            break;
+            //% "Password quality check failed because of an unknown setting."
+            return c->qtTrId("cutelyst-valpwq-err-unknownsetting");
         case PWQ_ERROR_INTEGER:
-            error = c->translate(
-                "Cutelyst::ValidatorPwQuality",
-                "Password quality check failed because of a bad integer value in the settings.");
-            break;
+            //% "Password quality check failed because of a bad integer value in the settings."
+            return c->qtTrId("cutelyst-valpwq-err-integer");
         case PWQ_ERROR_NON_INT_SETTING:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check failed because of a settings entry is not "
-                                 "of integer type.");
-            break;
+            //% "Password quality check failed because of a settings entry is not "
+            //% "of integer type."
+            return c->qtTrId("cutelyst-valpwq-err-nonintsetting");
         case PWQ_ERROR_NON_STR_SETTING:
-            error = c->translate(
-                "Cutelyst::ValidatorPwQuality",
-                "Password quality check failed because of a settings entry is not of string type.");
-            break;
+            //% "Password quality check failed because of a settings entry is not of string type."
+            return c->qtTrId("cutelyst-valpwq-err-nonstrsetting");
         case PWQ_ERROR_CFGFILE_OPEN:
-            error = c->translate(
-                "Cutelyst::ValidatorPwQuality",
-                "Password quality check failed because opening the configuration file failed.");
-            break;
+            //% "Password quality check failed because opening the configuration file failed."
+            return c->qtTrId("cutelyst-valpwq-err-cfgfileopen");
         case PWQ_ERROR_CFGFILE_MALFORMED:
-            error = c->translate(
-                "Cutelyst::ValidatorPwQuality",
-                "Password quality check failed because the configuration file is malformed.");
-            break;
+            //% "Password quality check failed because the configuration file is malformed."
+            return c->qtTrId("cutelyst-valpwq-err-cfgfilemalformed");
         case PWQ_ERROR_FATAL_FAILURE:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check failed because of a fatal failure.");
-            break;
+            //% "Password quality check failed because of a fatal failure."
+            return c->qtTrId("cutelyst-valpwq-err-fatalfailure");
         default:
         {
             if (returnValue < 0) {
-                error = c->translate("Cutelyst::ValidatorPwQuality",
-                                     "Password quality check failed because of an unknown error.");
+                //% "Password quality check failed because of an unknown error."
+                return c->qtTrId("cutelyst-valpwq-err-unknown");
             } else {
                 if (returnValue < threshold) {
-                    error = c->translate(
-                                 "Cutelyst::ValidatorPwQuality",
-                                 "The password quality score of %1 is below the threshold of %2.")
-                                .arg(QString::number(returnValue), QString::number(threshold));
+                    //% "The password quality score of %1 is below the threshold of %2."
+                    return c->qtTrId("cutelyst-valpwq-err-belowthreshold")
+                        .arg(QString::number(returnValue), QString::number(threshold));
+                } else {
+                    return {};
                 }
             }
-        } break;
+        }
         }
     } else {
         switch (returnValue) {
         case PWQ_ERROR_MEM_ALLOC:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because of a "
-                                 "memory allocation error.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because of a "
+            //% "memory allocation error."
+            return c->qtTrId("cutelyst-valpwq-err-memalloc-label").arg(label);
         case PWQ_ERROR_SAME_PASSWORD:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field is the same as the old one.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field is the same as the old one."
+            return c->qtTrId("cutelyst-valpwq-err-samepass-label").arg(label);
         case PWQ_ERROR_PALINDROME:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field is a palindrome.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field is a palindrome."
+            return c->qtTrId("cutelyst-valpwq-err-palindrome-label").arg(label);
         case PWQ_ERROR_CASE_CHANGES_ONLY:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field differs with case changes only.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field differs with case changes only from the old one."
+            return c->qtTrId("cutelyst-valpwq-err-casechangesonly-label").arg(label);
         case PWQ_ERROR_TOO_SIMILAR:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field is too similar to the old one.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field is too similar to the old one."
+            return c->qtTrId("cutelyst-valpwq-err-toosimilar-label").arg(label);
         case PWQ_ERROR_USER_CHECK:
-            error =
-                c->translate("Cutelyst::ValidatorPwQuality",
-                             "The password in the “%1” field contains the user name in some form.")
-                    .arg(label);
-            break;
+            //% "The password in the “%1” field contains the user name in some form."
+            return c->qtTrId("cutelyst-valpwq-err-usercheck-label").arg(label);
         case PWQ_ERROR_GECOS_CHECK:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field contains words from the real name "
-                                 "of the user name in some form.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field contains words from the real name "
+            //% "of the user name in some form."
+            return c->qtTrId("cutelyst-valpwq-err-gecoscheck-label").arg(label);
         case PWQ_ERROR_BAD_WORDS:
-            error = c->translate(
-                         "Cutelyst::ValidatorPwQuality",
-                         "The password in the “%1” field contains forbidden words in some form.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field contains forbidden words in some form."
+            return c->qtTrId("cutelyst-valpwq-err-badwords-label").arg(label);
         case PWQ_ERROR_MIN_DIGITS:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field contains too few digits.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field does not contain enough digits."
+            return c->qtTrId("cutelyst-valpwq-err-mindigits-label").arg(label);
         case PWQ_ERROR_MIN_UPPERS:
-            error =
-                c->translate("Cutelyst::ValidatorPwQuality",
-                             "The password in the “%1” field contains too few uppercase letters.")
-                    .arg(label);
-            break;
+            //% "The password in the “%1” field does not contain enough uppercase letters."
+            return c->qtTrId("cutelyst-valpwq-err-minuppers-label").arg(label);
         case PWQ_ERROR_MIN_LOWERS:
-            error =
-                c->translate("Cutelyst::ValidatorPwQuality",
-                             "The password in the “%1” field contains too few lowercase letters.")
-                    .arg(label);
-            break;
+            //% "The password in the “%1” field does not contain enough lowercase letters."
+            return c->qtTrId("cutelyst-valpwq-err-minlowers-label").arg(label);
         case PWQ_ERROR_MIN_OTHERS:
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorPwQuality",
-                     "The password in the “%1” field contains too few non-alphanumeric characters.")
-                    .arg(label);
-            break;
+            //% "The password in the “%1” field does not contain enough non-alphanumeric "
+            //% "characters."
+            return c->qtTrId("cutelyst-valpwq-err-minothers-label").arg(label);
         case PWQ_ERROR_MIN_LENGTH:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field is too short.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field is too short."
+            return c->qtTrId("cutelyst-valpwq-err-minlength-label").arg(label);
         case PWQ_ERROR_ROTATED:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field is just the rotated old one.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field is just the rotated old one."
+            return c->qtTrId("cutelyst-valpwq-err-rotated-label").arg(label);
         case PWQ_ERROR_MIN_CLASSES:
-            error = c->translate(
-                         "Cutelyst::ValidatorPwQuality",
-                         "The password in the “%1” field does not contain enough character types.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field does not contain enough character types."
+            return c->qtTrId("cutelyst-valpwq-err-minclasses-label").arg(label);
         case PWQ_ERROR_MAX_CONSECUTIVE:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field contains too many same characters "
-                                 "consecutively.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field contains too many same characters "
+            //% "consecutively."
+            return c->qtTrId("cutelyst-valpwq-err-maxconsecutive-label").arg(label);
         case PWQ_ERROR_MAX_CLASS_REPEAT:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field contains too many characters of "
-                                 "the same type consecutively.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field contains too many characters of "
+            //% "the same type consecutively."
+            return c->qtTrId("cutelyst-valpwq-err-maxclassrepeat-label").arg(label);
         case PWQ_ERROR_MAX_SEQUENCE:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field contains contains too long a "
-                                 "monotonous string.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field contains contains too long a "
+            //% "monotonous string."
+            return c->qtTrId("cutelyst-valpwq-err-maxsequence-label").arg(label);
         case PWQ_ERROR_EMPTY_PASSWORD:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "No password supplied in the “%1” field.")
-                        .arg(label);
-            break;
+            //% "No password supplied in the “%1” field."
+            return c->qtTrId("cutelyst-valpwq-err-emptypw-label").arg(label);
         case PWQ_ERROR_RNG:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because we "
-                                 "cannot obtain random numbers from the RNG device.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because we "
+            //% "cannot obtain random numbers from the RNG device."
+            return c->qtTrId("cutelyst-valpwq-err-rng-label").arg(label);
         case PWQ_ERROR_CRACKLIB_CHECK:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "The password in the “%1” field fails the dictionary check.")
-                        .arg(label);
-            break;
+            //% "The password in the “%1” field fails the dictionary check."
+            return c->qtTrId("cutelyst-valpwq-err-cracklibcheck-label").arg(label);
         case PWQ_ERROR_UNKNOWN_SETTING:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because of an "
-                                 "unknown setting.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because of an "
+            //% "unknown setting."
+            return c->qtTrId("cutelyst-valpwq-err-unknownsetting-label").arg(label);
         case PWQ_ERROR_INTEGER:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because of a "
-                                 "bad integer value in the settings.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because of a "
+            //% "bad integer value in the settings."
+            return c->qtTrId("cutelyst-valpwq-err-integer-label").arg(label);
         case PWQ_ERROR_NON_INT_SETTING:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because of a "
-                                 "settings entry is not of integer type.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because of a "
+            //% "settings entry is not of integer type."
+            return c->qtTrId("cutelyst-valpwq-err-nonintsetting-label").arg(label);
         case PWQ_ERROR_NON_STR_SETTING:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because of a "
-                                 "settings entry is not of string type.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because of a "
+            //% "settings entry is not of string type."
+            return c->qtTrId("cutelyst-valpwq-err-nonstrsetting-label").arg(label);
         case PWQ_ERROR_CFGFILE_OPEN:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because opening "
-                                 "the configuration file failed.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because opening "
+            //% "the configuration file failed."
+            return c->qtTrId("cutelyst-valpwq-err-cfgfileopen-label").arg(label);
         case PWQ_ERROR_CFGFILE_MALFORMED:
-            error = c->translate("Cutelyst::ValidatorPwQuality",
-                                 "Password quality check for the “%1“ field failed because the "
-                                 "configuration file is malformed.")
-                        .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because the "
+            //% "configuration file is malformed."
+            return c->qtTrId("cutelyst-valpwq-err-cfgfilemalformed-label").arg(label);
         case PWQ_ERROR_FATAL_FAILURE:
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorPwQuality",
-                     "Password quality check for the “%1“ field failed because of a fatal failure.")
-                    .arg(label);
-            break;
+            //% "Password quality check for the “%1“ field failed because of a fatal failure."
+            return c->qtTrId("cutelyst-valpwq-err-fatalfailure-label").arg(label);
         default:
         {
             if (returnValue < 0) {
-                error = c->translate("Cutelyst::ValidatorPwQuality",
-                                     "Password quality check for the “%1” field failed because of "
-                                     "an unknown error.")
-                            .arg(label);
+                //% "Password quality check for the “%1” field failed because of "
+                //% "an unknown error."
+                return c->qtTrId("cutelyst-valpwq-err-unknown-label").arg(label);
             } else {
                 if (returnValue < threshold) {
-                    error =
-                        c->translate("Cutelyst::ValidatorPwQuality",
-                                     "The quality score of %1 for the password in the “%2” field "
-                                     "is below the threshold of %3.")
-                            .arg(QString::number(returnValue), label, QString::number(threshold));
+                    //% "The quality score of %1 for the password in the “%2” field "
+                    //% "is below the threshold of %3."
+                    return c->qtTrId("cutelyst-valpwq-err-belowthreshold-label")
+                        .arg(QString::number(returnValue), QString::number(threshold));
+                } else {
+                    return {};
                 }
             }
-        } break;
+        }
         }
     }
-
-    return error;
 }
 
 ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMap &params) const

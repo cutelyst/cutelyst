@@ -31,16 +31,14 @@ ValidatorReturnType ValidatorPresent::validate(Context *c, const ParamsMultiMap 
 
 QString ValidatorPresent::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorPresent", "Has to be present in input data.");
+        //% "Has to be present in input data."
+        return c->qtTrId("cutelyst-vapresent-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorPresent",
-                             "The “%1” field was not found in the input data.")
-                    .arg(_label);
+        //% "The “%1” field was not found in the input data."
+        return c->qtTrId("cutelyst-vapresent-genvalerr-label").arg(_label);
     }
-    return error;
 }

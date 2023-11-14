@@ -59,7 +59,17 @@ public:
     // https://tools.ietf.org/html/rfc5321#section-4.5.3.1.1
     // The maximum total length of a user name or other local-part is 64 octets.
     static constexpr qsizetype maxLocalPartLength{64};
+    // https://tools.ietf.org/html/rfc1035#section-2.3.4
+    // labels          63 octets or less
     static constexpr qsizetype maxDnsLabelLength{63};
+    // There is a restriction in RFC 2821 on the length of an
+    // address in MAIL and RCPT commands of 254 characters. Since addresses
+    // that do not fit in those fields are not normally useful, the upper
+    // limit on address lengths should normally be considered to be 254.
+    static constexpr qsizetype maxMailboxLength{254};
+    // https://tools.ietf.org/html/rfc5321#section-4.5.3.1.2
+    // The maximum total length of a domain name or number is 255 octets.
+    static constexpr qsizetype maxDomainLength{255};
 
     static constexpr std::chrono::milliseconds dnsLookupTimeout{3100};
 

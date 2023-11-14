@@ -57,36 +57,31 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
 
 QString ValidatorIn::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     const QStringList vals = errorData.toStringList();
     const QString _label   = label(c);
     if (_label.isEmpty()) {
         //: %1 will be replaced by a comma separated list of allowed values
-        error = c->translate("Cutelyst::ValidatorIn", "Has to be one of the following values: %1")
-                    .arg(c->locale().createSeparatedList(vals));
+        //% "Has to be one of the following values: %1"
+        return c->qtTrId("cutelyst-valin-genvalerr").arg(c->locale().createSeparatedList(vals));
     } else {
-        //: %1 will be replaced by the field label, %2 will be replaced by a comma separated list of
-        //: allowed values
-        error =
-            c->translate("Cutelyst::ValidatorIn",
-                         "The value in the “%1” field has to be one of the following values: %2")
-                .arg(_label, c->locale().createSeparatedList(vals));
+        //: %1 will be replaced by the field label, %2 will be replaced by a comma
+        //: separated list of allowed values
+        //% "The value in the “%1” field has to be one of the following values: %2"
+        return c->qtTrId("cutelyst-valin-genvalerr-label")
+            .arg(_label, c->locale().createSeparatedList(vals));
     }
-    return error;
 }
 
 QString ValidatorIn::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorIn", "The list of comparison values is empty.");
+        //% "The list of comparison values is empty."
+        return c->qtTrId("cutelyst-validator-genvaldataerr-empty-list");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorIn",
-                             "The list of comparison values for the “%1” field is empty.")
-                    .arg(_label);
+        //% "The list of comparison values for the “%1” field is empty."
+        return c->qtTrId("cutelyst-validator-genvaldataerr-empty-list-label").arg(_label);
     }
-    return error;
 }

@@ -46,7 +46,7 @@ public:
     /*!
      * \brief Validation category, used as threshold to define valid addresses.
      */
-    enum Category : quint8 {
+    enum Category : int {
         Valid   = 1,  /**< Address is completely valid. */
         DNSWarn = 7,  /**< Address is valid but a DNS check was not successful. Diagnose in this
                          category is only returned if \a checkDns ist set to \c true. */
@@ -67,7 +67,7 @@ public:
     /*!
      * \brief Single diagnose values that show why an address is not valid.
      */
-    enum Diagnose : quint8 {
+    enum Diagnose : int {
         // Address is valid
         ValidAddress =
             0, /**< Address is valid. Please note that this does not mean the address actually
@@ -156,7 +156,7 @@ public:
     enum Option : quint8 {
         NoOption = 0, /**< No option enabled, the default. */
         CheckDNS =
-            1, /**< Enabled a DNS lookup to check if there are MX records for the mail domain. */
+            1, /**< Enables a DNS lookup to check if there are MX records for the mail domain. */
         UTF8Local = 2, /**< Allows UTF8 characters in the email address local part. */
         AllowIDN  = 4, /**< Allows internationalized domain names (IDN). */
         AllowUTF8 = UTF8Local | AllowIDN /**< Allows UTF8 characters in the email local part and
@@ -190,7 +190,7 @@ public:
      * \param label     Optional label used in the diagnose string.
      * \return Descriptive and translated string for the \a diagnose.
      */
-    static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = QString());
+    static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = {});
 
     /*!
      * \brief Returns a descriptive and translated string for the \a category.
@@ -199,7 +199,7 @@ public:
      * \param label     Optional label used in the category string.
      * \return Descriptive and translated string for the \a category.
      */
-    static QString categoryString(Context *c, Category category, const QString &label = QString());
+    static QString categoryString(Context *c, Category category, const QString &label = {});
 
     /*!
      * \brief Returns the category the \a diagnose belongs to.
@@ -215,7 +215,7 @@ public:
      * category string. \return Descriptive and translated string for the Category the \a diagnose
      * belongs to.
      */
-    static QString categoryString(Context *c, Diagnose diagnose, const QString &label = QString());
+    static QString categoryString(Context *c, Diagnose diagnose, const QString &label = {});
 
     /*!
      * \ingroup plugins-utils-validator-rules

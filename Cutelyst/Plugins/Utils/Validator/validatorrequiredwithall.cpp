@@ -63,15 +63,12 @@ ValidatorReturnType ValidatorRequiredWithAll::validate(Context *c,
 QString ValidatorRequiredWithAll::genericValidationError(Context *c,
                                                          const QVariant &errorData) const
 {
-    QString error;
-    const QString _label = label(c);
+    // translation strings are defined in ValidatorRequired
     Q_UNUSED(errorData)
+    const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorRequiredWithAll", "This is required.");
+        return c->qtTrId("cutelyst-validator-genvalerr-req");
     } else {
-        //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorRequiredWithAll", "The “%1” field is required.")
-                    .arg(_label);
+        return c->qtTrId("cutelyst-validator-genvalerr-req-label").arg(_label);
     }
-    return error;
 }

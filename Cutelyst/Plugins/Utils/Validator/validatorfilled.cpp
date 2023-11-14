@@ -38,13 +38,13 @@ ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &
 QString ValidatorFilled::genericValidationError(Context *c, const QVariant &errorData) const
 {
     Q_UNUSED(errorData)
-    QString error;
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorFilled", "Must be filled.");
+        //% "Must be filled."
+        return c->qtTrId("cutelyst-valfilled-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorFilled", "You must fill in the “%1” field.");
+        //% "You must fill in the “%1” field."
+        return c->qtTrId("cutelyst-valfilled-genvalerr-label");
     }
-    return error;
 }

@@ -129,144 +129,108 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 QString ValidatorBefore::genericValidationError(Cutelyst::Context *c,
                                                 const QVariant &errorData) const
 {
-    QString error;
-
     const QString _label = label(c);
     if (_label.isEmpty()) {
 
         switch (errorData.userType()) {
         case QMetaType::QDate:
-            error =
-                c->translate("Cutelyst::ValidatorBefore", "Has to be before %1.")
-                    .arg(errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
-            break;
+            //: %1 will be replaced by the comparison date in short format
+            //% "Has to be before %1."
+            return c->qtTrId("cutelyst-valbefore-genvalerr-date")
+                .arg(c->locale().toString(errorData.toDate(), QLocale::ShortFormat));
         case QMetaType::QDateTime:
-            error = c->translate("Cutelyst::ValidatorBefore", "Has to be before %1.")
-                        .arg(errorData.toDateTime().toString(
-                            c->locale().dateTimeFormat(QLocale::ShortFormat)));
-            break;
+            //: %1 will be replaced by the comparison datetime in short format
+            //% "Has to be before %1."
+            return c->qtTrId("cutelyst-valbefore-genvalerr-dt")
+                .arg(c->locale().toString(errorData.toDateTime(), QLocale::ShortFormat));
         case QMetaType::QTime:
-            error =
-                c->translate("Cutelyst::ValidatorBefore", "Has to be before %1.")
-                    .arg(errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
-            break;
+            //: %1 will be replaced by the comparison time in short format
+            //% "Has to be before %1."
+            return c->qtTrId("cutelyst-valbefore-genvalerr-time")
+                .arg(c->locale().toString(errorData.toTime(), QLocale::ShortFormat));
         default:
-            error = validationDataError(c);
-            break;
+            return validationDataError(c);
         }
 
     } else {
 
         switch (errorData.userType()) {
         case QMetaType::QDate:
-            error =
-                c->translate("Cutelyst::ValidatorBefore",
-                             "The date in the “%1” field must be before %2.")
-                    .arg(_label,
-                         errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
-            break;
+            //: %1 will be replaced by the field label, %2 by the comparison date in short format
+            //% "The date in the “%1” field must be before %2."
+            return c->qtTrId("cutelyst-valbefore-genvalerr-date-label")
+                .arg(_label, c->locale().toString(errorData.toDate(), QLocale::ShortFormat));
         case QMetaType::QDateTime:
-            error = c->translate("Cutelyst::ValidatorBefore",
-                                 "The date and time in the “%1” field must be before %2.")
-                        .arg(_label,
-                             errorData.toDateTime().toString(
-                                 c->locale().dateTimeFormat(QLocale::ShortFormat)));
-            break;
+            //: %1 will be replaced by the field label, %2 by the comparison datetime in short
+            //: format
+            //% "The date and time in the “%1” field must be before %2."
+            return c->qtTrId("cutelyst-valbefore-genvalerr-dt-label")
+                .arg(_label, c->locale().toString(errorData.toDateTime(), QLocale::ShortFormat));
         case QMetaType::QTime:
-            error =
-                c->translate("Cutelyst::ValidatorBefore",
-                             "The time in the “%1” field must be before %2.")
-                    .arg(_label,
-                         errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
-            break;
+            //: %1 will be replaced by the field label, %2 by the comparison time in short format
+            //% "The time in the “%1” field must be before %2."
+            return c->qtTrId("cutelyst-valbefore-genvalerr-time-label")
+                .arg(_label, c->locale().toString(errorData.toTime(), QLocale::ShortFormat));
         default:
-            error = validationDataError(c);
-            break;
+            return validationDataError(c);
         }
     }
-
-    return error;
 }
 
 QString ValidatorBefore::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_UNUSED(errorData)
-    error =
-        c->translate("Cutelyst::ValidatorBefore",
-                     "The comparison value is not a valid date and/or time, or cannot be found.");
-
-    return error;
+    const QString _label = label(c);
+    // the translation strings are defined in ValidatorAfter
+    if (_label.isEmpty()) {
+        return c->qtTrId("cutelyst-validator-genvaldataerr-dt");
+    } else {
+        return c->qtTrId("cutelyst-validator-genvaldataerr-dt-label").arg(_label);
+    }
 }
 
 QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorBefore);
+
+    // translation strings are defined in ValidatorAfter
 
     const QString _label = label(c);
     if (d->inputFormat) {
+        const QString _inputFormatTranslated =
+            d->translationContext ? c->translate(d->translationContext, d->inputFormat)
+                                  : c->qtTrId(d->inputFormat);
         if (_label.isEmpty()) {
-            //: %1 will be replaced by the datetime format
-            error =
-                c->translate(
-                     "Cutelyst::ValidatorBefore",
-                     "Could not be parsed according to the following date and/or time format: %1")
-                    .arg(c->translate(d->translationContext.data(), d->inputFormat));
+            return c->qtTrId("cutelyst-validator-genparseerr-dt-format")
+                .arg(_inputFormatTranslated);
         } else {
-            //: %1 will be replaced by the field label, %2 will be replaced by the datetime format
-            error = c->translate("Cutelyst::ValidatorBefore",
-                                 "The value of the “%1” field could not be parsed according to the "
-                                 "following date and/or time format: %2")
-                        .arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
+            return c->qtTrId("cutelyst-validator-genparseerr-dt-format-label")
+                .arg(_label, _inputFormatTranslated);
         }
     } else {
 
         if (_label.isEmpty()) {
             switch (errorData.userType()) {
             case QMetaType::QDateTime:
-                error = c->translate("Cutelyst::ValidatorBefore",
-                                     "Could not be parsed as date and time.");
-                break;
+                return c->qtTrId("cutelyst-validator-genparseerr-dt");
             case QMetaType::QTime:
-                error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as time.");
-                break;
+                return c->qtTrId("cutelyst-validator-genparseerr-time");
             case QMetaType::QDate:
-                error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date.");
-                break;
+                return c->qtTrId("cutelyst-validator-genparseerr-date");
             default:
-                error = validationDataError(c);
-                break;
+                return validationDataError(c);
             }
         } else {
             switch (errorData.userType()) {
             case QMetaType::QDateTime:
-                //: %1 will be replaced by the field label
-                error = c->translate(
-                             "Cutelyst::ValidatorBefore",
-                             "The value in the “%1” field could not be parsed as date and time.")
-                            .arg(_label);
-                break;
+                return c->qtTrId("cutelyst-vaidator-genparseerr-dt-label").arg(_label);
             case QMetaType::QTime:
-                //: %1 will be replaced by the field label
-                error = c->translate("Cutelyst::ValidatorBefore",
-                                     "The value in the “%1” field could not be parsed as time.")
-                            .arg(_label);
-                break;
+                return c->qtTrId("cutelyst-validator-genparseerr-time-label").arg(_label);
             case QMetaType::QDate:
-                //: %1 will be replaced by the field label
-                error = c->translate("Cutelyst::ValidatorBefore",
-                                     "The value in the “%1” field could not be parsed as date.")
-                            .arg(_label);
-                break;
+                return c->qtTrId("cutelyst-validator-genparseerr-date-label").arg(_label);
             default:
-                error = validationDataError(c);
-                break;
+                return validationDataError(c);
             }
         }
     }
-
-    return error;
 }

@@ -58,30 +58,26 @@ ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c,
 
 QString ValidatorNotIn::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorNotIn", "Value is not allowed.");
+        //% "Value is not allowed."
+        return c->qtTrId("cutelyst-valnotin-genvalerr");
     } else {
-        error =
-            c->translate("Cutelyst::ValidatorNotIn", "The value in the “%1” field is not allowed.")
-                .arg(_label);
+        //% "The value in the “%1” field is not allowed."
+        return c->qtTrId("cutelyst-valnotin-genvalerr-label").arg(_label);
     }
-    return error;
 }
 
 QString ValidatorNotIn::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    QString error;
+    // translation strings are defined in ValidatorIn
+
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorNotIn", "The list of comparison values is empty.");
+        return c->qtTrId("cutelyst-validator-genvaldataerr-empty-list");
     } else {
-        error = c->translate("Cutelyst::ValidatorNotIn",
-                             "The list of comparison values for the “%1” field is empty.")
-                    .arg(_label);
+        return c->qtTrId("cutelyst-validator-genvaldataerr-empty-list-label").arg(_label);
     }
-    return error;
 }

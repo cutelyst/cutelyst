@@ -68,34 +68,30 @@ bool ValidatorAlphaDash::validate(const QString &value, bool asciiOnly)
 QString ValidatorAlphaDash::genericValidationError(Cutelyst::Context *c,
                                                    const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     Q_D(const ValidatorAlphaDash);
     const QString _label = label(c);
     if (_label.isEmpty()) {
         if (d->asciiOnly) {
-            error = c->translate(
-                "Cutelyst::ValidatorAlphaDash",
-                "Must only contain alpha-numeric latin characters, dashes and underscores.");
+            //% "Must only contain alpha-numeric latin characters, dashes and underscores "
+            //% "from the ASCII character encoding (a-z, A-Z, 0-9, _ and -)."
+            return c->qtTrId("cutelyst-valalphadash-genvalerr-asciionly");
         } else {
-            error =
-                c->translate("Cutelyst::ValidatorAlphaDash",
-                             "Must only contain alpha-numeric characters, dashes and underscores.");
+            //% "Must only contain alpha-numeric characters, dashes and underscores."
+            return c->qtTrId("cutelyst-valalphadash-genvalerr");
         }
     } else {
         if (d->asciiOnly) {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlphaDash",
-                                 "The text in the “%1” field must only contain alpha-numeric latin "
-                                 "characters, dashes and underscores.")
-                        .arg(_label);
+            //% "The text in the “%1” field must only contain alpha-numeric latin "
+            //% "characters, dashes and underscores from the ASCII character encondig "
+            //% "(a-z, A-Z, 0-9, _ and -)."
+            return c->qtTrId("cutelyst-valalphadash-genvalerr-asciionly-label").arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlphaDash",
-                                 "The text in the “%1” field must only contain alpha-numeric "
-                                 "characters, dashes and underscores.")
-                        .arg(_label);
+            //% "The text in the “%1” field must only contain alpha-numeric "
+            //% "characters, dashes and underscores."
+            return c->qtTrId("cutelyst-valalphadash-genvalerr-label").arg(_label);
         }
     }
-    return error;
 }

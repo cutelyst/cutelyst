@@ -104,16 +104,14 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
 
 QString ValidatorUrl::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorUrl", "Not a valid URL.");
+        //% "Not a valid URL."
+        return c->qtTrId("cutelyst-valurl-genvalerr");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorUrl",
-                             "The value in the “%1” field is not a valid URL.")
-                    .arg(_label);
+        //% "The text in the “%1” field is not a valid URL."
+        return c->qtTrId("cutelyst-valurl-genvalerr-label").arg(_label);
     }
-    return error;
 }

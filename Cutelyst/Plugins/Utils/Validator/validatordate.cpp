@@ -46,39 +46,35 @@ ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &pa
 
 QString ValidatorDate::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-
     Q_D(const ValidatorDate);
     Q_UNUSED(errorData)
 
     const QString _label = label(c);
 
-    if (_label.isEmpty()) {
-
-        if (d->inputFormat) {
-            //: %1 will be replaced by the date format
-            error = c->translate("Cutelyst::ValidatorDate",
-                                 "Not a valid date according to the following date format: %1")
-                        .arg(c->translate(d->translationContext.data(), d->inputFormat));
+    if (d->inputFormat) {
+        const QString inputFormatTranslated =
+            d->translationContext ? c->translate(d->translationContext, d->inputFormat)
+                                  : c->qtTrId(d->inputFormat);
+        if (_label.isEmpty()) {
+            //: %1 will be replaced by the required date format
+            //% "Not a valid date according to the following format: %1"
+            return c->qtTrId("cutelyst-valdate-genvalerr-format").arg(inputFormatTranslated);
         } else {
-            error = c->translate("Cutelyst::ValidatorDate", "Not a valid date.");
+            //: %1 will be replaced by the field label, %2 will be replaced
+            //: by the required date format
+            //% "The value in the “%1” field can not be parsed as date according "
+            //% "to the following format: %2"
+            return c->qtTrId("cutelyst-valdate-genvalerr-format-label")
+                .arg(_label, inputFormatTranslated);
         }
-
     } else {
-
-        if (d->inputFormat) {
-            //: %1 will be replaced by the field label, %2 will be replaced by the date format
-            error = c->translate("Cutelyst::ValidatorDate",
-                                 "The value in the “%1” field can not be parsed as date according "
-                                 "to the following scheme: %2")
-                        .arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
+        if (_label.isEmpty()) {
+            //% "Not a valid date."
+            return c->qtTrId("cutelyst-valdate-genvalerr");
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDate",
-                                 "The value in the “%1” field can not be parsed as date.")
-                        .arg(_label);
+            //% "The value in the “%1” field can not be parsed as date."
+            return c->qtTrId("cutelyst-valdate-genvalerr-label").arg(_label);
         }
     }
-
-    return error;
 }

@@ -1093,11 +1093,12 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             returnStatus.push_back(ValidatorEmail::ErrorDotEnd);
         } else if (hypenFlag) {
             returnStatus.push_back(ValidatorEmail::ErrorDomainHyphenEnd);
-        } else if (parseDomain.size() > 255) {
+        } else if (parseDomain.size() > ValidatorEmailPrivate::maxDomainLength) {
             // https://tools.ietf.org/html/rfc5321#section-4.5.3.1.2
             //   The maximum total length of a domain name or number is 255 octets.
             returnStatus.push_back(ValidatorEmail::RFC5322DomainTooLong);
-        } else if ((parseLocalPart.size() + 1 + parseDomain.size()) > 254) {
+        } else if ((parseLocalPart.size() + 1 + parseDomain.size()) >
+                   ValidatorEmailPrivate::maxMailboxLength) {
             // https://tools.ietf.org/html/rfc5321#section-4.1.2
             //   Forward-path   = Path
             //
@@ -1243,656 +1244,472 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
 
 QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QString &label)
 {
-    QString ret;
-
     if (label.isEmpty()) {
         switch (diagnose) {
         case ValidAddress:
-            ret =
-                c->translate("Cutelyst::ValidatorEmail",
-                             "Address is valid. Please note that this does not mean that both the "
-                             "address and the domain actually exist. This address could be issued "
-                             "by the domain owner without breaking the rules of any RFCs.");
-            break;
+            //% "Address is valid. Please note that this does not mean that both the "
+            //% "address and the domain actually exist. This address could be issued "
+            //% "by the domain owner without breaking the rules of any RFCs."
+            return c->qtTrId("cutelyst-valemail-diag-valid");
         case DnsWarnNoMxRecord:
-            ret = c->translate(
-                "Cutelyst::ValidatorEmail",
-                "Could not find an MX record for this address’ domain but an A record does exist.");
-            break;
+            //% "Could not find an MX record for this address’ domain but an A record exists."
+            return c->qtTrId("cutelyst-valemail-diag-nomx");
         case DnsWarnNoRecord:
-            ret = c->translate(
-                "Cutelyst::ValidatorEmail",
-                "Could neither find an MX record nor an A record for this address’ domain.");
-            break;
+            //% "Could neither find an MX record nor an A record for this address’ domain."
+            return c->qtTrId("cutelyst-valemail-diag-noarec");
         case RFC5321TLD:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid but at a Top Level Domain.");
-            break;
+            //% "Address is valid but at a Top Level Domain."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321tld");
         case RFC5321TLDNumeric:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid but the Top Level Domain begins with a number.");
-            break;
+            //% "Address is valid but the Top Level Domain begins with a number."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321tldnumeric");
         case RFC5321QuotedString:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid but contains a quoted string.");
-            break;
+            //% "Address is valid but contains a quoted string."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321quotedstring");
         case RFC5321AddressLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid but uses an IP address instead of a domain name.");
-            break;
+            //% "Address is valid but uses an IP address instead of a domain name."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321addressliteral");
         case RFC5321IPv6Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid but uses an IP address that contains a :: only "
-                               "eliding one zero group. All implementations must accept and be "
-                               "able to handle any legitimate RFC 4291 format.");
-            break;
+            //% "Address is valid but uses an IP address that contains a :: only "
+            //% "eliding one zero group. All implementations must accept and be "
+            //% "able to handle any legitimate RFC 4291 format."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321ipv6deprecated");
         case CFWSComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains comments.");
-            break;
+            //% "Address contains comments."
+            return c->qtTrId("cutelyst-valemail-diag-cfwscomment");
         case CFWSFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains folding white spaces like line breaks.");
-            break;
+            //% "Address contains folding white spaces like line breaks."
+            return c->qtTrId("cutelyst-valemail-diag-cfwsfws");
         case DeprecatedLocalpart:
-            ret =
-                c->translate("Cutelyst::ValidatorEmail", "The local part is in a deprecated form.");
-            break;
+            //% "The local part is in a deprecated form."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedlocalpart");
         case DeprecatedFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains an obsolete form of folding white spaces.");
-            break;
+            //% "Address contains an obsolete form of folding white spaces."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedfws");
         case DeprecatedQText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A quoted string contains a deprecated character.");
-            break;
+            //% "A quoted string contains a deprecated character."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedqtext");
         case DeprecatedQP:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A quoted pair contains a deprecated character.");
-            break;
+            //% "A quoted pair contains a deprecated character."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedqp");
         case DeprecatedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains a comment in a position that is deprecated.");
-            break;
+            //% "Address contains a comment in a position that is deprecated."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedcomment");
         case DeprecatedCText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A comment contains a deprecated character.");
-            break;
+            //% "A comment contains a deprecated character."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedctext");
         case DeprecatedCFWSNearAt:
-            ret = c->translate(
-                "Cutelyst::ValidatorEmail",
-                "Address contains a comment or folding white space around the @ sign.");
-            break;
+            //% "Address contains a comment or folding white space around the @ sign."
+            return c->qtTrId("cutelyst-valemail-diag-cfwsnearat");
         case RFC5322Domain:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is RFC 5322 compliant but contains domain characters that "
-                               "are not allowed by DNS.");
-            break;
+            //% "Address is RFC 5322 compliant but contains domain characters that "
+            //% "are not allowed by DNS."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domain");
         case RFC5322TooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is too long.");
-            break;
+            //% "The address exceeds the maximum allowed length of %1 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322toolong")
+                .arg(c->locale().toString(ValidatorEmailPrivate::maxMailboxLength));
         case RFC5322LocalTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The local part of the address is too long.");
-            break;
+            //% "The local part of the address exceeds the maximum allowed length "
+            //% "of %1 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322localtoolong")
+                .arg(c->locale().toString(ValidatorEmailPrivate::maxLocalPartLength));
         case RFC5322DomainTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain part is too long.");
-            break;
+            //% "The domain part exceeds the maximum allowed length of %1 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domaintoolong")
+                .arg(c->locale().toString(ValidatorEmailPrivate::maxDomainLength));
         case RFC5322LabelTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain part contains an element that is too long.");
-            break;
+            //% "One of the labels/sections in the domain part exceeds the maximum allowed "
+            //% "length of %1 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322labeltoolong")
+                .arg(c->locale().toString(ValidatorEmailPrivate::maxDnsLabelLength));
         case RFC5322DomainLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain literal is not a valid RFC 5321 address literal.");
-            break;
+            //% "The domain literal is not a valid RFC 5321 address literal."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domainliteral");
         case RFC5322DomLitOBSDText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain literal is not a valid RFC 5321 domain literal and it "
-                               "contains obsolete characters.");
-            break;
+            //% "The domain literal is not a valid RFC 5321 domain literal and it "
+            //% "contains obsolete characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domlitobsdtext");
         case RFC5322IPv6GroupCount:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 literal address contains the wrong number of groups.");
-            break;
+            //% "The IPv6 literal address contains the wrong number of groups."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6groupcount");
         case RFC5322IPv62x2xColon:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 literal address contains too many :: sequences.");
-            break;
+            //% "The IPv6 literal address contains too many :: sequences."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv62x2xcolon");
         case RFC5322IPv6BadChar:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 address contains an illegal group of characters.");
-            break;
+            //% "The IPv6 address contains an illegal group of characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6badchar");
         case RFC5322IPv6MaxGroups:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address has too many groups.");
-            break;
+            //% "The IPv6 address has too many groups."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6maxgroups");
         case RFC5322IPv6ColonStart:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 address starts with a single colon.");
-            break;
+            //% "The IPv6 address starts with a single colon."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6colonstart");
         case RFC5322IPv6ColonEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 address ends with a single colon.");
-            break;
+            //% "The IPv6 address ends with a single colon."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6colonend");
         case ErrorExpectingDText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A domain literal contains a character that is not allowed.");
-            break;
+            //% "A domain literal contains a character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingdtext");
         case ErrorNoLocalPart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address has no local part.");
-            break;
+            //% "Address has no local part."
+            return c->qtTrId("cutelyst-valemail-diag-errnolocalpart");
         case ErrorNoDomain:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address has no domain part.");
-            break;
+            //% "Address has no domain part."
+            return c->qtTrId("cutelyst-valemail-diag-errnodomain");
         case ErrorConsecutiveDots:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address must not contain consecutive dots.");
-            break;
+            //% "The address must not contain consecutive dots."
+            return c->qtTrId("cutelyst-valemail-diag-errconsecutivedots");
         case ErrorATextAfterCFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains text after a comment or folding white space.");
-            break;
+            //% "Address contains text after a comment or folding white space."
+            return c->qtTrId("cutelyst-valemail-diag-erratextaftercfws");
         case ErrorATextAfterQS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains text after a quoted string.");
-            break;
+            //% "Address contains text after a quoted string."
+            return c->qtTrId("cutelyst-valemail-diag-erratextafterqs");
         case ErrorATextAfterDomLit:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Extra characters were found after the end of the domain literal.");
-            break;
+            //% "Extra characters were found after the end of the domain literal."
+            return c->qtTrId("cutelyst-valemail-diag-erratextafterdomlit");
         case ErrorExpectingQpair:
-            ret = c->translate(
-                "Cutelyst::ValidatorEmail",
-                "The Address contains a character that is not allowed in a quoted pair.");
-            break;
+            //% "The Address contains a character that is not allowed in a quoted pair."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingqpair");
         case ErrorExpectingAText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains a character that is not allowed.");
-            break;
+            //% "Address contains a character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingatext");
         case ErrorExpectingQText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A quoted string contains a character that is not allowed.");
-            break;
+            //% "A quoted string contains a character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingqtext");
         case ErrorExpectingCText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A comment contains a character that is not allowed.");
-            break;
+            //% "A comment contains a character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingctext");
         case ErrorBackslashEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address can not end with a backslash.");
-            break;
+            //% "The address can not end with a backslash."
+            return c->qtTrId("cutelyst-valemail-diag-errbackslashend");
         case ErrorDotStart:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Neither part of the address may begin with a dot.");
-            break;
+            //% "Neither part of the address may begin with a dot."
+            return c->qtTrId("cutelyst-valemail-diag-errdotstart");
         case ErrorDotEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Neither part of the address may end with a dot.");
-            break;
+            //% "Neither part of the address may end with a dot."
+            return c->qtTrId("cutelyst-valemail-diag-errdotend");
         case ErrorDomainHyphenStart:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A domain or subdomain can not begin with a hyphen.");
-            break;
+            //% "A domain or subdomain can not begin with a hyphen."
+            return c->qtTrId("cutelyst-valemail-diag-errdomainhyphenstart");
         case ErrorDomainHyphenEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A domain or subdomain can not end with a hyphen.");
-            break;
+            //% "A domain or subdomain can not end with a hyphen."
+            return c->qtTrId("cutelyst-valemail-diag-errdomainhyphenend");
         case ErrorUnclosedQuotedStr:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Unclosed quoted string. (Missing double quotation mark)");
-            break;
+            //% "Unclosed quoted string. (Missing double quotation mark)"
+            return c->qtTrId("cutelyst-valemail-diag-errunclosedquotedstr");
         case ErrorUnclosedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Unclosed comment. (Missing closing parentheses)");
-            break;
+            //% "Unclosed comment. (Missing closing parentheses)"
+            return c->qtTrId("cutelyst-valemail-diag-errunclosedcomment");
         case ErrorUnclosedDomLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Domain literal is missing its closing bracket.");
-            break;
+            //% "Domain literal is missing its closing bracket."
+            return c->qtTrId("cutelyst-valemail-diag-erruncloseddomliteral");
         case ErrorFWSCRLFx2:
-            ret = c->translate(
-                "Cutelyst::ValidatorEmail",
-                "Folding white space contains consecutive line break sequences (CRLF).");
-            break;
+            //% "Folding white space contains consecutive line break sequences (CRLF)."
+            return c->qtTrId("cutelyst-valemail-diag-errfwscrlfx2");
         case ErrorFWSCRLFEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Folding white space ends with a line break sequence (CRLF).");
-            break;
+            //% "Folding white space ends with a line break sequence (CRLF)."
+            return c->qtTrId("cutelyst-valemail-diag-errfwscrlfend");
         case ErrorCRnoLF:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains a carriage return (CR) that is not followed by a "
-                               "line feed (LF).");
-            break;
+            //% "Address contains a carriage return (CR) that is not followed by a "
+            //% "line feed (LF)."
+            return c->qtTrId("cutelyst-valemail-diag-errcrnolf");
         case ErrorFatal:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A fatal error occurred while parsing the address.");
-            break;
+            //% "A fatal error occurred while parsing the address."
+            return c->qtTrId("cutelyst-valemail-diag-errfatal");
         default:
-            break;
+            return {};
         }
 
     } else {
 
         switch (diagnose) {
         case ValidAddress:
-            ret =
-                c->translate(
-                     "Cutelyst::ValidatorEmail",
-                     "The address in the “%1” field is valid. Please note that this does not mean "
-                     "that both the address and the domain actually exist. This address could be "
-                     "issued by the domain owner without breaking the rules of any RFCs.")
-                    .arg(label);
-            break;
+            //% "The address in the “%1” field is valid. Please note that this does not mean "
+            //% "that both the address and the domain actually exist. This address could be "
+            //% "issued by the domain owner without breaking the rules of any RFCs."
+            return c->qtTrId("cutelyst-valemail-diag-valid-label").arg(label);
         case DnsWarnNoMxRecord:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Could not find an MX record for the address’ domain in the “%1” "
-                               "field but an A record does exist.")
-                      .arg(label);
-            break;
+            //% "Could not find an MX record for the address’ domain in the “%1” "
+            //% "field but an A record exists."
+            return c->qtTrId("cutelyst-valemail-diag-nomx-label").arg(label);
         case DnsWarnNoRecord:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Could neither find an MX record nor an A record for address’ "
-                               "domain in the “%1” field.")
-                      .arg(label);
-            break;
+            //% "Could neither find an MX record nor an A record for the address’ "
+            //% "domain in the “%1” field."
+            return c->qtTrId("cutelyst-valemail-diag-noarec-label").arg(label);
         case RFC5321TLD:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is valid but at a Top Level Domain.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid but at a Top Level Domain."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321tld-label").arg(label);
         case RFC5321TLDNumeric:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is valid but the Top Level Domain "
-                               "begins with a number.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid but the Top Level Domain "
+            //% "begins with a number."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321tldnumeric-label").arg(label);
         case RFC5321QuotedString:
-            ret =
-                c->translate("Cutelyst::ValidatorEmail",
-                             "The address in the “%1” field is valid but contains a quoted string.")
-                    .arg(label);
-            break;
+            //% "The address in the “%1” field is valid but contains a quoted string."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321quotedstring-label").arg(label);
         case RFC5321AddressLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is valid but uses an IP address "
-                               "instead of a domain name.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid but uses an IP address "
+            //% "instead of a domain name."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321addressliteral-label").arg(label);
         case RFC5321IPv6Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is valid but uses an IP address that "
-                               "contains a :: only eliding one zero group. All implementations "
-                               "must accept and be able to handle any legitimate RFC 4291 format.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid but uses an IP address that "
+            //% "contains a :: only eliding one zero group. All implementations "
+            //% "must accept and be able to handle any legitimate RFC 4291 format."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5321ipv6deprecated-label").arg(label);
         case CFWSComment:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains comments.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains comments."
+            return c->qtTrId("cutelyst-valemail-diag-cfwscomment-label").arg(label);
         case CFWSFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains folding white spaces like "
-                               "line breaks.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains folding white spaces like "
+            //% "line breaks."
+            return c->qtTrId("cutelyst-valemail-diag-cfwsfws-label").arg(label);
         case DeprecatedLocalpart:
-            ret = c->translate(
-                       "Cutelyst::ValidatorEmail",
-                       "The local part of the address in the “%1” field is in a deprecated form.")
-                      .arg(label);
-            break;
+            //% "The local part of the address in the “%1” field is in a deprecated form."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedlocalpart-label").arg(label);
         case DeprecatedFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains an obsolete form of folding "
-                               "white spaces.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains an obsolete form of folding "
+            //% "white spaces."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedfws-label").arg(label);
         case DeprecatedQText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A quoted string in the address in the “%1” field contains a "
-                               "deprecated character.")
-                      .arg(label);
-            break;
+            //% "A quoted string in the address in the “%1” field contains a "
+            //% "deprecated character."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedqtext-label").arg(label);
         case DeprecatedQP:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A quoted pair in the address in the “%1” field contains a "
-                               "deprecate character.")
-                      .arg(label);
-            break;
+            //% "A quoted pair in the address in the “%1” field contains a "
+            //% "deprecate character."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedqp-label").arg(label);
         case DeprecatedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains a comment in a position "
-                               "that is deprecated.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains a comment in a position "
+            //% "that is deprecated."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedcomment-label").arg(label);
         case DeprecatedCText:
-            ret =
-                c->translate(
-                     "Cutelyst::ValidatorEmail",
-                     "A comment in the address in the “%1” field contains a deprecated character.")
-                    .arg(label);
-            break;
+            //% "A comment in the address in the “%1” field contains a deprecated character."
+            return c->qtTrId("cutelyst-valemail-diag-deprecatedctext-label").arg(label);
         case DeprecatedCFWSNearAt:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains a comment or folding white "
-                               "space around the @ sign.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains a comment or folding white "
+            //% "space around the @ sign."
+            return c->qtTrId("cutelyst-valemail-diag-cfwsnearat-label").arg(label);
         case RFC5322Domain:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is RFC 5322 compliant but contains "
-                               "domain characters that are not allowed by DNS.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is RFC 5322 compliant but contains "
+            //% "domain characters that are not allowed by DNS."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domain-label").arg(label);
         case RFC5322TooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is too long.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field exceeds the maximum allowed length "
+            //% "of %2 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322toolong-label")
+                .arg(label, c->locale().toString(ValidatorEmailPrivate::maxMailboxLength));
         case RFC5322LocalTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The local part of the address in the “%1” field is too long.")
-                      .arg(label);
-            break;
+            //% "The local part of the address in the “%1” field exceeds the maximum allowed "
+            //% "length of %2 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322localtoolong-label")
+                .arg(label, c->locale().toString(ValidatorEmailPrivate::maxLocalPartLength));
         case RFC5322DomainTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain part of the address in the “%1” field is too long.")
-                      .arg(label);
-            break;
+            //% "The domain part of the address in the “%1” field exceeds the maximum "
+            //% "allowed length of %2 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domaintoolong-label")
+                .arg(label, c->locale().toString(ValidatorEmailPrivate::maxDomainLength));
         case RFC5322LabelTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain part of the address in the “%1” field contains an "
-                               "element that is too long.")
-                      .arg(label);
-            break;
+            //% "The domain part of the address in the “%1” field contains an element/section "
+            //% "that exceeds the maximum allowed lenght of %2 characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322labeltoolong-label")
+                .arg(label, c->locale().toString(ValidatorEmailPrivate::maxDnsLabelLength));
         case RFC5322DomainLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain literal of the address in the “%1” field is not a valid "
-                               "RFC 5321 address literal.")
-                      .arg(label);
-            break;
+            //% "The domain literal of the address in the “%1” field is not a valid "
+            //% "RFC 5321 address literal."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domainliteral-label").arg(label);
         case RFC5322DomLitOBSDText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The domain literal of the address in the “%1” field is not a valid "
-                               "RFC 5321 domain literal and it contains obsolete characters.")
-                      .arg(label);
-            break;
+            //% "The domain literal of the address in the “%1” field is not a valid "
+            //% "RFC 5321 domain literal and it contains obsolete characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322domlitobsdtext-label").arg(label);
         case RFC5322IPv6GroupCount:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 literal of the address in the “%1” field contains the "
-                               "wrong number of groups.")
-                      .arg(label);
-            break;
+            //% "The IPv6 literal of the address in the “%1” field contains the "
+            //% "wrong number of groups."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6groupcount-label").arg(label);
         case RFC5322IPv62x2xColon:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 literal of the address in the “%1” field contains too "
-                               "many :: sequences.")
-                      .arg(label);
-            break;
+            //% "The IPv6 literal of the address in the “%1” field contains too "
+            //% "many :: sequences."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv62x2xcolon-label").arg(label);
         case RFC5322IPv6BadChar:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 address of the email address in the “%1” field contains "
-                               "an illegal group of characters.")
-                      .arg(label);
-            break;
+            //% "The IPv6 address of the email address in the “%1” field contains "
+            //% "an illegal group of characters."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6badchar-label").arg(label);
         case RFC5322IPv6MaxGroups:
-            ret =
-                c->translate(
-                     "Cutelyst::ValidatorEmail",
-                     "The IPv6 address of the email address in the “%1” field has too many groups.")
-                    .arg(label);
-            break;
+            //% "The IPv6 address of the email address in the “%1” field has too many groups."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6maxgroups-label").arg(label);
         case RFC5322IPv6ColonStart:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 address of the email address in the “%1” field starts "
-                               "with a single colon.")
-                      .arg(label);
-            break;
+            //% "The IPv6 address of the email address in the “%1” field starts "
+            //% "with a single colon."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6colonstart-label").arg(label);
         case RFC5322IPv6ColonEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The IPv6 address of the email address in the “%1” field ends with "
-                               "a single colon.")
-                      .arg(label);
-            break;
+            //% "The IPv6 address of the email address in the “%1” field ends with "
+            //% "a single colon."
+            return c->qtTrId("cutelyst-valemail-diag-rfc5322ipv6colonend-label").arg(label);
         case ErrorExpectingDText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A domain literal of the address in the “%1” field contains a "
-                               "character that is not allowed.")
-                      .arg(label);
-            break;
+            //% "A domain literal of the address in the “%1” field contains a "
+            //% "character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingdtext-label").arg(label);
         case ErrorNoLocalPart:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field has no local part.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field has no local part."
+            return c->qtTrId("cutelyst-valemail-diag-errnolocalpart-label").arg(label);
         case ErrorNoDomain:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field has no domain part.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field has no domain part."
+            return c->qtTrId("cutelyst-valemail-diag-errnodomain-label").arg(label);
         case ErrorConsecutiveDots:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field must not contain consecutive dots.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field must not contain consecutive dots."
+            return c->qtTrId("cutelyst-valemail-diag-errconsecutivedots-label").arg(label);
         case ErrorATextAfterCFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains text after a comment or "
-                               "folding white space.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains text after a comment or "
+            //% "folding white space."
+            return c->qtTrId("cutelyst-valemail-diag-erratextaftercfws-label").arg(label);
         case ErrorATextAfterQS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains text after a quoted string.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains text after a quoted string."
+            return c->qtTrId("cutelyst-valemail-diag-erratextafterqs-label").arg(label);
         case ErrorATextAfterDomLit:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Extra characters were found after the end of the domain literal of "
-                               "the address in the “%1” field.")
-                      .arg(label);
-            break;
+            //% "Extra characters were found after the end of the domain literal of "
+            //% "the address in the “%1” field."
+            return c->qtTrId("cutelyst-valemail-diag-erratextafterdomlit-label").arg(label);
         case ErrorExpectingQpair:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains a character that is not "
-                               "allowed in a quoted pair.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains a character that is not "
+            //% "allowed in a quoted pair."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingqpair-label").arg(label);
         case ErrorExpectingAText:
-            ret = c->translate(
-                       "Cutelyst::ValidatorEmail",
-                       "The address in the “%1” field contains a character that is not allowed.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains a character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingatext-label").arg(label);
         case ErrorExpectingQText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A quoted string in the address in the “%1” field contains a "
-                               "character that is not allowed.")
-                      .arg(label);
-            break;
+            //% "A quoted string in the address in the “%1” field contains a "
+            //% "character that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingqtext-label").arg(label);
         case ErrorExpectingCText:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A comment in the address in the “%1” field contains a character "
-                               "that is not allowed.")
-                      .arg(label);
-            break;
+            //% "A comment in the address in the “%1” field contains a character "
+            //% "that is not allowed."
+            return c->qtTrId("cutelyst-valemail-diag-errexpectingctext-label").arg(label);
         case ErrorBackslashEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field can't end with a backslash.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field can't end with a backslash."
+            return c->qtTrId("cutelyst-valemail-diag-errbackslashend-label").arg(label);
         case ErrorDotStart:
-            ret =
-                c->translate("Cutelyst::ValidatorEmail",
-                             "Neither part of the address in the “%1” field may begin with a dot.")
-                    .arg(label);
-            break;
+            //% "Neither part of the address in the “%1” field may begin with a dot."
+            return c->qtTrId("cutelyst-valemail-diag-errdotstart-label").arg(label);
         case ErrorDotEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Neither part of the address in the “%1” field may end with a dot.")
-                      .arg(label);
-            break;
+            //% "Neither part of the address in the “%1” field may end with a dot."
+            return c->qtTrId("cutelyst-valemail-diag-errdotend-label").arg(label);
         case ErrorDomainHyphenStart:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A domain or subdomain of the address in the “%1” field can not "
-                               "begin with a hyphen.")
-                      .arg(label);
-            break;
+            //% "A domain or subdomain of the address in the “%1” field can not "
+            //% "begin with a hyphen."
+            return c->qtTrId("cutelyst-valemail-diag-errdomainhyphenstart-label").arg(label);
         case ErrorDomainHyphenEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "A domain or subdomain of the address in the “%1” field can not end "
-                               "with a hyphen.")
-                      .arg(label);
-            break;
+            //% "A domain or subdomain of the address in the “%1” field can not end "
+            //% "with a hyphen."
+            return c->qtTrId("cutelyst-valemail-diag-errdomainhyphenend-label").arg(label);
         case ErrorUnclosedQuotedStr:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Unclosed quoted string in the address in the “%1” field. (Missing "
-                               "double quotation mark)")
-                      .arg(label);
-            break;
+            //% "Unclosed quoted string in the address in the “%1” field. (Missing "
+            //% "double quotation mark)"
+            return c->qtTrId("cutelyst-valemail-diag-errunclosedquotedstr-label").arg(label);
         case ErrorUnclosedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Unclosed comment in the address in the “%1” field. (Missing "
-                               "closing parentheses)")
-                      .arg(label);
-            break;
+            //% "Unclosed comment in the address in the “%1” field. (Missing "
+            //% "closing parentheses)"
+            return c->qtTrId("cutelyst-valemail-diag-errunclosedcomment-label").arg(label);
         case ErrorUnclosedDomLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Domain literal of the address in the “%1” field is missing its "
-                               "closing bracket.")
-                      .arg(label);
-            break;
+            //% "Domain literal of the address in the “%1” field is missing its "
+            //% "closing bracket."
+            return c->qtTrId("cutelyst-valemail-diag-erruncloseddomliteral-label").arg(label);
         case ErrorFWSCRLFx2:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Folding white space in the address in the “%1” field contains "
-                               "consecutive line break sequences (CRLF).")
-                      .arg(label);
-            break;
+            //% "Folding white space in the address in the “%1” field contains "
+            //% "consecutive line break sequences (CRLF)."
+            return c->qtTrId("cutelyst-valemail-diag-errfwscrlfx2-label").arg(label);
         case ErrorFWSCRLFEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Folding white space in the address in the “%1” field ends with a "
-                               "line break sequence (CRLF).")
-                      .arg(label);
-            break;
+            //% "Folding white space in the address in the “%1” field ends with a "
+            //% "line break sequence (CRLF)."
+            return c->qtTrId("cutelyst-valemail-diag-errfwscrlfend-label").arg(label);
         case ErrorCRnoLF:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains a carriage return (CR) that "
-                               "is not followed by a line feed (LF).")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains a carriage return (CR) that "
+            //% "is not followed by a line feed (LF)."
+            return c->qtTrId("cutelyst-valemail-diag-errcrnolf-label").arg(label);
         case ErrorFatal:
-            ret =
-                c->translate("Cutelyst::ValidatorEmail",
-                             "A fatal error occurred while parsing the address in the “%1” field.")
-                    .arg(label);
-            break;
+            //% "A fatal error occurred while parsing the address in the “%1” field."
+            return c->qtTrId("cutelyst-valemail-diag-errfatal-label").arg(label);
         default:
-            break;
+            return {};
         }
     }
-
-    return ret;
 }
 
 QString ValidatorEmail::categoryString(Context *c, Category category, const QString &label)
 {
-    QString ret;
     if (label.isEmpty()) {
         switch (category) {
         case Valid:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid.");
-            break;
+            //% "Address is valid."
+            return c->qtTrId("cutelyst-valemail-cat-valid");
         case DNSWarn:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid but a DNS check was not successful.");
-            break;
+            //% "Address is valid but a DNS check was not successful."
+            return c->qtTrId("cutelyst-valemail-cat-dnswarn");
         case RFC5321:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid for SMTP but has unusual elements.");
-            break;
+            //% "Address is valid for SMTP but has unusual elements."
+            return c->qtTrId("cutelyst-valemail-cat-rfc5321");
         case CFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address is valid within the message but can not be used unmodified "
-                               "for the envelope.");
-            break;
+            //% "Address is valid within the message but can not be used unmodified "
+            //% "for the envelope."
+            return c->qtTrId("cutelyst-valemail-cat-cfws");
         case Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "Address contains deprecated elements but my still be valid in "
-                               "restricted contexts.");
-            break;
+            //% "Address contains deprecated elements but may still be valid in "
+            //% "restricted contexts."
+            return c->qtTrId("cutelyst-valemail-cat-deprecated");
         case RFC5322:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address is only valid according to the broad definition of RFC "
-                               "5322. It is otherwise invalid.");
-            break;
+            //% "The address is only valid according to the broad definition of RFC "
+            //% "5322. It is otherwise invalid."
+            return c->qtTrId("cutelyst-valemail-cat-rfc5322");
         default:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is invalid for any purpose.");
-            break;
+            //% "Address is invalid for any purpose."
+            return c->qtTrId("cutelyst-valemail-cat-invalid");
         }
     } else {
         switch (category) {
         case Valid:
-            ret =
-                c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid.")
-                    .arg(label);
-            break;
+            //% "The address in the “%1” field is valid."
+            return c->qtTrId("cutelyst-valemail-cat-valid-label").arg(label);
         case DNSWarn:
-            ret = c->translate(
-                       "Cutelyst::ValidatorEmail",
-                       "The address in the “%1” field is valid but a DNS check was not successful.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid but a DNS check was not successful."
+            return c->qtTrId("cutelyst-valemail-cat-dnswarn-label").arg(label);
         case RFC5321:
-            ret = c->translate(
-                       "Cutelyst::ValidatorEmail",
-                       "The address in the “%1” field is valid for SMTP but has unusual elements.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid for SMTP but has unusual elements."
+            return c->qtTrId("cutelyst-valemail-cat-rfc5321-label").arg(label);
         case CFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is valid within the message but can "
-                               "not be used unmodified for the envelope.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is valid within the message but can "
+            //% "not be used unmodified for the envelope."
+            return c->qtTrId("cutelyst-valemail-cat-cfws-label").arg(label);
         case Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field contains deprecated elements but my "
-                               "still be valid in restricted contexts.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field contains deprecated elements but may "
+            //% "still be valid in restricted contexts."
+            return c->qtTrId("cutelyst-valemail-cat-deprecated-label").arg(label);
         case RFC5322:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is only valid according to the broad "
-                               "definition of RFC 5322. It is otherwise invalid.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is only valid according to the broad "
+            //% "definition of RFC 5322. It is otherwise invalid."
+            return c->qtTrId("cutelyst-valemail-cat-rfc5322-label").arg(label);
         default:
-            ret = c->translate("Cutelyst::ValidatorEmail",
-                               "The address in the “%1” field is invalid for any purpose.")
-                      .arg(label);
-            break;
+            //% "The address in the “%1” field is invalid for any purpose."
+            return c->qtTrId("cutelyst-valemail-cat-invalid-label").arg(label);
         }
     }
-    return ret;
 }
 
 Cutelyst::ValidatorEmail::Category ValidatorEmail::category(Diagnose diagnose)
 {
     Category cat = Error;
 
-    const auto diag = static_cast<quint8>(diagnose);
+    const auto diag = static_cast<int>(diagnose);
 
-    if (diag < static_cast<quint8>(Valid)) {
+    if (diag < static_cast<int>(Valid)) {
         cat = Valid;
-    } else if (diag < static_cast<quint8>(DNSWarn)) {
+    } else if (diag < static_cast<int>(DNSWarn)) {
         cat = DNSWarn;
-    } else if (diag < static_cast<quint8>(RFC5321)) {
+    } else if (diag < static_cast<int>(RFC5321)) {
         cat = RFC5321;
-    } else if (diag < static_cast<quint8>(CFWS)) {
+    } else if (diag < static_cast<int>(CFWS)) {
         cat = CFWS;
-    } else if (diag < static_cast<quint8>(Deprecated)) {
+    } else if (diag < static_cast<int>(Deprecated)) {
         cat = Deprecated;
-    } else if (diag < static_cast<quint8>(RFC5322)) {
+    } else if (diag < static_cast<int>(RFC5322)) {
         cat = RFC5322;
     }
 
