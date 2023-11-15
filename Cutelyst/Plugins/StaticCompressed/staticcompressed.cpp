@@ -81,7 +81,8 @@ bool StaticCompressed::setup(Application *app)
     qCInfo(C_STATICCOMPRESSED) << "Compressed cache directory:" << d->cacheDir.absolutePath();
 
     const QString _mimeTypes =
-        config.value(u"mime_types"_qs, u"text/css,application/javascript"_qs).toString();
+        config.value(u"mime_types"_qs, u"text/css,application/javascript,text/javascript"_qs)
+            .toString();
     qCInfo(C_STATICCOMPRESSED) << "MIME Types:" << _mimeTypes;
     d->mimeTypes = _mimeTypes.split(u',', Qt::SkipEmptyParts);
 
@@ -176,6 +177,7 @@ bool StaticCompressed::setup(Application *app)
 #endif
 
     qCInfo(C_STATICCOMPRESSED) << "Supported compressions:" << supportedCompressions.join(u',');
+    qCInfo(C_STATICCOMPRESSED) << "Include paths:" << d->includePaths;
 
     connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
         d->beforePrepareAction(c, skipMethod);
@@ -190,8 +192,8 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
         return;
     }
 
-    const QString path           = c->req()->path();
-    const QRegularExpression _re = re; // Thread-safe
+    // TODO mid(1) quick fix for path now having leading slash
+    const QString path = c->req()->path().mid(1);
 
     for (const QString &dir : dirs) {
         if (path.startsWith(dir)) {
@@ -207,6 +209,7 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
         }
     }
 
+    const QRegularExpression _re        = re; // Thread-safe
     const QRegularExpressionMatch match = _re.match(path);
     if (match.hasMatch() && locateCompressedFile(c, path)) {
         *skipMethod = true;
@@ -216,6 +219,8 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
 bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &relPath) const
 {
     for (const QDir &includePath : includePaths) {
+        qCDebug(C_STATICCOMPRESSED)
+            << "Trying to find" << relPath << "in" << includePath.absolutePath();
         const QString path = includePath.absoluteFilePath(relPath);
         const QFileInfo fileInfo(path);
         if (fileInfo.exists()) {
@@ -248,7 +253,6 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                     suffixes.contains(fileInfo.completeSuffix(), Qt::CaseInsensitive)) {
 
                     const auto acceptEncoding = c->req()->header("Accept-Encoding");
-                    qCDebug(C_STATICCOMPRESSED) << "Accept-Encoding:" << acceptEncoding;
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
                     if (acceptEncoding.contains("br")) {
@@ -304,6 +308,10 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 if (!contentEncoding.isEmpty()) {
                     // serve correct encoding type
                     headers.setContentEncoding(contentEncoding);
+
+                    qCDebug(C_STATICCOMPRESSED)
+                        << "Encoding:" << headers.contentEncoding() << "Size:" << file->size()
+                        << "Original Size:" << fileInfo.size();
 
                     // force proxies to cache compressed and non-compressed files separately
                     headers.pushHeader("Vary"_qba, "Accept-Encoding"_qba);
