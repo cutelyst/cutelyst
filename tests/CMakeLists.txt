@@ -50,10 +50,6 @@ cutelyst_templates_unit_tests(
     testactionrenderview
 )
 
-if (${QT_VERSION} VERSION_LESS "6.1.0")
-    cute_test(testcookie "" "" "")
-endif (${QT_VERSION} VERSION_LESS "6.1.0")
-
 cute_test(testvalidator Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Utils::Validator "" "")
 
 cute_test(testauthentication Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Authentication Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session "")
