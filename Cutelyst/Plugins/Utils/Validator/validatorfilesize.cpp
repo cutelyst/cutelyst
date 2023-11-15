@@ -374,8 +374,12 @@ QString ValidatorFileSize::genericValidationDataError(Context *c, const QVariant
         }
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
     Q_UNREACHABLE_RETURN({});
+#else
+    return {};
+#endif
 }
 
 void ValidatorFileSize::inputPattern(Context *c, const QString &stashKey)
