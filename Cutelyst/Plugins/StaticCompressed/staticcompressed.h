@@ -78,7 +78,7 @@ class StaticCompressedPrivate;
  * @li @c cache_directory - string value, sets the directory where on the fly compressed data is
  * saved (default: QStandardPaths::CacheLocation + /compressed-static)
  * @li @c mime_types - string value, comma separated list of MIME types that should be compressed
- * (default: text/css,application/javascript)
+ * (default: text/css,application/javascript,text/javascript)
  * @li @c suffixes - string value, comma separted list of file suffixes/extensions that should be
  * compressed (default: js.map,css.map,min.js.map,min.css.map)
  * @li @c check_pre_compressed - boolean value, enables or disables the check for pre compressed
