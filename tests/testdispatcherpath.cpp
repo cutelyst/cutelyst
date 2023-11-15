@@ -1,6 +1,7 @@
 #ifndef DISPATCHERTEST_H
 #define DISPATCHERTEST_H
 
+#include "config.h"
 #include "coverageobject.h"
 #include "headers.h"
 
@@ -46,7 +47,8 @@ void TestDispatcherPath::initTestCase()
 
 TestEngine *TestDispatcherPath::getEngine()
 {
-    auto app    = new TestApplication;
+    auto app = new TestApplication;
+    app->loadTranslations(u"cutelystcore"_qs, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_qs);
     auto engine = new TestEngine(app, QVariantMap());
     if (!engine->init()) {
         return nullptr;
