@@ -32,6 +32,7 @@ private Q_SLOTS:
     void testGetFileFromSubdirs();
     void testFileNotFoundFomForcedDirs();
     void testGetFileFromForcedDirs();
+    void testLastModifiedSince();
 
 private:
     TestEngine *m_engine{nullptr};
@@ -139,6 +140,17 @@ void TestStaticSimple::testGetFileFromForcedDirs()
     QVERIFY(writeTestFile(u"forced/css/mytestfile.css"_qs));
     const auto resp = getFile(u"/forced/css/mytestfile.css"_qs);
     QCOMPARE(resp.statusCode, Response::OK);
+}
+
+void TestStaticSimple::testLastModifiedSince()
+{
+    QVERIFY(writeTestFile(u"lastmodified.js"_qs));
+    QFileInfo fi(m_dataDir.filePath(u"lastmodified.js"_qs));
+    const auto resp = getFile(
+        u"/lastmodified.js"_qs,
+        {{"If-Modified-Since",
+          fi.lastModified().toUTC().toString(u"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toLatin1()}});
+    QCOMPARE(resp.statusCode, Response::NotModified);
 }
 
 QTEST_MAIN(TestStaticSimple)
