@@ -5,6 +5,7 @@
 
 #include <Cutelyst/Plugins/StaticCompressed/staticcompressed.h>
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QTemporaryDir>
@@ -32,6 +33,9 @@ private Q_SLOTS:
     void testPreCompressed();
     void testPreCompressed_data();
     void testLastModifiedSince();
+    void testGetFileFromSubdirs();
+    void testFileNotFoundFromForcedDirs();
+    void testGetFileFromForcedDirs();
 
 private:
     TestEngine *m_engine{nullptr};
@@ -75,6 +79,7 @@ TestEngine *TestStaticCompressed::getEngine()
 
     auto plug = new StaticCompressed(app);
     plug->setIncludePaths({m_dataDir.path()});
+    plug->setDirs({u"forced"_qs});
 
     if (!engine->init()) {
         return nullptr;
@@ -202,6 +207,34 @@ void TestStaticCompressed::testLastModifiedSince()
     const auto resp = getFile(u"/lastmodified.js"_qs, hdrs);
 
     QCOMPARE(resp.statusCode, Response::NotModified);
+}
+
+void TestStaticCompressed::testGetFileFromSubdirs()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"static/css"_qs));
+    QVERIFY(writeTestFile(u"static/css/mytestfile.css"_qs));
+    const auto resp = getFile(u"/static/css/mytestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
+    QCOMPARE(resp.statusCode, Response::OK);
+    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
+}
+
+void TestStaticCompressed::testFileNotFoundFromForcedDirs()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
+    const auto resp = getFile(u"/forced/css/notavailable.css"_qs);
+    QCOMPARE(resp.statusCode, Response::NotFound);
+}
+
+void TestStaticCompressed::testGetFileFromForcedDirs()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
+    QVERIFY(writeTestFile(u"forced/css/mytestfile.css"_qs));
+    const auto resp = getFile(u"/forced/css/mytestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
+    QCOMPARE(resp.statusCode, Response::OK);
+    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
 }
 
 QTEST_MAIN(TestStaticCompressed)
