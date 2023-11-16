@@ -56,6 +56,14 @@ CSRFProtection::CSRFProtection(Application *parent)
 {
 }
 
+CSRFProtection::CSRFProtection(Application *parent, const QVariantMap &defaultConfig)
+    : Plugin(parent)
+    , d_ptr(new CSRFProtectionPrivate)
+{
+    Q_D(CSRFProtection);
+    d->defaultConfig = defaultConfig;
+}
+
 CSRFProtection::~CSRFProtection() = default;
 
 bool CSRFProtection::setup(Application *app)
@@ -69,12 +77,14 @@ bool CSRFProtection::setup(Application *app)
     bool cookieExpirationOk = false;
     const QString cookieExpireStr =
         config
-            .value(
-                u"cookie_expiration"_qs,
-                config.value(u"cookie_age"_qs,
-                             static_cast<qint64>(std::chrono::duration_cast<std::chrono::seconds>(
-                                                     CSRFProtectionPrivate::cookieDefaultExpiration)
-                                                     .count())))
+            .value(u"cookie_expiration"_qs,
+                   config.value(
+                       u"cookie_age"_qs,
+                       d->defaultConfig.value(
+                           u"cookie_expiration"_qs,
+                           static_cast<qint64>(std::chrono::duration_cast<std::chrono::seconds>(
+                                                   CSRFProtectionPrivate::cookieDefaultExpiration)
+                                                   .count()))))
             .toString();
     d->cookieExpiration = std::chrono::duration_cast<std::chrono::seconds>(
         Utils::durationFromString(cookieExpireStr, &cookieExpirationOk));
@@ -89,13 +99,18 @@ bool CSRFProtection::setup(Application *app)
         d->cookieExpiration = CSRFProtectionPrivate::cookieDefaultExpiration;
     }
 
-    d->cookieDomain = config.value(u"cookie_domain"_qs).toString();
+    d->cookieDomain =
+        config.value(u"cookie_domain"_qs, d->defaultConfig.value(u"cookie_domain"_qs)).toString();
     if (d->cookieName.isEmpty()) {
         d->cookieName = "csrftoken";
     }
     d->cookiePath = u"/"_qs;
 
-    const QString _sameSite = config.value(u"cookie_same_site"_qs, u"strict"_qs).toString();
+    const QString _sameSite =
+        config
+            .value(u"cookie_same_site"_qs,
+                   d->defaultConfig.value(u"cookie_same_site"_qs, u"strict"_qs))
+            .toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -111,7 +126,9 @@ bool CSRFProtection::setup(Application *app)
         d->cookieSameSite = QNetworkCookie::SameSite::Strict;
     }
 
-    d->cookieSecure = config.value(u"cookie_secure"_qs, false).toBool();
+    d->cookieSecure =
+        config.value(u"cookie_secure"_qs, d->defaultConfig.value(u"cookie_secure"_qs, false))
+            .toBool();
 
     if ((d->cookieSameSite == QNetworkCookie::SameSite::None) && !d->cookieSecure) {
         qCWarning(C_CSRFPROTECTION)
@@ -126,11 +143,15 @@ bool CSRFProtection::setup(Application *app)
     }
 
     d->trustedOrigins =
-        config.value(u"trusted_origins"_qs).toString().split(u',', Qt::SkipEmptyParts);
+        config.value(u"trusted_origins"_qs, d->defaultConfig.value(u"trusted_origins"_qs))
+            .toString()
+            .split(u',', Qt::SkipEmptyParts);
     if (d->formInputName.isEmpty()) {
         d->formInputName = "csrfprotectiontoken";
     }
-    d->logFailedIp = config.value(u"log_failed_ip"_qs, false).toBool();
+    d->logFailedIp =
+        config.value(u"log_failed_ip"_qs, d->defaultConfig.value(u"log_failed_ip"_qs, false))
+            .toBool();
     if (d->errorMsgStashKey.isEmpty()) {
         d->errorMsgStashKey = u"error_msg"_qs;
     }
@@ -523,7 +544,7 @@ void CSRFProtectionPrivate::reject(Context *c,
                                              "</html>\n"));
             c->res()->setContentType("text/html; charset=utf-8"_qba);
         }
-        c->detach();
+        c->finalize();
     }
 }
 

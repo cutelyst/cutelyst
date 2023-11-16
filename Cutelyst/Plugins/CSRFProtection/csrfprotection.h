@@ -99,15 +99,17 @@ class CSRFProtectionPrivate;
  * action the application should detach to if the check failed via setDefaultDetachTo(), optionally
  * there is the attribute <CODE>:CSRFDetachTo</CODE> that can be used to define a detach to action
  * per method. When using an action to detach to if the check fails, do not forget to call
- * Context::detach() with no arguments to escape the processing chain after that action. If the
- * detach to action is not set or could not be found it will either set the response body to the
- * content set by setGenericErrorMessage() of if that is absent it will generate a generic HTML
- * content containing error information.
+ * Context::finalize() to escape the processing chain after that action. If the detach to action
+ * is not set or could not be found it will either set the response body to the content set by
+ * setGenericErrorMessage() of if that is absent it will generate a generic HTML content
+ * containing error information.
  *
  * @code{.cpp}
  * bool MyCutelystApp::init()
  * {
- *     auto csrf = new CSRFProtection(this);
+ *     // constructs a new plugin and sets the default value for the
+ *     // log_failed_ip config file option to true
+ *     auto csrf = new CSRFProtection(this, {{"log_failed_ip", true}});
  *     csrf->setDefaultDetachTo(QStringLiteral("csrffailed"));
  * }
  *
@@ -124,7 +126,7 @@ class CSRFProtectionPrivate;
  * {
  *     // handle the CSRF violation
  *     c->res()->setStatus(403);
- *     c->detach();
+ *     c->finalize();
  * }
  * @endcode
  *
@@ -160,10 +162,11 @@ class CSRFProtectionPrivate;
  * other vulnerabilities, such as session fixation, that make giving subdomains to untrusted parties
  * a bad idea, and these vulnerabilities cannot easily be fixed with current browsers.
  *
- * <H3>Configuration file options</H3>
+ * <H3 ID="configfile">Configuration file options</H3>
  *
  * There are some options you can set in your application configuration file in the @c
- * Cutelyst_CSRFProtection_Plugin section.
+ * Cutelyst_CSRFProtection_Plugin section. You can override the defaults by setting a QVariantMap
+ * with selected default values to the constructor.
  *
  * @par cookie_expiration
  * @parblock
@@ -258,6 +261,14 @@ public:
     CSRFProtection(Application *parent);
 
     /**
+     * Contructs a new CSRFProtection object with the given @a parent and @a defaultConfig.
+     *
+     * Use the @a defaultConfig to set default values for the configuration entries from
+     * the <A HREF="#configfile">configuration file</A>.
+     */
+    CSRFProtection(Application *parent, const QVariantMap &defaultConfig);
+
+    /**
      * Deconstructs the CSRFProtection object.
      */
     ~CSRFProtection() override;
@@ -277,7 +288,7 @@ public:
     void setFormFieldName(const QByteArray &fieldName);
 
     /**
-     * Sets the name of the stash key that that will contain the error message if the CSRF
+     * Sets the name of the stash key that will contain the error message if the CSRF
      * protection check failed.
      */
     void setErrorMsgStashKey(const QString &keyName);
@@ -290,11 +301,11 @@ public:
     void setIgnoredNamespaces(const QStringList &namespaces);
 
     /**
-     * If this is set to @c true, the secret token will not be safed in a cookie but in the user's
+     * If this is set to @c true, the secret token will not be safed in a cookie but in the user’s
      * session. For this, the Session plugin has to be available.
      *
      * Storing the token in a cookie (the default) is safe, but storing it in the session is common
-     * practice in other web frameworks and therefore sometimes demaned by security auditors.
+     * practice in other web frameworks and therefore sometimes demanded by security auditors.
      */
     void setUseSessions(bool useSessions);
 
