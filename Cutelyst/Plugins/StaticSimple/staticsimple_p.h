@@ -18,6 +18,7 @@ public:
     QVector<QDir> includePaths;
     QStringList dirs;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
+    bool serveDirsOnly{false};
 };
 
 } // namespace Cutelyst
