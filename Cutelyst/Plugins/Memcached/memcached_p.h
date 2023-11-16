@@ -41,6 +41,8 @@ public:
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
     static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
     static bool isRegistered(Memcached *ptr, Memcached::MemcachedReturnType *rt);
+    static QByteArray compressIfNeeded(const QByteArray &value, Flags &flags);
+    static QByteArray uncompressIfNeeded(const QByteArray &value, memcached_result_st *result);
 
     static constexpr uint16_t defaultPort{11211};
     static constexpr int defaultCompressionThreshold{100};

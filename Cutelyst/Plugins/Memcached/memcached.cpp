@@ -269,12 +269,7 @@ bool Memcached::set(QByteArrayView key,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_set(mcd->d_ptr->memc,
                                                 key.constData(),
@@ -307,12 +302,7 @@ bool Memcached::setByKey(QByteArrayView groupKey,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_set_by_key(mcd->d_ptr->memc,
                                                        groupKey.constData(),
@@ -347,12 +337,7 @@ bool Memcached::add(QByteArrayView key,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_add(mcd->d_ptr->memc,
                                                 key.constData(),
@@ -385,12 +370,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_add_by_key(mcd->d_ptr->memc,
                                                        groupKey.constData(),
@@ -424,12 +404,7 @@ bool Memcached::replace(QByteArrayView key,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_replace(mcd->d_ptr->memc,
                                                     key.constData(),
@@ -462,12 +437,7 @@ bool Memcached::replaceByKey(QByteArrayView groupKey,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_replace_by_key(mcd->d_ptr->memc,
                                                            groupKey.constData(),
@@ -520,11 +490,8 @@ QByteArray Memcached::get(QByteArrayView key,
             if (cas) {
                 *cas = memcached_result_cas(result);
             }
-            MemcachedPrivate::Flags flags{memcached_result_flags(result)};
-            if (flags.testFlag(MemcachedPrivate::Compressed)) {
-                retData = qUncompress(retData);
-            }
-            ok = true;
+            retData = MemcachedPrivate::uncompressIfNeeded(retData, result);
+            ok      = true;
             // fetch another result even if there is no one to get
             // a NULL for the internal of libmemcached
             memcached_fetch_result(mcd->d_ptr->memc, nullptr, nullptr);
@@ -571,11 +538,8 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
             if (cas) {
                 *cas = memcached_result_cas(result);
             }
-            const MemcachedPrivate::Flags flags{memcached_result_flags(result)};
-            if (flags.testFlag(MemcachedPrivate::Compressed)) {
-                retData = qUncompress(retData);
-            }
-            ok = true;
+            retData = MemcachedPrivate::uncompressIfNeeded(retData, result);
+            ok      = true;
             // fetch another result even if there is no one to get
             // a NULL for the internal of libmemcached
             memcached_fetch_result(mcd->d_ptr->memc, nullptr, nullptr);
@@ -928,12 +892,7 @@ bool Memcached::cas(QByteArrayView key,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_cas(mcd->d_ptr->memc,
                                                 key.constData(),
@@ -968,12 +927,7 @@ bool Memcached::casByKey(QByteArrayView groupKey,
     }
 
     MemcachedPrivate::Flags flags;
-    QByteArray _value = value;
-
-    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags |= MemcachedPrivate::Compressed;
-        _value = qCompress(value, mcd->d_ptr->compressionLevel);
-    }
+    const QByteArray _value = MemcachedPrivate::compressIfNeeded(value, flags);
 
     const memcached_return_t rt = memcached_cas_by_key(mcd->d_ptr->memc,
                                                        groupKey.constData(),
@@ -1086,10 +1040,7 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
                 }
-                const MemcachedPrivate::Flags flags{memcached_result_flags(result)};
-                if (flags.testFlag(MemcachedPrivate::Compressed)) {
-                    rd = qUncompress(rd);
-                }
+                rd = MemcachedPrivate::uncompressIfNeeded(rd, result);
                 ret.insert(rk, rd);
             }
             memcached_result_free(result);
@@ -1167,10 +1118,7 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
                 }
-                const MemcachedPrivate::Flags flags{memcached_result_flags(result)};
-                if (flags.testFlag(MemcachedPrivate::Compressed)) {
-                    rd = qUncompress(rd);
-                }
+                rd = MemcachedPrivate::uncompressIfNeeded(rd, result);
                 ret.insert(rk, rd);
             }
             memcached_result_free(result);
@@ -1458,6 +1406,27 @@ bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::MemcachedReturnTy
         return false;
     }
     return true;
+}
+
+QByteArray MemcachedPrivate::compressIfNeeded(const QByteArray &value, Flags &flags)
+{
+    if (mcd->d_ptr->compression && (value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags |= MemcachedPrivate::Compressed;
+        return qCompress(value, mcd->d_ptr->compressionLevel);
+    } else {
+        return value;
+    }
+}
+
+QByteArray MemcachedPrivate::uncompressIfNeeded(const QByteArray &value,
+                                                memcached_result_st *result)
+{
+    const MemcachedPrivate::Flags flags{memcached_result_flags(result)};
+    if (flags.testFlag(MemcachedPrivate::Compressed)) {
+        return qUncompress(value);
+    } else {
+        return value;
+    }
 }
 
 #include "moc_memcached.cpp"
