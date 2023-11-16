@@ -13,9 +13,9 @@ namespace Cutelyst {
 class StaticCompressedPrivate;
 
 /**
- * @brief Deliver static files compressed on the fly or precompressed.
+ * @brief Serve static files compressed on the fly or precompressed.
  *
- * The StaticCompressed plugin for Cutelyst can be used to deliver specific static files like
+ * The %StaticCompressed plugin for %Cutelyst can be used to serve specific static files like
  * CSS and JavaScript files compressed. It has built in support for
  * <A HREF="https://en.wikipedia.org/wiki/Gzip">gzip</A> and
  * <A HREF="https://en.wikipedia.org/wiki/DEFLATE">DEFLATE</A> compression format and can be
@@ -32,9 +32,10 @@ class StaticCompressedPrivate;
  *
  * Support for @a gzip and @a DEFLATE compression format is built in by using the qCompress()
  * function. To enable suport for <A HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A>, build
- * with
- * @c-DPLUGIN_STATICCOMPRESSED_BROTLI@c:BOOL=ON and have the <A
- * HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files available.
+ * with @c-DPLUGIN_STATICCOMPRESSED_BROTLI@c:BOOL=ON and have the
+ * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files
+ * available.
+ *
  * To use <A HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for the @a gzip compression,
  * build with @c-DPLUGIN_STATICCOMPRESSED_ZOPFLI@c:BOOL=ON and have the <A
  * HREF="https://github.com/google/zopfli">libzopfli</A> development and header files available.
@@ -57,8 +58,8 @@ class StaticCompressedPrivate;
  *
  * <H3>Pre-compressed files</H3>
  *
- * Beside the cached on the fly compression it is also possible to deliver pre-comrpessed static
- * files that are saved in the same place as the original files are. The StaticCompressed plugin
+ * Beside the cached on the fly compression it is also possible to deliver pre-compressed static
+ * files that are saved in the same place as the original files are. The %StaticCompressed plugin
  * will try to find a compressed file at the same path as the original file appended by an extension
  * indicating the compression method. So if you have for example boostrap.min.css and
  * bootstrap.min.css.gz in your static files directory, the plugin will deliver the compressed
@@ -70,6 +71,14 @@ class StaticCompressedPrivate;
  * @li .br - Brotli compressed files
  * @li .gz - gzip/Zopfli compressed files
  * @li .deflate - DEFLATE compressed files
+ *
+ * <H3>Only serve from specific directories/paths</H3>
+ *
+ * You can use setDirs() to set a list of directories/paths below your web root where files should
+ * always be served by this plugin. By default, the plugin also tries to serve files from other
+ * paths when they have a file extension when they are not contain one of this paths. You can
+ * set setServeDirsOnly() to @c true (since %Cutelyst 4.0.0) to only serve files beginning with
+ * this paths. Have a look at setDirs() to learn more.
  *
  * <H3>Runtime configuration</H3>
  *
@@ -122,16 +131,16 @@ class StaticCompressedPrivate;
  * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files have to
  * be present (default: @c off)
  *
- * Since Cutelyst 2.0.0 you can check if \c CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI and/or
+ * Since %Cutelyst 2.0.0 you can check if \c CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI and/or
  * \c CUTELYST_STATICCOMPRESSED_WITH_BROTLI are defined if you need to know that the plugin supports
  * that compressions.
  *
  * @since %Cutelyst 1.11.0
+ * @sa StaticSimple
  * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  */
-class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT
-    StaticCompressed // clazy:exclude=ctor-missing-parent-argument
-    : public Plugin
+class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT // clazy:exclude=ctor-missing-parent-argument
+    StaticCompressed : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticCompressed) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -151,21 +160,52 @@ public:
      * Sets a list of directories in which to search for your static files.
      * The directories will be searched in order and will return the first file found.
      * Note that your root directory is not automatically added to the search path when
-     * you specify an include_path.
+     * you specify an include path.
      */
     void setIncludePaths(const QStringList &paths);
 
     /**
-     * Sets a list of top-level directories beneath your 'root' directory that should
-     * always be served in static mode.
+     * Sets a list of top-level directories beneath your root that should
+     * always be served in static mode. Set setServeDirsOnly() to @c true to only serve
+     * files in static mode (since %Cutelyst 4.0.0) if their path begins with one of the
+     * listed directories. By default, this list is empty.
+     *
+     * If your static files for example are like:
+     * <PRE>
+     * /path/to/my/static/files/static/css
+     * /path/to/my/static/files/static/js
+     * ...
+     * </PRE>
+     * When your @link setIncludePaths() include path@endlink is @c /path/to/my/static/files
+     * and you set @c static to the list of @a dirs, requested files like @c /static/css/style.css
+     * will always be tried to be served by this plugin. If these files are not found, a 404
+     * status will be returned.
+     *
+     * If setServeDirsOnly() is set to @c false (the default), the plugin will still try to serve
+     * files as static if they end with something that looks like a file extension. Set
+     * setServeDirsOnly() to @c true to only serve files as static that starts with paths defined
+     * here. If you would than request a file like @c /some/where/else/script.js it would
+     * not be tried to be found in the included directories and the dispatcher would try to
+     * find a fitting controller method for it.
+     *
+     * @sa setServeDirsOnly()
      */
     void setDirs(const QStringList &dirs);
+
+    /**
+     * Set this to @c true to only server static files where their path begins with one
+     * of the directories set by setDirs(). The default value is @c false.
+     *
+     * @sa setDirs()
+     * @since %Cutelyst 4.0.0
+     */
+    void setServeDirsOnly(bool dirsOnly);
 
     /**
      * Configures the plugin by reading the @c Cutelyst_StaticCompressed_Plugin section
      * from the Cutelyst application configuration file and connects to the
      * Application::beforePrepareAction() signal. Returns @c false if the cache directory
-     * can not be created if it not exists.
+     * can not be created or if it not exists.
      */
     bool setup(Application *app) override;
 
