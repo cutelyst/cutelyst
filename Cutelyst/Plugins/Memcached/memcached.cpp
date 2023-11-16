@@ -264,11 +264,7 @@ bool Memcached::set(QByteArrayView key,
                     time_t expiration,
                     Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -306,11 +302,7 @@ bool Memcached::setByKey(QByteArrayView groupKey,
                          time_t expiration,
                          MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -350,11 +342,7 @@ bool Memcached::add(QByteArrayView key,
                     time_t expiration,
                     MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -392,11 +380,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
                          time_t expiration,
                          MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -435,11 +419,7 @@ bool Memcached::replace(QByteArrayView key,
                         time_t expiration,
                         MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -477,11 +457,7 @@ bool Memcached::replaceByKey(QByteArrayView groupKey,
                              time_t expiration,
                              MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -522,11 +498,7 @@ QByteArray Memcached::get(QByteArrayView key,
 {
     QByteArray retData;
 
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return retData;
     }
 
@@ -577,11 +549,7 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
 {
     QByteArray retData;
 
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return retData;
     }
 
@@ -628,11 +596,7 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
 
 bool Memcached::remove(QByteArrayView key, MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -655,11 +619,7 @@ bool Memcached::removeByKey(QByteArrayView groupKey,
                             QByteArrayView key,
                             MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -681,11 +641,7 @@ bool Memcached::removeByKey(QByteArrayView groupKey,
 
 bool Memcached::exist(QByteArrayView key, MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -707,11 +663,7 @@ bool Memcached::existByKey(QByteArrayView groupKey,
                            QByteArrayView key,
                            MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -736,11 +688,7 @@ bool Memcached::increment(QByteArrayView key,
                           uint64_t *value,
                           MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -765,11 +713,7 @@ bool Memcached::incrementByKey(QByteArrayView groupKey,
                                uint64_t *value,
                                MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -801,11 +745,7 @@ bool Memcached::incrementWithInitial(QByteArrayView key,
                                      uint64_t *value,
                                      MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -833,11 +773,7 @@ bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
                                           uint64_t *value,
                                           MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -869,11 +805,7 @@ bool Memcached::decrement(QByteArrayView key,
                           uint64_t *value,
                           MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -898,11 +830,7 @@ bool Memcached::decrementByKey(QByteArrayView groupKey,
                                uint64_t *value,
                                MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -934,11 +862,7 @@ bool Memcached::decrementWithInitial(QByteArrayView key,
                                      uint64_t *value,
                                      MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -966,11 +890,7 @@ bool Memcached::decrementWithInitialByKey(QByteArrayView groupKey,
                                           uint64_t *value,
                                           MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1003,11 +923,7 @@ bool Memcached::cas(QByteArrayView key,
                     uint64_t cas,
                     MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1047,11 +963,7 @@ bool Memcached::casByKey(QByteArrayView groupKey,
                          uint64_t cas,
                          MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1089,11 +1001,7 @@ bool Memcached::casByKey(QByteArrayView groupKey,
 
 bool Memcached::flushBuffers(MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1113,11 +1021,7 @@ bool Memcached::flushBuffers(MemcachedReturnType *returnType)
 
 bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1141,11 +1045,7 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
 {
     QHash<QByteArray, QByteArray> ret;
 
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return ret;
     }
 
@@ -1213,11 +1113,7 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
 {
     QHash<QByteArray, QByteArray> ret;
 
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return ret;
     }
 
@@ -1294,11 +1190,7 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
 
 bool Memcached::touch(QByteArrayView key, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1323,11 +1215,7 @@ bool Memcached::touchByKey(QByteArrayView groupKey,
                            time_t expiration,
                            MemcachedReturnType *returnType)
 {
-    if (!mcd) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (returnType) {
-            *returnType = Memcached::PluginNotRegisterd;
-        }
+    if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
     }
 
@@ -1558,6 +1446,18 @@ void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcac
     if (rt1) {
         *rt1 = MemcachedPrivate::returnTypeConvert(rt2);
     }
+}
+
+bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::MemcachedReturnType *rt)
+{
+    if (!ptr) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (rt) {
+            *rt = Memcached::PluginNotRegisterd;
+        }
+        return false;
+    }
+    return true;
 }
 
 #include "moc_memcached.cpp"
