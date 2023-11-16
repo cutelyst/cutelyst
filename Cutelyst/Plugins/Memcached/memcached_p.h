@@ -18,8 +18,9 @@ namespace Cutelyst {
 
 class MemcachedPrivate
 {
+    Q_DISABLE_COPY(MemcachedPrivate)
 public:
-    MemcachedPrivate() {}
+    MemcachedPrivate() = default;
 
     ~MemcachedPrivate()
     {
