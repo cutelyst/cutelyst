@@ -46,6 +46,12 @@ void StaticSimple::setDirs(const QStringList &dirs)
     d->dirs = dirs;
 }
 
+void StaticSimple::setServeDirsOnly(bool dirsOnly)
+{
+    Q_D(StaticSimple);
+    d->serveDirsOnly = dirsOnly;
+}
+
 bool StaticSimple::setup(Cutelyst::Application *app)
 {
     connect(app, &Application::beforePrepareAction, this, &StaticSimple::beforePrepareAction);
@@ -76,6 +82,10 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
             *skipMethod = true;
             return;
         }
+    }
+
+    if (d->serveDirsOnly) {
+        return;
     }
 
     QRegularExpressionMatch match = re.match(path);

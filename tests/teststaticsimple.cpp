@@ -33,14 +33,20 @@ private Q_SLOTS:
     void testFileNotFoundFomForcedDirs();
     void testGetFileFromForcedDirs();
     void testLastModifiedSince();
+    void testGetFileFromForcedDirsOnly();
+    void testFileNotFoundFromForcedDirsOnly();
+    void testFileNotInForcedDirsOnly();
+    void testControllerPath();
 
 private:
     TestEngine *m_engine{nullptr};
+    TestEngine *m_engineDirsOnly{nullptr};
     QTemporaryDir m_dataDir;
 
-    TestEngine *getEngine();
+    TestEngine *getEngine(bool serveDirsOnly = false);
 
     TestEngine::TestResponse getFile(const QString &path, const Headers &headers = {});
+    TestEngine::TestResponse getForcedFile(const QString &path, const Headers &headers = {});
     bool writeTestFile(const QString &name);
 };
 
@@ -49,9 +55,11 @@ void TestStaticSimple::initTestCase()
     QVERIFY(m_dataDir.isValid());
     m_engine = getEngine();
     QVERIFY(m_engine);
+    m_engineDirsOnly = getEngine(true);
+    QVERIFY(m_engineDirsOnly);
 }
 
-TestEngine *TestStaticSimple::getEngine()
+TestEngine *TestStaticSimple::getEngine(bool serveDirsOnly)
 {
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, {});
@@ -59,6 +67,7 @@ TestEngine *TestStaticSimple::getEngine()
     auto plug = new StaticSimple(app);
     plug->setIncludePaths({m_dataDir.path()});
     plug->setDirs({u"forced"_qs});
+    plug->setServeDirsOnly(serveDirsOnly);
 
     if (!engine->init()) {
         return nullptr;
@@ -70,6 +79,12 @@ TestEngine *TestStaticSimple::getEngine()
 TestEngine::TestResponse TestStaticSimple::getFile(const QString &path, const Headers &headers)
 {
     return m_engine->createRequest("GET", path, {}, headers, nullptr);
+}
+
+TestEngine::TestResponse TestStaticSimple::getForcedFile(const QString &path,
+                                                         const Headers &headers)
+{
+    return m_engineDirsOnly->createRequest("GET", path, {}, headers, nullptr);
 }
 
 bool TestStaticSimple::writeTestFile(const QString &name)
@@ -151,6 +166,56 @@ void TestStaticSimple::testLastModifiedSince()
         {{"If-Modified-Since",
           fi.lastModified().toUTC().toString(u"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toLatin1()}});
     QCOMPARE(resp.statusCode, Response::NotModified);
+}
+
+/**
+ * @internal
+ * Test for a file that is below a path that is set to TestStaticSimple::setDirs()
+ * and where TestStaticSimple::setServeDirsOnly() is set to @c true.
+ */
+void TestStaticSimple::testGetFileFromForcedDirsOnly()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
+    QVERIFY(writeTestFile(u"forced/css/myforcedtestfile.css"_qs));
+    const auto resp = getForcedFile(u"/forced/css/myforcedtestfile.css"_qs);
+    QCOMPARE(resp.statusCode, Response::OK);
+}
+
+/**
+ * @internal
+ * Test for not available file in a directory that is below the paths set to
+ * TestStaticSimple::setDirs() and where TestStaticSimple::setServeDirsOnly() is set to @c true.
+ */
+void TestStaticSimple::testFileNotFoundFromForcedDirsOnly()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced"_qs));
+    const auto resp = getForcedFile(u"/forced/notavailable.js"_qs);
+    QCOMPARE(resp.statusCode, Response::NotFound);
+}
+
+/**
+ * @internal
+ * Test for not available file in a directory that is not below a path set to
+ * TestStaticSimple::setDirs() and where TestStaticSimple::setServeDirsOnly() is set to @c true.
+ */
+void TestStaticSimple::testFileNotInForcedDirsOnly()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced"_qs));
+    const auto resp = getForcedFile(u"/notinforced.js"_qs);
+    QVERIFY(resp.statusCode >= Response::BadRequest);
+}
+
+/**
+ * @internal
+ * Test if we still reach normal controllers
+ */
+void TestStaticSimple::testControllerPath()
+{
+    const auto resp = getFile(u"/test/controller/hello"_qs);
+    QCOMPARE(resp.statusCode, Response::OK);
 }
 
 QTEST_MAIN(TestStaticSimple)
