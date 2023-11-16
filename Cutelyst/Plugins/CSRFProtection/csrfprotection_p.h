@@ -48,6 +48,7 @@ public:
     static const QString stashKeyProcessingDone;
     static const QString stashKeyCheckPassed;
 
+    QVariantMap defaultConfig;
     QStringList trustedOrigins;
     static const QByteArrayList secureMethods;
     QStringList ignoredNamespaces;
