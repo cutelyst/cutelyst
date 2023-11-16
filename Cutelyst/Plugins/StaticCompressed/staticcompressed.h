@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef STATICCOMPRESSED_H
@@ -13,7 +13,7 @@ namespace Cutelyst {
 class StaticCompressedPrivate;
 
 /**
- * @brief Serve static files compressed on the fly or precompressed.
+ * @brief Serve static files compressed on the fly or pre-compressed.
  *
  * The %StaticCompressed plugin for %Cutelyst can be used to serve specific static files like
  * CSS and JavaScript files compressed. It has built in support for
@@ -30,8 +30,9 @@ class StaticCompressedPrivate;
  *
  * <H3>Compression formats</H3>
  *
- * Support for @a gzip and @a DEFLATE compression format is built in by using the qCompress()
- * function. To enable suport for <A HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A>, build
+ * Support for @a gzip and @a DEFLATE compression format is built in by using the
+ * @link QByteArray::qCompress() qCompress()@endlink function. To enable suport for
+ * <A HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A>, build
  * with @c-DPLUGIN_STATICCOMPRESSED_BROTLI@c:BOOL=ON and have the
  * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files
  * available.
@@ -58,11 +59,11 @@ class StaticCompressedPrivate;
  *
  * <H3>Pre-compressed files</H3>
  *
- * Beside the cached on the fly compression it is also possible to deliver pre-compressed static
+ * Beside the cached on the fly compression it is also possible to serve pre-compressed static
  * files that are saved in the same place as the original files are. The %StaticCompressed plugin
  * will try to find a compressed file at the same path as the original file appended by an extension
  * indicating the compression method. So if you have for example boostrap.min.css and
- * bootstrap.min.css.gz in your static files directory, the plugin will deliver the compressed
+ * bootstrap.min.css.gz in your static files directory, the plugin will serve the compressed
  * variant if the requesting user agent supports the gzip encoding. The delivery of pre-compressed
  * files can be disabled by setting @c check_pre_compressed to @c false in the configuration file.
  *
@@ -76,9 +77,9 @@ class StaticCompressedPrivate;
  *
  * You can use setDirs() to set a list of directories/paths below your web root where files should
  * always be served by this plugin. By default, the plugin also tries to serve files from other
- * paths when they have a file extension when they are not contain one of this paths. You can
+ * paths when they have a file extension when they not start with one of these paths. You can
  * set setServeDirsOnly() to @c true (since %Cutelyst 4.0.0) to only serve files beginning with
- * this paths. Have a look at setDirs() to learn more.
+ * these paths. Have a look at setDirs() to learn more.
  *
  * <H3>Runtime configuration</H3>
  *
@@ -165,26 +166,26 @@ public:
     void setIncludePaths(const QStringList &paths);
 
     /**
-     * Sets a list of top-level directories beneath your root that should
+     * Sets a list of top-level directories below your web root that should
      * always be served in static mode. Set setServeDirsOnly() to @c true to only serve
      * files in static mode (since %Cutelyst 4.0.0) if their path begins with one of the
      * listed directories. By default, this list is empty.
      *
-     * If your static files for example are like:
+     * If your static files for example are organized like:
      * <PRE>
-     * /path/to/my/static/files/static/css
-     * /path/to/my/static/files/static/js
+     * /path/to/my/static/files/assets/css
+     * /path/to/my/static/files/assets/js
      * ...
      * </PRE>
      * When your @link setIncludePaths() include path@endlink is @c /path/to/my/static/files
-     * and you set @c static to the list of @a dirs, requested files like @c /static/css/style.css
-     * will always be tried to be served by this plugin. If these files are not found, a 404
-     * status will be returned.
+     * and you set @c "assets" to the list of @a dirs, requested files like
+     * @c/assets/css/style@c.css will always be tried to be served by this plugin. If these files
+     * are not found, a 404 status will be returned.
      *
      * If setServeDirsOnly() is set to @c false (the default), the plugin will still try to serve
      * files as static if they end with something that looks like a file extension. Set
-     * setServeDirsOnly() to @c true to only serve files as static that starts with paths defined
-     * here. If you would than request a file like @c /some/where/else/script.js it would
+     * setServeDirsOnly() to @c true to only serve files as static that start with paths defined
+     * here. If you would than request a file like @c/some/where/else/script@c.js it would
      * not be tried to be found in the included directories and the dispatcher would try to
      * find a fitting controller method for it.
      *
