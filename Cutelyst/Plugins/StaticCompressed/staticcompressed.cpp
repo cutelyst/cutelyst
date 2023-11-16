@@ -10,6 +10,7 @@
 #include <Cutelyst/Engine>
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
+#include <array>
 #include <chrono>
 
 #include <QCoreApplication>
@@ -424,7 +425,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
 }
 
 // clang-format off
-static const quint32 crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
+static constexpr std::array<quint32, 256> crc_32_tab { /* CRC polynomial 0xedb88320 */
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
     0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -473,6 +474,7 @@ static const quint32 crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
 
 quint32 updateCRC32(unsigned char ch, quint32 crc)
 {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
     return (crc_32_tab[((crc) ^ (quint8(ch))) & 0xff] ^ ((crc) >> 8));
 }
 
@@ -480,7 +482,7 @@ quint32 crc32buf(const QByteArray &data)
 {
     return ~std::accumulate(data.begin(),
                             data.end(),
-                            quint32(0xFFFFFFFF),
+                            quint32(0xFFFFFFFF), // NOLINT(cppcoreguidelines-avoid-magic-numbers)
                             [](quint32 oldcrc32, char buf) { return updateCRC32(buf, oldcrc32); });
 }
 
