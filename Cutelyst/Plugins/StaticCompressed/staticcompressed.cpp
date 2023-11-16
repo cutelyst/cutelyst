@@ -534,6 +534,7 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath,
 
     QByteArray header;
     QDataStream headerStream(&header, QIODevice::WriteOnly);
+    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
     // prepend a generic 10-byte gzip header (see RFC 1952)
     headerStream << quint16(0x1f8b) << quint16(0x0800)
                  << quint32(origLastModified.toSecsSinceEpoch())
@@ -546,6 +547,7 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath,
 #else
                  << quint16(0x00ff);
 #endif
+    // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
     // append a four-byte CRC-32 of the uncompressed data
     // append 4 bytes uncompressed input size modulo 2^32
@@ -711,8 +713,8 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath,
 
     size_t outSize = BrotliEncoderMaxCompressedSize(static_cast<size_t>(data.size()));
     if (Q_LIKELY(outSize > 0)) {
-        const uint8_t *in = (const uint8_t *) data.constData();
-        uint8_t *out      = (uint8_t *) malloc(sizeof(uint8_t) * (outSize + 1));
+        const auto in = reinterpret_cast<const uint8_t *>(data.constData());
+        auto out      = static_cast<uint8_t *>(malloc(sizeof(uint8_t) * (outSize + 1)));
         if (Q_LIKELY(out != nullptr)) {
             BROTLI_BOOL status = BrotliEncoderCompress(brotliQualityLevel,
                                                        BROTLI_DEFAULT_WINDOW,
