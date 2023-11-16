@@ -54,6 +54,7 @@ public:
     bool useZopfli{false};
     bool checkPreCompressed{true};
     bool onTheFlyCompression{true};
+    bool serveDirsOnly{false};
 };
 
 } // namespace Cutelyst

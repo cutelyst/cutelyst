@@ -36,16 +36,22 @@ private Q_SLOTS:
     void testGetFileFromSubdirs();
     void testFileNotFoundFromForcedDirs();
     void testGetFileFromForcedDirs();
+    void testGetFileFromForcedDirsOnly();
+    void testFileNotFoundFromForcedDirsOnly();
+    void testFileNotInForcedDirsOnly();
+    void testControllerPath();
 
 private:
     TestEngine *m_engine{nullptr};
+    TestEngine *m_engineDirsOnly{nullptr};
     QTemporaryDir m_dataDir;
     static const QStringList types;
     static const QByteArrayList encoding;
 
-    TestEngine *getEngine();
+    TestEngine *getEngine(bool serveDirsOnly = false);
 
     TestEngine::TestResponse getFile(const QString &path, const Headers &headers = {});
+    TestEngine::TestResponse getForcedFile(const QString &path, const Headers &headers = {});
     bool writeTestFile(const QString &name);
 };
 
@@ -70,9 +76,11 @@ void TestStaticCompressed::initTestCase()
     QVERIFY(m_dataDir.isValid());
     m_engine = getEngine();
     QVERIFY(m_engine);
+    m_engineDirsOnly = getEngine(true);
+    QVERIFY(m_engineDirsOnly);
 }
 
-TestEngine *TestStaticCompressed::getEngine()
+TestEngine *TestStaticCompressed::getEngine(bool serveDirsOnly)
 {
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, {});
@@ -80,6 +88,7 @@ TestEngine *TestStaticCompressed::getEngine()
     auto plug = new StaticCompressed(app);
     plug->setIncludePaths({m_dataDir.path()});
     plug->setDirs({u"forced"_qs});
+    plug->setServeDirsOnly(serveDirsOnly);
 
     if (!engine->init()) {
         return nullptr;
@@ -92,6 +101,14 @@ TestEngine::TestResponse TestStaticCompressed::getFile(const QString &path, cons
     const Headers hdrs =
         headers.data().empty() ? Headers({{"Accept-Encoding", "gzip, defalte, br"}}) : headers;
     return m_engine->createRequest("GET", path, {}, headers, nullptr);
+}
+
+TestEngine::TestResponse TestStaticCompressed::getForcedFile(const QString &path,
+                                                             const Headers &headers)
+{
+    const Headers hdrs =
+        headers.data().empty() ? Headers({{"Accept-Encoding", "gzip, defalte, br"}}) : headers;
+    return m_engineDirsOnly->createRequest("GET", path, {}, headers, nullptr);
 }
 
 bool TestStaticCompressed::writeTestFile(const QString &name)
@@ -124,14 +141,24 @@ void TestStaticCompressed::cleanupTestCase()
 {
     delete m_engine;
     m_engine = nullptr;
+    delete m_engineDirsOnly;
+    m_engineDirsOnly = nullptr;
 }
 
+/**
+ * @internal
+ * Test for files that are not available.
+ */
 void TestStaticCompressed::testFileNotFound()
 {
     const auto resp = getFile(u"/filenotavailable.js"_qs);
     QVERIFY(resp.statusCode >= Response::BadRequest);
 }
 
+/**
+ * @internal
+ * Perform tests where files are compressed on the fly.
+ */
 void TestStaticCompressed::testOnTheFlyCompression()
 {
     QFETCH(QString, fileName);
@@ -144,6 +171,11 @@ void TestStaticCompressed::testOnTheFlyCompression()
     QCOMPARE(resp.headers.header("Content-Encoding"), encoding);
 }
 
+/**
+ * @internal
+ * Provide test data for testing on the fly compression. Will test for all
+ * supported encodings and by default supported file mime types and extensions.
+ */
 void TestStaticCompressed::testOnTheFlyCompression_data()
 {
     QTest::addColumn<QString>("fileName");
@@ -158,6 +190,10 @@ void TestStaticCompressed::testOnTheFlyCompression_data()
     }
 }
 
+/**
+ * @internal
+ * Perform tests where pre-compressed files are available.
+ */
 void TestStaticCompressed::testPreCompressed()
 {
     QFETCH(QString, fileName);
@@ -181,6 +217,11 @@ void TestStaticCompressed::testPreCompressed()
     QCOMPARE(resp.headers.header("Content-Encoding"), encoding);
 }
 
+/**
+ * @internal
+ * Provide test data for testing pre-compressed file serving. Will test for all
+ * supported encodings and by default supported file mime types and extensions.
+ */
 void TestStaticCompressed::testPreCompressed_data()
 {
     QTest::addColumn<QString>("fileName");
@@ -196,6 +237,10 @@ void TestStaticCompressed::testPreCompressed_data()
     }
 }
 
+/**
+ * @internal
+ * Test for a file where the last modified date has bot been changed.
+ */
 void TestStaticCompressed::testLastModifiedSince()
 {
     QVERIFY(writeTestFile(u"lastmodified.js"_qs));
@@ -209,6 +254,10 @@ void TestStaticCompressed::testLastModifiedSince()
     QCOMPARE(resp.statusCode, Response::NotModified);
 }
 
+/**
+ * @internal
+ * Test to get a static file from a subdirectory.
+ */
 void TestStaticCompressed::testGetFileFromSubdirs()
 {
     QDir dataDir(m_dataDir.path());
@@ -219,6 +268,11 @@ void TestStaticCompressed::testGetFileFromSubdirs()
     QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
 }
 
+/**
+ * @internal
+ * Test for not available file in a directory that is below the paths set to
+ * StaticCompressed::setDirs() and where StaticCompressed::setServeDirsOnly() is set to @c false.
+ */
 void TestStaticCompressed::testFileNotFoundFromForcedDirs()
 {
     QDir dataDir(m_dataDir.path());
@@ -227,6 +281,11 @@ void TestStaticCompressed::testFileNotFoundFromForcedDirs()
     QCOMPARE(resp.statusCode, Response::NotFound);
 }
 
+/**
+ * @internal
+ * Test for a file that is below a path that is set to StaticCompressed::setDirs()
+ * and where StaticCompressed::setServeDirsOnly() is set to @c false.
+ */
 void TestStaticCompressed::testGetFileFromForcedDirs()
 {
     QDir dataDir(m_dataDir.path());
@@ -235,6 +294,58 @@ void TestStaticCompressed::testGetFileFromForcedDirs()
     const auto resp = getFile(u"/forced/css/mytestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
     QCOMPARE(resp.statusCode, Response::OK);
     QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
+}
+
+/**
+ * @internal
+ * Test for a file that is below a path that is set to StaticCompressed::setDirs()
+ * and where StaticCompressed::setServeDirsOnly() is set to @c true.
+ */
+void TestStaticCompressed::testGetFileFromForcedDirsOnly()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
+    QVERIFY(writeTestFile(u"forced/css/myforcedtestfile.css"_qs));
+    const auto resp =
+        getForcedFile(u"/forced/css/myforcedtestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
+    QCOMPARE(resp.statusCode, Response::OK);
+    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
+}
+
+/**
+ * @internal
+ * Test for not available file in a directory that is below the paths set to
+ * StaticCompressed::setDirs() and where StaticCompressed::setServeDirsOnly() is set to @c true.
+ */
+void TestStaticCompressed::testFileNotFoundFromForcedDirsOnly()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced"_qs));
+    const auto resp = getForcedFile(u"/forced/notavailable.js"_qs);
+    QCOMPARE(resp.statusCode, Response::NotFound);
+}
+
+/**
+ * @internal
+ * Test for not available file in a directory that is not below a path set to
+ * StaticCompressed::setDirs() and where StaticCompressed::setServeDirsOnly() is set to @c true.
+ */
+void TestStaticCompressed::testFileNotInForcedDirsOnly()
+{
+    QDir dataDir(m_dataDir.path());
+    QVERIFY(dataDir.mkpath(u"forced"_qs));
+    const auto resp = getForcedFile(u"/notinforced.js"_qs);
+    QVERIFY(resp.statusCode >= Response::BadRequest);
+}
+
+/**
+ * @internal
+ * Test if we still reach normal controllers
+ */
+void TestStaticCompressed::testControllerPath()
+{
+    const auto resp = getFile(u"/test/controller/hello"_qs);
+    QCOMPARE(resp.statusCode, Response::OK);
 }
 
 QTEST_MAIN(TestStaticCompressed)

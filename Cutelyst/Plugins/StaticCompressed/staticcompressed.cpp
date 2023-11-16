@@ -59,6 +59,12 @@ void StaticCompressed::setDirs(const QStringList &dirs)
     d->dirs = dirs;
 }
 
+void StaticCompressed::setServeDirsOnly(bool dirsOnly)
+{
+    Q_D(StaticCompressed);
+    d->serveDirsOnly = dirsOnly;
+}
+
 bool StaticCompressed::setup(Application *app)
 {
     Q_D(StaticCompressed);
@@ -207,6 +213,10 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
             *skipMethod = true;
             return;
         }
+    }
+
+    if (serveDirsOnly) {
+        return;
     }
 
     const QRegularExpression _re        = re; // Thread-safe
