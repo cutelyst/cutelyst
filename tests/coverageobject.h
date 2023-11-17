@@ -1,6 +1,8 @@
 #ifndef _TEST_COVERAGE_OBJECT_H
 #define _TEST_COVERAGE_OBJECT_H
 
+#include "config.h"
+
 #include <Cutelyst/Application>
 #include <Cutelyst/Context>
 #include <Cutelyst/Controller>
@@ -247,6 +249,7 @@ public:
         : Application(parent)
     {
         defaultHeaders() = Headers();
+        loadTranslations(u"cutelystcore"_qs, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_qs);
     }
     virtual bool init()
     {
