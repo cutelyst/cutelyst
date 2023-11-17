@@ -36,6 +36,7 @@ public:
     [[nodiscard]] bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
 #endif
 
+    QVariantMap defaultConfig;
     QStringList dirs;
     QStringList mimeTypes;
     QStringList suffixes;
