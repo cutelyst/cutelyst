@@ -137,6 +137,7 @@ install(TARGETS cutelystd
 )
 
 set(cutelystd_TS_FILES
+    i18n/cutelystserver.ts
     i18n/cutelystserver.de.ts
     i18n/cutelystserver.en.ts
 )
@@ -150,6 +151,7 @@ qt_add_lupdate(cutelystd
 qt_add_lrelease(cutelystd
     TS_FILES ${cutelystd_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE cutelystd_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${cutelystd_QM_FILES} DESTINATION ${I18NDIR})
