@@ -32,6 +32,7 @@ set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst${PROJECT_VE
 install(TARGETS cutelyst-skell DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 set(cutelyst-skell_TS_FILES
+    i18n/cutelystcmd.ts
     i18n/cutelystcmd.de.ts
     i18n/cutelystcmd.en.ts
 )
