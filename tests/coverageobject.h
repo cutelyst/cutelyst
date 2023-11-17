@@ -249,6 +249,7 @@ public:
         : Application(parent)
     {
         defaultHeaders() = Headers();
+        // load the core translations from the build directory
         loadTranslations(u"cutelystcore"_qs, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_qs);
     }
     virtual bool init()
