@@ -245,6 +245,8 @@ if (BUILD_DOCS)
             "gr_tag{1}=<tt>{%&nbsp\;\\1&nbsp\;%}</tt>"
             "gr_var{1}=<tt>{{&nbsp\;\\1&nbsp\;}}</tt>"
             "accessors=\\par Accessors:^^"
+            "configblock{3}=\\par \\1^^\\parblock^^<tt>Type: \\2<br>Default: \\3</tt> ^^"
+            "endconfigblock=\\endparblock"
         )
         set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
         # Build related configuration options
