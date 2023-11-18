@@ -246,6 +246,7 @@ if (BUILD_DOCS)
             "gr_var{1}=<tt>{{&nbsp\;\\1&nbsp\;}}</tt>"
             "accessors=\\par Accessors:^^"
             "configblock{3}=\\par \\1 ^^ \\parblock ^^ <tt>Type: \\2<br>Default: \\3</tt> ^^"
+            "configblock{4}=\\par \\1 ^^ \\parblock ^^ <tt>Type: \\2<br>Default: \\3<br>Acceptable values: \\4</tt> ^^"
             "endconfigblock=\\endparblock"
         )
         set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
