@@ -17,62 +17,70 @@ class Context;
 class MemcachedPrivate;
 
 /**
+ * @ingroup plugins
+ * @class Cutelyst::Memcached memcached.h Cutelyst/Plugins/Memcached/Memcached
  * @brief %Cutelyst %Memcached plugin.
  *
  * The %Memcached plugin for %Cutelyst can be used to store, retrieve, delete and modify data on a
  * <A HREF="https://www.memcached.org/">memcached</A> general-purpose distributed memory caching
- system.
- * It uses <A HREF="http://docs.libmemcached.org">libmemcached</A> to connect to a pool of memcached
- servers
- * and to perform the caching operations. In order to build this plugin, the libmemcached
- development and header
- * files have to be present at build time.
+ * system. It uses <A HREF="http://docs.libmemcached.org">libmemcached</A> to connect to a pool
+ * of memcached servers and to perform the caching operations. In order to build this plugin, the
+ * libmemcached development and header files have to be present at build time.
  *
  * Basically all values are stored as QByteArray. So, to store simple types, simply convert them
- into a QByteArray
- * and vice versa on retrieval. For more complex or custom types you can use QDataStream to
- serialize them into
- * a QByteArray. For most methods in this plugin there are template functions for convenience that
- perform this
- * serialization. The requirement to use them is that the types to store and get provide stream
- operators for
- * QDataStream.
+ * into a QByteArray and vice versa on retrieval. For more complex or custom types you can use
+ * QDataStream to serialize them into a QByteArray. For most methods in this plugin there are
+ * template functions for convenience that perform this serialization. The requirement to use
+ * them is that the types to store and get provide stream operators for QDataStream.
  *
  * <H3>Configuration</h3>
-
+ *
  * The %Memcached plugin can be configured in the cutelyst configuration file in the @c
- Cutelyst_Memcached_Plugin section.
- * It uses the same configuration strings as <A
- HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
- * but in lowercase and without the dashes in front and for consistence @a - replaced by @a _ . So
- @c --BINARY-PROTOCOL will be
- * @c binary_protocol. To add servers and/or sockets use the @a servers configuration key. Servers
- can be added with name, port and
- * weight, separated by @c , - multiple servers are separated by a @c ; . To add sockets, use a full
- path as name. If no configuration
- * has been set or if the @a servers configuration key is empty, a default server at localhost on
- port 11211 will be used.
+ * Cutelyst_Memcached_Plugin section. It uses the same configuration strings as
+ * <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
+ * but in lowercase and without the dashes in front and for consistence @a - replaced by @a _.
+ * So @c --BINARY-PROTOCOL will be @c binary_protocol. To add servers and/or sockets use
+ * the @a servers configuration key. Servers can be added with name, port and weight, separated
+ * by @c , - multiple servers are separated by a @c ; . To add sockets, use a full path as name.
+ * If no configuration has been set or if the @a servers configuration key is empty, a default
+ * server at localhost on port 11211 will be used.
  *
- * Additional to the <A
- HREF="http://docs.libmemcached.org/libmemcached_configuration.html">configuration options of
- libmemcached</A> there are some plugin specific options:
- * @li @a compression - boolean value, enables compression of input values based on qCompress / zlib
- (default: disabled)
- * @li @a compression_level - integer value, the compression level used by qCompress (default: -1)
- * @li @a compression_threshold - integer value, the compression size threshold in bytes, only input
- values bigger than the threshold will be compressed (default: 100)
- * @li @a encryption_key - string value, if set and not empty, AES encryption will be enabled
- (default: empty)
- * @li @a sasl_user - string value, if set and not empty, SASL authentication will be used - note
- that SASL support has to be enabled when building libmemcached (default: empty)
- * @li @a sasl_password - string value, if set and not empty, SASL authentication will be used
- (default: empty)
+ * Additional to the <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">
+ * configuration options of libmemcached</A> there are some plugin specific options:
  *
- * @note If you want to use non-ASCII key names you have to enable the binary protocol.
+ * @configblock{compression,bool,fase}
+ * Enables compression of input values based on qCompress / zlib.
+ * @endconfigblock
+ *
+ * @configblock{compression_level,integer,-1}
+ * The compression level used by @link QByteArray::qCompress() qCompress()@endlink. Valid values
+ * are between 0 and 9, with 9 corresponding to the greatest compression. The value 0 corresponds
+ * to no compression at all. The default value is -1, which specifies zlib’s default compression.
+ * @endconfigblock
+ *
+ * @configblock{compression_threshold,integer,100}
+ * The compression size threshold in bytes. Only input values bigger than the threshold will be
+ * compressed.
+ * @endconfigblock
+ *
+ * @configblock{encryption_key,string,empty}
+ * If set and not empty, AES encryption will be enabled for storing data on the memcached servers.
+ * @endconfigblock
+ *
+ * @configblock{sasl_user,string,empty}
+ * If set and not empty, SASL authentication will be used to authenticate with the memcached
+ * server(s). Note that SASL support has to be enabled when building libmemcached.
+ * @endconfigblock
+ *
+ * @configblock{sasl_password,string,empty}
+ * Password used for the SASL authentication with the memcached server(s).
+ * @endconfigblock
+ *
+ * @note If you want to use non-ASCII key names, you have to enable the binary protocol.
  *
  * To set default values directly in your application, use setDefaultConfig(). Configuration values
- that can not be found
- * in the Cutelyst configuration file will be looked up for default values in that QVariantMap.
+ * that can not be found in the Cutelyst configuration file will be looked up for default values in
+ * that QVariantMap.
  *
  * <H4>Configuration example</h4>
  *
@@ -86,14 +94,12 @@ class MemcachedPrivate;
  * <H3>Expiration times</H3>
  *
  * Expiration times are set in seconds. If the value is bigger than 30 days, it is interpreted as a
- unix timestamp.
+ * unix timestamp.
  *
  * <H3>Logging and return types</H3>
  * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All
- methods provide
- * the possibility to specify a pointer to a MemcachedReturnType variable that can provide further
- information
- * about occurred errors if methods return @c false or empty results.
+ * methods provide the possibility to specify a pointer to a MemcachedReturnType variable that can
+ * provide further information about occurred errors if methods return @c false or empty results.
  *
  * <H3>Usage example</H3>
  *
@@ -131,21 +137,19 @@ class MemcachedPrivate;
  *
  * <H3>Build requirements</H3>
  *
- * To build this plugin you need the development and header files for <A
- HREF="http://libmemcached.org">libmemcached</A>
- * and run cmake with <CODE>-DPLUGIN_MEMCACHED:BOOL=ON</CODE>.
+ * To build this plugin you need the development and header files for
+ * <A HREF="http://libmemcached.org">libmemcached</A> and run cmake with
+ * <CODE>-DPLUGIN_MEMCACHED:BOOL=ON</CODE>.
  *
  * <H4>Unit test</H4>
  *
- * Enabling the build of the %Memcached plugin will also enable the unit tests for this plugin. By
- default, the unit test
- * will start its own memcached instance. Alternatively you can set the @c
- CUTELYST_MEMCACHED_TEST_SERVERS environment
- * variable in your build environment to define different servers that you have to start by
- yourself. The syntax is the
- * same as for adding servers in the configuration file. If you have for examble two servers, one on
- default location and
- * another one on a unix socket, export the following environment variable befor running the tests:
+ * Enabling the build of the %Memcached plugin will also enable the unit tests for this plugin.
+ * By default, the unit test will start its own memcached instance. Alternatively you can set the
+ * @c CUTELYST_MEMCACHED_TEST_SERVERS environment variable in your build environment to define
+ * different servers that you have to start by yourself. The syntax is the same as for adding
+ * servers in the configuration file. If you have for examble two servers, one on default location
+ * and another one on a unix socket, export the following environment variable befor running the
+ * tests:
  *
  * @code{.sh}
  * export CUTELYST_MEMCACHED_TEST_SERVERS=localhost;/tmp/memcached.sock
@@ -161,25 +165,27 @@ class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached // clazy:exclude=ctor-missing-p
     Q_DISABLE_COPY(Memcached)
 public:
     /**
-     * Constructs a new Memcached object with the given @a parent.
+     * Constructs a new %Memcached object with the given @a parent.
      */
     Memcached(Application *parent);
 
     /**
-     * Deconstructs the Memcached object.
+     * Deconstructs the %Memcached object.
      */
     ~Memcached() override;
 
     /**
      * Return types for memcached operations.
+     * @todo Make it an enum class.
      */
     enum MemcachedReturnType {
-        Success,           /**< The request was successfully executed. */
-        Failure,           /**< A unknown failure has occurred in the server. */
-        HostLookupFailure, /**< A DNS failure has occurred. */
-        ConnectionFailure, /**< A unknown error has occurred while trying to connect to a server. */
-        WriteFailure,      /**< An error has occurred while trying to write to a server. */
-        ReadFailure,       /**< A read failure has occurred. */
+        Success,            /**< The request was successfully executed. */
+        Failure,            /**< An unknown failure has occurred in the server. */
+        HostLookupFailure,  /**< A DNS failure has occurred. */
+        ConnectionFailure,  /**< An unknown error has occurred while trying to connect to a server.
+                             */
+        WriteFailure,       /**< An error has occurred while trying to write to a server. */
+        ReadFailure,        /**< A read failure has occurred. */
         UnknownReadFailure, /**< An unknown read failure only occurs when either there is a bug in
                                the server, or in rare cases where an ethernet nic is reporting
                                dubious information. */
@@ -187,13 +193,13 @@ public:
         ClientError,        /**< An unknown client error has occurred internally. */
         ServerError,        /**< An unknown error has occurred in the server. */
         Error,              /**< A general error occurred. */
-        DataExists,         /**< The data requested with the key given was found. */
-        DataDoesNotExist,   /**< The data requested with the key given was not found. */
+        DataExists,         /**< The data requested with the given key was found. */
+        DataDoesNotExist,   /**< The data requested with the given key was not found. */
         NotStored,          /**< The request to store an object failed. */
         Stored,             /**< The requested object has been successfully stored on the server. */
         NotFound,           /**< The object requested was not found. */
         MemoryAllocationFailure, /**< An error has occurred while trying to allocate memory. */
-        PartialRead,             /**< The read was only partially successful. */
+        PartialRead,             /**< The read operation was only partially successful. */
         SomeErrors,   /**< A multi request has been made, and some underterminate number of errors
                          have occurred. */
         NoServers,    /**< No servers have been added to the memcached_st object. */
@@ -218,7 +224,7 @@ public:
         KeyTooBig,        /**< The key that has been provided is too large for the given server. */
         AuthProblem,      /**< An unknown issue has occurred during authentication. */
         AuthFailure,      /**< The credentials provided are not valid for this server. */
-        AuthContinue,     /**< Authentication has been paused. */
+        AuthContinue,     /**< %Authentication has been paused. */
         ParseError, /**< An error has occurred while trying to parse the configuration string. You
                        should use memparse to determine what the error was. */
         ParseUserError, /**< An error has occurred in parsing the configuration string. */
@@ -227,14 +233,16 @@ public:
         ServerTemporaryDisabled,
         ServerMemoryAllocationFailure,
         MaximumReturn,
-        PluginNotRegisterd /**< The Cutelyst Memcached plugin has not been registered to the
+        PluginNotRegisterd /**< The %Cutelyst %Memcached plugin has not been registered to the
                               application. */
     };
     Q_ENUM(MemcachedReturnType)
 
     /**
      * Sets default configuration values for configuration keys that are not set in
-     * the Cutelyst configuratoin file.
+     * the %Cutelyst configuratoin file.
+     *
+     * @todo Add constructor overload that takes default config.
      */
     void setDefaultConfig(const QVariantMap &defaultConfig);
 
@@ -247,7 +255,7 @@ public:
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool set(QByteArrayView key,
@@ -275,7 +283,7 @@ public:
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
@@ -307,7 +315,7 @@ public:
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool setByKey(QByteArrayView groupKey,
@@ -340,7 +348,7 @@ public:
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
@@ -373,7 +381,7 @@ public:
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool add(QByteArrayView key,
@@ -405,7 +413,7 @@ public:
      * @param[in] value value of type @a T of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to MemcachedReturnType variable that takes the return
-     * type of the operation
+     *             type of the operation
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
@@ -440,7 +448,7 @@ public:
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool addByKey(QByteArrayView groupKey,
@@ -477,7 +485,7 @@ public:
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
@@ -510,7 +518,7 @@ public:
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
-     * return type of the operation
+     *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool replace(QByteArrayView key,
@@ -1159,7 +1167,7 @@ public:
      * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
-     * @param[in] groupkey key that specifies the server to write to
+     * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to compare and set
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
@@ -1197,7 +1205,7 @@ public:
      * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
-     * @param[in] groupkey key that specifies the server to write to
+     * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to compare and set
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server

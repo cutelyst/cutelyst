@@ -1335,6 +1335,10 @@ QVersionNumber Memcached::libMemcachedVersion()
 }
 
 // clang-format off
+/**
+ * @internal
+ * Converts the @a rt returned by libmemcached into a MemcachedReturnType enum.
+ */
 Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_return_t rt)
 {
     switch (rt) {
@@ -1389,6 +1393,11 @@ Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_ret
 }
 // clang-format on
 
+/**
+ * @internal
+ * Convenience function to set @a rt2 returned by libmemcached to a pointer to
+ * a MemcachedReturnType at @a rt1 if @a rt1 is not a @c nullptr.
+ */
 void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2)
 {
     if (rt1) {
@@ -1396,6 +1405,11 @@ void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcac
     }
 }
 
+/**
+ * @internal
+ * Checks if the %Memcached plugin @a ptr is registered to the application and sets
+ * the @a rt accordingly.
+ */
 bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::MemcachedReturnType *rt)
 {
     if (!ptr) {
@@ -1408,6 +1422,11 @@ bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::MemcachedReturnTy
     return true;
 }
 
+/**
+ * @internal
+ * Compresses the @a value with @link QByteArray::qCompress() qCompress()@endlink if compression
+ * has been enabled. Will also set the correct @a flags.
+ */
 QByteArray MemcachedPrivate::compressIfNeeded(const QByteArray &value, Flags &flags)
 {
     if (mcd->d_ptr->compression && (value.size() > mcd->d_ptr->compressionThreshold)) {
@@ -1418,6 +1437,11 @@ QByteArray MemcachedPrivate::compressIfNeeded(const QByteArray &value, Flags &fl
     }
 }
 
+/**
+ * @internal
+ * Reads the stored falgs from @a result and uncompresses the @a value if needed
+ * with @link QByteArray::qUncompress() qUncompress()@endlink and returns it.
+ */
 QByteArray MemcachedPrivate::uncompressIfNeeded(const QByteArray &value,
                                                 memcached_result_st *result)
 {
