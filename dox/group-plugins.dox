@@ -1,0 +1,4 @@
+/*!
+ * \defgroup plugins Plugins
+ * \brief Available plugins to extend %Cutelyst
+ */

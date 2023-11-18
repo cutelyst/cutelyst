@@ -1,0 +1,5 @@
+/*!
+ * \ingroup plugins
+ * \defgroup plugins-utils Utils
+ * \brief Utility plugins to extend %Cutelyst
+ */
