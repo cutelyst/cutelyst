@@ -15,6 +15,7 @@ class Context;
 class CSRFProtectionPrivate;
 
 /**
+ * @ingroup plugins
  * @class Cutelyst::CSRFProtection csrfprotection.h Cutelyst/Plugins/CSRFProtection/CSRFProtection
  * @brief Protect input forms against Cross Site %Request Forgery (CSRF/XSRF) attacks.
  *
@@ -75,7 +76,7 @@ class CSRFProtectionPrivate;
  * }
  * @endcode
  *
- * In your Grantlee or Cutelee template you should then use the <CODE>{% c_csrf_token %}</CODE> tag
+ * In your Cutelee template you should then use the <CODE>{% c_csrf_token %}</CODE> tag
  * in your forms to add a hidden input field that contains the CSRF protection token.
  *
  * @code{.html}
@@ -148,8 +149,8 @@ class CSRFProtectionPrivate;
  * a different salt has then to be sent to the application either via a hidden form field or via a
  * HTTP request header.
  *
- * To get the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your Grantlee
- * templates. If you are not using Grantlee or if you do not use a form but AJAX, you can use
+ * To get the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your Cutelee
+ * templates. If you are not using Cutelee or if you do not use a form but AJAX, you can use
  * CSRFProtection::getToken() to place the token somewhere in your DOM tree so that you can read it
  * with JavaScript.
  *
@@ -247,6 +248,7 @@ class CSRFProtectionPrivate;
  * @c cutelyst.plugin.csrfprotection
  *
  * @since Cutelyst 1.12.0
+ * @todo Add Cutelee tag to only get the token value instead of a complete input field.
  */
 class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection
     : public Plugin // clazy:exclude=ctor-missing-parent-argument
@@ -362,7 +364,7 @@ public:
 
     /**
      * Returns HTML code for a hidden input field that contains the current token and has the name
-     * set by setFormFieldName(). This method is also used by the Grantlee tag <CODE>{% c_csrf_token
+     * set by setFormFieldName(). This method is also used by the Cutelee tag <CODE>{% c_csrf_token
      * %}</CODE>
      *
      * @b Example output
