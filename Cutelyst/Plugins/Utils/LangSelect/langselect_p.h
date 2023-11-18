@@ -35,11 +35,7 @@ public:
 
     static const QString stashKeySelectionTried;
 
-#if __cplusplus >= 202002L
     static constexpr std::chrono::months cookieDefaultExpiration{1};
-#else
-    static constexpr std::chrono::hours cookieDefaultExpiration{730};
-#endif
 
     QVector<QLocale> locales;
     LangSelect::Source source = LangSelect::Fallback;
