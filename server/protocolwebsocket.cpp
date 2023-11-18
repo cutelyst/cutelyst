@@ -26,9 +26,6 @@ using namespace Cutelyst;
 
 ProtocolWebSocket::ProtocolWebSocket(Server *wsgi)
     : Protocol(wsgi)
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    , m_codec(QTextCodec::codecForName(QByteArrayLiteral("UTF-8")))
-#endif
     , m_websockets_max_size(wsgi->websocketMaxSize() * 1024)
 {
 }
@@ -252,15 +249,9 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
 #endif
 
     if (protoRequest->websocket_payload.size() >= 2) {
-        closeCode = net_be16(protoRequest->websocket_payload.data());
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        reason = m_codec->toUnicode(protoRequest->websocket_payload.data() + 2,
-                                    protoRequest->websocket_payload.size() - 2,
-                                    &state);
-#else
+        closeCode    = net_be16(protoRequest->websocket_payload.data());
         auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
         reason       = toUtf16(protoRequest->websocket_payload.mid(2));
-#endif
     }
     Q_EMIT c->request()->webSocketClosed(closeCode, reason);
 

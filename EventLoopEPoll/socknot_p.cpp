@@ -114,13 +114,8 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
     Q_ASSERT(notifier != 0);
     Q_ASSUME(notifier != 0);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     auto it = m_notifiers.constFind(notifier);
     if (Q_LIKELY(it != m_notifiers.constEnd())) {
-#else
-    auto it = m_notifiers.find(notifier);
-    if (Q_LIKELY(it != m_notifiers.end())) {
-#endif
         SocketNotifierInfo *info = it.value();
 
         struct epoll_event e;
