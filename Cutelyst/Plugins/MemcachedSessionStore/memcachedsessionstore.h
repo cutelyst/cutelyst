@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTMEMCACHEDSESSIONSTORE_H
@@ -14,10 +14,12 @@ class Application;
 class MemcachedSessionStorePrivate;
 
 /**
+ * @ingroup plugins-session
+ * @headerfile memcachedsessionstore.h <Cutelyst/Pugins/MemcachedSessionStore/MemcachedSessionStore>
  * @brief Memcached based session store.
  *
  * This session store saves session data to <A HREF="http://memcached.org">Memcached</A> servers
- * using the Memcached plugin. It obsoletes the SessionStoreMemcached class.
+ * using the Memcached plugin.
  *
  * @note The memcached server does not guarantee the existence of the session data. It might for
  * example delete the data because it runs out of memory and deletes session data. So be careful
@@ -26,11 +28,11 @@ class MemcachedSessionStorePrivate;
  * <H3>Configuration</h3>
  *
  * The %MemcachedSessionStore plugin can be configured in the cutelyst configuration file in the @c
- * Cutelyst_MemcachedSessionStore_Plugin section.
+ * Cutelyst_MemcachedSessionStore_Plugin section:
  *
- * Currently there are the following configuration options:
- * @li @a group_key - string value, defines a group key to store the data on a specific server
- * (default: empty)
+ * @configblock{group_key,string,empty}
+ * Sets an optional group key to store the data on a specific server.
+ * @endconfigblock
  *
  * <H4>Configuration example</H4>
  *
@@ -76,14 +78,14 @@ class CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT MemcachedSessionStore final :
     Q_DISABLE_COPY(MemcachedSessionStore)
 public:
     /**
-     * Constructs a new MemcachedSessionStore object with the given @a parent and @a app.
+     * Constructs a new %MemcachedSessionStore object with the given @a parent and @a app.
      * The pointer to the Application object is used to load the plugin configuration from
      * the configuration file section @c Cutelyst_MemcachedSessionStore_Plugin.
      */
     MemcachedSessionStore(Application *app, QObject *parent = nullptr);
 
     /**
-     * Deconstructs the MemcachedSessionStore object
+     * Deconstructs the %MemcachedSessionStore object
      */
     ~MemcachedSessionStore() override;
 
