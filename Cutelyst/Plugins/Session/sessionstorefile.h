@@ -11,14 +11,31 @@
 namespace Cutelyst {
 
 class SessionStoreFilePrivate;
+/**
+ * @ingroup plugins-session
+ * @class Cutelyst::SessionStoreFile session.h Cutelyst/Plugins/Session/sessionstorefile.h
+ * @brief A session store that stores user sessions in the file system.
+ *
+ * This session store stores the session data in the file system. The data is stored in files
+ * named after the session id below a directory that is created in the
+ * @link QDir::tempPath() system’s temporary directory@endlink and named after your application.
+ * For example <TT>/tmp/myapplication/session/data</TT>.
+ *
+ * This is also the default session store that is used by the Session plugin if no session store
+ * has been manuall set via Session::setStorage().
+ */
 class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
 {
     Q_OBJECT
 public:
     /**
-     * Constructs a new session store file object with the given parent.
+     * Constructs a new %SessionStoreFile object with the given @p parent.
      */
     explicit SessionStoreFile(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %SessionStoreFile object.
+     */
     ~SessionStoreFile();
 
     /**
