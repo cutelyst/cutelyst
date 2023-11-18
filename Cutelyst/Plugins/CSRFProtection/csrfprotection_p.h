@@ -33,11 +33,7 @@ public:
 
     static const QByteArray allowedChars;
     static const QRegularExpression sanitizeRe;
-#if __cplusplus >= 202002L
     static constexpr std::chrono::years cookieDefaultExpiration{1};
-#else
-    static constexpr std::chrono::hours cookieDefaultExpiration{8766};
-#endif
     static constexpr qsizetype secretLength{32};
     static constexpr qsizetype tokenLength{2 * secretLength};
     static const QString sessionKey;
