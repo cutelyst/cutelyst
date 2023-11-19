@@ -14,16 +14,32 @@ namespace Cutelyst {
 class Context;
 class AuthenticationStore;
 class AuthenticationCredential;
+
+/**
+ * \ingroup plugins-authentication
+ * \headerfile authenticationrealm.h <Cutelyst/Plugins/Authentication/authenticationrealm.h>
+ * \brief Combines user store and credential validation into a named realm.
+ *
+ * An %AuthenticationRealm combines an AuthenticationStore with an AuthenticationCredential object
+ * to retrieve and validate user login data.
+ *
+ * For an example implementation see \ref plugins-authentication overview.
+ *
+ * \par Logging category
+ * cutelyst.plugin.authentication.realm
+ */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationRealm : public Component
 {
     Q_OBJECT
 public:
-    /*! default realm name */
+    /**
+     * Default realm name.
+     */
     static char *defaultRealm;
 
-    /*!
-     * Constructs a new AuthenticationRealm object with the given parent.
-     * \note This class will take ownership of store and credential.
+    /**
+     * Constructs a new %AuthenticationRealm object with the given \a store, \a credential
+     * provider, \a name and \a parent.
      */
     explicit AuthenticationRealm(std::shared_ptr<AuthenticationStore> store,
                                  std::shared_ptr<AuthenticationCredential> credential,
@@ -31,45 +47,45 @@ public:
                                  QObject *parent     = nullptr);
     ~AuthenticationRealm() override;
 
-    /*!
-     * Returns the authentication store object
+    /**
+     * Returns the authentication store object.
      */
     [[nodiscard]] std::shared_ptr<AuthenticationStore> store() const noexcept;
 
-    /*!
-     * Returns the authentication credential object
+    /**
+     * Returns the authentication credential object.
      */
     [[nodiscard]] std::shared_ptr<AuthenticationCredential> credential() const noexcept;
 
-    /*!
-     * Tries to find the user with \p authinfo returning a non null AuthenticationUser on success
+    /**
+     * Tries to find the user with \a authinfo returning a non null AuthenticationUser on success.
      */
     [[nodiscard]] virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo);
 
-    /*!
-     * Tries to authenticate the user with \p authinfo returning a non null AuthenticationUser on
-     * success
+    /**
+     * Tries to authenticate the user with \a authinfo returning a non null AuthenticationUser on
+     * success.
      */
     [[nodiscard]] virtual AuthenticationUser authenticate(Context *c,
                                                           const ParamsMultiMap &authinfo);
 
-    /*!
-     * Removes the user from the session
+    /**
+     * Removes the user from the session.
      */
     void removePersistedUser(Context *c);
 
-    /*!
-     * Stores the user on the session
+    /**
+     * Stores the \a user on the session.
      */
     AuthenticationUser persistUser(Context *c, const AuthenticationUser &user);
 
-    /*!
-     * Retrieves the user from the store
+    /**
+     * Retrieves the user \a frozenUser from the store.
      */
     [[nodiscard]] AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser);
 
-    /*!
-     * Checks if user can be retrieved
+    /**
+     * Checks if user can be retrieved.
      */
     [[nodiscard]] QVariant userIsRestorable(Context *c);
 
