@@ -64,7 +64,15 @@ private:
     bool Begin(Context *) { return true; }
 
     C_ATTR(Auto,)
-    bool Auto(Context *) { return true; }
+    bool Auto(Context *c)
+    {
+        if (!c->req()->queryParam(u"autoFalse"_qs).isEmpty()) {
+            c->response()->setStatus(Response::InternalServerError);
+            c->response()->setBody("autoFalse"_qba);
+            return false;
+        }
+        return true;
+    }
 
     C_ATTR(End,)
     bool End(Context *) { return true; }

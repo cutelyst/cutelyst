@@ -119,6 +119,10 @@ void TestDispatcherPath::testController_data()
     QTest::newRow("path-test19") << QStringLiteral("/test/controller/twoOld/1/2")
                                  << QByteArrayLiteral("path /test/controller/twoOld/1/2 args 1/2");
     QTest::newRow("path-test21") << QStringLiteral("/") << QByteArrayLiteral("rootAction");
+
+    // Test if we break chain with auto returning false
+    QTest::newRow("path-autoFalse00")
+        << QStringLiteral("/global?autoFalse=1") << QByteArrayLiteral("autoFalse");
 }
 
 QTEST_MAIN(TestDispatcherPath)
