@@ -15,6 +15,7 @@
 namespace Cutelyst {
 
 /*!
+ * \ingroup plugins-utils
  * \defgroup plugins-utils-validator Validator
  * \brief Provides an API to validate input values.
  *
