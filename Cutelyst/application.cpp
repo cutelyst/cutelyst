@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "view.h"
 
+#include <QJsonDocument>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDataStream>
 #include <QtCore/QDir>
@@ -694,6 +695,13 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
     params = req->bodyParameters();
     if (!params.isEmpty()) {
         logRequestParameters(params, QLatin1String("Body Parameters are:"));
+    }
+
+    const auto bodyData = req->bodyData();
+    if (bodyData.typeId() == QMetaType::QJsonDocument) {
+        const auto doc = bodyData.toJsonDocument();
+        qCDebug(CUTELYST_REQUEST).noquote() << "JSON body:\n"
+                                            << doc.toJson(QJsonDocument::Indented);
     }
 
     const auto uploads = req->uploads();

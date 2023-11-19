@@ -473,7 +473,7 @@ void RequestPrivate::parseBody() const
         return;
     }
 
-    const QByteArray contentType = engineRequest->headers.header("Content-Type"_qba);
+    const QByteArray contentType = engineRequest->headers.header("Content-Type");
     if (contentType.startsWith("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
