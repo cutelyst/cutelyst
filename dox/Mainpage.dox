@@ -2,12 +2,12 @@
 // Put this in the Cutelyst namespace so that autolinks to classes work without needing a Cutelyst:: prefix.
 
 /**
-  @brief The Cutelyst namespace holds all public %Cutelyst API.
+  @brief The %Cutelyst namespace holds all public %Cutelyst API.
 */
 namespace Cutelyst
 {
 
-/** @mainpage Cutelyst the C++ Web Framework
+/** @mainpage %Cutelyst the C++ Web Framework
 
   @section overview Overview
 
@@ -44,12 +44,13 @@ namespace Cutelyst
     </td><td>
       - Authentication
       - CSRFProtection
+      - LangSelect
       - Memcached
       - MemcachedSessionStore
       - Pagination
       - Session
-      - StaticSimple
       - StaticCompressed
+      - StaticSimple
       - StatusMessage
       - Validator
     </td><td>
@@ -59,7 +60,7 @@ namespace Cutelyst
       - RenderView
       - ActionREST
       - RoleACL
-    </td></tr>
+    </td><td></td></tr>
   </table>
 
   @section start_community Community
