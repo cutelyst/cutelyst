@@ -12,87 +12,119 @@
 namespace Cutelyst {
 
 class CredentialPasswordPrivate;
+
+/**
+ * \ingroup plugins-authentication
+ * \headerfile credentialpassword.h <Cutelyst/Plugins/Authentication/credentialpassword.h>
+ * \brief Use password based authentication to authenticate a user.
+ *
+ * This credential provider authenticates a user with authentication information provided
+ * by for example a HTML login formular or another source for login data.
+ *
+ * For an example implementation see \ref plugins-authentication overview.
+ *
+ * \par Logging category
+ * cutelyst.plugin.credentialpassword
+ */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT CredentialPassword : public AuthenticationCredential
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CredentialPassword)
 public:
+    /**
+     * The used password type.
+     */
     enum PasswordType {
-        None,
-        Clear,
-        Hashed,
+        None,  /**< Ignore password check. */
+        Clear, /**< Clear text password. */
+        Hashed /**< Derived password hash using
+                    <A HREF="https://datatracker.ietf.org/doc/html/rfc8018">PBKDF2</A> method. */
     };
     Q_ENUM(PasswordType)
 
-    /*!
-     * Constructs a new CredentialPassword object with the given parent.
+    /**
+     * Constructs a new %CredentialPassword object with the given \a parent.
      */
     explicit CredentialPassword(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %CredentialPassword object.
+     */
     virtual ~CredentialPassword() override;
 
+    /**
+     * Tries to authenticate the user from the \a authinfo by searching it in the given \a realm.
+     * If found, the password will be checked according to the set passwordType(). On success,
+     * a not null AuthenticationUser object will be returned.
+     */
     [[nodiscard]] AuthenticationUser
         authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 
-    /*!
-     * Returns the field to look for when authenticating the user. \sa authenticate().
+    /**
+     * Returns the field to look for when authenticating the user.
+     * \sa authenticate(), setPasswordField()
      */
     [[nodiscard]] QString passwordField() const;
 
-    /*!
-     * Sets the field to look for when authenticating the user. \sa authenticate().
+    /**
+     * Sets the field to look for when authenticating the user.
+     * \sa authenticate(), passwordField()
      */
     void setPasswordField(const QString &fieldName);
 
-    /*!
+    /**
      * Returns the type of password this class will be dealing with.
+     * \sa setPasswordType()
      */
     [[nodiscard]] PasswordType passwordType() const;
 
-    /*!
+    /**
      * Sets the type of password this class will be dealing with.
+     * \sa passwordType()
      */
     void setPasswordType(PasswordType type);
 
-    /*!
-     * Returns the salt string to be prepended to the password
+    /**
+     * Returns the salt string to be prepended to the password.
+     * \sa setPasswordPreSalt()
      */
     [[nodiscard]] QString passwordPreSalt() const;
 
-    /*!
-     * Sets the salt string to be prepended to the password
+    /**
+     * Sets the salt string to be prepended to the password.
+     * \sa passwordPreSalt()
      */
     void setPasswordPreSalt(const QString &passwordPreSalt);
 
-    /*!
-     * Returns the salt string to be appended to the password
+    /**
+     * Returns the salt string to be appended to the password.
+     * \sa setPasswordPostSalt()
      */
     [[nodiscard]] QString passwordPostSalt() const;
 
-    /*!
-     * Sets the salt string to be appended to the password
+    /**
+     * Sets the salt string to be appended to the password.
+     * \sa passwordPostSalt()
      */
     void setPasswordPostSalt(const QString &passwordPostSalt);
 
-    /*!
-     * Validates the given password against the correct hash.
+    /**
+     * Validates the given \a password against the \a correctHash.
      */
     [[nodiscard]] static bool validatePassword(const QByteArray &password,
                                                const QByteArray &correctHash);
 
-    /*!
-     * Validates the given password string against the correct hash string.
+    /**
+     * Validates the given \a password string against the \a correctHash string.
      */
     [[nodiscard]] static bool validatePassword(const QString &password, const QString &correctHash);
 
-    /*!
-     * Creates a password hash string.
-     * \note That is you want pre and post salts you must manualy add them.
-     * \param password
-     * \param method
-     * \param iterations
-     * \param saltByteSize
-     * \param hashByteSize
-     * \return the pbkdf2 representation of the password
+    /**
+     * Returns a derived hash from the clear text \a password with the given \a method,
+     * \a iterations, \a saltByteSize and \a hashByteSize using the pbkdf2() method.
+     *
+     * \note If you want to use pre and post salts you have to manually add them to the
+     * \a password.
      */
     [[nodiscard]] static QByteArray createPassword(const QByteArray &password,
                                                    QCryptographicHash::Algorithm method,
@@ -100,30 +132,31 @@ public:
                                                    int saltByteSize,
                                                    int hashByteSize);
 
-    /*!
-     * Creates a password hash string using sensible defaults
-     * \note That is you want pre and post salts you must manualy add them.
-     * \param password
-     * \return the pbkdf2 representation of the password
+    /**
+     * Returns a derived hash from the clear text \a password with sensible defaults
+     * using the pbkdf2() method.
+     *
+     * This uses SHA-512 with 10.000 iterations and 16 bytes size for salt and hash.
+     *
+     * \note If you want to use pre and post salts you have to manually add them to the
+     * \a password.
      */
     [[nodiscard]] static QByteArray createPassword(const QByteArray &password);
 
-    /*!
-     * Creates a password hash string using sensible defaults
-     * \note That is you want pre and post salts you must manualy add them.
-     * \param password
-     * \return the pbkdf2 representation of the password
+    /**
+     * Returns a derived hash from the clear text \a password with sensible defaults
+     * using the pbkdf2() method.
+     *
+     * This uses SHA-512 with 10.000 iterations and 16 bytes size for salt and hash.
+     *
+     * \note If you want to use pre and post salts you have to manually add them to the
+     * \a password.
      */
     [[nodiscard]] inline static QString createPassword(const QString &password);
 
-    /*!
-     * \brief Generates a pbkdf2 string for the given \p password
-     * \param method
-     * \param password
-     * \param salt
-     * \param rounds
-     * \param keyLength
-     * \return
+    /**
+     * Returns a <A HREF="https://datatracker.ietf.org/doc/html/rfc8018">PBKDF2</A> string for
+     * the given clear text \a password and \a salt using \a method, \a rounds and \a keyLength.
      */
     [[nodiscard]] static QByteArray pbkdf2(QCryptographicHash::Algorithm method,
                                            const QByteArray &password,
@@ -131,7 +164,7 @@ public:
                                            int rounds,
                                            int keyLength);
 
-    /*!
+    /**
      * Generates the Hash-based message authentication code.
      */
     [[nodiscard]] static QByteArray hmac(QCryptographicHash::Algorithm method,

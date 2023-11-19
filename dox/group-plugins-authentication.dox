@@ -1,0 +1,178 @@
+/**
+ @ingroup plugins
+ @defgroup plugins-authentication Authentication
+ @brief Plugins and classes to authenticate users.
+
+ The way to manage user authentication in %Cutelyst is to combine a Cutelyst::AuthenticationStore that
+ provides the user data from for example a database together with a Cutelyst::AuthenticationCredential
+ validator that checks the password or other information to legitimate a user in an
+ Cutelyst::AuthenticationRealm that is added to the main plugin class Cutelyst::Authentication in your
+ application’s \link Cutelyst::Application::init() init()\endlink method.
+
+ <H3>Implementation example</H3>
+ You can add multpiple AuthenticationRealms to be used for different parts of your application. We will
+ use one realm for the website and one for API access in this example. We will assume that you store your
+ user data in a MySQL/MariaDB database with the following layout for your \c users table:
+ <table>
+     <tr>
+         <th>Row</th>
+         <th>Type</th>
+     </tr>
+     <tr>
+         <td>id</td>
+         <td>INTEGER PRIMARY KEY</td>
+     </tr>
+     <tr>
+         <td>username</td>
+         <td>TEXT</td>
+     </tr>
+     <tr>
+         <td>password</td>
+         <td>TEXT</td>
+     </tr>
+     <tr>
+         <td>email_address</td>
+         <td>TEXT</td>
+     </tr>
+     <tr>
+         <td>first_name</td>
+         <td>TEXT</td>
+     </tr>
+     <tr>
+         <td>last_name</td>
+         <td>TEXT</td>
+     </tr>
+     <tr>
+         <td>active</td>
+         <td>INTEGER</td>
+     </tr>
+ </table>
+
+ In order to persist the authenticated user over multiple requests, you also need the Cutelyst::Session plugin.
+ Include it together with the Cutelyst::Authentication plugin in your CMakeLists.txt file. For this example we
+ also need the Cutelyst::Sql plugin.
+
+ \code
+ target_link_libraries(MyApp
+     ...
+     Cutelyst::Session
+     Cutelyst::Authentication
+     Cutelyst::Utils::Sql
+     ...
+ )
+ \endcode
+
+ <h4>Create an authentication store</h4>
+ In order to get the user data from the database we have to create our own subclass of Cutelyst::AuthenticationStore
+ and reimplement the findUser() method. We will call it AuthStoreSql in this example.
+
+ The header file authstoresql.h looks like the following:
+ \code{.cpp}
+ #ifndef AUTHSTORESQL_H
+ #define AUTHSTORESQL_H
+
+ #include <Cutelyst/Plugins/Authentication/authenticationstore.h>
+
+ using namespace Cutelyst;
+
+ class AuthStoreSql : public AuthenticationStore
+ {
+ public:
+     AuthStoreSql();
+     ~AuthStoreSql() = default;
+
+     AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo) override;
+
+ private:
+     QString m_idField;
+ };
+
+ #endif // AUTHSTORESQL_H
+ \endcode
+
+ Our implementation in authstoresql.cpp:
+ \code{.cpp}
+ AuthStoreSql::AuthStoreSql() : AuthenticationStore()
+ {
+     m_idField = u"username"_qs;
+ }
+
+ AuthenticationUser AuthStoreSql::findUser(Context *c, const ParamsMultiMap &userinfo)
+ {
+     const QString username = userinfo[m_idField];
+
+     QSqlQuery query = CPreparedSqlQueryThread(u"SELECT * FROM users WHERE username = :username"_qs);
+     query.bindValue(u":username"_qs, username);
+     if (query.exec() && query.next()) {
+         const QVariant userId = query.value("id");
+         qDebug() << "FOUND USER ->" << userId.toInt();
+         AuthenticationUser user(userId);
+
+         const qsizetype columns = query.record().count();
+
+         // collect column headers
+         QStrinList cols;
+         for (qsizetype i = 0; i < columns; ++i) {
+             cols << query.record().fieldName(i);
+         }
+
+         // fill the user object
+         for (qsizetype i = 0; i < columns; ++i) {
+             user.inser(cols.at(i), query.value(i).toString());
+         }
+
+         return user;
+     }
+
+     qDebug() << query.lastError().text();
+
+     return {};
+ }
+ \endcode
+
+ <h4>Configure authentication</h4>
+ We now have to glue all the stuff together in our application’s init method.
+ Example myapp.cpp:
+ \code{.cpp}
+ #include <Cutelyst/Plugins/Session/Session>
+ #include <Cutelyst/Plugins/Authentication/authentication.h>
+ #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
+ #include <Cutelyst/Plugins/Authentication/credentialhttp.h>
+
+ #include "authstoresql.h"
+
+ bool MyApp::init()
+ {
+     ...
+
+     // add the session plugin
+     new Session(this);
+
+     // add the Authentication plugin
+     auto auth = new Authentication(this);
+
+     // create our authentication store
+     auto authStore = std::make_shared<AuthStoreSql>();
+
+     // create password credential validator for website login
+     // using PBKDF2 hashed passwords
+     auto credWeb = std::make_shared<CredentialPassword>();
+     credWeb->setPasswordType(CredentialPassword::Hashed);
+
+     // add a realm for website login using our auth store
+     // and the credentials from above
+     auth->addRealm(authStore, credWeb, u"website"_qs);
+
+     // create HTTP basic auth credential validator for API
+     // authentication
+     auto credApi = std::make_shared<CredentialHttp>();
+     credApi->setPasswordType(CredentialHttp::Hashed);
+
+     // add a realm for API login using our auth store
+     // and the credentials from above
+     auth->addRealm(authStore, credApi, u"api"_qs);
+
+     ...
+ }
+ \endcode
+ */

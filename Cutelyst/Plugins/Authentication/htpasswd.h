@@ -9,14 +9,26 @@
 
 namespace Cutelyst {
 
+/**
+ * \ingroup plugins-authentication
+ * \headerfile htpasswd.h <Cutelyst/Plugins/Authentication/htpasswd.h>
+ * \brief %Authentication data store using a flat file.
+ *
+ * This authentication data store stores user data as a combination of <TT>username:password</TT>
+ * in a flat file where each row contains one user. This is like the file created by Apache’s
+ * <A HREF="https://httpd.apache.org/docs/current/programs/htpasswd.html">htpasswd</A> command.
+ */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreHtpasswd : public AuthenticationStore
 {
 public:
     /**
-     * Constructs a new htpasswd store object with the given parent to represent the file with the
-     * specified name.
+     * Constructs a new %StoreHtpasswd object with the given file \a name.
      */
     StoreHtpasswd(const QString &name);
+
+    /**
+     * Destroys the %StoreHtpasswd object.
+     */
     virtual ~StoreHtpasswd() override;
 
     /**

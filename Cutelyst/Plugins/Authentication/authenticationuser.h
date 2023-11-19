@@ -15,52 +15,85 @@
 namespace Cutelyst {
 
 class AuthenticationRealm;
+
+/**
+ * \ingroup plugins-authentication
+ * \headerfile authenticationuser.h <Cutelyst/Plugins/Authentication/authenticationuser.h>
+ * \brief Container for user data retrieved from an AuthenticationStore.
+ *
+ * Create this object in your reimplementation of AuthenticationStore::findUser() and populate
+ * it with the data retrieved from your store.
+ *
+ * For an example implementation see \ref plugins-authentication overview.
+ */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser
 {
     Q_GADGET
 public:
-    /*!
-     * Constructs a new AuthenticationUser object
+    /**
+     * Constructs a new %AuthenticationUser object.
      */
     AuthenticationUser();
 
-    /*!
-     * Constructs a new AuthenticationUser object with the given id
+    /**
+     * Constructs a new %AuthenticationUser object with the given \a id.
      */
     AuthenticationUser(const QVariant &id);
+
+    /**
+     * Destroys the %AuthenticationUser object.
+     */
     virtual ~AuthenticationUser();
 
     /**
-     * A unique ID by which a AuthenticationUser can be retrieved from the store.
+     * A unique ID by which a %AuthenticationUser can be retrieved from the store.
      */
     [[nodiscard]] QVariant id() const;
 
-    /*!
-     * Sets the unique user id restored from the store
+    /**
+     * Sets the unique user \a id restored from the store
      */
     void setId(const QVariant &id);
 
-    /*!
-     * Returns true if the object is null
+    /**
+     * Returns \c true if the object is null.
      */
     [[nodiscard]] bool isNull() const;
 
-    /*!
-     * Returns the authentication realm from which this user was retrieved
+    /**
+     * Returns the authentication realm from which this user was retrieved.
      */
     [[nodiscard]] QString authRealm();
 
-    /*!
-     * Sets the authentication realm from which this user was retrieved
+    /**
+     * Sets the authentication realm from which this user was retrieved.
      */
     void setAuthRealm(const QString &authRealm);
 
+    /**
+     * Returns the internal data object.
+     */
     [[nodiscard]] inline QVariantMap data() const;
 
+    /**
+     * Directly sets the internal \a data object.
+     */
     inline void setData(const QVariantMap &data);
 
+    /**
+     * Inserts a new item with the key \a key and a value of \a value.
+     *
+     * If there is already an item with the key \a key, that item's value is replaced with
+     * \a value.
+     */
     inline void insert(const QString &key, const QVariant &value);
 
+    /**
+     * Returns the value associated with the \a key key.
+     *
+     * If the internal map contains no item with key \a key, the function returns \a defaultValue.
+     * If no \a defaultValue is specified, the function returns a default-constructed value.
+     */
     [[nodiscard]] inline QVariant value(const QString &key,
                                         const QVariant &defaultValue = QVariant()) const;
 

@@ -12,13 +12,25 @@
 
 namespace Cutelyst {
 
+/**
+ * \ingroup plugins-authentication
+ * \headerfile minimal.h <Cutelyst/Plugins/Authentication/minimal.h>
+ * \brief Minimal in memory authentication data store.
+ *
+ * This authentication data store stores user data directly in memory. So it is gone when
+ * the application stops or restarts.
+ */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreMinimal : public AuthenticationStore
 {
 public:
     /**
-     * Constructs a new minimal authentication store object with the given parent.
+     * Constructs a new %StoreMinimal object with the given \a idField.
      */
     explicit StoreMinimal(const QString &idField);
+
+    /**
+     * Destroys the %StoreMinimal object.
+     */
     virtual ~StoreMinimal() override;
 
     /**
