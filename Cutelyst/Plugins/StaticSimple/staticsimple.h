@@ -14,7 +14,7 @@ namespace Cutelyst {
 class StaticSimplePrivate;
 /**
  * @ingroup plugins
- * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
+ * @headerfile "" <Cutelyst/Plugins/StaticSimple/StaticSimple>
  * @brief Serve static files directly from your application.
  *
  * The %StaticSimple plugin for %Cutelyst can be used to serve static files from
@@ -22,7 +22,7 @@ class StaticSimplePrivate;
  * starts with a specific directory. Files that end with something that look like a file extension
  * will tried to be served by this plugin.
  *
- * Beside serving the file contentn this will also set the respective HTTP header fields
+ * Beside serving the file content this will also set the respective HTTP header fields
  * @c Content-Type, @c Content-Length, @c Last-Modified and @c Cache-Control=public.
  *
  * <h3>Only serve for specific request paths</h3>
