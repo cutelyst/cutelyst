@@ -322,6 +322,8 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 }
             }
 
+            // Response::setBody() will take the ownership
+            // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
             QFile *file = !compressedPath.isEmpty() ? new QFile(compressedPath) : new QFile(path);
             if (file->open(QFile::ReadOnly)) {
                 qCDebug(C_STATICCOMPRESSED) << "Serving" << path;
