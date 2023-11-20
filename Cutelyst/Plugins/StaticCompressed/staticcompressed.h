@@ -78,11 +78,11 @@ class StaticCompressedPrivate;
  * @li .gz - gzip/Zopfli compressed files
  * @li .deflate - DEFLATE compressed files
  *
- * <H3>Only serve specific request paths</H3>
+ * <H3>Only serve for specific request paths</H3>
  *
  * You can use setDirs() to set a list of directories/paths below your web root where files should
  * always be served by this plugin. By default, the plugin also tries to serve files from other
- * paths when they have a file extension when they not start with one of these paths. You can
+ * paths when they have a file extension when they do not start with one of these paths. You can
  * set setServeDirsOnly() to @c true (since %Cutelyst 4.0.0) to only serve files beginning with
  * these paths. Have a look at setDirs() to learn more.
  *
