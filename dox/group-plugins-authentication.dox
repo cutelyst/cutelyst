@@ -1,13 +1,15 @@
+namespace Cutelyst {
+
 /**
  @ingroup plugins
  @defgroup plugins-authentication Authentication
  @brief Plugins and classes to authenticate users.
 
- The way to manage user authentication in %Cutelyst is to combine a Cutelyst::AuthenticationStore that
- provides the user data from for example a database together with a Cutelyst::AuthenticationCredential
+ The way to manage user authentication in %Cutelyst is to combine a AuthenticationStore that
+ provides the user data from for example a database together with a AuthenticationCredential
  validator that checks the password or other information to legitimate a user in an
- Cutelyst::AuthenticationRealm that is added to the main plugin class Cutelyst::Authentication in your
- application’s \link Cutelyst::Application::init() init()\endlink method.
+ AuthenticationRealm that is added to the main plugin class Authentication in your
+ application’s \link Application::init() init()\endlink method.
 
  <H3>Implementation example</H3>
  You can add multpiple AuthenticationRealms to be used for different parts of your application. We will
@@ -48,8 +50,8 @@
      </tr>
  </table>
 
- In order to persist the authenticated user over multiple requests, you also need the Cutelyst::Session plugin.
- Include it together with the Cutelyst::Authentication plugin in your CMakeLists.txt file. For this example we
+ In order to persist the authenticated user over multiple requests, you also need the Session plugin.
+ Include it together with the %Authentication plugin in your CMakeLists.txt file. For this example we
  also need the Cutelyst::Sql plugin.
 
  \code
@@ -63,8 +65,9 @@
  \endcode
 
  <h4>Create an authentication store</h4>
- In order to get the user data from the database we have to create our own subclass of Cutelyst::AuthenticationStore
- and reimplement the findUser() method. We will call it AuthStoreSql in this example.
+ In order to get the user data from the database we have to create our own subclass of AuthenticationStore
+ and reimplement the \link AuthenticationStore::findUser() findUser()\endlink method.
+ We will call it AuthStoreSql in this example.
 
  The header file authstoresql.h looks like the following:
  \code{.cpp}
@@ -79,7 +82,7 @@
  {
  public:
      AuthStoreSql();
-     ~AuthStoreSql() = default;
+     ~AuthStoreSql() override = default;
 
      AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo) override;
 
@@ -92,13 +95,18 @@
 
  Our implementation in authstoresql.cpp:
  \code{.cpp}
+ #include "authstoresql.h"
+ #include <Cutelyst/Plugins/Utils/Sql/Sql>
+
  AuthStoreSql::AuthStoreSql() : AuthenticationStore()
  {
-     m_idField = u"username"_qs;
+     m_idField = "username";
  }
 
  AuthenticationUser AuthStoreSql::findUser(Context *c, const ParamsMultiMap &userinfo)
  {
+     // get the user name from the userinfo that might be
+     // populated by HTML form input
      const QString username = userinfo[m_idField];
 
      QSqlQuery query = CPreparedSqlQueryThread(u"SELECT * FROM users WHERE username = :username"_qs);
@@ -108,17 +116,17 @@
          qDebug() << "FOUND USER ->" << userId.toInt();
          AuthenticationUser user(userId);
 
-         const qsizetype columns = query.record().count();
+         const int columns = query.record().count();
 
          // collect column headers
-         QStrinList cols;
-         for (qsizetype i = 0; i < columns; ++i) {
+         QStringList cols;
+         for (int i = 0; i < columns; ++i) {
              cols << query.record().fieldName(i);
          }
 
          // fill the user object
-         for (qsizetype i = 0; i < columns; ++i) {
-             user.inser(cols.at(i), query.value(i).toString());
+         for (int i = 0; i < columns; ++i) {
+             user.inser(cols.at(i), query.value(i));
          }
 
          return user;
@@ -131,8 +139,8 @@
  \endcode
 
  <h4>Configure authentication</h4>
- We now have to glue all the stuff together in our application’s init method.
- Example myapp.cpp:
+ We now have to glue all the stuff together in our \link Application::init() application’s init\endlink
+ method. Example myapp.cpp:
  \code{.cpp}
  #include <Cutelyst/Plugins/Session/Session>
  #include <Cutelyst/Plugins/Authentication/authentication.h>
@@ -145,7 +153,8 @@
  {
      ...
 
-     // add the session plugin
+     // add the session plugin to persist the logged in user
+     // over multiple requests
      new Session(this);
 
      // add the Authentication plugin
@@ -161,18 +170,175 @@
 
      // add a realm for website login using our auth store
      // and the credentials from above
-     auth->addRealm(authStore, credWeb, u"website"_qs);
+     auth->addRealm(authStore, credWeb, "website");
 
      // create HTTP basic auth credential validator for API
-     // authentication
+     // authentication usin PBKDF2 hashed passwords
      auto credApi = std::make_shared<CredentialHttp>();
      credApi->setPasswordType(CredentialHttp::Hashed);
 
      // add a realm for API login using our auth store
      // and the credentials from above
-     auth->addRealm(authStore, credApi, u"api"_qs);
+     auth->addRealm(authStore, credApi, "api");
 
      ...
  }
  \endcode
+
+ <h4>In the controllers</h4>
+ Let’s assume you have an admin area below \c /admin and API routes below \c /api.
+ Your admin area login form is at \c /admin/login.
+
+ In your admin controller header admin.h:
+ \code{.cpp}
+ #ifndef ADMIN_H
+ #define ADMIN_H
+
+ #include <Cutelyst/Controller>
+
+ using namespace Cutelyst;
+
+ class Admin : public Controller
+ {
+    Q_OBJECT
+ public:
+    explicit Admin(QObject *parent = nullptr);
+    ~Admin() override = default;
+
+    // something like the main admin dashboard at /admin
+    C_ATTR(index, :Path)
+    void index(Context *c);
+
+    // will take login data at /admin/login provided by
+    // a HTML form
+    C_ATTR(login, :Local)
+    void login(Context *c);
+
+    // will log out a logged in user when requesting /admin/logout
+    C_ATTR(logout, :Local)
+    void logout(Context *c);
+
+ private:
+    // will be called for all routes below /admin and will
+    // contain our check for existence of a logged in user
+    C_ATTR(Auto, :Private)
+    bool Auto(Context *c);
+ };
+
+ #endif // ADMIN_H
+ \endcode
+
+ Implementation in admin.cpp:
+ \code{.cpp}
+ #include "admin.h"
+ #include <Cutelyst/Plugins/Authentication/authentication.h>
+
+ Admin::Admin(QObject *parent) : Controller(parent)
+ {
+ }
+
+ void Admin::index(Context *c)
+ {
+    // implement the admin dashboard or something else
+ }
+
+ // this will now be the place to get login data from a
+ // HTML form
+ void Admin::login(Context *c)
+ {
+    // get the username and the password from the form
+    const QString username = c->request()->bodyParam("username");
+    const QString password = c->request()->bodyParam("password");
+
+    // if the username and password values were found in the form
+    // try to authenticate the user
+    if (!username.isNull() && !password.isNull()) {
+        // attempt to log the user in in the website realm
+        if (Authentication::authenticate(c, { {"username", username}, {"password", password} }, "website")) {
+            // if successful, then let them use the admin area
+            c->response()->redirect(c->uriFor(c->controller("Admin")->actionFor("index")));
+            return;
+        } else {
+            // set an error message
+            c->setStash("error_msg", "Bad username or password.");
+        }
+    } else if (!Authentication::userInRealm(c, "website")) {
+        // set an error message
+        c->setStash("error_msg", "Empty username or password.");
+    }
+
+    // if either of above don't work out, send to the login page
+    c->setStash("template", "login.html");
+ }
+
+ void Admin::logout(Context *c)
+ {
+     // clear the user's state
+    Authentication::logout(c);
+
+    // send the user to the starting point
+    c->response()->redirect(c->uriFor("/"));
+ }
+
+ bool Admin::Auto(Context *c)
+ {
+    // Allow unauthenticated users to reach the login page
+    if (c->action() == c->controller("Admin")->actionFor("login")) {
+        return true;
+    }
+
+    // if a user doesn't exist, force login
+    if (!Authentication::userInRealm(c, "website")) {
+        // redirect the user to the login page
+        c->response()->redirect(c->uriFor("/admin/login"));
+
+        // return false to cancel 'post-auto' processing and prevent use of application
+        return false;
+    }
+
+    // user found, so return true to continue with processing after this 'auto'
+    return true;
+ }
+ \endcode
+
+ Our API root controller api.h:
+ \code
+ #ifndef API_H
+ #define API_H
+
+ #include <Cutelyst/Controller>
+
+ using namespace Cutelyst;
+
+ class Api : public Controller
+ {
+    ... other parts
+
+ private:
+    // will be called for all routes below /api and will
+    // contain our authentication check
+    C_ATTR(Auto, :Private)
+    bool Auto(Context *c);
+ }
+
+ #endif // API_H
+ \endcode
+
+ Implementation in api.cpp:
+ \code{.cpp}
+ #include "api.h"
+ #include <Cutelyst/Plugins/Authentication/authentication.h>
+
+ bool Api::Auto(Context *c)
+ {
+    // We directly return the authentication result to further
+    // process the request or not. If authentication fails, the
+    // used CredentialHttp will automatically set a 401 status
+    // code to the response
+    return Authentication::authenticate(c, {}, "api");
+ }
+
+ \endcode
  */
+
+} // namespace Cutelyst
