@@ -13,6 +13,7 @@ namespace Cutelyst {
 class StaticCompressedPrivate;
 
 /**
+ * @ingroup plugins
  * @brief Serve static files compressed on the fly or pre-compressed.
  *
  * The %StaticCompressed plugin for %Cutelyst can be used to serve specific static files like
@@ -27,6 +28,10 @@ class StaticCompressedPrivate;
  * plugin uses the @a Accept-Encoding HTTP request header to determine the compression methods
  * supported by the user agent. If you do not need this, use the StaticSimple plugin to serve
  * your static files.
+ *
+ * Beside serving the file content this will also set the respective HTTP header fields
+ * @c Content-Type, @c Content-Length, @c Last-Modified, @c Content-Encoding,
+ * @c Vary=Accept-Encoding and @c Cache-Control=public.
  *
  * <H3>Compression formats</H3>
  *
@@ -73,7 +78,7 @@ class StaticCompressedPrivate;
  * @li .gz - gzip/Zopfli compressed files
  * @li .deflate - DEFLATE compressed files
  *
- * <H3>Only serve from specific directories/paths</H3>
+ * <H3>Only serve specific request paths</H3>
  *
  * You can use setDirs() to set a list of directories/paths below your web root where files should
  * always be served by this plugin. By default, the plugin also tries to serve files from other
