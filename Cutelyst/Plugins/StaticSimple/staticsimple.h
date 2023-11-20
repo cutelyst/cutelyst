@@ -12,6 +12,51 @@
 namespace Cutelyst {
 
 class StaticSimplePrivate;
+/**
+ * @ingroup plugins
+ * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
+ * @brief Serve static files directly from your application.
+ *
+ * The %StaticSimple plugin for %Cutelyst can be used to serve static files from
+ * specific directories. Optionally it only serves files where the request path
+ * starts with a specific directory. Files that end with something that look like a file extension
+ * will tried to be served by this plugin.
+ *
+ * Beside serving the file contentn this will also set the respective HTTP header fields
+ * @c Content-Type, @c Content-Length, @c Last-Modified and @c Cache-Control=public.
+ *
+ * <h3>Only serve for specific request paths</h3>
+ *
+ * You can use setDirs() to set a list of directories/path below your web root where files should
+ * always be served by this plugin. By default, the plugin also tries to server files from other
+ * paths when they have a file extension when they do not start with one of these paths. You can
+ * set setServeDirsOnly() to @c true (since %Cutelyst 4.0.0) to only serve files beginning with
+ * these paths. Have a look at setDirs() to learn more.
+ *
+ * <h3>Usage example</h3>
+ *
+ * @code{.cpp}
+ * #include <Cutelyst/Plugins/StaticSimple/StaticSimple>
+ *
+ * bool MyCutelystApp::init()
+ * {
+ *      // other initialization stuff
+ *      // ...
+ *
+ *      // construct a new StaticSimple plugin
+ *      auto stat = new StaticSimple(this);
+ *      stat->setIncludePaths({"/path/to/my/static/files"});
+ *
+ *      // maybe more initialization stuff
+ *      // ...
+ * }
+ * @endcode
+ *
+ * @par Logging category
+ * cutelyst.plugin.staticsimple
+ *
+ * @sa StaticCompressed
+ */
 class CUTELYST_PLUGIN_STATICSIMPLE_EXPORT StaticSimple : public Plugin
 {
     Q_OBJECT
