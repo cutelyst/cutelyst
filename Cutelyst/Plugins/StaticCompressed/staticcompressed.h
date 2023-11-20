@@ -14,6 +14,7 @@ class StaticCompressedPrivate;
 
 /**
  * @ingroup plugins
+ * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  * @brief Serve static files compressed on the fly or pre-compressed.
  *
  * The %StaticCompressed plugin for %Cutelyst can be used to serve specific static files like
@@ -166,11 +167,10 @@ class StaticCompressedPrivate;
  * that compressions.
  *
  * @par Logging category
- * @c cutelyst.plugin.csrfprotection
+ * cutelyst.plugin.csrfprotection
  *
  * @since %Cutelyst 1.11.0
  * @sa StaticSimple
- * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  */
 class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT // clazy:exclude=ctor-missing-parent-argument
     StaticCompressed : public Plugin
