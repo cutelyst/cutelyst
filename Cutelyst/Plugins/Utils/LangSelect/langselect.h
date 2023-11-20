@@ -14,39 +14,21 @@
 
 namespace Cutelyst {
 
-/**
- * @defgroup plugins-utils-langselect LangSelect
- * @brief Provides a plugin to select locale based on different input parameters.
- *
- * The LangSelect plugin can set the locale (Context::setLocale()) based on different definable
- * input parameters like cookie or session values, URL query parameters and parts of the path or the
- * domain. It will check if the language requested by the user agent is @link
- * LangSelect::setSupportedLocales() supported@endlink by the application. If the language is not
- * supported, it will use a @link LangSelect::setFallbackLocale() fallback@endlink language. As
- * another fallback it will try to get the locale from the @a Accept-Language header.
- *
- * <h3>Logging</h3>
- * Information is logged to the @c cutelyst.plugin.langselect logging category.
- *
- * <h3>Building and using</h3>
- * The plugin is linked to @c Cutelyst::Core, @c Cutelyst::Session and the QtNetwork module. To use
- * it in your application, link your application to @c Cutelyst::Utils::LangSelect. See LangSelect
- * to learn how to use it.
- */
-
 class Context;
 class LangSelectPrivate;
 
 /**
- * @ingroup plugins-utils-langselect
- * @class LangSelect langselect.h <Cutelyst/Plugins/Utils/LangSelect>
- * @brief Language selection plugin
+ * @ingroup plugins-utils
+ * @class LangSelect langselect.h <Cutelyst/Plugins/Utils/LangSelect/LangSelect>
+ * @brief Detect and select locale based on different input parameters.
  *
- * The %LangSelect plugin can be used to automatically detect and set a user's language by querying
+ * The %LangSelect plugin can be used to automatically detect and set a user’s language by querying
  * various sources like session keys, cookies, path and subdomain components or the @a
  * Accept-Language header sent by the user agent (like the web browser). It will compare the
- * detected locale against a list of locales supported by the application to choose the most
- * appropriate locale fitting the user's preferences.
+ * detected locale against a list of locales @link setSupportedLocales() supported@endlink by the
+ * application to choose the most appropriate locale fitting the user’s preferences. If the language
+ * is not supported, it will use a @link setFallbackLocale() fallback@endlink locale. As
+ * another fallback it will try to get the locale from the @a Accept-Language header.
  *
  * Unless the plugin has been constructed with the manual mode constructor, it will be connected to
  * the Application::beforePrepareAction() signal to set the locale. If auto detection is disabled,
@@ -61,7 +43,8 @@ class LangSelectPrivate;
  * display language. Especially on publicly available content you might want to put the locale
  * information into the domain or URL path to optimize your content for search engines.
  *
- * The plugin will also set two values to the stash that will contain the BCP47 name of the selected
+ * The plugin will also set two values to the stash that will contain the
+ * <a href="https://www.rfc-editor.org/info/bcp47">BCP47</a> name of the selected
  * locale and the text direction. You can set the stash keys used for this information with
  * setLanguageCodeStashKey() and setLanguageDirStashKey().
  *
@@ -363,6 +346,13 @@ class LangSelectPrivate;
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value">MDN</A>
  * to learn more about SameSite cookies. See also QNetworkCookie::SameSite.
  * @endparblock
+ *
+ * <h3>Building and using</h3>
+ * The plugin is linked to Cutelyst::Core, Cutelyst::Session and the QtNetwork module. To use it
+ * in your application, link your application to Cutelyst::Utils::LangSelect.
+ *
+ * @par Logging category
+ * cutelyst.plugin.langselect
  *
  * @since %Cutelyst 2.1.0
  */
