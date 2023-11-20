@@ -118,31 +118,31 @@ QNetworkReply *UA::sendCustomRequestJson(const QNetworkRequest &request,
     return UA::sendCustomRequest(jsonRequest, verb, doc.toJson(QJsonDocument::Compact));
 }
 
-QNetworkReply *UA::postJsonObject(const QNetworkRequest &request, const QJsonObject &obj)
+QNetworkReply *UA::postJsonObject(const QNetworkRequest &request, const QJsonObject &object)
 {
     QNetworkRequest jsonRequest(request);
     jsonRequest.setHeader(QNetworkRequest::ContentTypeHeader,
                           QByteArrayLiteral("application/json"));
-    return m_instance.post(jsonRequest, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    return m_instance.post(jsonRequest, QJsonDocument(object).toJson(QJsonDocument::Compact));
 }
 
-QNetworkReply *UA::putJsonObject(const QNetworkRequest &request, const QJsonObject &obj)
+QNetworkReply *UA::putJsonObject(const QNetworkRequest &request, const QJsonObject &object)
 {
     QNetworkRequest jsonRequest(request);
     jsonRequest.setHeader(QNetworkRequest::ContentTypeHeader,
                           QByteArrayLiteral("application/json"));
-    return m_instance.put(jsonRequest, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    return m_instance.put(jsonRequest, QJsonDocument(object).toJson(QJsonDocument::Compact));
 }
 
 QNetworkReply *UA::sendCustomRequestJsonObject(const QNetworkRequest &request,
                                                const QByteArray &verb,
-                                               const QJsonObject &obj)
+                                               const QJsonObject &object)
 {
     QNetworkRequest jsonRequest(request);
     jsonRequest.setHeader(QNetworkRequest::ContentTypeHeader,
                           QByteArrayLiteral("application/json"));
     return UA::sendCustomRequest(
-        jsonRequest, verb, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+        jsonRequest, verb, QJsonDocument(object).toJson(QJsonDocument::Compact));
 }
 
 QNetworkReply *UA::postJsonArray(const QNetworkRequest &request, const QJsonArray &array)
