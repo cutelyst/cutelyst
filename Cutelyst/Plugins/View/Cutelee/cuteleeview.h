@@ -208,20 +208,23 @@ public:
      *      auto view = new CuteleeView(this);
      *
      *      auto deDeTrans = new QTranslator(this);
-     *      if (deDeTrans->load(QStringLiteral("de_DE"), QStringLiteral("/path/to/my/translations"))
-     * { view->addTranslator(QLocale("de_DE"), deDeTrans);
+     *      if (deDeTrans->load(QStringLiteral("de_DE"),
+     *                          QStringLiteral("/path/to/my/translations")) {
+     *           view->addTranslator(QLocale("de_DE"), deDeTrans);
      *      }
      *
      *      auto ptBrTrans = new QTranslator(this);
-     *      if (ptBrTrans->load(QStringLiteral("pt_BR"), QStringLiteral("/path/to/my/translations"))
-     * { view->addTranslator(QLocale("pt_BR"), ptBrTrans);
+     *      if (ptBrTrans->load(QStringLiteral("pt_BR"),
+     *                          QStringLiteral("/path/to/my/translations")) {
+     *           view->addTranslator(QLocale("pt_BR"), ptBrTrans);
      *      }
      *
      *      // ...
      * }
      * \endcode
      *
-     * \sa loadTranslationsFromDir()
+     * It is mostly easier to use loadTranslationsFromDir() to load all available translations
+     * in a bunch.
      *
      * \since Cutelyst 1.5.0
      */
