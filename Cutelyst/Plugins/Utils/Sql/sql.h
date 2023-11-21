@@ -11,25 +11,13 @@
 #include <QtCore/QVariant>
 #include <QtSql/QSqlDatabase>
 
-/**
- * @ingroup plugins-utils
- * @defgroup plugins-utils-sql Sql
- * @brief Helper methods to perform and work with database queries.
- *
- * The %Sql plugin provides methods and classes in the Sql namespace to help with performing
- * database queries and to handle the query results.
- *
- * @par Header to include
- * #include <Cutelyst/Plugins/Sql/Sql>
- */
-
 namespace Cutelyst {
 
 namespace Sql {
 
 /**
  * @ingroup plugins-utils-sql
- * @headerfile "" <Cutelyst/Plugins/Sql/Sql>
+ * @headerfile "" <Cutelyst/Plugins/Utils/Sql>
  * @brief This is a helper class to create scoped transactions
  *
  * This is a helper class to create scoped transactions, when you create a
@@ -230,7 +218,7 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &qu
 /**
  * @ingroup plugins-utils-sql
  * Constructs a static thread local QSqlQuery with query \a str on database \a db using
- * the Cutelyst::Sql::preparedQuery() method. The created QSqlQuery object will be returned.
+ * Cutelyst::Sql::preparedQuery() method. The created QSqlQuery object will be returned.
  */
 #define CPreparedSqlQueryForDatabase(str, db) \
     ([]() -> QSqlQuery { \
@@ -241,7 +229,7 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &qu
 /**
  * @ingroup plugins-utils-sql
  * Constructs a static QSqlQuery with query \a str on the default database using
- * the Cutelyst::Sql::preparedQuery(). The created QSqlQuery object will be returned.
+ * Cutelyst::Sql::preparedQuery(). The created QSqlQuery object will be returned.
  */
 #define CPreparedSqlQuery(str) \
     ([]() -> QSqlQuery { \

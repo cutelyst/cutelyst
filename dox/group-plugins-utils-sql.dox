@@ -1,0 +1,186 @@
+namespace Cutelyst {
+
+/**
+ @ingroup plugins-utils
+ @defgroup plugins-utils-sql Sql
+ @brief Helper methods to perform and work with database queries.
+
+ @par Header to include
+ #include <Cutelyst/Plugins/Utils/Sql>
+
+ The %Sql plugin provides methods and classes in the Sql namespace to help with performing
+ database queries and to handle the query results.
+
+ <h3>Usage example</h3>
+ Setup the database and the per thread database connection in your application class. Database
+ connections should be established in your reimplementation of Application::postFork(). Creating
+ the database can be done in your reimplementation of Application::init(). You could also use
+ external tools to create the database layout. On bigger project you will mostly want to use
+ some kind of database migration helper. In this example we will use a simple SQLite database
+ that will be created in our init method if not already existing.
+
+ myapp.h:
+ @code{.cpp}
+ #ifndef MYAPP_H
+ #define MYAPP_H
+
+ #include <Cutelyst/Application>
+
+ using namespace Cutelyst;
+
+ class MyApp : public Application
+ {
+      Q_OBJECT
+      CUTELYST_APPLICATION(IID "MyApp")
+ public:
+      Q_INVOKABLE explicit MyApp(QObject *parent = nullptr);
+      ~MyApp() override = default;
+
+      // our reimplementation of the init method to initialize
+      // the application
+      bool init() override;
+
+      // our reimplementation of postFork that is called after
+      // the engine forks to establish the per thread database
+      // connection
+      bool postFork();
+
+ private:
+      // function to create the database if it not exists
+      // will be called inside init()
+      bool createDb();
+
+      // path to the SQLite database file
+      QString m_dbPath;
+ };
+ #endif // MYAPP_H
+ @endcode
+
+ Implementation in myapp.cpp:
+ @code{.cpp}
+ #include "myapp.h"
+
+ #include <Cutelyst/Plugins/Utils/Sql>
+
+ #include <QSqlDatabase>
+ #include <QSqlError>
+ #include <QSqlQuery>
+ #include <QStandardPaths>
+ #include <QFileInfo>
+ #include <QMutex>
+ #include <QDebug>
+
+ // mutex used to protect the db connection setup
+ static QMutex dbMutex;
+
+ MyApp::MyApp(QObject *parent) : Application(parent)
+ {
+ }
+
+ bool MyApp::init()
+ {
+      // other initialization stuff
+      // ...
+
+      // setting the path for the SQLite database file
+      m_dbPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/myapp.sqlite";
+
+      // if the database not already exists, we will create it
+      if (!QFileInfo::exists(m_dbPath)) {
+           if (!createDb()) {
+                qCritical() << "Failed to create database" << m_dbPath;
+                return false;
+           }
+
+           // remove the database connection used for creating the db
+           QSqlDatabase::removeDatabase("db");
+      }
+
+      // maybe more initalization stuff
+      // ...
+ }
+
+ bool MyApp::createDb()
+ {
+      // create a new database connection only used for creating the db layout
+      auto db = QSqlDatabase::addDatabae("QSQLITE", "db");
+      db.setDatabaseName(m_dbPath);
+      if (!db.open()) {
+           qCritical() << "Failed to open database:" << db.lastError().databaseText();
+           return false;
+      }
+
+      QSqlQuery query(db);
+      qDebug() << "Creating database" << m_dbPath;
+
+      if (!query.exec("CREATE TABLE users "
+                      "( id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT"
+                      ", username TEXT NOT NULL UNIQUE"
+                      ", password TEXT NOT NULL"
+                      ", email_address TEXT NOT NULL UNIQUE"
+                      ", first_name TEXT"
+                      ", last_name TEXT"
+                      ", active INTEGER DEFAULT 1)")) {
+          qCritical() << "Failed to create database:" << query.lastError().text();
+          return false;
+      }
+
+      return true;
+ }
+
+ bool MyApp::postFork()
+ {
+      // try to lock our mutex to protect connection establishment
+      QMutexLocker locker(&dbMutex);
+
+      // create a new per thread database connection,
+      // later on you have to use the database name usede here ("myapp") when getting
+      // the database connection for queries
+      auto db = QSqlDatabase::addDatabase("QSQLITE", Cutelyst::Sql::databaseNameThread("myapp"));
+      db.setDatabaseName(m_dbPath);
+      if (!db.open()) {
+           qCritical() << "Failed to open database:" << db.lastError().databaseText();
+           return false;
+      }
+
+      qDebug() << "Database ready:" << db.connectionName();
+
+      return true;
+ }
+ @endcode
+
+ Use our database in a controller listing available users:
+ @code{.cpp}
+ #include <Cutelyst/Plugins/Utils/Sql>
+
+ #include <QSqlQuery>
+ #include <QSqlError>
+ #include <QDebug>
+
+ using namespace Cutelyst;
+
+ void Users::index(Context *c)
+ {
+      // get a new forward only query for the local thread for db connection named "myapp"
+      QSqlQuery query = CPreparedSqlQueryThreadForDBFO("SELECT * FROM users", "myapp");
+
+      if (!query.exec()) {
+           qCritical() << "Failed to query users table:" << query.lastError().text();
+           // handle errors
+      }
+
+      // convert the query result in a list of maps where the
+      // map key will be the database column name
+      const QVariantList users = Sql::queryToMapList(query);
+
+      if (users.empty()) {
+           // handle empty result
+      }
+
+      // put the users into the stash to use it in your template
+      // or perform other actions on it
+ }
+ @endcode
+ */
+
+} // namespace Cutelyst
