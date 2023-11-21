@@ -34,6 +34,9 @@ class Request;
  * See also the documentation for QNetworkAccessManager to learn more about sending network
  * requests.
  *
+ * \par Include file
+ * #include <Cutelyst/Plugins/UserAgent>
+ *
  * \par Logging category
  * cutelyst.useragent
  */
