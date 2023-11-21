@@ -21,7 +21,7 @@ namespace Cutelyst {
 class Context;
 /**
  * @ingroup plugins-session
- * @class Cutelyst::SessionStore session.h Cutelyst/Plugins/Session/Session
+ * @headerfile "" <Cutelyst/Plugins/Session/Session>
  * @brief Abstract class to create a session store.
  *
  * Use this class to create your own session store to use with the Session plugin. Reimplement
@@ -72,7 +72,7 @@ public:
 class SessionPrivate;
 /**
  * @ingroup plugins-session
- * @class Cutelyst::Session session.h Cutelyst/Plugins/Session/Session
+ * @headerfile "" <Cutelyst/Plugins/Session/Session>
  * @brief %Plugin providing methods for session management.
  *
  * The %Session plugin manages user sessions and uses a SessionStore to store the session

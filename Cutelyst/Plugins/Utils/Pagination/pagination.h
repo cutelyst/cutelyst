@@ -13,7 +13,7 @@ namespace Cutelyst {
 
 /**
  * @ingroup plugins-utils
- * @headerfile "" <Cutelyst/Plugins/Utils/Pagination/Pagination>
+ * @headerfile "" <Cutelyst/Plugins/Utils/Pagination>
  * @brief Helper to calculate values for paginating result lists.
  *
  * The %Pagination plugin is a little helper class to calculate different values for paginating

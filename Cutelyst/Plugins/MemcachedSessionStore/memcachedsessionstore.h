@@ -15,7 +15,7 @@ class MemcachedSessionStorePrivate;
 
 /**
  * @ingroup plugins-session
- * @headerfile memcachedsessionstore.h <Cutelyst/Pugins/MemcachedSessionStore/MemcachedSessionStore>
+ * @headerfile "" <Cutelyst/Pugins/MemcachedSessionStore/MemcachedSessionStore>
  * @brief Memcached based session store.
  *
  * This session store saves session data to <A HREF="http://memcached.org">Memcached</A> servers

@@ -14,7 +14,7 @@ namespace Cutelyst {
 class StatusMessagePrivate;
 /**
  * @ingroup plugins
- * @headerfile "" <Cutelyst/Plugins/StatusMessage/StatusMessage>
+ * @headerfile "" <Cutelyst/Plugins/StatusMessage>
  * @brief Manage status messages over multiple requests stored in the Session.
  *
  * The %StatusMessage plugin can be used to generate status messages that are saved
