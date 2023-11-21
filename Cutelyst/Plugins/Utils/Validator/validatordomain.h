@@ -14,10 +14,10 @@ namespace Cutelyst {
 
 class ValidatorDomainPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorDomain validatordomain.h <Cutelyst/Plugins/Utils/validatordomain.h>
- * \brief Checks if the value of the input \a field contains FQDN according to RFC 1035.
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatordomain.h>
+ * \brief Checks if the value of the input \a field contains a FQDN according to RFC 1035.
  *
  * The \a field under validation must contain a fully qualified domain name according to <a
  * href="https://tools.ietf.org/html/rfc1035">RFC 1035</a>. If \a checkDNS is set to \c false, there
@@ -32,13 +32,17 @@ class ValidatorDomainPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString with the ACE version of the
+ * domain name.
+ *
  * \sa Validator for general usage of validators.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorDomain : public ValidatorRule
 {
     Q_GADGET
 public:
-    /*!
+    /**
      * \brief Possible diagnose information for the checked domain.
      */
     enum Diagnose : quint8 {
@@ -61,41 +65,45 @@ public:
     };
     Q_ENUM(Diagnose)
 
-    /*!
-     * \brief Constructs a new %ValidatorDomain with the given parameters.
+    /**
+     * \brief Constructs a new %ValidatorDomain object with the given parameters.
      * \param field     Name of the input field to validate.
      * \param checkDNS  If \c true, a DNS lookup will be performed to check if the domain name
-     * exists in the domain name system. \param messages  Custom error messages if validation fails.
+     *                  exists in the domain name system.
+     * \param messages  Custom error messages if validation fails.
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                  input field is empty. This value will \b NOT be validated.
      */
     ValidatorDomain(const QString &field,
                     bool checkDNS                     = false,
                     const ValidatorMessages &messages = ValidatorMessages(),
                     const QString &defValKey          = QString());
 
-    /*!
-     * Deconstructs %ValidatorDomain
+    /**
+     * Destroys the %ValidatorDomain object.
      */
     ~ValidatorDomain() override;
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
-     * \brief Returns \c true if \a value is a valid domain name.
+     * \brief Returns \c true if \a value is a valid fully qualified domain name.
      * \param value             The value to validate.
      * \param checkDNS          If \c true, a DNS lookup will be performed to check if the domain
-     * name exists in the domain name system. \param diagnose          Optional pointer to a
-     * variable that will be filled with the Diagnose that describes the error if validation fails.
+     *                          name exists in the domain name system.
+     * \param diagnose          Optional pointer to a variable that will be filled with the
+     *                          Diagnose that describes the error if validation fails.
      * \param extractedValue    Optional pointer to a variable that will contain the validated
-     * domain converted into ACE puny code. \return \c true if the \a value is a valid domain name.
+     *                          domain converted into ACE puny code.
+     * \return \c true if the \a value is a valid domain name.
      */
     static bool validate(const QString &value,
                          bool checkDNS,
                          Diagnose *diagnose      = nullptr,
                          QString *extractedValue = nullptr);
 
-    /*!
-     * \brief Returns a human readable description of a Diagnose.
+    /**
+     * Returns a human readable description of a Diagnose.
+     *
      * \param c         Current Context, used for translations.
      * \param diagnose  The Diagnose to get the description for.
      * \param label     Optinonal label that will be part of the diagnose string if not empty.
@@ -104,15 +112,15 @@ public:
     static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = QString());
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as ACE version of the domain in a QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
+    /**
      * \brief Returns a generic error message if validation failed.
      *
      * \a errorData will contain the Diagnose returned by ValidatorDomain::validate().

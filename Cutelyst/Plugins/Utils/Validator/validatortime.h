@@ -13,13 +13,13 @@ namespace Cutelyst {
 
 class ValidatorTimePrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorTime validatortime.h <Cutelyst/Plugins/Utils/validatortime.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatortime.h>
  * \brief Checks if the input data is a valid time.
  *
  * This validator checks if the input \a field can be parsed into a QTime, it will check the parsing
- * ability but will not convert the input data into a QTime. If a custom \a format is given, the
+ * ability and will convert the input data into a QTime. If a custom \a format is given, the
  * validator will at first try to parse the date according to that \a format. If that fails or if
  * there is no custom \a inputFormat set, it will try to parse the date based on standard formats in
  * the following order: \link Context::locale() Context locale's \endlink \link QLocale::toDate()
@@ -33,6 +33,9 @@ class ValidatorTimePrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QTime.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorDateTime, ValidatorDate
@@ -40,35 +43,36 @@ class ValidatorTimePrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorTime : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new time validator.
+    /**
+     * Constructs a new %ValidatorTime object with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param format        Optional time format for input parsing, can be translatable.
      * \param messages      Custom error messages if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorTime(const QString &field,
                   const char *format                = nullptr,
                   const ValidatorMessages &messages = ValidatorMessages(),
                   const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs time the validator.
+    /**
+     * Destroys the %ValidatorTime object.
      */
     ~ValidatorTime() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramater value
      * converted into a QTime.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error if validation failed.
+    /**
+     * Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

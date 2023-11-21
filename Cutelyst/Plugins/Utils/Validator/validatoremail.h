@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorEmailPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorEmail validatoremail.h <Cutelyst/Plugins/Utils/validatoremail.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatoremail.h>
  * \brief Checks if the value is a valid email address according to specific RFCs.
  *
  * You can use a \link ValidatorEmail::Category Category\endlink as threshold to define which level
@@ -25,7 +25,7 @@ class ValidatorEmailPrivate;
  * \link ValidatorEmail::CFWSComment CFWSComment\endlink diagnose is above the threshold. If it
  * would contain a quoted string like <code>"main test address"\@example.com</code> it would be
  * valid because the \link ValidatorEmail::RFC531QuotedString RFC5321QuotedString\endlink diagnose
- * is under the threshold.
+ * is below the threshold.
  *
  * The parser used to validate the email address is a reimplementation of Dominic Sayers’ <a
  * href="https://github.com/dominicsayers/isemail">isemail</a> PHP parser.
@@ -37,13 +37,19 @@ class ValidatorEmailPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain the cleaned up email address
+ * without any comments as QString. ValidatorReturnType::extra will contain a QList<Diagnose>
+ * list containing all issues found in the checked email, ordered from the highest to the
+ * lowest.
+ *
  * \sa Validator for general usage of validators.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorEmail : public ValidatorRule
 {
     Q_GADGET
 public:
-    /*!
+    /**
      * \brief Validation category, used as threshold to define valid addresses.
      */
     enum Category : int {
@@ -64,7 +70,7 @@ public:
     };
     Q_ENUM(Category)
 
-    /*!
+    /**
      * \brief Single diagnose values that show why an address is not valid.
      */
     enum Diagnose : int {
@@ -164,13 +170,14 @@ public:
     };
     Q_DECLARE_FLAGS(Options, Option)
 
-    /*!
-     * \brief Constructs a new email validator.
+    /**
+     * Constructs a new %ValidatorEmail object with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param options       Options for the validation process.
      * \param messages      Custom error messages if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                      input field is empty. This value will \b NOT be validated.
      */
     ValidatorEmail(const QString &field,
                    Category threshold                = RFC5321,
@@ -178,13 +185,13 @@ public:
                    const ValidatorMessages &messages = ValidatorMessages(),
                    const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the email validator.
+    /**
+     * Destroys the %ValidatorEmail object.
      */
     ~ValidatorEmail() override;
 
-    /*!
-     * \brief Returns a descriptive and translated string for the \a diagnose.
+    /**
+     * Returns a descriptive and translated string for the \a diagnose.
      * \param c         The current Context, used for translation.
      * \param diagnose  The Diagnose to return the descriptive string for.
      * \param label     Optional label used in the diagnose string.
@@ -192,8 +199,8 @@ public:
      */
     static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = {});
 
-    /*!
-     * \brief Returns a descriptive and translated string for the \a category.
+    /**
+     * Returns a descriptive and translated string for the \a category.
      * \param c         The current Context, used for translation.
      * \param category  The Category to return the descriptive string for.
      * \param label     Optional label used in the category string.
@@ -201,29 +208,33 @@ public:
      */
     static QString categoryString(Context *c, Category category, const QString &label = {});
 
-    /*!
-     * \brief Returns the category the \a diagnose belongs to.
+    /**
+     * Returns the category the \a diagnose belongs to.
      * \param diagnose  The Diagnose to get the Category for.
      * \return The Category the \a diagnose belongs to.
      */
     static Category category(Diagnose diagnose);
 
-    /*!
-     * \brief Returns a descriptive and translated string for the Category the \a diagnose belongs
-     * to. \param c         The current context, used for translation. \param diagnose  The Diagnose
-     * to return the descriptive Category string for. \param label     Optional label used in the
-     * category string. \return Descriptive and translated string for the Category the \a diagnose
-     * belongs to.
+    /**
+     * Returns a descriptive and translated string for the Category the \a diagnose belongs to.
+     *
+     * \param c         The current context, used for translation.
+     * \param diagnose  The Diagnose to return the descriptive Category string for.
+     * \param label     Optional label used in the category string.
+     * \return Descriptive and translated string for the Category the \a diagnose belongs to.
      */
     static QString categoryString(Context *c, Diagnose diagnose, const QString &label = {});
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a email is a valid address according to the Category given in the
-     * \a threshold. \param[in] email         The address to validate. \param[in] threshold     The
-     * threshold category that limits the diagnose that is accepted as valid. \param[in] options
-     * Options for the validation process. \param[out] diagnoses    If not a \c nullptr, this will
-     * contain a list of all issues found by the check, ordered from the highest to the lowest.
+     * \a threshold.
+     * \param[in] email         The address to validate.
+     * \param[in] threshold     The threshold category that limits the diagnose that is accepted
+     *                          as valid.
+     * \param[in] options       Options for the validation process.
+     * \param[out] diagnoses    If not a \c nullptr, this will contain a list of all issues found
+     *                          by the check, ordered from the highest to the lowest.
      * \return \c true if \a email is a valid address according to the Category given in the \a
      * threshold.
      */
@@ -233,8 +244,8 @@ public:
                          QList<Diagnose> *diagnoses = nullptr);
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the cleaned up email address
      * without any comments as QString. ValidatorReturnType::extra will contain a QList<Diagnose>
@@ -243,8 +254,8 @@ protected:
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error if validation failed.
+    /**
+     * Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

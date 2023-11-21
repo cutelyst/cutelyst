@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorAlphaNumPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorAlphaNum validatoralphanum.h <Cutelyst/Plugins/Utils/validatoralphanum.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatoralphanum.h>
  * \brief Checks a value for only alpha-numeric content.
  *
  * The \a field under validation is only allowed to contain alpha-numeric characters.
@@ -36,6 +36,9 @@ class ValidatorAlphaNumPrivate;
  * " " // valid if trimBefore is true, invaid if trimBefore is false
  * \endcode
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorAlpha, ValidatorAlphaDash
@@ -43,25 +46,26 @@ class ValidatorAlphaNumPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorAlphaNum : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new alpha num validator.
+    /**
+     * Constructs a new %ValidatorAlphaNum object with the given parameters.
+     *
      * \param field     Name of the input field to validate.
-     * \param asciiOnly     If \c true, only ASCII characters are allowed.
+     * \param asciiOnly If \c true, only ASCII characters are allowed.
      * \param messages  Custom error message if validation fails.
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                  input field is empty. This value will \b NOT be validated.
      */
     ValidatorAlphaNum(const QString &field,
                       bool asciiOnly                    = false,
                       const ValidatorMessages &messages = ValidatorMessages(),
                       const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the alpha num validator.
+    /**
+     * Destryos the %ValidatorAlphaNum object.
      */
     ~ValidatorAlphaNum() override;
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a value only contains alpha-numeric characters.
      * \param value     The value to validate as it is.
@@ -71,16 +75,16 @@ public:
     static bool validate(const QString &value, bool asciiOnly = false);
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message.
+    /**
+     * Returns a generic error message.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

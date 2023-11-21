@@ -15,9 +15,9 @@ namespace Cutelyst {
 
 class ValidatorRequiredIfPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredIf validatorrequiredif.h <Cutelyst/Plugins/Utils/validatorrequiredif.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorrequiredif.h>
  * \brief The field under validation must be present and not empty if the other field is equal to
  * any value in a list.
  *
@@ -30,6 +30,9 @@ class ValidatorRequiredIfPrivate;
  * end of the input value before validation. So, fields that only contain whitespaces will be
  * treated as empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequired, ValidatorRequiredUnless, ValidatorRequiredWith, ValidatorRequiredWithAll,
@@ -38,35 +41,36 @@ class ValidatorRequiredIfPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequiredIf : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new required if validator.
+    /**
+     * Constructs a new %ValidatorRequiredIf object with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param otherField    Name of the other input field to validate.
-     * \param otherValues   Values in the other field from which one must match the other field's
-     * content to require the main field. \param messages      Custom error messages if validation
-     * fails.
+     * \param otherValues   Values in the other field from which one must match the other field’s
+     *                      content to require the main field.
+     * \param messages      Custom error messages if validation fails.
      */
     ValidatorRequiredIf(const QString &field,
                         const QString &otherField,
                         const QStringList &otherValues,
                         const ValidatorMessages &messages = ValidatorMessages());
 
-    /*!
-     * \brief Deconstructs the required if validator.
+    /**
+     * Destroys the %ValidatorRequiredIf object.
      */
     ~ValidatorRequiredIf() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

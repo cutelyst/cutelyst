@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorAlphaPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorAlpha validatoralpha.h <Cutelyst/Plugins/Utils/validatoralpha.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatoralpha.h>
  * \brief Validates an input field for only alphabetic content.
  *
  * The \a field under validation is only allowed to contain alphabetic characters.
@@ -37,6 +37,9 @@ class ValidatorAlphaPrivate;
  * " " // valid if trimBefore is true, invalid if trimBefore is false
  * \endcode
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorAlphaDash, ValidatorAlphaNum
@@ -44,45 +47,45 @@ class ValidatorAlphaPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorAlpha : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new alpha validator.
+    /**
+     * Constructs a new %ValidatorAlpha object with the given parameters.
      *
      * \param field         Name of the input field to validate.
      * \param asciiOnly     If \c true, only ASCII characters are allowed.
      * \param messages      Custom error messages if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                      input field is empty. This value will \b NOT be validated.
      */
     ValidatorAlpha(const QString &field,
                    bool asciiOnly                    = false,
                    const ValidatorMessages &messages = ValidatorMessages(),
                    const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the alpha validator.
+    /**
+     * Destroys the %ValidatorAlpha object.
      */
     ~ValidatorAlpha() override;
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a value only contains alphabetic characters.
      * \param value     The value to validate.
      * \param asciiOnly If \c true, only ASCII characters are allowed.
-     * \return \c true if the \a value only contains alphabetic characters
+     * \return \c true if \a value only contains alphabetic characters
      */
     static bool validate(const QString &value, bool asciiOnly = false);
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

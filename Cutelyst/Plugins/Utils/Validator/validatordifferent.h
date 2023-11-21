@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorDifferentPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorDifferent validatordifferent.h <Cutelyst/Plugins/Utils/validatordifferent.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatordifferent.h>
  * \brief Checks if two values are different.
  *
  * This will check if the value in the one input \a field is different from the value in the \a
@@ -28,6 +28,9 @@ class ValidatorDifferentPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorSame
@@ -35,34 +38,36 @@ class ValidatorDifferentPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorDifferent : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new different validator.
-     * \param field         Name of the input field to validate.
-     * \param other         Name of the other field to compare against.
-     * \param otherLabel    Translatable label of the other input field, used for generic error
-     * messages. \param messages      Custom error messages if validation fails.
+    /**
+     * Constructs a new %ValidatorDifferent object with the given parameters.
+     *
+     * \param field      Name of the input field to validate.
+     * \param other      Name of the other field to compare against.
+     * \param otherLabel Translatable label of the other input field, used for generic
+     *                   error messages.
+     * \param messages   Custom error messages if validation fails.
      */
     ValidatorDifferent(const QString &field,
                        const QString &other,
                        const char *otherLabel            = nullptr,
                        const ValidatorMessages &messages = ValidatorMessages());
 
-    /*!
-     * \brief Deconstructs the different validator.
+    /**
+     * Destroys the %ValidatorDifferent object.
      */
     ~ValidatorDifferent() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter value as
      * QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error if validation failed.
+    /**
+     * Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

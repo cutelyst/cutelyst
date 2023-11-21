@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorAcceptedPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorAccepted validatoraccepted.h <Cutelyst/Plugins/Utils/validatoraccepted.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatoraccepted.h>
  * \brief Checks if a field is available and has a specific value.
  *
  * The \a field under validation must be \c yes, \c on, \c 1, or \c true. This is useful for
@@ -26,43 +26,45 @@ class ValidatorAcceptedPrivate;
  * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
  * end of the input value before validation.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will be set to \c true.
+ *
  * \sa Validator for general usage of validators.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorAccepted : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new accepted validator.
-     *
-     * \param field     Name of the input field to validate.
-     * \param messages  Custom error message if validation fails.
+    /**
+     * Constructs a new %ValidatorAccepted object for the given \a field using optional
+     * custom error \a messages.
      */
     ValidatorAccepted(const QString &field,
                       const ValidatorMessages &messages = ValidatorMessages());
 
-    /*!
-     * \brief Deconstructs the accepted validator.
+    /**
+     * Destroys the %ValidatorAccepted object.
      */
     ~ValidatorAccepted() override;
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
-     * \brief Returns \c true if the \a value is \c yes, \c on, \c 1, or \c true.
-     * \param value The value to validate.
-     * \return \c true if the \a value is \c yes, \c on, \c 1, or \c true.
+     * \brief Returns \c true if the \a value is equal to \c yes, \c on, \c 1, or \c true.
+     *
+     * Returns \c true if the \a value is equal to \c yes, \c on, \c 1, or \c true, otherwise
+     * returns \c false.
      */
     static bool validate(const QString &value);
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
-     * If validation succeeded, ValidatorReturnType::value will contain \c true.
+     * If validation succeeds, ValidatorReturnType::value will contain \c true.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Creates a generic error message.
+    /**
+     * Returns a generic error message.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

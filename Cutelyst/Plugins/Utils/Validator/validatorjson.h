@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorJsonPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorJson validatorjson.h <Cutelyst/Plugins/Utils/validatorjson.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorjson.h>
  * \brief Checks if the inut data is valid JSON.
  *
  * This tries to load the input \a field string into a QJsonDocument and checks if it is not null
@@ -28,40 +28,44 @@ class ValidatorJsonPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QJsonDocument.
+ *
  * \sa Validator for general usage of validators.
+ *
+ * \todo Add options to check for the type of the JSON root object, if it is an object or an array.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorJson : public ValidatorRule
 {
 public:
-    /*!
+    /**
+     * Constructs a new %ValidatorJson object with the given parameters.
      * \brief Constructs a new json validator.
      * \param field         Name of the input field to validate.
      * \param messages      Custom error message if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                      input field is empty. This value will \b NOT be validated.
      */
     ValidatorJson(const QString &field,
                   const ValidatorMessages &messages = ValidatorMessages(),
                   const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the json validator.
+    /**
+     * Destroys the %ValidatorJson object.
      */
     ~ValidatorJson() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value converted into a QJsonDocument.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
-     * \param c         The current context, used for translations.
-     * \param errorData Will contain the error string from QJsonParseError.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

@@ -13,7 +13,7 @@ namespace Cutelyst {
 
 class ValidatorMinPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
  * \class ValidatorMin validatormin.h <Cutelyst/Plugins/Utils/validatormin.h>
  * \brief Checks if a value is not smaller or shorter than a maximum value.
@@ -38,6 +38,9 @@ class ValidatorMinPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain the \a type specified in the constructor.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorMax, ValidatorBetween, ValidatorSize
@@ -45,14 +48,16 @@ class ValidatorMinPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorMin : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new min validator.
+    /**
+     * Constructs a new %ValidatorMin with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param type          The type to compare.
      * \param min           Minimum value. Will be converted into comparable value. If it is a
-     * QString, it will try to get the comparison value from the stash. \param messages      Custom
-     * error message if validation fails. \param defValKey     \link Context::stash() Stash \endlink
-     * key containing a default value if input field is empty. This value will \b NOT be validated.
+     *                      QString, it will try to get the comparison value from the stash.
+     * \param messages      Custom error message if validation fails.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorMin(const QString &field,
                  QMetaType::Type type,
@@ -60,39 +65,33 @@ public:
                  const ValidatorMessages &messages = ValidatorMessages(),
                  const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the min validator.
+    /**
+     * Destroys the %ValidatorMin object.
      */
     ~ValidatorMin() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input parameter value
      * converted into the \a type specified in the constructor.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message.
-     * \param c         The current context, used for translations.
-     * \param errorData Will contain a QVariantMap with "val" containing the value and "min"
-     * containing the comparison value.
+    /**
+     * Returns a generic error message.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;
 
-    /*!
-     * \brief Returns a generic error message for validation data errors.
-     * \param c         The current context, used for translations.
-     * \param errorData Will contain either -1 if comparison value is invalid or 0 if the \a type is
-     * not supported.
+    /**
+     * Returns a generic error message for validation data errors.
      */
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
 
-    /*!
-     * \brief Returns a generic error message for input value parsing errors.
+    /**
+     * Returns a generic error message for input value parsing errors.
      */
     QString genericParsingError(Context *c, const QVariant &errorData) const override;
 

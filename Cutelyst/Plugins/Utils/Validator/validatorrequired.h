@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorRequiredPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequired validatorrequired.h <Cutelyst/Plugins/Utils/validatorrequired.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorrequired.h>
  * \brief Checks if a field is available and not empty.
  *
  * The \a field under validation must be present in the input data and not empty.
@@ -25,6 +25,9 @@ class ValidatorRequiredPrivate;
  * end of the input value before validation. So, fields that only contain whitespaces will be
  * treated as empty and are invalid.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith,
@@ -33,8 +36,8 @@ class ValidatorRequiredPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequired : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new required validator.
+    /**
+     * Constructs a new %ValidatorRequired object with the given parameters.
      *
      * \param field     Name of the input field that is required.
      * \param messages  Custom error message if validation fails.
@@ -42,21 +45,21 @@ public:
     ValidatorRequired(const QString &field,
                       const ValidatorMessages &messages = ValidatorMessages());
 
-    /*!
-     * \brief Deconstructs the required validator.
+    /**
+     * Destroys the %ValidatorRequired object.
      */
     ~ValidatorRequired() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input parameter value as
      * QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
+    /**
      * \brief Returns a generic error message.
      */
     QString genericValidationError(Context *c,

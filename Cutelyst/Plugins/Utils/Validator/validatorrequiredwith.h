@@ -15,11 +15,11 @@ namespace Cutelyst {
 
 class ValidatorRequiredWithPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredWith validatorrequiredwith.h
- * <Cutelyst/Plugins/Utils/validatorrequiredwith.h> \brief The field under validation must be
- * present and not empty only if any of the other specified fields is present.
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorrequiredwith.h>
+ * \brief The field under validation must be present and not empty only if any of the other
+ * specified fields is present.
  *
  * If \b any of the fields defined in the \a otherFields list is present in the input data, the \a
  * field under validation must be present and not empty. For the other fields only their presence in
@@ -30,6 +30,9 @@ class ValidatorRequiredWithPrivate;
  * end of the input value before validation. So, fields that only contain whitespaces will be
  * treated as empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequired, ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWithAll,
@@ -38,32 +41,34 @@ class ValidatorRequiredWithPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequiredWith : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new required with validator.
+    /**
+     * Constructs a new %ValidatorRequiredWith with the given parameters.
+     *
      * \param field         Name of the input field to validate.
-     * \param otherFields   List of other fields from which one must be present in the input data to
-     * require the field. \param messages      Custom error messages if validation fails.
+     * \param otherFields   List of other fields from which one must be present in the input data
+     *                      to require the \a field.
+     * \param messages      Custom error messages if validation fails.
      */
     ValidatorRequiredWith(const QString &field,
                           const QStringList &otherFields,
                           const ValidatorMessages &messages = ValidatorMessages());
 
-    /*!
-     * \brief Deconstructs the required with validator.
+    /**
+     * Destroys the %ValidatorRequiredWith object.
      */
     ~ValidatorRequiredWith() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

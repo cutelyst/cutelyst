@@ -13,13 +13,13 @@ namespace Cutelyst {
 
 class ValidatorNumericPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorNumeric validatornumeric.h <Cutelyst/Plugins/Utils/validatornumeric.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatornumeric.h>
  * \brief Checks if the field under validation could be casted into a numeric value.
  *
- * Checks for signed and unsigned integers as well as floats (also with exponential e) together with
- * minus signs in the input \a field. * Valid values are in format 3, -3.54, 8.89234e12 etc.
+ * Checks for signed and unsigned integers as well as floats (also with exponential e) together
+ * with minus signs in the input \a field. Valid values are in format 3, -3.54, 8.89234e12 etc.
  * Internally this will simply try to convert the parameter value from a QString into a double.
  *
  * \note Conversion of numeric input values is performed in the \c 'C' locale.
@@ -31,6 +31,9 @@ class ValidatorNumericPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a double.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorInteger
@@ -38,33 +41,34 @@ class ValidatorNumericPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorNumeric : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new numeric validator.
+    /**
+     * Constructs a new %ValidatorNumeric with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param messages      Custom error message if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorNumeric(const QString &field,
                      const ValidatorMessages &messages = ValidatorMessages(),
                      const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the numeric validator.
+    /**
+     * Destroys the %ValidatorNumeric object.
      */
     ~ValidatorNumeric() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value converted into a double.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;
