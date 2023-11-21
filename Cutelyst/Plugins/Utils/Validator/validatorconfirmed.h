@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorConfirmedPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorConfirmed validatorconfirmed.h <Cutelyst/Plugins/Utils/validatorconfirmed.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorconfirmed.h>
  * \brief Checks for a confirmation input field.
  *
  * The \a field under validation must have a matching field of \c foo_confirmation. For example, if
@@ -29,6 +29,9 @@ class ValidatorConfirmedPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorSame
@@ -36,30 +39,31 @@ class ValidatorConfirmedPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorConfirmed : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new confirmed validator.
+    /**
+     * Constructs a new %ValidatorConfirmed object with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param messages      Custom error message if validation fails.
      */
     ValidatorConfirmed(const QString &field,
                        const ValidatorMessages &messages = ValidatorMessages());
 
-    /*!
-     * \brief Deconstructs the confirmed validator.
+    /**
+     * Destroys the %ValidatorConfirmed object.
      */
     ~ValidatorConfirmed() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramater values
      * as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

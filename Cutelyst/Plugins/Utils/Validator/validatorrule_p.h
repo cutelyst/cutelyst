@@ -204,6 +204,13 @@ public:
         return var;
     }
 
+    /**
+     * @internal
+     * Returns a time zone either extracted directly from the value of \a field or from value in
+     * \a params identified by the value of \a field as key. If there is no suche key in \a params,
+     * it will be looked into the stash if there is a value identified by \a field. You should check
+     * the returned QTimeZone for validity.
+     */
     static QTimeZone extractTimeZone(Context *c, const ParamsMultiMap &params, const QString &field)
     {
         QTimeZone tz;

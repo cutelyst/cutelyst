@@ -15,9 +15,9 @@ namespace Cutelyst {
 
 class ValidatorNotInPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorNotIn validatornotin.h <Cutelyst/Plugins/Utils/validatornotin.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatornotin.h>
  * \brief Checks if the field value is not one from a list of values.
  *
  * This validator checks if the value of the \a field is not one from a list of \a values.
@@ -29,6 +29,9 @@ class ValidatorNotInPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorIn
@@ -36,15 +39,17 @@ class ValidatorNotInPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorNotIn : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new not in validator.
+    /**
+     * Constructs a new %VaidatorNotIn with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param values        List of values to compare against. Can be either a QStringList
-     * containing the not allowed values or a QString specifing a stash key containing a QStringList
-     * with not allowed values. \param cs            Case sensitivity when comparing the values.
+     *                      containing the not allowed values or a QString specifing a stash
+     *                      key containing a QStringList with not allowed values.
+     * \param cs            Case sensitivity when comparing the values.
      * \param messages      Custom error message if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorNotIn(const QString &field,
                    const QVariant &values,
@@ -52,28 +57,28 @@ public:
                    const ValidatorMessages &messages = ValidatorMessages(),
                    const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the validator.
+    /**
+     * Destroys the %ValidatorNotIn object.
      */
     ~ValidatorNotIn() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;
 
-    /*!
-     * \brief Returns a generic error messages if the list of comparison values is empty.
+    /**
+     * Returns a generic error messages if the list of comparison values is empty.
      */
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
 

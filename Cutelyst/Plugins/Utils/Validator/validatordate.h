@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorDatePrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorDate validatordate.h <Cutelyst/Plugins/Utils/validatordate.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatordate.h>
  * \brief Checks if the input data is a valid date.
  *
  * This validator checks if the input \a field can be parsed into a QDate, it will check the parsing
@@ -33,6 +33,9 @@ class ValidatorDatePrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QDate.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorDateTime, ValidatorTime
@@ -40,35 +43,36 @@ class ValidatorDatePrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorDate : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new date validator.
+    /**
+     * Constructs a new %ValidatorDate with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param inputFormat   Optional input format for input data parsing, can be translatable.
      * \param messages      Custom error messages if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorDate(const QString &field,
                   const char *inputFormat           = nullptr,
                   const ValidatorMessages &messages = ValidatorMessages(),
                   const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the date validator.
+    /**
+     * Destroys the %VaidatorDate object.
      */
     ~ValidatorDate() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramater value
      * converted into a QDate.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error if validation failed.
+    /**
+     * Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

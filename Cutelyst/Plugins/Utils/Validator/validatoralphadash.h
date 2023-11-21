@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorAlphaDashPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorAlphaDash validatoralphadash.h <Cutelyst/Plugins/Utils/validatoralphadash.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatoralphadash.h>
  * \brief Checks a value for only alpha-numeric content and dashes and underscores.
  *
  * The \a field under validation is only allowed to contain alpha-numeric characters as well as
@@ -37,6 +37,9 @@ class ValidatorAlphaDashPrivate;
  * " " // valid if trimBefore is true, invalid if trimBefore is false
  * \endcode
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorAlpha, ValidatorAlphaNum
@@ -44,44 +47,47 @@ class ValidatorAlphaDashPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorAlphaDash : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new alpha dash validator.
+    /**
+     * Constructs a new %ValidatorAlphaDash object with the given parameters.
+     *
      * \param field     Name of the input field to validate.
      * \param asciiOnly If \c true, only ASCII characters are allowed.
      * \param messages  Custom error message if validation fails.
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                  input field is empty. This value will \b NOT be validated.
      */
     ValidatorAlphaDash(const QString &field,
                        bool asciiOnly                    = false,
                        const ValidatorMessages &messages = ValidatorMessages(),
                        const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the alpha dash validator.
+    /**
+     * Destroys the %ValidatorAlpha object.
      */
     ~ValidatorAlphaDash() override;
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if the \a value only contains alpha-numeric characters, dashes and
-     * underscores. \param value     The value to validate as it is. \param asciiOnly If \c true,
-     * only ASCII characters are allowed. \return \c true if the \a value only contains
-     * alpha-numeric characters, dashes and underscores
+     * underscores.
+     * \param value     The value to validate as it is.
+     * \param asciiOnly If \c true, only ASCII characters are allowed.
+     * \return \c true if the \a value only contains alpha-numeric characters, dashes and
+     * underscores
      */
     static bool validate(const QString &value, bool asciiOnly = false);
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message.
+    /**
+     * Returns a generic error message.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

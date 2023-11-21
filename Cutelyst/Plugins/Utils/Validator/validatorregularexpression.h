@@ -15,11 +15,10 @@ namespace Cutelyst {
 
 class ValidatorRegularExpressionPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRegularExpression validatorregularexpression.h
- * <Cutelyst/Plugins/Utils/validatorregularexpression.h> \brief The field under validation must
- * match the given regular expression.
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorregularexpression.h>
+ * \brief The field under validation must match the given regular expression.
  *
  * Checks if the \a regex matches the content of the \a field.
  *
@@ -30,6 +29,9 @@ class ValidatorRegularExpressionPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorCharNotAllowed
@@ -37,35 +39,36 @@ class ValidatorRegularExpressionPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRegularExpression : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new regex validator.
+    /**
+     * Constructs a new %ValidatorRegularExpression object.
+     *
      * \param field         Name of the input field to validate.
      * \param regex         The regular expression to check against.
      * \param messages      Custom error message if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorRegularExpression(const QString &field,
                                const QRegularExpression &regex,
                                const ValidatorMessages &messages = ValidatorMessages(),
                                const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the regex validator.
+    /**
+     * Destroys the %ValidatorRegularExpresseion object.
      */
     ~ValidatorRegularExpression() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

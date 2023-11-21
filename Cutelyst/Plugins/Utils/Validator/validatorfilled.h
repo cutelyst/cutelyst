@@ -13,9 +13,9 @@ namespace Cutelyst {
 
 class ValidatorFilledPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorFilled validatorfilled.h <Cutelyst/Plugins/Utils/validatorfilled.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorfilled.h>
  * \brief The field under validation must not be empty when it is present.
  *
  * The difference to the \link ValidatorRequired required validator \endlink is, that it will only
@@ -26,6 +26,9 @@ class ValidatorFilledPrivate;
  * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
  * end of the input value before validation.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  *
  * \sa ValidatorPresent
@@ -33,8 +36,9 @@ class ValidatorFilledPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorFilled : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constructs a new filled validator.
+    /**
+     * Constructs a new %ValidatorFilled object with the given parameters.
+     *
      * \param field     Name of the input field to validate.
      * \param messages  Custom error message if validation fails.
      */
@@ -42,22 +46,22 @@ public:
                     const ValidatorMessages &messages = ValidatorMessages(),
                     const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the filled validator.
+    /**
+     * Destroys the %ValidatorFilled object.
      */
     ~ValidatorFilled() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input parameter value as
      * QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Creates a generic error message.
+    /**
+     * Creates a generic error message.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

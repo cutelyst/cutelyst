@@ -13,12 +13,12 @@ namespace Cutelyst {
 
 class ValidatorUrlPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorUrl validatorurl.h <Cutelyst/Plugins/Utils/validatorurl.h>
+ * \headerfile "" <Cutelyst/Plugins/Utils/validatorurl.h>
  * \brief The field under validation must be a valid URL.
  *
- * Checks if the \a field contains a valid URL by loading it into a QUrl and testing it's validity.
+ * Checks if the \a field contains a valid URL by loading it into a QUrl and testing it’s validity.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link
  * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
@@ -27,33 +27,36 @@ class ValidatorUrlPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QUrl.
+ *
  * \sa Validator for general usage of validators.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorUrl : public ValidatorRule
 {
 public:
-    /*!
-     * \brief Constraints to limit the validation.
+    /**
+     * Constraints to limit the validation.
      */
     enum Constraint {
         NoConstraint  = 0, /**< No constraints set. */
-        StrictParsing = 1, /**< String will be parsed in strict mode. See
-                              http://doc.qt.io/qt-5/qurl.html#ParsingMode-enum */
-        NoRelative  = 2,   /**< Relative URLs are not valid. */
-        NoLocalFile = 4,   /**< Local file URLs are not Vaid. */
-        WebsiteOnly = 8,   /**< Combines NoRelative and NoLocalFile and sets http and https to the
+        StrictParsing = 1, /**< String will be parsed in strict mode. See QUrl::ParsingMode */
+        NoRelative    = 2, /**< Relative URLs are not valid. */
+        NoLocalFile   = 4, /**< Local file URLs are not Vaid. */
+        WebsiteOnly   = 8, /**< Combines NoRelative and NoLocalFile and sets http and https to the
                               schemes list. (Will overwrite existing list) */
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 
-    /*!
-     * \brief Constructs a new url validator.
+    /**
+     * Constructs a new %ValidatorUrl object with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param constraints   Constraints for parsing and validating the URL.
      * \param schemes       List of allowed schemes for a valid URL.
      * \param messages      Custom error messages if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
+     *                      if input field is empty. This value will \b NOT be validated.
      */
     ValidatorUrl(const QString &field,
                  Constraints constraints           = NoConstraint,
@@ -61,22 +64,22 @@ public:
                  const ValidatorMessages &messages = ValidatorMessages(),
                  const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the validator.
+    /**
+     * Destroys the %ValidatorUrl object.
      */
     ~ValidatorUrl() override;
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value converted into QUrl.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;

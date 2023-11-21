@@ -13,7 +13,7 @@ namespace Cutelyst {
 
 class ValidatorIpPrivate;
 
-/*!
+/**
  * \ingroup plugins-utils-validator-rules
  * \class ValidatorIp validatorip.h <Cutelyst/Plugins/Utils/validatorip.h>
  * \brief Checks if the field value is a valid IP address.
@@ -28,12 +28,15 @@ class ValidatorIpPrivate;
  * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
  * present and not empty.
  *
+ * \par Return type
+ * On success, ValidatorReturnType::value will contain a QString.
+ *
  * \sa Validator for general usage of validators.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorIp : public ValidatorRule
 {
 public:
-    /*!
+    /**
      * \brief Acceptable address ranges.
      */
     enum Constraint {
@@ -49,25 +52,26 @@ public:
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 
-    /*!
-     * \brief Constructs a new ip validator.
+    /**
+     * Constructs a new %ValidatorIp object with the given parameters.
+     *
      * \param field         Name of the input field to validate.
      * \param constraints   Optional validation constraints.
      * \param messages      Custom error message if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
-     * input field is empty. This value will \b NOT be validated.
+     *                      input field is empty. This value will \b NOT be validated.
      */
     ValidatorIp(const QString &field,
                 Constraints constraints           = NoConstraint,
                 const ValidatorMessages &messages = ValidatorMessages(),
                 const QString &defValKey          = QString());
 
-    /*!
-     * \brief Deconstructs the ip validator.
+    /**
+     * Destroys the %ValidatorIp object.
      */
     ~ValidatorIp() override;
 
-    /*!
+    /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a value is a valid IP address within the \a constraints.
      * \param value         The value to validate.
@@ -77,16 +81,16 @@ public:
     static bool validate(const QString &value, Constraints constraints = NoConstraint);
 
 protected:
-    /*!
-     * \brief Performs the validation and returns the result.
+    /**
+     * Performs the validation on the input \a params and returns the result.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input paramter
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
-    /*!
-     * \brief Returns a generic error message if validation failed.
+    /**
+     * Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c,
                                    const QVariant &errorData = QVariant()) const override;
