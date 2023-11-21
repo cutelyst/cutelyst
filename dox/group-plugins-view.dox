@@ -1,0 +1,18 @@
+namespace Cutelyst {
+
+/**
+@ingroup plugins
+@defgroup plugins-view View
+@brief Available view plugins for %Cutelyst that render output.
+
+%View plugins for %Cutelyst are subclasses of View and render output for displaying or serving to
+the user agent. They can for example rendering HTML pages using template engines like
+\link CuteleeView Cutelee\endlink or create and sending emails or return JSON data.
+
+%Cutelyst already ships with different views that most easily can by called by the RenderView action
+when already registered in your reimplementation of Application::init(). You can create different
+views distinguished by names that can be load for different areas for your website. You can for
+example use a CuteleeView for your HTML website routes and a ViewJson for your API routes.
+*/
+
+}
