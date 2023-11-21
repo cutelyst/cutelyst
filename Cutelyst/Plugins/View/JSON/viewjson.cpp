@@ -12,12 +12,6 @@
 
 using namespace Cutelyst;
 
-/*!
- * \class Cutelyst::ViewJson viewjson.h Cutelyst/Plugins/JSON/viewjson.h
- * \brief JSON view for your data
- *
- * Cutelyst::ViewJSON is a Cutelyst View handler that returns stash data in JSON format.
- */
 ViewJson::ViewJson(QObject *parent, const QString &name)
     : View(new ViewJsonPrivate, parent, name)
 {
