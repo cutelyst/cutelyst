@@ -13,7 +13,7 @@ namespace Cutelyst {
 class SessionStoreFilePrivate;
 /**
  * @ingroup plugins-session
- * @class Cutelyst::SessionStoreFile session.h Cutelyst/Plugins/Session/sessionstorefile.h
+ * @headerfile "" <Cutelyst/Plugins/Session/sessionstorefile.h>
  * @brief A session store that stores user sessions in the file system.
  *
  * This session store stores the session data in the file system. The data is stored in files

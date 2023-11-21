@@ -18,8 +18,7 @@ class AuthenticationRealm;
 
 /**
  * \ingroup plugins-authentication
- * \class Cutelyst::AuthenticationCredential
- * \headerfile authentication.h <Cutelyst/Plugins/Authentication/authentication.h>
+ * \headerfile "" <Cutelyst/Plugins/Authentication/authentication.h>
  * \brief Abstract class to validate authentication credentials like user name and password.
  *
  * Use this class to create your own credential validator. Reimplement the pure virtual function
@@ -60,8 +59,7 @@ class AuthenticationPrivate;
 
 /**
  * \ingroup plugins-authentication
- * \class Cutelyst::Authentication
- * \headerfile authentication.h <Cutelyst/Plugins/Authentication/authentication.h>
+ * \headerfile "" <Cutelyst/Plugins/Authentication/authentication.h>
  * \brief Main class to manage user authentication.
  *
  * The %Authentication class authenticates users against user data found in a specific realm.

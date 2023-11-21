@@ -18,7 +18,7 @@ class MemcachedPrivate;
 
 /**
  * @ingroup plugins
- * @class Cutelyst::Memcached memcached.h Cutelyst/Plugins/Memcached/Memcached
+ * @headerfile "" <Cutelyst/Plugins/Memcached/Memcached>
  * @brief %Cutelyst %Memcached plugin.
  *
  * The %Memcached plugin for %Cutelyst can be used to store, retrieve, delete and modify data on a

@@ -24,7 +24,7 @@ class Request;
 
 /**
  * @ingroup plugins
- * @headerfile "" <Cutelyst/Plugins/UserAgent/UserAgent>
+ * @headerfile "" <Cutelyst/Plugins/UserAgent>
  * @brief Send network requests to other endpoints.
  *
  * The %UserAgent plugin provides access to a thread local network access manager object to

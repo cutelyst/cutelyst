@@ -19,7 +19,7 @@ class LangSelectPrivate;
 
 /**
  * @ingroup plugins-utils
- * @class LangSelect langselect.h <Cutelyst/Plugins/Utils/LangSelect/LangSelect>
+ * @headerfile "" <Cutelyst/Plugins/Utils/LangSelect>
  * @brief Detect and select locale based on different input parameters.
  *
  * The %LangSelect plugin can be used to automatically detect and set a user’s language by querying
