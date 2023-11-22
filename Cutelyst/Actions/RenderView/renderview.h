@@ -18,16 +18,30 @@ class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView final : public Action
     Q_DECLARE_PRIVATE(RenderView)
 public:
     /**
-     * Constructs a RenderView object with the given \arg parent.
+     * Constructs a %RenderView object with the given \a parent.
      */
     explicit RenderView(QObject *parent = nullptr);
 
     /**
-     * Reimplemented from Plugin::init()
+     * Initializes the %RenderView action by looking for a view name in the method attributes.
+     * The default view will be used if no <tt>:View(name)</tt> has been declard on the
+     * method attributes.
      */
     bool init(Application *application, const QVariantHash &args) override;
 
 protected:
+    /**
+     * This will \link Context::forward() forward\endlink execution to either a
+     * \link Context::setCutomView() custom\endlink view or to a view set as method attribute via
+     * <tt>:View(name)</tt> or to the default view.
+     *
+     * If the \c Content-Type header of the Response has not been already set, it will be set to
+     * <tt>'text/html; charset=utf-8'</tt>.
+     *
+     * If the Request is a HEAD request or if the Response::body() has already been set, this will
+     * do nothing and will return \c true. The same is true for when the Response::status() has
+     * already been set to 204 (no content) or 3xx.
+     */
     bool doExecute(Cutelyst::Context *c) override;
 };
 
