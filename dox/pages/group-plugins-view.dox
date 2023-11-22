@@ -6,13 +6,71 @@ namespace Cutelyst {
 @brief Available view plugins for %Cutelyst that render output.
 
 %View plugins for %Cutelyst are subclasses of View and render output for displaying or serving to
-the user agent. They can for example rendering HTML pages using template engines like
-\link CuteleeView Cutelee\endlink or create and sending emails or return JSON data.
+the user agent. They can for example render HTML pages using template engines like
+\link CuteleeView Cutelee\endlink or create and sending e-mails or return JSON data.
 
-%Cutelyst already ships with different views that most easily can by called by the RenderView action
-when already registered in your reimplementation of Application::init(). You can create different
-views distinguished by names that can be load for different areas for your website. You can for
-example use a CuteleeView for your HTML website routes and a ViewJson for your API routes.
+%Cutelyst already ships with different views that most easily can by called by the RenderView
+action when already registered in your reimplementation of Application::init(). You can create
+different views distinguished by names that can be load for different areas of your application.
+You can for example use a CuteleeView for your HTML website routes and a ViewJson for your API
+routes.
+
+<h3 id="defaultview">Default view</h3>
+Adding a view with an empty name makes it the default view. Everywhere where no view name is
+explicitely specified, the default view will be used.
+
+<h3>Registering views</h3>
+Views should be registered in your reimplementation of Application::init(). You can specify names
+for your views when registering them that can be used to load different views for different parts
+of your application. A nameless view would be the default view for your application.
+@code{.cpp}
+#include <Cutelyst/Plugins/View/Cutelee/cuteleeview.h>
+#include <Cutelyst/Plugins/View/JSON/viewjson.h>
+
+using namespace Cutelyst;
+
+bool MyApp::init()
+{
+    // other initialization stuff
+    // ...
+
+    // registering a Cutelee view as default view
+    auto cuteleeView = new CuteleeView(this);
+    cuteleeView->setIncludePaths({"/path/to/my/template/files"});
+
+    // registering a JSON view with the name "json"
+    auto jsonView = new ViewJson(this, "json");
+    jsonView->setExposeStash("myjsonkey");
+
+    // ...
+}
+@endcode
+Later in your code you can use the RenderView action to load the views.
+@code{.h}
+#include <Cutelyst/Controller>
+
+using namespace Cutelyst;
+
+class Root : public Controller
+{
+    // ...
+
+private:
+    // will use the default view to render output
+    C_ATTR(End, :ActionClass("RenderView"))
+    void End(Context *c);
+};
+
+class Api : public Controller
+{
+    // ...
+
+private:
+    // will use the "json" view to render output
+    C_ATTR(End, :ActionClass("RenderView") :View("json"))
+    void End(Context *c);
+};
+@endcode
 */
 
 }
