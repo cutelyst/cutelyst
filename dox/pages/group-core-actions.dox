@@ -5,8 +5,20 @@ namespace Cutelyst {
 @defgroup core-actions Actions
 @brief %Cutelyst controller method actions.
 
-%Cutelyst action classes are not meant to be instantiated manually but should be annotatet to
-a Controller method via method arguments.
+%Cutelyst action classes and action roles are not meant to be instantiated manually but should be
+annotated to a Controller method via method attribute <tt>:ActionClass(actionName)</tt> for action
+classes and <tt>:Does(actionName)</tt> for action roles set by <tt>C_ATTR(methodName, attributes ...)</tt>
+in front of a Controller method. \a actionName has to be the case sensitive class name of the action
+class or role to load. See Controller for more information about %Cutelyst method attributes set via
+<tt>C_ATTR()</tt>.
+@code{.h}
+...
+C_ATTR(End, :Private :ActionClass(RenderView) :View(someView))
+void End(Context *c);
+...
+@endcode
+
+An action class is a subclass of Action while an action role is a direct subclass of Component.
 */
 
 }
