@@ -34,10 +34,14 @@ class Plugin;
 class Headers;
 class ApplicationPrivate;
 
-/*! \class Application application.h Cutelyst/Application
- * @brief The %Cutelyst %Application
+/**
+ * \ingroup core
+ * \class Application application.h Cutelyst/Application
+ * \brief The %Cutelyst application.
  *
- * This is the main class of a Cutelyst appplication
+ * This is the main class of a %Cutelyst appplication.
+ *
+ * \logcat{core}
  */
 class CUTELYST_LIBRARY Application : public QObject
 {
@@ -52,13 +56,17 @@ public:
      * A Web Engine will instantiate your application through this
      * class, next it will load the settings file, and in the end
      * it will call init() which is where your application
-     * should do it's own setup.
+     * should do it’s own setup.
      *
      * \warning DO NOT register your controllers,
      * plugins or anything that might want to
      * use config() in here, do that in init()
      */
     explicit Application(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %Application object.
+     */
     virtual ~Application();
 
     /**
@@ -69,12 +77,20 @@ public:
     QVector<Controller *> controllers() const noexcept;
 
     /**
-     * Returns the view specified by \p name, if no view is found nullptr is returned.
+     * Returns the \ref plugins-view specified by \a name, if no view is found nullptr is returned.
+     * The default view is nameless.
      */
     View *view(QStringView name = {}) const;
 
     /**
-     * Returns application config specified by \p key, with a possible default value.
+     * Returns application config specified by \a key. If \a key is not found, \a defaultValue
+     * will be returned. These are the config entries in the \c %Cutelyst section in your
+     * \ref configuration "application configuration file".
+     *
+     * \note If you want to get config entries for other sections than \c %Cutelyst, you should
+     * use \link Engine::config() engine()->config("section").value("key")\endlink.
+     *
+     * \sa \ref configuration
      */
     QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 
@@ -84,19 +100,19 @@ public:
     Dispatcher *dispatcher() const noexcept;
 
     /**
-     * Returns a list with all registered dispachers.
+     * Returns a list with all registered dispatchers.
      *
      * The list might only be complete after application has been setup.
      */
     QVector<DispatchType *> dispatchers() const noexcept;
 
     /**
-     * Returns all registered plugins
+     * Returns all registered plugins.
      */
     QVector<Plugin *> plugins() const noexcept;
 
-    /*!
-     * Returns the registered plugin that casts to the template type \p T
+    /**
+     * Returns the registered plugin that casts to the template type \a T.
      */
     template <typename T>
     T plugin()
@@ -112,23 +128,36 @@ public:
     }
 
     /**
-     * User configuration for the application
-     * @return A variant hash with configuration settings
+     * User configuration for the application. Returns a map with
+     * configuration settings that are read from the \c %Cutelyst section of your
+     * \ref configuration "application configuration file".
+     *
+     * \note If you want to get other config sections than \c %Cutelyst, you should
+     * use \link Engine::config() engine()->config("section")\endlink.
+     *
+     * \sa \ref configuration
      */
     QVariantMap config() const noexcept;
 
     /**
-     * Merges path with config("HOME") and returns an absolute path.
+     * Merges \a path with \link config() config("home")\endlink and returns an absolute path.
+     *
+     * \note If "home" was not set in your \ref configuration "configuration file",
+     * it will be automatically set to the value returned by QDir::currentPath().
      */
     QString pathTo(const QString &path) const;
 
     /**
-     * Merges path with config("HOME") and returns an absolute path.
+     * Merges the \a path parts with \link config() config("home")\endlink and returns an
+     * absolute path.
+     *
+     * \note If "home" was not set in your \ref configuration "configuration file",
+     * it will be automatically set to the value returned by QDir::currentPath().
      */
     QString pathTo(const QStringList &path) const;
 
     /**
-     * Returns true if the application has been inited.
+     * Returns \c true if the application has been inited.
      */
     bool inited() const noexcept;
 
@@ -138,13 +167,13 @@ public:
     Engine *engine() const noexcept;
 
     /**
-     * Tries to load a plugin in Cutelyst default plugin directory with \p parent as it's parent.
+     * Tries to load a plugin in %Cutelyst default plugin directory with \a parent as it’s parent.
      * A nullptr is returned in case of failure.
      */
     Component *createComponentPlugin(const QString &name, QObject *parent = nullptr);
 
     /**
-     * Returns cutelyst version.
+     * Returns %Cutelyst version.
      */
     static const char *cutelystVersion() noexcept;
 
@@ -152,9 +181,13 @@ public:
      * Adds a @a translator for the specified @a locale.
      *
      * You can add multiple translators for different application parts for every supported
-     * locale. The installed translators will then be used by Context::translate() (what itself
-     * will use Application::translate()) to translate strings according to the locale set by
-     * Context::setLocale().
+     * locale. The installed translators will then be used by Context::translate() and
+     * Context::qtTrId() (which itself will use Application::translate()) to translate strings
+     * according to the locale set by Context::setLocale().
+     *
+     * \note You will most likely want to use loadTranslationsFromDir() or
+     * loadTranslationsFromDirs() instead of this function because they automatically load
+     * translations and set their locales.
      *
      * @par Usage example:
      * @code{.cpp}
@@ -164,15 +197,18 @@ public:
      *
      *      auto trans = new QTranslator(this);
      *      QLocale deDE(QLocale::German, QLocale::Germany);
-     *      if (trans->load(deDE, QStringLiteral("mycutelystapp"), QStringLiteral("."),
-     * QStringLiteral("/usr/share/mycutelystapp/l10n")) { addTranslator(deDE, trans);
+     *      if (trans->load(deDE, QStringLiteral("mycutelystapp"),
+     *                            QStringLiteral("."),
+     *                            QStringLiteral("/usr/share/mycutelystapp/l10n")) {
+     *           addTranslator(deDE, trans);
      *      }
      *
      *      // ...
      * }
      * @endcode
      *
-     * @sa loadTranslations()
+     * @sa loadTranslationsFromDir() loadTranslationsFromDirs()
+     * @sa @ref translations
      *
      * @since Cutelyst 1.5.0
      */
@@ -185,6 +221,8 @@ public:
      *
      * @overload
      *
+     * @sa @ref translations
+     *
      * @since Cutelyst 1.5.0
      */
     void addTranslator(const QString &locale, QTranslator *translator);
@@ -192,7 +230,12 @@ public:
     /**
      * Adds multiple @a translators for the specified @a locale.
      *
+     * \note You will most likely want to use loadTranslationsFromDir() or
+     * loadTranslationsFromDirs() instead of this function because they automatically load
+     * translations and set their locales.
+     *
      * @sa addTranslator()
+     * @sa @ref translations
      *
      * @since Cutelyst 1.5.0
      */
@@ -206,6 +249,7 @@ public:
      * disambiguation and/or the @a n parameter to translate a pluralized version.
      *
      * @sa Context::translate(), QTranslator::translate()
+     * @sa @ref translations
      *
      * @since Cutelyst 1.5.0
      */
@@ -218,8 +262,10 @@ public:
     /**
      * Loads translations for a specific @a filename from a single directory.
      *
-     * This can be used to load translations for a specific component if the translation file names
-     * follow a common schema. Let us assume you organised your translation files as follows:
+     * This can be used to load translations for a specific component or application if the
+     * translation file names follow a common schema.
+     *
+     * Let us assume you organised your translation files as follows:
      * @li @c /usr/share/myapp/translations/myapp_de.qm
      * @li @c /usr/share/myapp/translations/myapp_pt_BR.qm
      * @li @c ...
@@ -230,7 +276,8 @@ public:
      * bool MyApp::init()
      * {
      *      loadTranslations(QStringLiteral("myapp"),
-     * QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     *                       QStringLiteral("/usr/share/myapp/translations"),
+     *                       QStringLiteral("_"));
      * }
      * @endcode
      *
@@ -240,6 +287,7 @@ public:
      * @a suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
      * @sa addTranslator(), loadTranslationsFromDir(), loadTranslationsFromDirs()
+     * @sa @ref translations
      *
      * @since Cuteylst 2.0.0
      */
@@ -252,8 +300,10 @@ public:
      * Loads translations for a specific @a filename from a single directory and returns a list of
      * added locales.
      *
-     * This can be used to load translations for a specific component if the translation file names
-     * follow a common schema. Let us assume you organised your translation files as follows:
+     * This can be used to load translations for a specific component or application if the
+     * translation file names follow a common schema.
+     *
+     * Let us assume you organised your translation files as follows:
      * @li @c /usr/share/myapp/translations/myapp_de.qm
      * @li @c /usr/share/myapp/translations/myapp_pt_BR.qm
      * @li @c ...
@@ -264,7 +314,8 @@ public:
      * bool MyApp::init()
      * {
      *      loadTranslationsFromDir(QStringLiteral("myapp"),
-     * QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     *                              QStringLiteral("/usr/share/myapp/translations"),
+     *                              QStringLiteral("_"));
      * }
      * @endcode
      *
@@ -274,6 +325,7 @@ public:
      * @a suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
      * @sa addTranslator(), loadTranslationsFromDirs()
+     * @sa @ref translations
      *
      * @since Cuteylst 2.1.0
      */
@@ -299,11 +351,12 @@ public:
      * bool MyApp::init()
      * {
      *     loadTranslationsFromDirs(QStringLiteral("/usr/share/locale"),
-     * QStringLiteral("LC_MESSAGES/myapp.qm"));
+     *                              QStringLiteral("LC_MESSAGES/myapp.qm"));
      * }
      * @endcode
      *
      * @sa addTranslator(), loadTranslationsFromDir()
+     * @sa @ref translations
      *
      * @since Cutelyst 2.1.0
      */
@@ -313,13 +366,15 @@ protected:
     /**
      * Do your application initialization here, if your
      * application should not proceed log some information
-     * that might help on debuggin and return false
+     * that might help on debugging and return \c false.
      *
      * For example if your application only works with
      * PostgeSQL and the Qt driver is not available it
      * makes sense to fail here. However you should not
      * initialize resouces that cannot be shared among
-     * process. \sa postFork
+     * process.
+     *
+     * \sa postFork
      *
      * @return \c true if your application was successfuly initted
      */
@@ -330,34 +385,34 @@ protected:
      *
      * After the web engine forks itself it will call
      * this function so that you can initialize resources
-     * that can't be shared with the parent process, namely
+     * that can’t be shared with the parent process, namely
      * sockets and file descriptors.
      *
      * A good example of usage of this function is when
-     * openning a connection to the database which can't
-     * be shared with other process and should probably
-     * make this function return false if it fails to open.
+     * opening a connection to the database which can’t
+     * be shared with other processes and should probably
+     * make this function return \c false if it fails to open.
      *
-     * Default implementation returns true.
+     * Default implementation returns \c true.
      *
-     * @return False if the engine should not use this process
+     * @return \c false if the engine should not use this process
      */
     virtual bool postFork();
 
     /**
-     * This is the HTTP default response headers that each request gets
+     * This is the HTTP default response headers that each request gets.
      *
      * Do not change it after the application has started.
      */
     Headers &defaultHeaders() noexcept;
 
     /**
-     * Adds a X-Cutelyst header with our version on each request
+     * Adds a X-Cutelyst header with our version on each request.
      */
     void addXCutelystVersionHeader();
 
     /**
-     * Registers a global plugin ie one that doesn't need
+     * Registers a global plugin ie. one that doesn’t need
      * to be created explicity for a single request and returns
      * true on plugin->isApplicationPlugin();
      *
@@ -367,9 +422,9 @@ protected:
 
     /**
      * This method registers a Controller class which
-     * is responsible for handlying Requests,
-     * since they are reused between multiple requests
-     * beaware of not storing data there, instead you
+     * is responsible for handlying requests,
+     * since they are reused between multiple requests.
+     * Be aware of not storing data there, instead you
      * might want to use a session plugin or the stash.
      *
      * @param controller the Controller class
@@ -378,17 +433,17 @@ protected:
     bool registerController(Controller *controller);
 
     /**
-     * This method registers a View class which
+     * This method registers a \ref plugins-view class which
      * is responsible for rendering requests.
      *
-     * @param view the View class
+     * @param view the \ref plugins-view class
      * @return \c true if succeeded
      */
     bool registerView(View *view);
 
     /**
-     * Registers a custom DispatchType, if none is registered
-     * all the built-in dispatchers types will be registered
+     * Registers a custom DispatchType. If none is registered,
+     * all the built-in dispatcher types will be registered.
      */
     bool registerDispatcher(DispatchType *dispatcher);
 
@@ -396,11 +451,11 @@ Q_SIGNALS:
     /**
      * This signal is emitted before the Dispatcher
      * is called to find an action.
-     * It's useful if you need to intercept requests
-     * before they are dispached.
-     * Always check skipMethod and return if it's true.
+     * It’s useful if you need to intercept requests
+     * before they are dispatched.
+     * Always check \a skipMethod and return if it’s \c true.
      * In case you want to stop further processing set
-     * skipMethod to true.
+     * \a skipMethod to \c true.
      */
     void beforePrepareAction(Cutelyst::Context *c, bool *skipMethod);
 
@@ -418,46 +473,50 @@ Q_SIGNALS:
 
     /**
      * This signal is emitted right after application has been setup
-     * and before application forks and \sa postFork() is called.
+     * and before application forks and postFork() is called.
      */
     void preForked(Cutelyst::Application *app);
 
     /**
-     * This signal is emitted after before \sa postFork() is called.
+     * This signal is emitted after postFork() is called.
      */
     void postForked(Cutelyst::Application *app);
 
     /**
      * This signal is likely to be emitted when the worker process should
-     * stop, at this point the application has a limited time to finish it's
-     * operations, if a timeout is reached the application will get killed.
+     * stop. At this point the application has a limited time to finish it’s
+     * operations. If a timeout is reached the application will get killed.
      */
     void shuttingDown(Cutelyst::Application *app);
 
 protected:
     /**
-     * Change the value of the configuration key
-     * You should never call this from random parts of the
-     * code as a way to store shareable data, it should
-     * only be called by a subclass
+     * Change the \a value of the configuration \a key.
+     *
+     * This will change or add keys to the configuration read from the \c %Cutelyst section
+     * of your \ref configuration "configuration file". The set values are not written to
+     * the file.
+     *
+     * \warning You should never call this from random parts of the code as a way to store
+     * shareable data, it should only be called by a subclass
      */
     void setConfig(const QString &key, const QVariant &value);
 
     friend class Engine;
     friend class Context;
 
-    /*!
-     * Called by the Engine to setup the internal data
+    /**
+     * Called by the Engine to setup the internal data.
      */
     bool setup(Engine *engine);
 
-    /*!
-     * Called by the Engine to handle a new Request object
+    /**
+     * Called by the Engine to handle a new Request object.
      */
     void handleRequest(Cutelyst::EngineRequest *request);
 
-    /*!
-     * Called by the Engine once post fork happened
+    /**
+     * Called by the Engine once post fork happened.
      */
     bool enginePostFork();
 
