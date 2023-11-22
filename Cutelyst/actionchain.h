@@ -13,10 +13,12 @@
 namespace Cutelyst {
 
 class ActionChainPrivate;
-/*! \class ActionChain actionchain.h Cutelyst/ActionChain
- * @brief Holds a chain of %Cutelyst %Actions
+/**
+ * \ingroup core
+ * \class ActionChain actionchain.h Cutelyst/ActionChain
+ * \brief Holds a chain of %Cutelyst actions
  *
- * This class represents a chain of Cutelyst Actions.
+ * This class represents a chain of Cutelyst actions.
  * It behaves exactly like the action at the *end* of the chain
  * except on dispatch it will execute all the actions in the chain in order.
  */
@@ -26,20 +28,20 @@ class CUTELYST_LIBRARY ActionChain : public Action
     Q_DECLARE_PRIVATE(ActionChain)
 public:
     /**
-     * Constructs a ActionChain object with the folloing \p chain and the given \p parent.
+     * Constructs a new %ActionChain object with the given \a chain and \a parent.
      */
     explicit ActionChain(const ActionList &chain, QObject *parent = nullptr);
+
+    /**
+     * Destroys the %ActionChain object.
+     */
     virtual ~ActionChain() override = default;
 
     /**
-     * The action chain
-     * @return a list of Cutelyst::Action objects encapsulated by this chain.
+     * Returns a list of Action objects encapsulated by this chain.
      */
     [[nodiscard]] ActionList chain() const noexcept;
 
-    /**
-     * Reimplemented from Action::numberOfCaptures()
-     */
     qint8 numberOfCaptures() const noexcept override;
 
 protected:
