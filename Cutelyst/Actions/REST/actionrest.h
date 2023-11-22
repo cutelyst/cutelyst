@@ -18,7 +18,7 @@ class CUTELYST_PLUGIN_ACTION_REST_EXPORT ActionREST final : public Action
     Q_DECLARE_PRIVATE(ActionREST)
 public:
     /**
-     * Constructs a new ActionREST object with the given parent.
+     * Constructs a new %ActionREST object with the given \a parent.
      */
     explicit ActionREST(QObject *parent = nullptr);
 
