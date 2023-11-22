@@ -11,9 +11,10 @@
 
 using namespace Cutelyst;
 
-/*!
- * \class Cutelyst::RoleACL roleacl.h Cutelyst/RoleACL
- * \brief User role-based authorization action class
+/**
+ * \ingroup core-actions
+ * \class Cutelyst::RoleACL
+ * \brief User role-based authorization action role.
  *
  * Provides a reusable action role for user role-based authorization. ACLs are applied via the
  * assignment of attributes to application action subroutines.
@@ -35,7 +36,7 @@ using namespace Cutelyst;
  * };
  * \endcode
  *
- * <H3>REQUIRED ATTRIBUTES</H3>
+ * <H3>Required Attributes</H3>
  *
  * Failure to include the following required attributes will result in a fatal error when the
  * RoleACL action's constructor is called.
@@ -54,7 +55,7 @@ using namespace Cutelyst;
  *
  * One or more roles may be associated with an action.
  *
- * User roles are fetched via the invocation of the AuthenticationUser object's "roles" QStringList
+ * User roles are fetched via the invocation of the AuthenticationUser object’s "roles" QStringList
  * value.
  *
  * Roles specified with the RequiresRole attribute are checked before roles specified with the
@@ -78,7 +79,7 @@ using namespace Cutelyst;
  *        :Does(RoleACL))
  * void broken(Context *c);
  * \endcode
- * This action will cause a fatal error because it's missing the ACLDetachTo attribute
+ * This action will cause a fatal error because it’s missing the ACLDetachTo attribute
  * and has neither a RequiresRole nor an AllowedRole attribute. A RoleACL action
  * must include at least one RequiresRole or AllowedRole attribute.
  *

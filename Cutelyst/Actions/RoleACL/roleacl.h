@@ -21,34 +21,25 @@ class CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT RoleACL final : public Component
     Q_DECLARE_PRIVATE(RoleACL)
 public:
     /**
-     * Constructs a new role ACL object with the given parent.
+     * Constructs a new %RoleACL object with the given \a parent.
      */
     explicit RoleACL(QObject *parent = nullptr);
 
     /**
-     * Reimplemented from Component::modifiers().
+     * Always returns Component::Modifiers::AroundExecute.
      */
     Modifiers modifiers() const override;
 
-    /**
-     * Reimplemented from Component::init().
-     */
     bool init(Application *application, const QVariantHash &args) override;
 
-    /**
-     * Reimplemented from Component::aroundExecute().
-     */
     bool aroundExecute(Context *c, QStack<Component *> stack) override;
 
     /**
-     * Returns true if the action can be visited by the context c.
+     * Returns \c true if the action can be visited by the context \a c.
      */
     [[nodiscard]] bool canVisit(Context *c) const;
 
 protected:
-    /**
-     * Reimplemented from Component::dispatcherReady().
-     */
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 };
 
