@@ -52,6 +52,8 @@ using namespace Cutelyst;
  * \endcode
  *
  * \sa \ref plugins-view
+ *
+ * \logcat{renderview}
  */
 RenderView::RenderView(QObject *parent)
     : Action(new RenderViewPrivate, parent)
