@@ -365,7 +365,7 @@ if (BUILD_DOCS)
         set(DOXYGEN_TAGFILES ${ONLINETAGS})
         set(DOXYGEN_HTML_OUTPUT "webdocs")
         doxygen_add_docs(webdocs
-            ${CMAKE_CURRENT_SOURCE_DIR}/dox ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/dox/pages ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
             COMMENT "Generate HTML documentation for online usage"
         )
         message(STATUS "Adding build target webdocs")
@@ -374,7 +374,7 @@ if (BUILD_DOCS)
         set(DOXYGEN_TAGFILES ${LOCALHTMLTAGS})
         set(DOXYGEN_HTML_OUTPUT "htmldocs")
         doxygen_add_docs(htmldocs
-            ${CMAKE_CURRENT_SOURCE_DIR}/dox ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/dox/pages ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
             COMMENT "Generate HTML documentation for local usage"
         )
         add_dependencies(docs htmldocs)
@@ -392,7 +392,7 @@ if (BUILD_DOCS)
             set(DOXYGEN_QCH_FILE "${CMAKE_CURRENT_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}.qch")
 
             doxygen_add_docs(qtdocs
-                ${CMAKE_CURRENT_SOURCE_DIR}/dox ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/dox/pages ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
                 COMMENT "Generate Qt QCH documentation for local usage"
             )
             add_dependencies(docs qtdocs)
