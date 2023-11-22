@@ -16,36 +16,42 @@ Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview", QtWarningMsg)
 using namespace Cutelyst;
 
 /**
- * \class Cutelyst::RenderView renderview.h Cutelyst/Actions/RenderView/RenderView
- * \brief Sensible default end action.
+ * \ingroup core-actions
+ * \class Cutelyst::RenderView
+ * \brief Sensible default end action that forwards to a \ref plugins-view.
  *
  * This action implements a sensible default end action, which will forward to the first available
- * view or a custom one, unless c->res()->status() is a 3xx code (redirection, not modified, etc.),
- * 204 (no content), HEAD methods, or c->res()->body() has already been set.
+ * \ref plugins-view or a custom one, unless
+ * \link Context c\endlink->\link Response res()\endlink->\link Response::status() status()\endlink
+ * is a 3xx code (redirection, not modified, etc.), 204 (no content), HEAD methods, or
+ * \link Context c\endlink->\link Response res()\endlink->\link Response::body() body()\endlink
+ * has already been set.
  *
  * If you have more than one view, you can specify which one to use with the :View(view_name)
- * attribute or one set with c->setView() otherwise this module simply calls c->view() with no
- * argument.
+ * attribute or one set with \link Context::setCustomView() c->setCustomView()\endlink otherwise
+ * this module simply calls \link Context::view() c->view()\endlink with no argument what will
+ * return the default \ref plugins-view.
  *
- * The RenderView action allows to easily call a renderer without including it's
- * header and add implementation code, all that is needed is an anotation to the Controller's
- * method: \code{.h} class Users : public Cutelyst::Controller
+ * The %RenderView action allows to easily call a renderer without including it’s
+ * header and add implementation code, all that is needed is an annotation to the Controller’s
+ * method:
+ * \code{.h} class Users : public Cutelyst::Controller
  * {
  * public:
  *   C_ATTR(End, :ActionClass(RenderView))
  *   void End(Context *c);
  * };
  * \endcode
- * The above will render with the default
- * view added to Cutelyst::Application, if
- * you want it to render with another view
- * just add the View(name) keyword:
+ * The above will render with the default view added to Cutelyst::Application without a name, if
+ * you want it to render with another view just add the View(name) keyword:
  * \code{.h}
  * ...
  *   C_ATTR(End, :ActionClass(RenderView) :View(ajax_view))
  *   void End(Context *c);
  * ...
  * \endcode
+ *
+ * \sa \ref plugins-view
  */
 RenderView::RenderView(QObject *parent)
     : Action(new RenderViewPrivate, parent)
