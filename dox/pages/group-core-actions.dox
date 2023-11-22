@@ -1,0 +1,12 @@
+namespace Cutelyst {
+
+/**
+@ingroup core
+@defgroup core-actions Actions
+@brief %Cutelyst controller method actions.
+
+%Cutelyst action classes are not meant to be instantiated manually but should be annotatet to
+a Controller method via method arguments.
+*/
+
+}
