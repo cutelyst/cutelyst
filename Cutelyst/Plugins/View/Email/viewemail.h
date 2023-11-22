@@ -17,17 +17,37 @@ class ViewEmailPrivate;
  * \brief A view that sends stash data via e-mail.
  *
  * %ViewEmail is a View handler that sends Context::stash() data via e-mail.
+ *
+ * \par Logging category
+ * cutelyst.view.email
  */
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewEmail)
+    /**
+     * The stash key that will contain the email data.
+     */
     Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey NOTIFY changed)
+    /**
+     * The default content type (mime type) that is used if there is no content type
+     * set in the stash data. \c text/plain by default.
+     */
     Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType
                    NOTIFY changed)
+    /**
+     * The default charset for every MIME part with the content type text that is used if there
+     * is no charset set in the stash data.
+     */
     Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset NOTIFY changed)
+    /**
+     * The default encoding that is used if there is no encoding set in the stash data.
+     */
     Q_PROPERTY(
         QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding NOTIFY changed)
+    /**
+     * \c True if async mode is on.
+     */
     Q_PROPERTY(bool async READ async WRITE setAsync NOTIFY changed)
 public:
     /**  This value defines which kind of connection should be used */
