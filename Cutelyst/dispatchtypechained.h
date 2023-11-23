@@ -11,15 +11,26 @@
 namespace Cutelyst {
 
 class DispatchTypeChainedPrivate;
+/**
+ * @ingroup core
+ * @class Cutelyst::DispatchTypeChained
+ * @brief Describes a chained dispatch type.
+ *
+ * Describes a chained dispatch type.
+ */
 class CUTELYST_LIBRARY DispatchTypeChained final : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypeChained)
 public:
     /**
-     * Constructs a DispatchTypeChained object with the given \p parent.
+     * Constructs a new %DispatchTypeChained object with the given \a parent.
      */
     explicit DispatchTypeChained(QObject *parent = nullptr);
+
+    /**
+     * Destryos the %DispatchTypeChained object.
+     */
     ~DispatchTypeChained() override;
 
     QByteArray list() const override;

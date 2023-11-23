@@ -18,44 +18,50 @@ class Controller;
 class DispatchType;
 class DispatcherPrivate;
 
-/*! \class Dispatcher dispatcher.h Cutelyst/Dispatcher
- * @brief The %Cutelyst %Dispatcher
+/**
+ * \ingroup core
+ * \class Dispatcher dispatcher.h Cutelyst/Dispatcher
+ * \brief The %Cutelyst %Dispatcher
  *
- * This class is resposible for finding an Action for new Requests and invoking it.
+ * This class is resposible for finding an Action for new requests and invoking it.
  */
 class CUTELYST_LIBRARY Dispatcher : public QObject
 {
     Q_OBJECT
 public:
     /**
-     * Constructs a Dispatcher object with the given \p parent.
+     * Constructs a new %Dispatcher object with the given \a parent.
      */
     Dispatcher(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %Dispatcher object.
+     */
     ~Dispatcher();
 
     /**
-     * Returns a named action from a given namespace.
+     * Returns an action by \a name from a given \a nameSpace.
      */
     [[nodiscard]] Action *getAction(QStringView name, QStringView nameSpace = {}) const;
 
     /**
-     * Returns the named action by its full private path.
+     * Returns an action by its full private \a path.
      */
     [[nodiscard]] Action *getActionByPath(QStringView path) const;
 
     /**
-     * Returns a list of actions that match \p name on
-     * the desired namespace \p nameSpace
+     * Returns a list of actions that match \a name on
+     * the desired namespace \a nameSpace.
      */
     [[nodiscard]] ActionList getActions(QStringView name, QStringView nameSpace) const;
 
     /**
-     * Returns a Controller given it's name
+     * Returns a Controller given it's \a name.
      */
     [[nodiscard]] Controller *controller(QStringView name) const;
 
     /**
-     * Returns a list of registered controllers
+     * Returns a list of registered controllers.
      */
     [[nodiscard]] QList<Controller *> controllers() const;
 
@@ -70,7 +76,7 @@ public:
     [[nodiscard]] QString uriForAction(Action *action, const QStringList &captures) const;
 
     /**
-     * Expand an action into a full representation of the dispatch. mostly useful for chained where
+     * Expand an action into a full representation of the dispatch. Mostly useful for chained where
      * the returned Action will be of ActionChain type, other actions will just return a single
      * action.
      */
@@ -84,7 +90,7 @@ public:
 
 protected:
     /**
-     * Used by Application to register all Controllers Actions into the list of DispatchType
+     * Used by Application to register all Controllers Actions into the list of DispatchType.
      */
     void setupActions(const QVector<Controller *> &controllers,
                       const QVector<DispatchType *> &dispatchers,
@@ -92,22 +98,22 @@ protected:
 
     /**
      * Delegate the dispatch to the action that matched the url, or return a
-     * message about unknown resource
+     * message about unknown resource.
      */
     bool dispatch(Context *c);
 
     /**
-     * Used by Application to forward execution to the following Component
+     * Used by Application to forward execution to the following Component.
      */
     bool forward(Context *c, Component *component);
 
     /**
-     * Used by Application to forward execution to \p opname that is resolved to an Action
+     * Used by Application to forward execution to \a opname that is resolved to an Action.
      */
     bool forward(Context *c, QStringView opname);
 
     /**
-     * Used by Application to find a matching action for the current Context
+     * Used by Application to find a matching action for the current Context \a c.
      */
     void prepareAction(Context *c);
 
