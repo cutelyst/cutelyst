@@ -15,6 +15,7 @@ class Context;
 class ViewPrivate;
 
 /**
+ * \ingroup core
  * \class View view.h Cutelyst/View
  * \brief Abstract %View component for %Cutelyst.
  *
