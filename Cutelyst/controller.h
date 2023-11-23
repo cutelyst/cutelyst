@@ -14,9 +14,35 @@
 
 #define STR(X) #X
 #define C_PATH(X, Y) Q_CLASSINFO(STR(X##_Path), STR(Y))
+
+/**
+ * \related Cutelyst::Controller
+ * Explicitely sets the <a href="#namespace">controller namespace</a> to \a value.
+ * Use this in the private part of your controller declaration.
+ */
 #define C_NAMESPACE(value) Q_CLASSINFO("Namespace", value)
+
+/**
+ * \related Cutelyst::Controller
+ * Sets method attributes \a Y to method \a X and marks the method
+ * as \link QObject::Q_INVOKABLE Q_INVOKABLE\endlink.
+ * @code{.h}
+ * ...
+ *
+ * C_ATTR(index, :Path :Args(0))
+ * void index(Context *c);
+ *
+ * C_ATTR(pageNotFound, :Path)
+ * void pageNotFound(Context *c;
+ *
+ * ...
+ * @endcode
+ */
 #define C_ATTR(X, Y) Q_CLASSINFO(STR(X), STR(Y)) Q_INVOKABLE
 
+/**
+ * \related Cutelyst::Controller
+ */
 #define CActionFor(str) \
     ([this]() -> Cutelyst::Action * { \
         static thread_local Cutelyst::Action *action = Cutelyst::Controller::actionFor(str); \
@@ -26,63 +52,6 @@
 namespace Cutelyst {
 
 class ControllerPrivate;
-/*! \class Controller controller.h Cutelyst/Controller
- * @brief %Cutelyst %Controller base class
- *
- * Controllers are where the actions in the Cutelyst framework reside.
- * Each action is represented by a function with an attribute to identify
- * what kind of action it is. See the Cutelyst::Dispatcher for more info
- * about how Cutelyst dispatches to actions.
- *
- * Use C_ATTR to give hints about methods
- * build like methodName_option
- * Where option is one of the following:
- *
- * \b :Path - An ending path relative to the class info Namespace
- * for example:
- * \n :Path("") - /namespace/controlername (used for the index)
- * \n :Path("foo") - /namespace/controlername/foo
- * \n :Path("/bar") - /namespace/bar
- *
- * \b :Chained - Sets the name of this part of the chain. If it
- * is specified without arguments, it takes the name of
- * the action as default.
- *
- * \b :PathPart - The part of the chained path
- *
- * \b :Args - In the case of more than 9 parameters, to build
- * the path set the needed number here, where an empty string
- * means unlimited arguments.
- *
- * \b :CaptureArgs - In the case of more than 9 parameters, to
- * be captured the path set the needed number here, where -1
- * means unlimited arguments.
- *
- * \b :Global - Alias to Path="/methodname" which sets the
- * method relative to your root.
- *
- * \b :Local - Alias to Path="methodname".
- *
- * \b :Args - When used with "Path" it indicates the number of
- * arguments in the path.
- * \n The number is computed by counting the arguments the method expects.
- * \n However if no Args value is set, assumed to 'slurp' all
- *    remaining path parts under this namespace.
- *
- * There are also three special methods that can be implemented
- * that will be automatically dispatched, they are Begin(),
- * Auto() and End().
- *
- * Begin(Context*) and End(Context*) are both called on the closest
- * namespace match. If the Controller implements Begin it's that action
- * that will be called otherwise it will try to match looking at the
- * namespace.
- *
- * Auto(Context*) is called in namespace order, so if
- * you have a Foo and a FooBar controller with 'foo' and 'foo/bar'
- * namespaces respectively and both implement Auto(), you get
- * Foo->Auto() and FooBar->Auto() called.
- */
 class CUTELYST_LIBRARY Controller : public QObject
 {
     Q_OBJECT
@@ -101,6 +70,8 @@ public:
      * 'MyFooBar' will be bound to 'my/foo/bar'.
      * The default Root controller is an example of setting
      * namespace to '' (the null string).
+     *
+     * \sa <a href="#namespace">Controller namespace</a>
      */
     [[nodiscard]] QString ns() const noexcept;
 
@@ -126,7 +97,7 @@ public:
 protected:
     /**
      * This method is called right after Controller has been setup
-     * and before application forks and \sa postFork() is called.
+     * and before application forks and postFork() is called.
      *
      * Reimplement this method if you need to configure
      * internal variable and you need to know for
@@ -146,7 +117,7 @@ protected:
 
     /**
      * This is called by the dispatch engine to do the contextual action dispatching.
-     * Transversing each namespace's Begin(), nearest Auto(), the Action method of
+     * Transversing nearest Begin(), each namespace’s Auto(), the Action method of
      * this controller and nearest End().
      */
     bool _DISPATCH(Context *c);
