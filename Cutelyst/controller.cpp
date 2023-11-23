@@ -14,6 +14,229 @@
 
 using namespace Cutelyst;
 
+/**
+ * \ingroup core
+ * \class Cutelyst::Controller controller.h Cutelyst/Controller
+ * \brief %Cutelyst %Controller base class.
+ *
+ * Controllers are where the actions in the %Cutelyst framework reside. Each action is
+ * represented by a function/method with an attribute to identify what kind of action it is.
+ * See the Cutelyst::Dispatcher for more information about how %Cutelyst dispatches to actions.
+ *
+ * <h3 id="namespace">%Controller namespace</h3>
+ * If not explicitely set by C_NAMESPACE() macro, the controller namespace will be generated
+ * from the C++ class name and optional C++ namespace name the class is part of. Camel-case
+ * class and namespace names like \c FooBar will be converted into a controller namespace
+ * \c foo/bar, while \c Foo would be only the \c foo controller namespace. A class \c FooBar
+ * inside C++ namespace \c FuBaz would have the controller namespace \c /fu/baz/foo/bar.
+ *
+ * The controller namespace will be prepended to the public path of your controller methods
+ * unless you specify a global public path.
+ *
+ * A root namespace can be created by setting an empty controller namespace with C_NAMESPACE("").
+ *
+ * <h3>Private and public paths</h3>
+ * Public paths are the routes that you can call with your user agent like the web browser.
+ * Private paths are internally used and can for example be used to get an URI via
+ * Context::uriForAction(). The public path has not to be the same like the private path, but
+ * it can be the same.
+ *
+ * While the public path is created with the <b>:Path</b> attribute prepended by the
+ * <a href="#namespace">controller namespace</a> or from multiple <br>:Chained</b> actions,
+ * the private path will be the function/method name prepended by the controller namespace.
+ *
+ * <h3 id="attributes">Method attributes</h3>
+ * Use the C_ATTR() macro to give hints about methods build like C_ATTR(methodName, options),
+ * where options are some of the following:
+ *
+ * \par :Path
+ * \parblock
+ * An ending public path relative to the <a href="#namespace">controller namespace</a>. The
+ * public path has not to be the same as the method name but it can. For example:<br>
+ * <b>:Path("")</b> - /namespace (used for the index)<br>
+ * <b>:Path("foo")</b> - /namespace/foo<br>
+ * <b>:Path("/bar")</b> - /bar
+ * \endparblock
+ *
+ * \par :Global
+ * Alias to <b>:Path("/methodname")</b> which sets the method relative to your root.
+ *
+ * \par :Local
+ * Alias to <b>:Path("methodname")</b>.
+ *
+ * \par :Chained
+ * Sets the name of this part of the chain. If it is specified without arguments, it takes the
+ * name of the action as default. To starte a chain use <b>:Chained("/")</b>.
+ *
+ * \par :PathPart
+ * The part of the chained path.
+ *
+ * \par :Args
+ * \parblock
+ * Indicates the number of expected arguments on a public path. If omitted, an unlimited number of
+ * args will be accepted. Can also be set to \c 0 to expect no arguments.
+ *
+ * Arguments are the request url parts behind your public route path. Like if your public path is
+ * \c /foo/bar and you call \a /foo/bar/fu/baz and there is no other path fitting that and if your
+ * \c /foo/bar path will expect two arguments, the method behind \c foo/bar would be called with the
+ * two arguments \c 'fu' and \c 'baz'.
+ * \endparblock
+ *
+ * \par :AutoArgs
+ * Will calculate the number of expected arguments from the number of method arguments where the
+ * pointer to the Context ist not counted. Can not be mixed with :AutoCaptureArgs.
+ *
+ * \par :CaptureArgs
+ * Indicates the number of expected arguments on a publich chain path part.
+ *
+ * \par :AutoCaptureArgs
+ * Will calculate the number of expected capture arguments for chain parts from the number of
+ * method arguments where the pointer to the Context is not counted. Can not be mixed with
+ * :AutoArgs.
+ *
+ * \par :Private
+ * Marks a method as private. Can also be achieved by declaring the method in the private section
+ * of your class declaration. This attribute can be useful if you want to mark a public method as
+ * private for the dispatcher. It can still be used as public method by your C++ code but will be
+ * visible for the dispatcher as private.
+ *
+ * <h3>Method arguments</h3>
+ * Methods are only exposed to the dispatcher when they have a C_ATTR() macro in front and have
+ * a pointer to a Context object as first parameter. If the method should take request arguments
+ * it should either have QStringList to take the arguments from Request::arguments() or the expected
+ * amount of QString parameters.
+ *
+ * <h3>Special methods</h3>
+ * There are also three special methods that can be implemented that will be automatically
+ * dispatched, they are Begin(), Auto() and End().
+ *
+ * \par Begin(Context*)
+ * \parblock
+ * Called on the closest namespace match. If the %Controller implements \b Begin(), it’s that
+ * action that will be called. Otherwise it will try to match looking at the namespace. So there
+ * will be only one \b Begin() action dispatched.
+ *
+ * Begin will be dispached as first action before the \b Auto() actions and the actual action
+ * will be dispatched.
+ * \endparblock
+ *
+ * \par Auto(Context*)
+ * \parblock
+ * Called in namespace order after the \b Begin() action (if any) and before the actual action.
+ * If you have a \c Foo and a \c FooBar controller with 'foo' and 'foo/bar' namespaces and both
+ * implement \b Auto() and you call an action on the 'foo/bar' namespace, you get Foo->Auto() and
+ * FooBar->Auto() called.
+ * \endparblock
+ *
+ * \par End(Context*)
+ * \parblock
+ * Called on the closest namespace match. If the %Controller implements \b End(), it’s that action
+ * that will be called. Otherwise it will try to match looking at the namespace. So there will be
+ * only one \b End() action dispatched.
+ * \endparblock
+ *
+ * <h3>Examples</h3>
+ * @code{.h}
+ * #include <Cutelyst/Controller>
+ *
+ * using namespace Cutelyst;
+ *
+ * class Root : public Controller
+ * {
+ *      // set this as the root namespace
+ *      C_NAMESPACE("")
+ *      Q_OBJECT
+ * public:
+ *      explicit Root(QObject *parent = nulltr);
+ *      ~Root() override;
+ *
+ *      // Will create a nameless path on the empty root path
+ *      // without any arguments expected what will give a public
+ *      // path of '/'. The private path will be '/index'.
+ *      C_ATTR(index, :Path :Args(0))
+ *      void index(Context *c);
+ *
+ *      // Will create a nameless path on the empty root path
+ *      // taking an unlimited count of arguments that will give
+ *      // a public path '/...', where the dots indicate the unlimited
+ *      // count of arguments.
+ *      C_ATTR(defaultPage, :Path)
+ *      void defaultPage(Context *c);
+ * };
+ *
+ * // will have the namespace 'foo/bar'
+ * class FooBar : public Controller
+ * {
+ *      Q_OBJECT
+ * public:
+ *      explicit FooBar(QObject *parent = nullptr);
+ *      ~FooBar() override;
+ *
+ *      // Will create a nameless path on the namespace 'foo/bar'
+ *      // without any arguments expected what will give a public
+ *      // path of '/foo/bar'. The private path will be '/foo/bar/index'.
+ *      C_ATTR(index, :Path :AutoArgs)
+ *      void index(Context *c);
+ *
+ *      // Will create the path 'baaaz' on the namespace 'foo/bar'
+ *      // with one expected argument what will give a public path
+ *      // of '/foo/bar/baaaz/∗', where the asterisk indicates the expected
+ *      // single argument that will be given to the arg parameter of the
+ *      // method. The private path will be '/foo/bar/baz'.
+ *      C_ATTR(baz, :Path("baaaz") :Args(1))
+ *      void baz(Context *c, const QString &arg);
+ * };
+ *
+ * namespace Api {
+ *
+ * // will have the namespace 'api/books'
+ * class Books : public Controller
+ * {
+ *      Q_OBJECT
+ * punlic:
+ *      explicit Books(QObject *parent = nullptr);
+ *      ~Books() override;
+ *
+ *      // Will create a nameless path on the namespace 'api/books'
+ *      // without any arguments expected waht will give a public
+ *      // path of '/api/books'. The private path will be '/api/books/index'.
+ *      C_ATTR(index, :Path :Args(0))
+ *      void index(Context *c);
+ *
+ *      // Will create a chain start path capturing zero arguments.
+ *      // Can be used to setup stuff for other chained actions.
+ *      // There will be no public path for this. The private path will be
+ *      // '/api/books/base'.
+ *      C_ATTR(base, :Chained("/") :PathPart("api/books") :CaptureArgs(0))
+ *      void base(Context *c);
+ *
+ *      // Will create a chained action based on 'base' taking three arguments.
+ *      // The public path will be '/api/books/create/∗/∗/∗' while the private
+ *      // path will be '/api/books/create'. Will also end the chain with taking
+ *      // three arguments.
+ *      C_ATTR(create, :Chained("base") :PathPart("create") :Args(3))
+ *      void create(Context *c, const QString &title,
+ *                              const QString &rating,
+ *                              const QString &author);
+ *
+ *      // Will create a chain start path capturing one argument..
+ *      // Can be used to setup stuff for other chained actions.
+ *      // There will be no public path for this. The private path will be
+ *      // '/api/books/author'.
+ *      C_ATTR(author, :Chained("/") :PathPart("api/author") :CaptureArgs(1))
+ *      void author(Context *c, const QString &authorId);
+ *
+ *      // Will create a chained action based on 'author' taking zerog arguments
+ *      // and ending the chain. Will have a public path of '/api/author/∗/remove',
+ *      // the private path will be '/api/books/remove'.
+ *      C_ATTR(remove, :Chained("author") :PathPart("remove") :Args(0))
+ *      void remove(Context *c);
+ * };
+ *
+ * }
+ * @endcode
+ */
+
 Controller::Controller(QObject *parent)
     : QObject(parent)
     , d_ptr(new ControllerPrivate(this))
