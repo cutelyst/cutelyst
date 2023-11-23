@@ -17,6 +17,14 @@ class Context;
 class Engine;
 class EngineRequest;
 class ResponsePrivate;
+/**
+ * @ingroup core
+ * @class Cutelyst::Response response.h Cutelyst/Response
+ * @brief A %Cutelyst response.
+ *
+ * A %Cutelyst response contains the data created by your application that should be
+ * send back to the \link Request requesting\endlink client.
+ */
 class CUTELYST_LIBRARY Response final : public QIODevice
 {
     Q_OBJECT
@@ -88,22 +96,25 @@ public:
     };
     Q_ENUM(CloseCode)
 
+    /**
+     * Destroys the %Response object.
+     */
     virtual ~Response() override;
 
     /**
-     * The current response code status
+     * The current response code status.
      */
     quint16 status() const noexcept;
 
     /**
-     * Sets the response code status
+     * Sets the response code status.
      */
     void setStatus(quint16 status) noexcept;
 
     /**
      * Returns true if a body device has been defined
      * as QByteArray or QIODevice or write() was called
-     * and it's on chunked mode
+     * and it's on chunked mode.
      */
     bool hasBody() const noexcept;
 
@@ -121,52 +132,52 @@ public:
     QIODevice *bodyDevice() const noexcept;
 
     /**
-     * Sets an IO device as the response body,
+     * Sets an IO device as the response \a body,
      * the open mode must be at least QIODevice::ReadOnly.
      * This function takes ownership of your device
-     * deleting after the request has completed
+     * deleting after the request has completed.
      */
     void setBody(QIODevice *body);
 
     /**
-     * Sets a QByteArray as the response body,
+     * Sets a QByteArray as the response \a body,
      * content length will be automatically set to it's size.
      */
     void setBody(const QByteArray &body);
 
     /**
-     * Sets a QString as the response body, the output will be UTF-8 and
+     * Sets a QString as the response \a body, the output will be UTF-8 and
      * content length will be automatically set to it's size.
      */
     inline void setBody(const QString &body);
 
     /**
-     * Sets a QString as the response body, the output will be UTF-8 and
+     * Sets a QString as the response \a body, the output will be UTF-8 and
      * content length will be automatically set to it's size.
      */
     inline void setBody(QStringView body);
 
     /**
-     * Sets a JSON string as the response body,
+     * Sets a \a JSON string as the response body,
      * this method is provided for convenience as it sets the content-type to application/json.
      */
     inline void setJsonBody(QStringView json);
 
     /**
-     * Sets a JSON string as the response body,
+     * Sets a \a JSON string as the response body,
      * this method is provided for convenience as it sets the content-type to application/json.
      */
     void setJsonBody(const QByteArray &json);
 
     /**
-     * Sets a QJsonObject on a QJsonDocument as the response body,
+     * Sets a QJsonObject \a obj on a QJsonDocument as the response body,
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
      */
     void setJsonObjectBody(const QJsonObject &obj);
 
     /**
-     * Sets a QJsonArray on a QJsonDocument as the response body,
+     * Sets a QJsonArray \a array on a QJsonDocument as the response body,
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
      */
@@ -174,53 +185,66 @@ public:
 
     /**
      * Short for headers().contentEncoding();
+     * \sa Headers::contentEncoding()
+     * \sa setContentEncoding()
      */
     QByteArray contentEncoding() const noexcept;
 
     /**
      * Short for headers().setContentEncoding(encoding);
+     * \sa Headers::setContentEncoding()
+     * \sa contentEncoding()
      */
     void setContentEncoding(const QByteArray &encoding);
 
     /**
      * Short for headers().contentLength();
+     * \sa Headers::contentLength()
+     * \sa setContentLength()
      */
     qint64 contentLength() const;
 
     /**
      * Short for headers().setContentLength(length);
+     * \sa Headers::setContentLength()
+     * \sa contentLength()
      */
     void setContentLength(qint64 length);
 
     /**
      * Short for headers().contentType();
+     * \sa Headers::contentType()
+     * \sa setContentType()
      */
     QByteArray contentType() const;
 
     /**
      * Short for headers().setContentType(type);
+     * \sa Headers::setContentType()
+     * \sa contentType()
      */
     void setContentType(const QByteArray &type) { headers().setContentType(type); }
 
     /**
      * Short for headers().contentTypeCharset();
+     * \sa Headers::contentTypeCharset()
      */
     QByteArray contentTypeCharset() const;
 
     /**
-     * Returns the first QNetworkCookie matching the name
-     * or a null QVariant if not found
+     * Returns the first QNetworkCookie matching the \a name
+     * or a null QVariant if not found.
      */
     QVariant cookie(const QByteArray &name) const;
 
     /**
-     * Returns a list of all cookies set
+     * Returns a list of all cookies set.
      */
     QList<QNetworkCookie> cookies() const;
 
     /**
      * Defines a QNetworkCookie to be sent to the user-agent,
-     * if a previous cookie->name() was set it will be replaced
+     * if a previous cookie->name() was set it will be replaced.
      */
     void setCookie(const QNetworkCookie &cookie);
 
@@ -231,7 +255,7 @@ public:
     void setCookies(const QList<QNetworkCookie> &cookies);
 
     /**
-     * Removes all cookies that matches name, returning
+     * Removes all cookies that matches \a name, returning
      * the number of cookies removed
      */
     int removeCookies(const QByteArray &name);
@@ -243,7 +267,7 @@ public:
      * c->detach() to interrupt the normal processing flow if you want the redirect to
      * occur straight away.
      *
-     * \note do not give a relative URL as $url, i.e: one that is not fully
+     * \note Do not give a relative URL as $url, i.e: one that is not fully
      * qualified ("http://...", etc.) or that starts with a slash "/path/here".
      * While it may work, it is not guaranteed to do the right thing and is not a
      * standard behaviour. You may opt to use uriFor() or uriForAction() instead.
@@ -257,7 +281,7 @@ public:
      * c->detach() to interrupt the normal processing flow if you want the redirect to
      * occur straight away.
      *
-     * \note do not give a relative URL as $url, i.e: one that is not fully
+     * \note Do not give a relative URL as $url, i.e: one that is not fully
      * qualified ("http://...", etc.) or that starts with a slash "/path/here".
      * While it may work, it is not guaranteed to do the right thing and is not a
      * standard behaviour. You may opt to use uriFor() or uriForAction() instead.
@@ -290,26 +314,28 @@ public:
 
     /**
      * Shortcut headers().header()
+     * \sa Headers::header()
      */
     QByteArray header(const QByteArray &field) const noexcept;
 
     /**
      * Shortcut headers().setHeader()
+     * \sa Headers::setHeader()
      */
     void setHeader(const QByteArray &key, const QByteArray &value);
 
     /**
-     * Returns a reference to the response headers class
+     * Returns a reference to the response headers class.
      */
     Headers &headers() noexcept;
 
     /**
-     * Returns if Headers are finalized (sent to the client)
+     * Returns \c true if Headers are finalized (sent to the client).
      */
     bool isFinalizedHeaders() const noexcept;
 
     /**
-     * Writing to user-agent is always sequential
+     * Writing to user-agent is always sequential.
      */
     bool isSequential() const noexcept override;
 
@@ -318,7 +344,7 @@ public:
      */
     qint64 size() const noexcept override;
 
-    /*!
+    /**
      * Sends the websocket handshake, if no parameters are defined it will use header data.
      * Returns true in case of success, false otherwise, which can be due missing support on
      * the engine or missing the appropriate headers.
@@ -332,28 +358,28 @@ public:
                             const QByteArray &origin   = {},
                             const QByteArray &protocol = {});
 
-    /*!
-     * Sends a WebSocket text message
+    /**
+     * Sends a WebSocket text \a message.
      */
     bool webSocketTextMessage(const QString &message);
 
-    /*!
-     * Sends a WebSocket binary message
+    /**
+     * Sends a WebSocket binary \a message.
      */
     bool webSocketBinaryMessage(const QByteArray &message);
 
-    /*!
-     * Sends a WebSocket ping with an optional payload limited to 125 bytes,
+    /**
+     * Sends a WebSocket ping with an optional \a payload limited to 125 bytes,
      * which will be truncated if larger.
      *
-     * \note Some front-end servers will close the conetion if no activity is seem, NGINX closes in
-     * 60 seconds by default, in order to avoid that, sending a ping is the best to way to keep the
-     * connection alive and to know that your client is still there.
+     * \note Some front-end servers will close the connection if no activity is seem, NGINX closes
+     * in 60 seconds by default, in order to avoid that, sending a ping is the best to way to keep
+     * the connection alive and to know that your client is still there.
      */
     bool webSocketPing(const QByteArray &payload = {});
 
-    /*!
-     * Sends a WebSocket close frame, with both optional close code and a string reason.
+    /**
+     * Sends a WebSocket close frame, with both optional close \a code and a string \a reason.
      *
      * \note This method does not emit Request::webSocketClosed() signal. If
      * you need to track when the connection was closed, the proper way is to rely on
@@ -363,7 +389,7 @@ public:
 
 protected:
     /**
-     * Constructs a Response object, for this engine request and defaultHeaders.
+     * Constructs a %Response object, for engine request \a conn with \a defaultHeaders.
      */
     explicit Response(const Headers &defaultHeaders, EngineRequest *conn = nullptr);
 
