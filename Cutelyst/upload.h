@@ -16,6 +16,7 @@ namespace Cutelyst {
 class UploadPrivate;
 
 /**
+ * \ingroup core
  * \class Upload upload.h Cutelyst/Upload
  * \brief %Cutelyst %Upload handles file upload requests.
  *
