@@ -248,7 +248,7 @@ if (BUILD_DOCS)
             "configblock{3}=\\par \\1 ^^ \\parblock ^^ <tt>Type: \\2<br>Default: \\3</tt> ^^"
             "configblock{4}=\\par \\1 ^^ \\parblock ^^ <tt>Type: \\2<br>Default: \\3<br>Acceptable values: \\4</tt> ^^"
             "endconfigblock=\\endparblock"
-            "logcat{1}=\\par Logging category^^ cutelyst.\\1"
+            "logcat{1}=\\par Logging category^^ cutelyst.\\1<br>\\ref logging"
         )
         set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
         # Build related configuration options
