@@ -21,12 +21,13 @@ namespace Cutelyst
       <th class="section">%Plugin API</th>
       <th class="section">%View API</th>
       <th class="section">%Action API</th>
-      <th class="section">%WSGI API</th>
+      <th class="section">%Server API</th>
     </tr>
     <tr><td>
       - Action
       - ActionChain
       - Application
+      - ASync
       - Component
       - Context
       - Controller
@@ -42,19 +43,22 @@ namespace Cutelyst
       - Upload
       - View
     </td><td>
-      - Authentication
+      - \ref plugins-authentication
       - CSRFProtection
       - LangSelect
       - Memcached
       - MemcachedSessionStore
       - Pagination
-      - Session
+      - \ref plugins-session
       - StaticCompressed
       - StaticSimple
       - StatusMessage
-      - Validator
+      - \link Cutelyst::UA UserAgent\endlink
+      - \ref plugins-utils-validator
     </td><td>
+      - CuteleeView
       - ViewEmail
+      - ViewEmailTemplate
       - ViewJson
     </td><td>
       - RenderView
