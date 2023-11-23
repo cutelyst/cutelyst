@@ -57,10 +57,6 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-/**
- * @brief application
- * @return the Application object we are dealing with
- */
 Application *Engine::app() const
 {
     Q_D(const Engine);
@@ -68,25 +64,6 @@ Application *Engine::app() const
     return d->app;
 }
 
-/*! \fn virtual int Engine::workerId() const = 0
-
- The id is the number of the spawned engine process,
- a single process workerId = 0, two process 0 for the first
- 1 for the second.
-
- \note the value returned from this function is
- only valid when postFork() is issued.
-
- \returns the worker id (process)
-*/
-
-/*!
- Each worker process migth have a number of worker cores (threads),
- a single process with two worker threads will return 0 and 1 for
- each of the thread respectively.
-
- \returns the worker core (thread)
-*/
 int Engine::workerCore() const
 {
     Q_D(const Engine);

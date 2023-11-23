@@ -27,8 +27,9 @@ class MemcachedSessionStorePrivate;
  *
  * <H3>Configuration</h3>
  *
- * The %MemcachedSessionStore plugin can be configured in the cutelyst configuration file in the @c
- * Cutelyst_MemcachedSessionStore_Plugin section:
+ * The %MemcachedSessionStore plugin can be configured in the
+ * \ref configuration "application configuration file" in the
+ * @c Cutelyst_MemcachedSessionStore_Plugin section:
  *
  * @configblock{group_key,string,empty}
  * Sets an optional group key to store the data on a specific server.
@@ -69,7 +70,9 @@ class MemcachedSessionStorePrivate;
  * too. To disable the build of the %MemcachedSessionStore plugin, run cmake with
  * <CODE>-DPLUGIN_MEMCACHEDSESSIONSTORE:BOOL=OFF</CODE>.
  *
- * @since Cutelyst 1.11.0
+ * @logcat{plugin.memcachedsessionstore}
+ *
+ * @since %Cutelyst 1.11.0
  */
 class CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT MemcachedSessionStore final : public SessionStore
 {

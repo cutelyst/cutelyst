@@ -28,8 +28,7 @@ class CredentialHttpPrivate;
  *
  * For an example implementation see \ref plugins-authentication overview.
  *
- * \par Logging category
- * cutelyst.plugin.credentialhttp
+ * \logcat{plugin.credentialhttp}
  */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT CredentialHttp : public AuthenticationCredential
 {

@@ -20,8 +20,7 @@ class ViewEmailTemplatePrivate;
  * %ViewEmailTemplate is a View handler that renders Context::stash() data using another view and
  * sends it via e-mail.
  *
- * \par Logging category
- * cutelyst.view.emailtemplate
+ * \logcat{view.emailtemplate}
  */
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate final : public ViewEmail
 {

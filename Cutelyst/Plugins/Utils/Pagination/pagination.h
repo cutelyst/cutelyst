@@ -19,6 +19,8 @@ namespace Cutelyst {
  * The %Pagination plugin is a little helper class to calculate different values for paginating
  * result lists from for example database queries. If you have a result set of for example 123
  * records and want to show 10 per page, you can use this class to calculate the pagination.
+ *
+ * \logcat{utils.pagination}
  */
 class CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Pagination : public QVariantMap
 {

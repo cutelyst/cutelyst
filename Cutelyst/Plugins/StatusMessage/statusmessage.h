@@ -78,6 +78,8 @@ class StatusMessagePrivate;
  *      // ...
  * }
  * @endcode
+ *
+ * @logcat{plugins.statusmessage}
  */
 class CUTELYST_PLUGIN_STATUSMESSAGE_EXPORT StatusMessage : public Plugin
 {

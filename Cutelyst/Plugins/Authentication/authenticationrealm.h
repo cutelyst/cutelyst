@@ -25,8 +25,7 @@ class AuthenticationCredential;
  *
  * For an example implementation see \ref plugins-authentication overview.
  *
- * \par Logging category
- * cutelyst.plugin.authentication.realm
+ * \logcat{plugin.authentication.realm}
  */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationRealm : public Component
 {

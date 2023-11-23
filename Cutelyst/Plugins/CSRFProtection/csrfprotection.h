@@ -149,10 +149,10 @@ class CSRFProtectionPrivate;
  * a different salt has then to be sent to the application either via a hidden form field or via a
  * HTTP request header.
  *
- * To get the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your Cutelee
- * templates. If you are not using Cutelee or if you do not use a form but AJAX, you can use
- * CSRFProtection::getToken() to place the token somewhere in your DOM tree so that you can read it
- * with JavaScript.
+ * To get the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your
+ * \link CuteleeView Cutelee templates\endlink. If you are not using Cutelee or if you do not use
+ * a form but AJAX, you can use CSRFProtection::getToken() to place the token somewhere in your
+ * DOM tree so that you can read it with JavaScript.
  *
  * <H3 ID="limitations">Limitations</H3>
  *
@@ -165,14 +165,11 @@ class CSRFProtectionPrivate;
  *
  * <H3 ID="configfile">Configuration file options</H3>
  *
- * There are some options you can set in your application configuration file in the @c
- * Cutelyst_CSRFProtection_Plugin section. You can override the defaults by setting a QVariantMap
- * with selected default values to the constructor.
+ * There are some options you can set in your \ref configuration "application configuration file"
+ * in the @c Cutelyst_CSRFProtection_Plugin section. You can override the defaults by setting a
+ * QVariantMap with selected default values to the constructor.
  *
- * @par cookie_expiration
- * @parblock
- * Integer or string, default: 1 year
- *
+ * @configblock{cookie_expiration,string,1 year}
  * The expiration time of the cookie. The value will be parsed by Utils::durationFromString(),
  * so you can use one of the supported human readable time spans.
  *
@@ -184,12 +181,9 @@ class CSRFProtectionPrivate;
  * have the indexes to the cookie jar corrupted on disk, thereby causing CSRF protection checks to
  * (sometimes intermittently) fail. Change this setting to @c 0 to use session-based CSRF cookies,
  * which keep the cookies in-memory instead of on persistent storage.
- * @endparblock
+ * @endconfigblock
  *
- * @par cookie_domain
- * @parblock
- * String value, default: empty
- *
+ * @configblock{cookie_domain,string,empty}
  * The domain to be used when setting the CSRF cookie. This can be useful for easily allowing
  * cross-subdomain requests to be excluded from the normal cross site request forgery protection. It
  * should be set to a string such as ".example.com" to allow a POST request from a form on one
@@ -198,31 +192,22 @@ class CSRFProtectionPrivate;
  * Please note that the presence of this setting does not imply that the CSRF protection is safe
  * from cross-subdomain attacks by default - please see the <A HREF="#limitations">limitations
  * section</A>.
- * @endparblock
+ * @endconfigblock
  *
- * @par cookie_secure
- * @parblock
- * Boolean value, default: @c false
- *
+ * @configblock{cookie_secure,bool,false}
  * Whether to use a secure cookie for the CSRF cookie. If this is set to @c true, the cookie will be
  * marked as @a secure, which means browsers may ensure that the cookie is only sent with an HTTPS
  * connection.
- * @endparblock
+ * @endconfigblock
  *
- * @par cookie_same_site
- * @parblock
- * String value, default: strict; acceptable values: default, none, lax, strict
- *
+ * @configblock{cookie_same_site,string,strict,default\,none\,lax\,strict}
  * Defines the SameSite attribute of the CSRF cookie. See <A
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value">MDN</A>
  * to learn more about SameSite cookies. See also QNetworkCookie::SameSite. This configuration key
  * is available since Cutelyst 3.8.0.
- * @endparblock
+ * @endconfigblock
  *
- * @par trusted_origins
- * @parblock
- * String list, default: empty
- *
+ * @configblock{trusted_origins,string,empty}
  * A comma separated list of hosts which are trusted origins for unsafe requests (e.g. POST). For a
  * secure unsafe request, the CSRF protection requires that the request have a @a Referer header
  * that matches the origin present in the @a Host header. This prevents, for example, a POST request
@@ -230,22 +215,18 @@ class CSRFProtectionPrivate;
  * cross-origin unsafe requests over HTTPS, continuing the example, add @c "subdomain.example.com"
  * to this list. The setting also supports subdomains, so you could add @c ".example.com", for
  * example, to allow access from all subdomains of @c example.com.
- * @endparblock
+ * @endconfigblock
  *
- * @par log_failed_ip
- * @parblock
- * Boolean value, default: @c false
- *
+ * @configblock{log_failed_ip,bool,false}
  * If this is set to @c true, the log output for failed checks will contain the IP address of the
  * remote client.
- * @endparblock
+ * @endconfigblock
  *
  * <H3>Build options</H3>
  * This plugin is not enabled by default. Use <CODE>-DPLUGIN_CSRFPROTECTION:BOOL=ON</CODE> for your
  * cmake configuration. To link it to your application use @c %Cutelyst::CSRFProtection.
  *
- * @par Logging category
- * @c cutelyst.plugin.csrfprotection
+ * @logcat{plugin.csrfprotection}
  *
  * @since Cutelyst 1.12.0
  * @todo Add Cutelee tag to only get the token value instead of a complete input field.
@@ -258,12 +239,12 @@ class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection
     Q_DISABLE_COPY(CSRFProtection)
 public:
     /**
-     * Constructs a new CSRFProtection object with the given @a parent.
+     * Constructs a new %CSRFProtection object with the given @a parent.
      */
     CSRFProtection(Application *parent);
 
     /**
-     * Contructs a new CSRFProtection object with the given @a parent and @a defaultConfig.
+     * Contructs a new %CSRFProtection object with the given @a parent and @a defaultConfig.
      *
      * Use the @a defaultConfig to set default values for the configuration entries from
      * the <A HREF="#configfile">configuration file</A>.
@@ -271,7 +252,7 @@ public:
     CSRFProtection(Application *parent, const QVariantMap &defaultConfig);
 
     /**
-     * Deconstructs the CSRFProtection object.
+     * Deconstructs the %CSRFProtection object.
      */
     ~CSRFProtection() override;
 
@@ -364,8 +345,8 @@ public:
 
     /**
      * Returns HTML code for a hidden input field that contains the current token and has the name
-     * set by setFormFieldName(). This method is also used by the Cutelee tag <CODE>{% c_csrf_token
-     * %}</CODE>
+     * set by setFormFieldName(). This method is also used by the \link CuteleeView Cutelee\endlink
+     * tag <CODE>{% c_csrf_token %}</CODE>.
      *
      * @b Example output
      * @code{.html}

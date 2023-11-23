@@ -50,6 +50,7 @@ namespace Cutelyst
       - MemcachedSessionStore
       - Pagination
       - \ref plugins-session
+      - \ref plugins-utils-sql
       - StaticCompressed
       - StaticSimple
       - StatusMessage

@@ -70,8 +70,7 @@ class AuthenticationPrivate;
  *
  * For an example implementation see \ref plugins-authentication overview.
  *
- * \par Logging category
- * cutelyst.plugin.authentication
+ * \logcat{plugin.authentication}
  */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT Authentication : public Plugin
 {

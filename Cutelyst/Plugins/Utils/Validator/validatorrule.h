@@ -91,6 +91,8 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
  * translation context on the constructor of Validator, internally Context::qtTrId() will be
  * used to find the translated string.
  *
+ * \sa \ref translations
+ *
  * <h3>Usage example</h3>
  * \code{.cpp}
  * void MyController::do_form(Context *c)

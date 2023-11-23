@@ -35,8 +35,8 @@ class MemcachedPrivate;
  *
  * <H3>Configuration</h3>
  *
- * The %Memcached plugin can be configured in the cutelyst configuration file in the @c
- * Cutelyst_Memcached_Plugin section. It uses the same configuration strings as
+ * The %Memcached plugin can be configured in the \ref configuration "application configuration
+ * file" in the @c Cutelyst_Memcached_Plugin section. It uses the same configuration strings as
  * <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
  * but in lowercase and without the dashes in front and for consistence @a - replaced by @a _.
  * So @c --BINARY-PROTOCOL will be @c binary_protocol. To add servers and/or sockets use
@@ -100,6 +100,8 @@ class MemcachedPrivate;
  * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All
  * methods provide the possibility to specify a pointer to a MemcachedReturnType variable that can
  * provide further information about occurred errors if methods return @c false or empty results.
+ *
+ * @sa @ref logging
  *
  * <H3>Usage example</H3>
  *

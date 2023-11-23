@@ -23,6 +23,8 @@ class SessionStoreFilePrivate;
  *
  * This is also the default session store that is used by the Session plugin if no session store
  * has been manuall set via Session::setStorage().
+ *
+ * @logcat{plugin.sessionfile}
  */
 class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
 {
