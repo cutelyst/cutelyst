@@ -37,8 +37,7 @@ class Request;
  * \par Include file
  * #include <Cutelyst/Plugins/UserAgent>
  *
- * \par Logging category
- * cutelyst.useragent
+ * \logcat{useragent}
  */
 namespace UA {
 

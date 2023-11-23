@@ -11,6 +11,8 @@ namespace Cutelyst {
  The %Sql plugin provides methods and classes in the Sql namespace to help with performing
  database queries and to handle the query results.
 
+ @logcat{utils.sql}
+
  <h3>Usage example</h3>
  Setup the database and the per thread database connection in your application class. Database
  connections should be established in your reimplementation of Application::postFork(). Creating

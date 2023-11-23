@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: (C) 2017-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-/*!
+/**
  * \file
  * \warning
  * This header file is part of the internal private api.
@@ -45,13 +45,13 @@ public:
 
     virtual ~EngineRequest();
 
-    /*!
+    /**
      * Engines must reimplement this to write the
      * response body back to the caller
      */
     virtual void finalizeBody();
 
-    /*!
+    /**
      * Engines should overwrite this if they
      * want to to make custom error messages.
      * Default implementation render an html
@@ -59,27 +59,27 @@ public:
      */
     virtual void finalizeError();
 
-    /*!
+    /**
      * Called by Application to deal
      * with finalizing cookies, headers and body
      */
     void finalize();
 
-    /*!
+    /**
      * Reimplement if you need a custom way
      * to Set-Cookie, the default implementation
      * writes them to c->res()->headers()
      */
     virtual void finalizeCookies();
 
-    /*!
+    /**
      * Finalize the headers, and call
      * doWriteHeader(), reimplemententions
      * must call this first
      */
     virtual bool finalizeHeaders();
 
-    /*!
+    /**
      * Called by Response to manually write data
      */
     qint64 write(const char *data, qint64 len);
@@ -97,12 +97,12 @@ public:
     virtual bool webSocketClose(quint16 code, const QString &reason);
 
 protected:
-    /*!
+    /**
      * Reimplement this to do the RAW writing to the client
      */
     virtual qint64 doWrite(const char *data, qint64 len) = 0;
 
-    /*!
+    /**
      * This is called when the Application chain is finished
      * processing this request, here the request can send final
      * bytes to the client or do a clean up.
@@ -114,7 +114,7 @@ protected:
      */
     virtual void processingFinished();
 
-    /*!
+    /**
      * Reimplement this to write the headers back to the client
      */
     virtual bool writeHeaders(quint16 status, const Headers &headers) = 0;
@@ -124,7 +124,7 @@ protected:
                                       const QByteArray &protocol);
 
 public:
-    /*!
+    /**
      * This method sets the path and already does the decoding so that it is
      * done a single time.
      *
@@ -138,50 +138,50 @@ public:
         setPath(path.data(), path.size());
     }
 
-    /*! The method used (GET, POST...) */
+    /** The method used (GET, POST...) */
     QByteArray method;
 
-    /*! Call setPath() instead */
+    /** Call setPath() instead */
     QString path;
 
-    /*! The query string requested by the user agent 'foo=bar&baz' */
+    /** The query string requested by the user agent 'foo=bar&baz' */
     QByteArray query;
 
-    /*! The protocol requested by the user agent 'HTTP1/1' */
+    /** The protocol requested by the user agent 'HTTP1/1' */
     QByteArray protocol;
 
-    /*! The server address which the server is listening to,
+    /** The server address which the server is listening to,
      *  usually the 'Host' header but if that's not present should be filled with the server address
      */
     QByteArray serverAddress;
 
-    /*! The remote/client address */
+    /** The remote/client address */
     QHostAddress remoteAddress;
 
-    /*! The remote user name set by a front web server */
+    /** The remote user name set by a front web server */
     QString remoteUser;
 
-    /*! The request headers */
+    /** The request headers */
     Headers headers;
 
-    /*! The QIODevice containing the body (if any) of the request
+    /** The QIODevice containing the body (if any) of the request
      * \note It's deleted when Context gets deleted */
     QIODevice *body = nullptr;
 
-    /*! The Cutelyst::Context of this request
+    /** The Cutelyst::Context of this request
      * \note It's deleted on processingFinished() or destructor */
     Context *context = nullptr;
 
-    /*! The timepoint of the start of request */
+    /** The timepoint of the start of request */
     TimePointSteady startOfRequest;
 
-    /*! The remote/client port */
+    /** The remote/client port */
     quint16 remotePort = 0;
 
-    /*! Connection status */
+    /** Connection status */
     Status status = InitialState;
 
-    /*! If the connection is secure HTTPS */
+    /** If the connection is secure HTTPS */
     bool isSecure = false;
 };
 

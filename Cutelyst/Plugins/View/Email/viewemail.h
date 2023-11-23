@@ -18,8 +18,7 @@ class ViewEmailPrivate;
  *
  * %ViewEmail is a View handler that sends Context::stash() data via e-mail.
  *
- * \par Logging category
- * cutelyst.view.email
+ * \logcat{view.email}
  */
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {

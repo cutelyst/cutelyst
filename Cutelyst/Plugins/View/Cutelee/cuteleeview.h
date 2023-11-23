@@ -122,6 +122,8 @@ class CuteleeViewPrivate;
  *      c->setStash("template", "frontend/index.html");
  * }
  * @endcode
+ *
+ * @logcat{cutelee}
  */
 class CUTELYST_VIEW_CUTELEE_EXPORT CuteleeView final : public View
 {
@@ -226,6 +228,8 @@ public:
      * It is mostly easier to use loadTranslationsFromDir() to load all available translations
      * in a bunch.
      *
+     * \sa \ref translations
+     *
      * \since Cutelyst 1.5.0
      */
     void addTranslator(const QLocale &locale, QTranslator *translator);
@@ -238,6 +242,7 @@ public:
      * \overload
      *
      * \sa loadTranslationsFromDir()
+     * \sa \ref translations
      *
      * \since Cutelyst 1.4.0
      */
@@ -270,6 +275,8 @@ public:
      * }
      * \endcode
      *
+     * \sa \ref translations
+     *
      * \since Cutelyst 1.5.0
      */
     void addTranslationCatalog(const QString &path, const QString &catalog);
@@ -279,6 +286,8 @@ public:
      *
      * The \a key of the QHash is the name of the catalog, the \a value is the path.
      * See addTranslationCatalog() for more information about translation catalogs.
+     *
+     * \sa \ref translations
      *
      * \since Cutelyst 1.5.0
      */
@@ -310,6 +319,7 @@ public:
      * @p suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
      * @sa addTranslator(), loadTranslationsFromDir()
+     * @sa @ref translations
      *
      * @since Cuteylst 2.1.0
      */

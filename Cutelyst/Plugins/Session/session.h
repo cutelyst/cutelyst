@@ -118,8 +118,8 @@ class SessionPrivate;
  *
  * <H3>Configuration file options</H3>
  *
- * There are some options you can set in your application configuration file in the
- * @c Cutelyst_Session_Plugin section:
+ * There are some options you can set in your \ref configuration "application configuration file"
+ * in the @c Cutelyst_Session_Plugin section:
  *
  * @configblock{expires,integer,7200}
  * Expiration duration of the session in seconds.
@@ -150,6 +150,8 @@ class SessionPrivate;
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN</A> to
  * learn more about SameSite cookies. This configuration key is available since %Cutelyst 3.8.0.
  * @endconfigblock
+ *
+ * @logcat{plugin.session}
  */
 class CUTELYST_PLUGIN_SESSION_EXPORT Session : public Plugin
 {

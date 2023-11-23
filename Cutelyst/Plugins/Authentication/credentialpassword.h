@@ -23,8 +23,7 @@ class CredentialPasswordPrivate;
  *
  * For an example implementation see \ref plugins-authentication overview.
  *
- * \par Logging category
- * cutelyst.plugin.credentialpassword
+ * \logcat{plugin.credentialpassword}
  */
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT CredentialPassword : public AuthenticationCredential
 {

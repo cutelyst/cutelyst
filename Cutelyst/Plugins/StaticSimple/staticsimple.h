@@ -17,9 +17,9 @@ class StaticSimplePrivate;
  * @headerfile "" <Cutelyst/Plugins/StaticSimple/StaticSimple>
  * @brief Serve static files directly from your application.
  *
- * The %StaticSimple plugin for %Cutelyst can be used to serve static files from
- * specific directories. Optionally it only serves files where the request path
- * starts with a specific directory. Files that end with something that look like a file extension
+ * The %StaticSimple plugin for %Cutelyst can be used to @ref servestatic "serve static files"
+ * from specific directories. Optionally it only serves files where the request path starts
+ * with a specific directory. Files that end with something that look like a file extension
  * will tried to be served by this plugin.
  *
  * Beside serving the file content this will also set the respective HTTP header fields
@@ -52,10 +52,10 @@ class StaticSimplePrivate;
  * }
  * @endcode
  *
- * @par Logging category
- * cutelyst.plugin.staticsimple
+ * @logcat{plugin.staticsimple}
  *
  * @sa StaticCompressed
+ * @sa @ref servestatic
  */
 class CUTELYST_PLUGIN_STATICSIMPLE_EXPORT StaticSimple : public Plugin
 {

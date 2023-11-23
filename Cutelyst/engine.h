@@ -39,11 +39,20 @@ public:
     /**
      * Reimplement this to get the workerId of the engine subclass, this is
      * the same as processes id.
+     *
+     * The id is the number of the spawned engine process, a single process
+     * workerId = 0, two process 0 for the first 1 for the second.
+     *
+     * \note The value returned from this function is only valid when postFork() is issued.
      */
     [[nodiscard]] virtual int workerId() const = 0;
 
     /**
      * Returns the worker core set when constructing the engine.
+     *
+     * Each worker process migth have a number of worker cores (threads),
+     * a single process with two worker threads will return 0 and 1 for
+     * each of the thread respectively.
      */
     [[nodiscard]] int workerCore() const;
 
@@ -63,7 +72,7 @@ public:
 
     /**
      * Returns a map of key value pairs for the configuration \a entitiy (section) from
-     * your application’s configuratoin file.
+     * your application’s configuration file.
      *
      * \sa \ref configuration
      */

@@ -17,9 +17,9 @@ class StaticCompressedPrivate;
  * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  * @brief Serve static files compressed on the fly or pre-compressed.
  *
- * The %StaticCompressed plugin for %Cutelyst can be used to serve specific static files like
- * CSS and JavaScript files compressed. It has built in support for
- * <A HREF="https://en.wikipedia.org/wiki/Gzip">gzip</A> and
+ * The %StaticCompressed plugin for %Cutelyst can be used to
+ * \ref servestatic "serve specific static files" like CSS and JavaScript files compressed.
+ * It has built in support for <A HREF="https://en.wikipedia.org/wiki/Gzip">gzip</A> and
  * <A HREF="https://en.wikipedia.org/wiki/DEFLATE">DEFLATE</A> compression format and can be
  * extended by external libraries to support the <A
  * HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A> compression algorithm and to use <A
@@ -89,9 +89,10 @@ class StaticCompressedPrivate;
  *
  * <H3 ID="configfile">Runtime configuration</H3>
  *
- * The plugin offers some configuration options that can be set in the %Cutelyst application
- * configuration file in the @c Cutelyst_StaticCompressed_Plugin section. You can override the
- * defaults by setting a QVariantMap with selected default values to the constructor.
+ * The plugin offers some configuration options that can be set in the
+ * \ref configuration "application configuration file" in the @c Cutelyst_StaticCompressed_Plugin
+ * section. You can override the defaults by setting a QVariantMap with selected default values
+ * to the constructor.
  *
  * @configblock{cache_directory,string,QStandardPaths::CacheLocation + /compressed-static}
  * Sets the directory path where on the fly compressed data is saved.
@@ -166,11 +167,11 @@ class StaticCompressedPrivate;
  * \c CUTELYST_STATICCOMPRESSED_WITH_BROTLI are defined if you need to know that the plugin supports
  * that compressions.
  *
- * @par Logging category
- * cutelyst.plugin.csrfprotection
+ * @logcat{plugin.csrfprotection}
  *
  * @since %Cutelyst 1.11.0
  * @sa StaticSimple
+ * @sa @ref servestatic
  */
 class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT // clazy:exclude=ctor-missing-parent-argument
     StaticCompressed : public Plugin

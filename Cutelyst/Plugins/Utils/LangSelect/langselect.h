@@ -313,46 +313,35 @@ class LangSelectPrivate;
  * Cutelyst_LangSelect_Plugin section. The configuration file options are available since
  * %Cutelyst 4.0.0.
  *
- * @par cookie_expiration
- * @parblock
- * Integer or string, default: 1 month
- *
+ * @configblock{cookie_expiration,string,1 month}
  * The expiration time of the cookie. The value will be parsed by Utils::durationFromString(),
  * so you can use one of the supported human readable time spans.
- * @endparblock
+ * @endconfigblock
  *
- * @par cookie_domain
- * @parblock
- * String value, default: empty
- *
+ * @configblock{cookie_domain,string,empty}
  * The domain to be used when setting the cookie. When empty, the browser will set the current
  * domain.
- * @endparblock
+ * @endconfigblock
  *
- * @par cookie_secure
- * @parblock
- * Boolean value, default: @c false
- *
+ * @configblock{cookie_secure,bool,false}
  * Whether to use a secure cookie. If this is set to @c true, the cookie will be marked as
  * @a secure, which means browsers may ensure that the cookie is only sent with an HTTPS
  * connection.
- * @endparblock
+ * @endconfigblock
  *
- * @par cookie_same_site
- * @parblock
- * String value, default: strict; acceptable values: default, none, lax, strict
- *
+ * @configblock{cookie_same_site,string,lax,default\,none\,lax\,strict}
  * Defines the SameSite attribute of the CSRF cookie. See <A
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value">MDN</A>
  * to learn more about SameSite cookies. See also QNetworkCookie::SameSite.
- * @endparblock
+ * @endconfigblock
  *
  * <h3>Building and using</h3>
  * The plugin is linked to Cutelyst::Core, Cutelyst::Session and the QtNetwork module. To use it
  * in your application, link your application to Cutelyst::Utils::LangSelect.
  *
- * @par Logging category
- * cutelyst.plugin.langselect
+ * @logcat{plugin.langselect}
+ *
+ * @sa @ref translations
  *
  * @since %Cutelyst 2.1.0
  */
