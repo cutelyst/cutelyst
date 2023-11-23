@@ -22,11 +22,22 @@ class Engine;
 class Upload;
 class Context;
 
-/** A vector of Upload pointers */
+/**
+ * \related Upload
+ * A vector of Upload pointers.
+ */
 typedef QVector<Upload *> Uploads;
 
 class EngineRequest;
 class RequestPrivate;
+/**
+ * @ingroup core
+ * @class Cutelyst::Request request.h Cutelyst/Request
+ * @brief A request.
+ *
+ * A request contains the data that should be handled by your application
+ * for the client.
+ */
 class CUTELYST_LIBRARY Request final : public QObject
 {
     Q_OBJECT
@@ -50,10 +61,13 @@ class CUTELYST_LIBRARY Request final : public QObject
     Q_PROPERTY(QByteArray referer READ referer CONSTANT)
     Q_PROPERTY(QString remoteUser READ remoteUser CONSTANT)
 public:
+    /**
+     * Destroys the %Request object.
+     */
     virtual ~Request();
 
     /**
-     * Returns the address of the client
+     * Returns the address of the client.
      */
     [[nodiscard]] QHostAddress address() const noexcept;
 
@@ -95,14 +109,13 @@ public:
      * See secure() for more info.
      *
      * If your application was queried with the URI http://localhost:3000/some/path
-     * then base is http://localhost:3000.
+     * then base is 'http://localhost:3000'.
      */
     [[nodiscard]] QString base() const;
 
     /**
      * Returns the path, i.e. the part of the URI after base(), for the current request.
-     * for  http://localhost/path/foo
-     * path will contain '/path/foo'
+     * for http://localhost/path/foo path will contain '/path/foo'.
      */
     [[nodiscard]] QString path() const noexcept;
 
@@ -131,37 +144,37 @@ public:
      * };
      * \endcode
      * and the URI for the request was http://.../foo/bar/bah, the string
-     * bah would be the first and only argument.
+     * 'bah' would be the first and only argument.
      *
      * Arguments get automatically URI-unescaped for you.
      */
     [[nodiscard]] QStringList arguments() const noexcept;
 
     /**
-     * Defines the arguments of the request
-     * Useful for custom dispatchers and/or actions
+     * Defines the arguments of the request.
+     * Useful for custom dispatchers and/or actions.
      */
     void setArguments(const QStringList &arguments);
 
     /**
-     * Shortcut for arguments()
+     * Shortcut for arguments().
      */
     [[nodiscard]] inline QStringList args() const noexcept;
 
     /**
-     * Captures
+     * Returns captures.
      */
     [[nodiscard]] QStringList captures() const noexcept;
 
     /**
-     * Defines the arguments of the request
+     * Defines the captures of the request
      * Useful for custom dispatchers and/or actions
      */
     void setCaptures(const QStringList &captures);
 
     /**
-     * Returns true or false to indicate that a connection is secure (https),
-     * The reliability of it may depend on your server configuration, Cutelyst
+     * Returns \c true or \c false to indicate that a connection is secure (https).
+     * The reliability of it may depend on your server configuration. %Cutelyst
      * relies on the Engine to set this information which is used to build up
      * uri().scheme(). The Engine itself might not be aware of a front HTTP
      * server with https enabled.
@@ -177,7 +190,7 @@ public:
 
     /**
      * Returns a QVariant representation of POST/PUT body data that is not classic HTML
-     * form data, such as JSON, XML, etc. By default, Cutelyst will parse incoming
+     * form data, such as JSON, XML, etc. By default, %Cutelyst will parse incoming
      * data of the type 'application/json' and return access to that data via this method.
      *
      * You may define addition data_handlers.
@@ -254,7 +267,7 @@ public:
 
     /**
      * Contains the keywords portion of a query string, when no '=' signs are present.
-     * * \code
+     * \code
      * http://localhost/path?some+keywords
      * c->request()->queryKeywords() will contain 'some keywords'
      * \endcode
@@ -479,7 +492,7 @@ public:
     [[nodiscard]] Engine *engine() const noexcept;
 
     /**
-     * Constructs a new Request object.
+     * Constructs a new %Request object.
      */
     Request(EngineRequest *engineRequest);
 
