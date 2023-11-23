@@ -18,15 +18,16 @@
 
 using namespace Cutelyst;
 
-/*!
- \class Cutelyst::Engine
- \brief The Cutelyst Engine
+/**
+ \ingroup core
+ \class Cutelyst::Engine engine.h Cutelyst/Engine
+ \brief The %Cutelyst %Engine.
 
  This class is responsible receiving the request
  and sending the response. It must be reimplemented
  by real HTTP engines due some pure virtual methods.
 
- The subclass must create an Engine per thread (worker core),
+ The subclass must create an engine per thread (worker core),
  if the Application passed to the constructor has a worker core
  greater than 0 it will issue a new Application instance, failing
  to do so a fatal error is generated (usually indicating that

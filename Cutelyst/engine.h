@@ -21,11 +21,14 @@ class CUTELYST_LIBRARY Engine : public QObject
     Q_OBJECT
 public:
     /**
-     * Constructs an Engine object, where \p app is the application that might be
-     * used to create new instances if \p workerCore is greater than 1, \p opts
+     * Constructs an %Engine object, where \a app is the application that might be
+     * used to create new instances if \a workerCore is greater than 1, \a opts
      * is the options loaded by the engine subclass.
      */
     explicit Engine(Application *app, int workerCore, const QVariantMap &opts);
+    /**
+     * Destroys the %Engine object.
+     */
     virtual ~Engine();
 
     /**
@@ -40,13 +43,13 @@ public:
     [[nodiscard]] virtual int workerId() const = 0;
 
     /**
-     * Returns the worker core set when constructing the engine
+     * Returns the worker core set when constructing the engine.
      */
     [[nodiscard]] int workerCore() const;
 
     /**
      * Returns true if this is the Zero worker,
-     * ie if workerId() == 0 and workerCore() == 0
+     * ie if workerId() == 0 and workerCore() == 0.
      *
      * \note the value returned from this function is
      * only valid when postFork() is issued.
@@ -54,56 +57,56 @@ public:
     [[nodiscard]] inline bool isZeroWorker() const;
 
     /**
-     * Engine options
+     * Returns the engine options set in the constructor.
      */
     [[nodiscard]] QVariantMap opts() const;
 
     /**
-     * @brief user configuration for the application
-     * @param entity the entity you are interested in
-     * @return the configuration settings
+     * Returns a map of key value pairs for the configuration \a entitiy (section) from
+     * your application’s configuratoin file.
+     *
+     * \sa \ref configuration
      */
     [[nodiscard]] QVariantMap config(const QString &entity) const;
 
     /**
-     * Sets the configuration to be used by Application
+     * Sets the configuration to be used by Application.
      */
     void setConfig(const QVariantMap &config);
 
     /**
-     * Returns a QVariantMap with the INI parsed from \p filename.
+     * Returns a QVariantMap with the INI parsed from \a filename.
      */
     [[nodiscard]] static QVariantMap loadIniConfig(const QString &filename);
 
     /**
-     * Returns a QVariantMap with the JSON parsed from \p filename.
+     * Returns a QVariantMap with the JSON parsed from \a filename.
      */
     [[nodiscard]] static QVariantMap loadJsonConfig(const QString &filename);
 
     /**
-     * @return current micro seconds time to be used for stats, the default implementation returns
+     * Returns current micro seconds time to be used for stats. The default implementation returns
      * QDateTime::currentMSecsSinceEpoch() * 1000, to become micro seconds, so if the engine
      * supports a more precise value it can reimplement this method.
      */
     virtual quint64 time();
 
     /**
-     * Process the EngineRequest \p req, the caller
-     * must delete the context when the request is finished.
+     * Process the \a request. The caller must delete the context when the request is finished.
      *
-     * This method allows for engines to keep the Context alive
-     * while processing websocket data.
+     * This method allows for engines to keep the Context alive while processing websocket data.
      */
     void processRequest(EngineRequest *request);
 
     /**
-     * Returns the HTTP status message for the given \p status.
+     * Returns the HTTP status message for the given \a status. If \a len is not a \c nullptr,
+     * the length of the returned string will be stored to \a *len.
      */
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
 Q_SIGNALS:
     /**
-     * Process the EngineRequest \p req Async, the caller
+     * Process the \a requst asynchronous. The caller
      * must delete the context when the request is finished.
      *
      * This method allows for engines to keep the Context alive
@@ -113,19 +116,12 @@ Q_SIGNALS:
 
 protected:
     /**
-     * @brief initApplication
-     *
-     * This method inits the application and
-     * calls init on the engine. It must be called on the
-     * engine's thread
-     *
-     * @return true if succeded
+     * This method inits the application and calls init on the engine. It must be called on the
+     * engine's thread. Returns \c true on success.
      */
     bool initApplication();
 
     /**
-     * @brief postForkApplication
-     *
      * Subclasses must be call after the engine forks by the worker thread,
      * if no forking is involved it must be called once the worker thread has
      * started.
@@ -138,7 +134,7 @@ protected:
     bool postForkApplication();
 
     /**
-     * This is the HTTP default response headers that each request gets
+     * This is the HTTP default response headers that each request gets.
      */
     [[nodiscard]] Headers &defaultHeaders();
 
@@ -150,8 +146,7 @@ private:
     friend class Response;
 
     /**
-     * @brief init the engine
-     * @return true if succeeded
+     * Initialize the engine and return \c true on success.
      */
     virtual bool init() = 0;
 };
