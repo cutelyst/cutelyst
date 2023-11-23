@@ -17,10 +17,14 @@ class Controller;
 class Dispatcher;
 class ComponentPrivate;
 
-/*! \class Component component.h Cutelyst/Component
- * @brief The %Cutelyst %Component base class
+/**
+ * \ingroup core
+ * \class Component component.h Cutelyst/Component
+ * \brief The %Cutelyst %Component base class.
  *
- * This is the base class of a Cutelyst component
+ * This is the base class of a %Cutelyst component.
+ *
+ * \logcat{component}
  */
 class CUTELYST_LIBRARY Component : public QObject
 {
@@ -28,7 +32,7 @@ class CUTELYST_LIBRARY Component : public QObject
     Q_DECLARE_PRIVATE(Component)
     Q_FLAGS(Modifiers)
 public:
-    /**  This value defines which kind of modifiers should be executed */
+    /**  This value defines which kind of modifiers should be executed. */
     enum Modifier {
         None          = 0 << 1,
         OnlyExecute   = 1 << 1,
@@ -40,89 +44,97 @@ public:
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
     /**
-     * This is the base class for many Cutelyst objects,
-     * prividing access to name and reverse for actions,
+     * This is the base class for many %Cutelyst objects,
+     * providing access to name and reverse for actions,
      * and modifiers to customize execution.
      */
     explicit Component(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %Component object.
+     */
     virtual ~Component() override;
 
     /**
-     * Reimplement to return custom Modifiers, default is None
+     * Reimplement this to return custom Modifiers, default is None.
      */
     [[nodiscard]] virtual Modifiers modifiers() const;
 
     /**
-     * Returns the sub name of this Component.
+     * Returns the sub name of this %Component.
+     * \sa setName()
      */
     [[nodiscard]] QString name() const noexcept;
 
     /**
-     * Defines the sub name of this Component.
+     * Defines the sub \a name of this %Component.
+     * \sa name()
      */
     void setName(const QString &name);
 
     /**
-     * Returns the private name of this component.
+     * Returns the private name of this %Component.
+     * \sa setReverse()
      */
     [[nodiscard]] QString reverse() const noexcept;
 
     /**
-     * Defines the private name of this Component.
+     * Defines the private name of this %Component.
+     * \sa reverse()
      */
     void setReverse(const QString &reverse);
 
     /**
      * A Does class is always attached to an action,
-     * if this method returns false the application
+     * if this method returns \c false, the application
      * will fail to start. Often useful if the user
-     * misconfigured the settings
+     * misconfigured the settings.
      */
     virtual bool init(Application *application, const QVariantHash &args);
 
     /**
-     * Executes this component agains the Context
+     * Executes this component agains the Context \a c.
      */
     bool execute(Context *c);
 
 protected:
-    /*!
+    /**
      * A derived class using pimpl should call this constructor, to reduce the number of memory
-     * allocations
+     * allocations.
      */
     explicit Component(ComponentPrivate *d, QObject *parent = nullptr);
 
     /**
-     * Reimplement this if you want to do processing before doExecute
+     * Reimplement this if you want to do processing before doExecute().
      */
     virtual bool beforeExecute(Context *c);
 
     /**
-     * Reimplement this if you want to do processing around doExecute,
-     * you must call doExecute yourself then
+     * Reimplement this if you want to do processing around doExecute(),
+     * you must call doExecute() yourself then.
      */
     virtual bool aroundExecute(Context *c, QStack<Component *> stack);
 
     /**
-     * Reimplement this if you want to do processing after doExecute
+     * Reimplement this if you want to do processing after doExecute().
      */
     virtual bool afterExecute(Context *c);
 
     /**
-     * Reimplement this for the main processing
+     * Reimplement this for the main processing.
      */
     virtual bool doExecute(Context *c);
 
     /**
-     * Call this to install before, around and after roles
+     * Call this to install before, around and after roles.
      */
     void applyRoles(const QStack<Component *> &roles);
 
     /**
-     * Called by dispatcher once it's done preparing actions
+     * Called by dispatcher once it’s done preparing actions.
      *
      * Subclasses might want to implement this to cache special
-     * actions, such as special methods for REST actions
+     * actions, such as special methods for REST actions.
      */
     virtual bool dispatcherReady(const Dispatcher *dispatch, Controller *controller);
 
