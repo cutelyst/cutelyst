@@ -15,8 +15,11 @@ namespace Cutelyst {
 
 class UploadPrivate;
 
-/*! \class Upload upload.h Cutelyst/Upload
- * @brief %Cutelyst %Upload handles file upload request
+/**
+ * \class Upload upload.h Cutelyst/Upload
+ * \brief %Cutelyst %Upload handles file upload requests.
+ *
+ * %Cutelyst %Upload handles file upload requests.
  */
 class CUTELYST_LIBRARY Upload final : public QIODevice
 {
@@ -27,30 +30,33 @@ public:
      * This class provides access to client upload requests
      */
     Upload(UploadPrivate *prv);
+    /**
+     * Destroys the %Upload object.
+     */
     virtual ~Upload() override;
 
     /**
-     * Returns the name of the form field
+     * Returns the name of the form field.
      */
     [[nodiscard]] QString name() const;
 
     /**
-     * Returns the file name provided by the user agent
+     * Returns the file name provided by the user agent.
      */
     [[nodiscard]] QString filename() const;
 
     /**
-     * Returns the content type provided by the user agent
+     * Returns the content type provided by the user agent.
      */
     [[nodiscard]] QByteArray contentType() const;
 
     /**
-     * Returns the headers provided by the user agent
+     * Returns the headers provided by the user agent.
      */
     [[nodiscard]] Headers headers() const;
 
     /**
-     * Saves this upload to the following location.
+     * Saves this upload to the location defined by \a filename.
      */
     bool save(const QString &filename);
 

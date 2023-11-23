@@ -13,7 +13,13 @@
 namespace Cutelyst {
 
 /**
+ * \ingroup core
+ * \brief Helper functions used all over %Cutelyst.
+ *
  * Helper functions used all over %Cutelyst.
+ *
+ * \par Include statement
+ * #include <Cutelyst/utils.h>
  */
 namespace Utils {
 CUTELYST_LIBRARY QByteArray buildTable(const QVector<QStringList> &table,
