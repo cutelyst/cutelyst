@@ -1,4 +1,15 @@
+namespace Cutelyst {
 /**
 \page configuration Configure your application
 \tableofcontents
+You can load configuration settings for your application from configuration files in different
+formats. Currently %Cutelyst supports the INI format read by QSettings and the JSON format read
+by QJsonDocument. To load the configuration file you have to provide them to the cutelyst server
+executable that will load them into your application.
+
+\section loading Load your configuration
+When loading your application with \c \serverexec server, you can add the parameter
+<tt>\-\-ini &lt;path&gt;</tt> to load a configuration file in INI format or
+<tt>\-\-json &lt;path&gt;</tt> to load a configuration file in JSON format.
  */
+}
