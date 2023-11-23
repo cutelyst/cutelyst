@@ -14,6 +14,13 @@ namespace Cutelyst {
 class Context;
 class Action;
 class Request;
+/**
+ * @ingroup core
+ * @class Cutelyst::DispatchType dispatchtype.h Cutelyst/DispatchType
+ * @brief Abstract class to described a dispatch type.
+ *
+ * This abstract class can be used to describe a dispatch type.
+ */
 class CUTELYST_LIBRARY DispatchType : public QObject
 {
     Q_OBJECT
@@ -27,38 +34,44 @@ public:
     Q_ENUM(MatchType)
 
     /**
-     * Construct a DispatchType object
+     * Construct a new %DispatchType object with the given \a parent.
      */
     explicit DispatchType(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %DispatchType object.
+     */
     virtual ~DispatchType();
 
     /**
-     * @brief list the registered actions
-     * To be implemented by subclasses
+     * Lists the registered actions.
+     * Has to be implemented by subclasses.
      */
     virtual QByteArray list() const = 0;
 
     /**
-     * Return true if the dispatchType matches the given path
+     * Returns the MatchType for the given \a path and \a args.
+     * Has to be implemented by subclasses.
      */
     [[nodiscard]] virtual MatchType
         match(Context *c, QStringView path, const QStringList &args) const = 0;
 
     /**
-     * Returns an uri for an action
+     * Returns an uri for an \a action with given \a captures.
+     * Has to be implemented by subclasses.
      */
     [[nodiscard]] virtual QString uriForAction(Action *action,
                                                const QStringList &captures) const = 0;
 
     /**
-     * Expand the action to a list of actions which is used in chained
+     * Expand the \a action to a list of actions which is used in chained.
+     * The default implementation does nothing and returns a \c nullptr.
      */
     [[nodiscard]] virtual Action *expandAction(const Context *c, Action *action) const;
 
     /**
-     * @brief registerAction
-     * @param action
-     * @return
+     * Register an \a action and return \c true on success.
+     * The default implementation does nothing and returns always \c true.
      */
     virtual bool registerAction(Action *action);
 
@@ -75,9 +88,11 @@ public:
     virtual bool inUse() = 0;
 
     /**
-     * Returns true if the dispatch type has low precedence
+     * Returns \c true if the dispatch type has low precedence
      * when the precedence is the same the Class name is used
      * to sort them.
+     *
+     * The default implementation return \c false.
      */
     virtual bool isLowPrecedence() const;
 
@@ -86,7 +101,7 @@ protected:
     friend class Application;
 
     /**
-     * Sets the matched action to the Context
+     * Sets the matched \a action to the Context \a c.
      */
     void setupMatchedAction(Context *c, Action *action) const;
 };

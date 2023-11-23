@@ -12,15 +12,25 @@
 namespace Cutelyst {
 
 class DispatchTypePathPrivate;
+/**
+ * @ingroup core
+ * @class Cutelyst::DispatchTypePath
+ * @brief Describes a path dispatch type.
+ *
+ * Describes a path dispatch type.
+ */
 class CUTELYST_LIBRARY DispatchTypePath final : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypePath)
 public:
     /**
-     * Constructs a DispatchTypePath object with the given \p parent.
+     * Constructs a new %DispatchTypePath object with the given \a parent.
      */
     explicit DispatchTypePath(QObject *parent = nullptr);
+    /**
+     * Destroys the %DispatchTypePath object.
+     */
     ~DispatchTypePath() override;
 
     QByteArray list() const override;
@@ -32,8 +42,8 @@ public:
     bool inUse() override;
 
     /**
-     * Get a URI part for an action
-     * Always returns NULL if captures is not empty since Path actions don't have captures
+     * Get a URI part for an action.
+     * Always returns NULL if captures is not empty since Path actions don't have captures.
      */
     QString uriForAction(Action *action, const QStringList &captures) const override;
 
