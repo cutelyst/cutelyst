@@ -14,8 +14,11 @@ namespace Cutelyst {
 class Context;
 class ViewPrivate;
 
-/*! \class View view.h Cutelyst/View
- * @brief %Cutelyst %View abstract view component
+/**
+ * \class View view.h Cutelyst/View
+ * \brief Abstract %View component for %Cutelyst.
+ *
+ * Create a subclass of %View if you want to create your own \ref plugins-view.
  */
 class CUTELYST_LIBRARY View : public Component
 {
@@ -23,14 +26,18 @@ class CUTELYST_LIBRARY View : public Component
     Q_DECLARE_PRIVATE(View)
 public:
     /**
-     * The base implementation for a View class, a name
+     * The base implementation for a %View class, a \a name
      * for the view should be set to be found by Context->view()
      */
     explicit View(QObject *parent, const QString &name);
+
+    /**
+     * Destroys the %View object.
+     */
     virtual ~View() override = default;
 
     /**
-     * The default implementation returns Component::OnlyExecute
+     * The default implementation returns Component::OnlyExecute.
      */
     Modifiers modifiers() const override;
 
@@ -58,7 +65,7 @@ private:
     bool doExecute(Context *c) final;
 
 protected:
-    /*!
+    /**
      * A derived class using pimpl should call this constructor, to reduce the number of memory
      * allocations
      */
