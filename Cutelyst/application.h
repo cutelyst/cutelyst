@@ -41,6 +41,25 @@ class ApplicationPrivate;
  *
  * This is the main class of a %Cutelyst appplication.
  *
+ * <h3 id="configfile">Configuration file options</h3>
+ *
+ * There are some options you can set in your \ref configuration "application configuration file"
+ * in the \c %Cutelyst section. If you want to get keys via the config() method of %Application,
+ * you have to add them to the \c %Cutelyst section. If you want to get other config sections
+ * than \c %Cutelyst, you should use \link Engine::config() engine()->config("section")\endlink.
+ *
+ * @configblock{home,string,empty}
+ * Absolute path to your home diretory, that is for example used by pathTo(). If this is empty
+ * (the default), it will be populated by the return value of QDir::currentPath().
+ * @endconfigblock
+ *
+ * @configblock{root,string,empty}
+ * Absolute path to your web root directory that contains your template and/or static files. This
+ * might be used by plugins to \ref servestatic "server static files" or by
+ * \ref plugins-view "Views" like CuteleeView to find template files. If this is empty (the
+ * default), it will be populated as directory below \c "home".
+ * @endconfigblock
+ *
  * \logcat{core}
  */
 class CUTELYST_LIBRARY Application : public QObject
