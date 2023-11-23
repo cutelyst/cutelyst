@@ -14,18 +14,25 @@
 namespace Cutelyst {
 
 class Application;
+/**
+ * @ingroup core
+ * @class Cutelyst::Plugin plugin.h Cutelyst/Plugin
+ * @brief Base class for %Cutelyst \ref plugins.
+ *
+ * Base class for %Cutelyst \ref plugins.
+ */
 class CUTELYST_LIBRARY Plugin : public QObject
 {
     Q_OBJECT
 public:
     /**
-     * Constructs a new plugin object with the given Application parent.
+     * Constructs a new %Plugin object with the given Application \a parent.
      */
     Plugin(Application *parent);
 
     /**
      * Reimplement this if you need to connect to
-     * the signals emitted from Cutelyst::Application
+     * the signals emitted from Cutelyst::Application.
      */
     virtual bool setup(Application *app);
 };
