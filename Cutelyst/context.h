@@ -28,46 +28,96 @@ class Stats;
 class Plugin;
 class ContextPrivate;
 
-/*! \class Context context.h Cutelyst/Context
- * @brief The %Cutelyst %Context
+/**
+ * \ingroup core
+ * \class Context context.h Cutelyst/Context
+ * \brief The %Cutelyst %Context.
  *
  * This is the context class that glues Request and Response plus
  * some helper methods.
+ *
+ * \logcat{core}
  */
 class CUTELYST_LIBRARY Context : public QObject
 {
     Q_OBJECT
+    /**
+     * Pointer to the current action.
+     */
     Q_PROPERTY(Action *action READ action CONSTANT)
+    /**
+     * Private name of the current action
+     */
     Q_PROPERTY(QString actionName READ actionName CONSTANT)
+    /**
+     * The namespace of the current action.
+     * \sa ns()
+     */
     Q_PROPERTY(QString ns READ ns CONSTANT)
+    /**
+     * The namespace of the current action.
+     * \sa ns()
+     */
     Q_PROPERTY(QString namespace READ ns CONSTANT)
+    /**
+     * The current Request object containing
+     * information about the client request.
+     */
     Q_PROPERTY(Request *req READ request CONSTANT)
+    /**
+     * The current Request object containing
+     * information about the client request.
+     */
     Q_PROPERTY(Request *request READ request CONSTANT)
+    /**
+     * The current controller.
+     */
     Q_PROPERTY(Controller *controller READ controller CONSTANT)
+    /**
+     * The current controller name.
+     */
     Q_PROPERTY(QString controllerName READ controllerName CONSTANT)
+    /**
+     * Mapping for all configuration entries read from the \c %Cutelyst
+     * configuration section.
+     *
+     * \sa \ref configuration
+     */
     Q_PROPERTY(QVariantMap config READ config CONSTANT)
+    /**
+     * Holds the return value of the last executed action.
+     */
     Q_PROPERTY(bool state READ state CONSTANT)
 public:
-    /*!
-     * Constructs a new DUMMY Context object that is child of Application
-     * This currently is experimental to allow non network events (such as database notification)
-     * to be able to use our infrastructure
+    /**
+     * Constructs a new DUMMY Context object that is child of Application.
+     *
+     * \warning This currently is experimental to allow non network events (such as database
+     * notification) to be able to use our infrastructure.
      */
     Context(Application *app);
+
+    /**
+     * Destroys the %Context object.
+     * This will also delete the associated Request and Response.
+     */
     virtual ~Context();
 
-    /*!
-     * Returns true if an error was set.
+    /**
+     * Returns \c true if an error was set.
+     * \sa appendError() errors()
      */
     [[nodiscard]] bool error() const noexcept;
 
-    /*!
-     * Sets an error string and try to stop
+    /**
+     * Sets an \a error string and tries to stop.
+     * \sa error() errors()
      */
     void appendError(const QString &error);
 
-    /*!
-     * Returns a list of errors that were defined
+    /**
+     * Returns a list of errors that were defined.
+     * \sa error() appendError()
      */
     [[nodiscard]] QStringList errors() const noexcept;
 
@@ -76,19 +126,19 @@ public:
      */
     [[nodiscard]] bool state() const noexcept;
 
-    /*!
-     * Sets the state of the current executed action, setting to false
+    /**
+     * Sets the \a state of the current executed action. Setting to \c false
      * will make the dispatcher skip non processed actions.
      */
     void setState(bool state) noexcept;
 
     /**
-     * Returns the engine instance. See Cutelyst::Engine
+     * Returns the engine instance. See Cutelyst::Engine.
      */
     [[nodiscard]] Engine *engine() const noexcept;
 
     /**
-     * Returns the application instance. See Cutelyst::Application
+     * Returns the application instance. See Cutelyst::Application.
      */
     [[nodiscard]] Application *app() const noexcept;
 
@@ -103,78 +153,79 @@ public:
     [[nodiscard]] Response *res() const noexcept;
 
     /**
-     * Returns a pointer to the current action
+     * Returns a pointer to the current action.
      */
     [[nodiscard]] Action *action() const noexcept;
 
     /**
-     * Returns the private name of the current action
+     * Returns the private name of the current action.
      */
     [[nodiscard]] QString actionName() const noexcept;
 
     /**
      * Returns the namespace of the current action.
-     * i.e. the URI prefix corresponding to the controller
-     * of the current action. For example:
-     * // a class named FooBar which inherits Controller
-     * c->ns(); // returns 'foo/bar'
+     * I.e. the URI prefix corresponding to the controller
+     * of the current action.
+     *
+     * For example: on a class named \c FooBar which inherits Controller
+     * this will return \c 'foo/bar'.
      */
     [[nodiscard]] QString ns() const noexcept;
 
     /**
      * Returns the current Request object containing
-     * information about the client request Request
+     * information about the client request.
      */
     [[nodiscard]] Request *request() const noexcept;
 
     /**
-     * Short for request()
+     * Short for request().
      */
     [[nodiscard]] Request *req() const noexcept;
 
     /**
-     * Returns the dispatcher instance. See Cutelyst::Dispatcher
+     * Returns the dispatcher instance. See Cutelyst::Dispatcher.
      */
     [[nodiscard]] Dispatcher *dispatcher() const noexcept;
 
     /**
-     * The current controller name
+     * Returns the current controller name.
      */
     [[nodiscard]] QString controllerName() const noexcept;
 
     /**
-     * Returns the current controller
+     * Returns the current controller.
      */
     [[nodiscard]] Controller *controller() const noexcept;
 
     /**
-     * Returns the controller by name, or nullptr
-     * if the controller is not found
+     * Returns the controller by \a name or \c nullptr
+     * if the controller is not found.
      */
     [[nodiscard]] Controller *controller(QStringView name) const;
 
     /**
-     * Returns the view with name name or nullptr if not found
+     * Returns the \ref plugins-view with \a name or \c nullptr if not found.
      */
     [[nodiscard]] View *view(QStringView name = {}) const;
 
     /**
-     * Returns the view set to be used
+     * Returns the \ref plugins-view set to be used
      * for rendering this request, if one
-     * is set by setView() or nullptr if none was set
+     * is set by setCustomView() or \c nullptr if none was set.
      */
     [[nodiscard]] View *customView() const noexcept;
 
     /**
-     * Defines the view to be used to render
+     * Defines the \ref plugins-view to be used to render
      * the request, it must be previously
      * be registered by Cutelyst::Application.
      *
      * Action classes like RenderView will use
      * this value to overwrite their settings.
      *
-     * Returns true if a view with the given
-     * name was found
+     * Returns \c true if a view with the given
+     * \a name was found.
      */
     bool setCustomView(QStringView name);
 
@@ -184,13 +235,13 @@ public:
      * which may be used to store data and pass it between
      * components during a request.
      *
-     * The stash is automatically sent to the view.
+     * The stash is automatically sent to the \ref plugins-view.
      * The stash is cleared at the end of a request;
      * it cannot be used for persistent storage
-     * (for this you must use a session; see Cutelyst::Plugin::Session
-     * for a complete system integrated with Cutelyst).
+     * (for this you must use a session; see \ref plugins-session
+     * for a complete system integrated with %Cutelyst).
      *
-     * If a given key is present it will be replaced
+     * If a given key is present it will be replaced.
      *
      * \code{.cpp}
      * c->stash({
@@ -209,41 +260,42 @@ public:
      * The stash is automatically sent to the view.
      * The stash is cleared at the end of a request;
      * it cannot be used for persistent storage
-     * (for this you must use a session; see Cutelyst::Plugin::Session
-     * for a complete system integrated with Cutelyst).
+     * (for this you must use a session; see \ref plugins-session
+     * for a complete system integrated with %Cutelyst).
      */
     [[nodiscard]] QVariantHash &stash();
 
     /**
-     * A convenient method to retrieve a single value from the stash
+     * A convenient method to retrieve a single value from the stash by \a key.
      */
     [[nodiscard]] QVariant stash(const QString &key) const;
 
     /**
-     * A convenient method to retrieve a single value with a default value from the stash
+     * A convenient method to retrieve a single value with the stash by \a key. If
+     * \a key is not found, \a defaultValue will be returned.
      */
     [[nodiscard]] QVariant stash(const QString &key, const QVariant &defaultValue) const;
 
     /**
-     * Removes the item with the key from the stash and returns the value associated with it.
+     * Removes the item with the \a key from the stash and returns the value associated with it.
      * If the item does not exist in the stash, the function simply returns a default-constructed
-     * value. If you don't use the return value, stashRemove() is more efficient.
+     * value. If you don’t use the return value, stashRemove() is more efficient.
      */
     QVariant stashTake(const QString &key);
 
     /**
-     * Removes the item that has the key from the stash.
-     * Returns true if any item was removed removed.
+     * Removes the item that has the \a key from the stash.
+     * Returns \c true if any item was removed.
      */
     bool stashRemove(const QString &key);
 
     /**
-     * A convenient method to set a single value to the stash
+     * A convenient method to set a single \a value to the stash on \a key.
      */
     void setStash(const QString &key, const QVariant &value);
 
     /**
-     * A convenient method to set a single ParamsMultiMap to the stash
+     * A convenient method to set a single ParamsMultiMap \a map to the stash on \a key.
      */
     void setStash(const QString &key, const ParamsMultiMap &map);
 
@@ -254,14 +306,15 @@ public:
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
-     * provided path, and the additional arguments and query parameters provided.
-     * When used as a string, provides a textual URI.
+     * provided \a path, and the additional arguments \a args and query parameters
+     * \a queryValues provided. When used as a string, provides a textual URI.
      *
      * The first argument is taken as a public URI path relative
-     * c->ns (if it doesn't begin with a forward slash) or
+     * \link ns() c->ns()\endlink (if it doesn’t begin with a forward slash) or
      * relative to the application root (if it does). It is then merged with
-     * c->request()->base() any \p args are appended as additional path
-     * components; and any queryValues> are appended as "?foo=bar" parameters.
+     * \link Request::base() c->request()->base()\endlink any \a args are appended
+     * as additional path components; and any \a queryValues are appended as \c "?foo=bar"
+     * parameters.
      */
     [[nodiscard]] QUrl uriFor(const QString &path               = {},
                               const QStringList &args           = {},
@@ -269,22 +322,23 @@ public:
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
-     * provided path, and the additional arguments and query parameters provided.
+     * provided \a path and the query parameters \a queryValues provided.
      * When used as a string, provides a textual URI.
      *
      * The first argument is taken as a public URI path relative
-     * c->ns (if it doesn't begin with a forward slash) or
+     * \link ns() c->ns()\endlink (if it doesn’t begin with a forward slash) or
      * relative to the application root (if it does). It is then merged with
-     * c->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
+     * \link Request::base() c->request()->base()\endlink and any \a queryValues
+     * are appended as \c "?foo=bar" parameters.
      */
     [[nodiscard]] inline QUrl uriFor(const QString &path, const ParamsMultiMap &queryValues) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
-     * provided path, and the additional arguments and query parameters provided.
-     * When used as a string, provides a textual URI.
+     * provided \a action, \a captures, arguments \a args and query parameters
+     * \a queryValues. When used as a string, provides a textual URI.
      *
-     * If no arguments are provided, the URI for the current action is returned.
+     * If \a action is a \c nullptr, the URI for the current action is returned.
      * To return the current action and also provide \p args, use
      * c->uriFor(c->action(), args).
      */
@@ -295,7 +349,7 @@ public:
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
-     * provided path, and the additional arguments and query parameters provided.
+     * provided \a action and the query parameters \a queryValues provided.
      * When used as a string, provides a textual URI.
      */
     [[nodiscard]] inline QUrl uriFor(Action *action, const ParamsMultiMap &queryValues) const;
@@ -304,7 +358,7 @@ public:
      * A private path to the Cutelyst action you want to create a URI for.
      *
      * This is a shortcut for calling c->dispatcher()->getActionByPath(path)
-     * and passing the resulting action and the remaining arguments to c->uri_for.
+     * and passing the resulting action and the remaining arguments to c->uriFor().
      *
      * Note that although the path looks like a URI that dispatches to the wanted action,
      * it is not a URI, but an internal path to that action.
@@ -329,21 +383,23 @@ public:
                                     const ParamsMultiMap &queryValues = {}) const;
 
     /**
-     * A convenience method for the uriForAction() without the arguments parameter
+     * A convenience method for the uriForAction() without the arguments parameter.
      */
     [[nodiscard]] inline QUrl uriForAction(QStringView path,
                                            const ParamsMultiMap &queryValues) const;
 
     /**
-     * Returns true if the last executed Action requested
+     * Returns \c true if the last executed Action requested
      * that the processing be escaped.
      */
     bool detached() const noexcept;
 
     /**
-     * The same as forward(action)
+     * The same as forward().
      *
      * When called with no arguments it escapes the processing chain entirely.
+     *
+     * \sa finalize()
      */
     void detach(Action *action = nullptr);
 
@@ -351,25 +407,24 @@ public:
      * Detaches the processing chain telling the Engine that
      * the request is not finished yet.
      *
-     * The scoped \sa Async class can make handlying async requests easier.
+     * The scoped ASync class can make handling async requests easier.
      *
-     * It's often useful to call async API's, while convenient the use of QEventLoop
+     * It’s often useful to call async API’s. While convenient, the use of QEventLoop
      * will only work for the first request or lead to a crash due stacking of calls.
      *
      * This method, tells the Engine that this request is not finished yet, making
      * it return to the event loop to process other requests or the task that was
      * created prior to calling this.
      *
-     * Once done call attachAsync() in order to process the remaining of the action chain.
+     * Once done, call attachAsync() in order to process the remaining of the action chain.
      */
     void detachAsync() noexcept;
 
-    /*!
-     * \brief attachAsync
+    /**
+     * Reattaches to the processing chain in order to process the remaining of the action chaing.
+     * Call this after you called detachAsync().
      *
-     * The scoped \sa Async class can make handlying async requests easier.
-     *
-     * Reattaches to the remaining actions
+     * The scoped ASync class can make handlying async requests easier.
      */
     void attachAsync();
 
@@ -385,7 +440,7 @@ public:
      * Whether you use 'forward' or not is up to you; it is not considered superior to
      * the other ways to call a method.
      *
-     * forward calls Component::execute.
+     * This calls Component::execute().
      *
      * Keep in mind that the End() method used is that of the caller action.
      * So a c->detach() inside a forwarded action would run the End() method from
@@ -405,7 +460,7 @@ public:
      * Whether you use 'forward' or not is up to you; it is not considered superior to
      * the other ways to call a method.
      *
-     * forward calls another action, by its private name.
+     * This calls another action, by its private name.
      *
      * Keep in mind that the End() method used is that of the caller action.
      * So a c->detach() inside a forwarded action would run the End() method from
@@ -414,22 +469,22 @@ public:
     bool forward(QStringView action);
 
     /**
-     * Gets an action in a given namespace.
+     * Gets an \a action in a given namespace \a ns.
      */
     [[nodiscard]] Action *getAction(QStringView action, QStringView ns = {}) const;
 
     /**
-     * Gets all actions of a given name in a namespace and all parent namespaces.
+     * Gets all actions of a given \a action name in a namespace \a ns and all parent namespaces.
      */
     [[nodiscard]] QVector<Action *> getActions(QStringView action, QStringView ns = {}) const;
 
     /**
-     * Returns all registered plugins
+     * Returns all registered plugins.
      */
     [[nodiscard]] QVector<Plugin *> plugins() const;
 
-    /*!
-     * Returns the registered plugin that casts to the template type \p T
+    /**
+     * Returns the registered plugin that casts to the template type \a T.
      */
     template <typename T>
     T plugin()
@@ -445,42 +500,57 @@ public:
     }
 
     /**
-     * Execute an action. Errors are available via error().
+     * Execute an action. Errors are available via errors().
      */
     bool execute(Component *code);
 
     /**
-     * Returns the current locale to be used when processing Views
+     * Returns the current locale to be used when processing a \ref plugins-view
      * or translating user messages.
      *
-     * If not explicity set by setLocale it will use the QLocale::setDefault(),
-     * or QLocale::system() if not set.
+     * If not explicity set by setLocale() it will use a default constructed QLocale
+     * that will either be the locale set by QLocale::setDefault() or QLocale::system()
+     * if no default locale has been set.
+     *
+     * \sa \ref translations
      */
     [[nodiscard]] QLocale locale() const noexcept;
 
     /**
-     * Defines the current locale to be used when processing Views
+     * Defines the current locale to be used when processing a \ref plugins-view
      * or translating user messages.
      *
      * Setting a locale on a web application can be done in many ways,
-     * so it's up to the developer to decide which one to use.
+     * so it’s up to the developer to decide which one to use.
      *
-     * For example it's possible to try to guess the user locale with
+     * For example it’s possible to try to guess the user locale with
      * the request header Accept-Language, and  or use the chained dispatcher to first
      * match the locale as in "example.com/pt-br/some_action", and or store
      * the locale into a cookie or session.
      *
      * Be sure to set it as soon as possible so that all content can be properly localized.
+     *
+     * \sa LangSelect
+     * \sa \ref translations
      */
     void setLocale(const QLocale &locale);
 
     /**
-     * Returns a configuration value for key with an optional default value
+     * Returns a configuration value for \a key. If \a key is not found, \a defaultValue will
+     * be returned.
+     *
+     * This calls Application::config(), so it will only return entries from the \c %Cutelyst
+     * configuration section.
+     *
+     * \sa \ref configuration
      */
     [[nodiscard]] QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 
     /**
-     * Returns a configuration mapping for all configuration read
+     * Returns a configuration mapping for all configuration entries read from the \c %Cutelyst
+     * configuration section.
+     *
+     * \sa \ref configuration
      */
     [[nodiscard]] QVariantMap config() const noexcept;
 
@@ -496,6 +566,8 @@ public:
      *      c->res()->setBody(c->translate("MyController", "You are on the index page."));
      * }
      * \endcode
+     *
+     * \sa \ref translations
      */
     [[nodiscard]] QString translate(const char *context,
                                     const char *sourceText,
@@ -534,20 +606,22 @@ public:
      * Creating QM files suitable for use with this function requires passing the \c -idbased
      * option to the \c lrelease tool.
      *
+     * \sa \ref translations
+     *
      * \since Cutelyst 3.9.0
      */
     [[nodiscard]] inline QString qtTrId(const char *id, int n = -1) const;
 
 public Q_SLOTS:
-    /*!
-     * \brief finalize the request right away this is automatically called
-     * at the end of the actions chain
+    /**
+     * Finalize the request right away. This is automatically called
+     * at the end of the actions chain.
      */
     void finalize();
 
 protected:
-    /*!
-     * Constructs a new Context object using private implementation.
+    /**
+     * Constructs a new %Context object using private implementation.
      */
     Context(ContextPrivate *priv);
 
