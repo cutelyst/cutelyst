@@ -11,6 +11,7 @@
 namespace Cutelyst {
 
 /**
+ * @ingroup core
  * ParamsMultiMap is a QMultiMap used to store
  * request parameters with keys containing
  * multiple values.
