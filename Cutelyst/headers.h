@@ -12,6 +12,14 @@
 
 namespace Cutelyst {
 
+/**
+ * @ingroup core
+ * @class Cutelyst::Headers headers.h Cutelyst/Headers
+ * @brief Container for HTTP headers.
+ *
+ * %Headers is a container for HTTP headers that also implements helper methods to set and
+ * get specific headers.
+ */
 class CUTELYST_LIBRARY Headers
 {
 public:
@@ -26,17 +34,17 @@ public:
     };
 
     /**
-     * Construct an empty header object.
+     * Construct an empty %Header object.
      */
     Headers() noexcept = default;
 
     /**
-     * Constructs a copy of \pa other.
+     * Constructs a copy of \a other.
      */
     Headers(const Headers &other) noexcept;
 
     /**
-     * Construct a header from a std::initializer_list given by list.
+     * Construct a %Header from a std::initializer_list given by \a list.
      */
     inline Headers(std::initializer_list<std::pair<QByteArray, QByteArray>> list)
     {
@@ -50,24 +58,26 @@ public:
     /**
      * The Content-Disposition header field indicates if the content is expected
      * to be displayed inline in the browser, that is, as a Web page or as part
-     * of a Web page, or as an attachment, that is downloaded and saved locally
+     * of a Web page, or as an attachment, that is downloaded and saved locally.
+     *
+     * \sa setContentDisposition()
      */
     [[nodiscard]] QByteArray contentDisposition() const noexcept;
 
     /**
-     * Defines the Cache-Control header
+     * Sets the \a value for the Cache-Control header.
      */
     void setCacheControl(const QByteArray &value);
 
     /**
-     * Defines the Content-Disposition header
+     * Sets the value for the Content-Disposition header to \a contentDisposition.
      * \sa contentDisposition()
      */
     void setContentDisposition(const QByteArray &contentDisposition);
 
     /**
-     * Defines the Content-Disposition header as type attachment and the
-     * optional filename parameter
+     * Sets the Content-Disposition header as type attachment and sets the \a filename
+     * as optional filename parameter.
      * \sa contentDisposition()
      */
     void setContentDispositionAttachment(const QByteArray &filename = {});
@@ -80,7 +90,7 @@ public:
     [[nodiscard]] QByteArray contentEncoding() const noexcept;
 
     /**
-     * Defines the Content-Encoding header
+     * Sets the Content-Encoding header to \a encoding.
      * \sa contentEncoding()
      */
     void setContentEncoding(const QByteArray &encoding);
@@ -90,74 +100,78 @@ public:
      * E.g.: "text/html"
      * The value returned will be converted to lower case, and potential parameters
      * will be ignored. If there is no such header field, then the empty string is returned.
+     * \sa setContentType()
      */
     [[nodiscard]] QByteArray contentType() const;
 
     /**
-     * Defines the Content-Encoding header
+     * Sets the value for the Content-Type header to \a contentType.
      * \sa contentType()
      */
     void setContentType(const QByteArray &contentType);
 
     /**
      * Returns the upper-cased charset specified in the Content-Type header.
+     * \sa setContentTypeCharset()
      */
     [[nodiscard]] QByteArray contentTypeCharset() const;
 
     /**
-     * The Content-Type header field indicates the media type of the message content.
-     * this defines the charset of the content-type
+     * Set the optional charset parameter of the Content-Type header field to \a charset.
+     * \sa contentTypeCharset()
      */
     void setContentTypeCharset(const QByteArray &charset);
 
     /**
-     * Returns TRUE if the Content-Type header field indicate that the content is textual.
+     * Returns \c true if the Content-Type header field indicate that the content is textual.
      */
     [[nodiscard]] bool contentIsText() const;
 
     /**
-     * Returns TRUE if the Content-Type header field indicate that the
+     * Returns \c true if the Content-Type header field indicate that the
      * content is some kind of HTML (including XHTML).
      */
     [[nodiscard]] bool contentIsHtml() const;
 
     /**
-     * Returns TRUE if the Content-Type header field indicate that the content is XHTML.
+     * Returns \c true if the Content-Type header field indicate that the content is XHTML.
      */
     [[nodiscard]] bool contentIsXHtml() const;
 
     /**
-     * Returns TRUE if the Content-Type header field indicate that the content is XML.
+     * Returns \c true if the Content-Type header field indicate that the content is XML.
      */
     [[nodiscard]] bool contentIsXml() const;
 
     /**
-     * Returns TRUE if the Content-Type header field indicate that the content is JSON.
+     * Returns \c true if the Content-Type header field indicate that the content is JSON.
      */
     [[nodiscard]] bool contentIsJson() const;
 
     /**
      * Returns the size in bytes of the message content
+     * \sa setContentLength()
      */
     [[nodiscard]] qint64 contentLength() const;
 
     /**
-     * Defines the size in bytes of the message content
+     * Sets the size in bytes of the message content.
+     * \sa contentLength()
      */
     void setContentLength(qint64 value);
 
     /**
-     * Defines the header that represents the date and time at which the message was originated
+     * Sets the Date header that represents the date and time at which the message was originated.
      */
     QByteArray setDateWithDateTime(const QDateTime &date);
 
     /**
-     * Returns the date header as QDateTime
+     * Returns the Date header as QDateTime
      */
     [[nodiscard]] QDateTime date() const;
 
     /**
-     * This header fields is used to make a request conditional. If the requested resource has
+     * This header field is used to make a request conditional. If the requested resource has
      * (or has not) been modified since the time specified in this field,
      * then the server will return a 304 Not Modified response instead of the document itself.
      */
@@ -185,7 +199,7 @@ public:
      * or if the client did not provide the If-Match header.
      *
      * In case of false client should usually discard posted data and return
-     * status code of 412 - Response::PreconditionFailed
+     * status code of 412 - Response::PreconditionFailed.
      */
     [[nodiscard]] bool ifMatch(const QByteArray &etag) const;
 
@@ -405,19 +419,19 @@ public:
     [[nodiscard]] inline QVector<HeaderKeyValue> data() const { return m_data; }
 
     /**
-     * Returns true if the header field is defined.
+     * Returns \c true if the header field specified by \a key is defined.
      */
     [[nodiscard]] bool contains(QByteArrayView key) const noexcept;
 
     [[nodiscard]] QByteArrayList keys() const;
 
     /**
-     * Returns the value associated with key.
+     * Returns the value associated with \a key.
      */
     QByteArray operator[](QByteArrayView key) const noexcept;
 
     /**
-     * Assigns \p other to this Header and returns a reference to this Header.
+     * Assigns \a other to this Header and returns a reference to this Header.
      */
     inline Headers &operator=(const Headers &other) noexcept
     {
@@ -426,7 +440,7 @@ public:
     }
 
     /**
-     * Compares if another Header object has the same data as this.
+     * Compares if \a other has the same data as this.
      */
     bool operator==(const Headers &other) const noexcept;
 
