@@ -45,6 +45,7 @@ qt_add_lupdate(cutelyst-skell
 qt_add_lrelease(cutelyst-skell
     TS_FILES ${cutelyst-skell_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE cutelyst-skell_QM_FILES
+    OPTIONS -idbased
 )
 
 install(FILES ${cutelyst-skell_QM_FILES} DESTINATION ${I18NDIR})
