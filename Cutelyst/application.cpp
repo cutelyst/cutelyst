@@ -376,6 +376,7 @@ void Application::handleRequest(EngineRequest *request)
     priv->engineRequest = request;
     priv->response      = new Response(d->headers, request);
     priv->request       = new Request(request);
+    priv->locale        = d->defaultLocale;
 
     if (d->useStats) {
         priv->stats = new Stats(request);
@@ -633,6 +634,18 @@ QVector<QLocale> Application::loadTranslationsFromDirs(const QString &directory,
     }
 
     return locales;
+}
+
+QLocale Application::defaultLocale() const noexcept
+{
+    Q_D(const Application);
+    return d->defaultLocale;
+}
+
+void Application::setDefaultLocale(const QLocale &locale)
+{
+    Q_D(Application);
+    d->defaultLocale = locale;
 }
 
 void Cutelyst::ApplicationPrivate::setupHome()

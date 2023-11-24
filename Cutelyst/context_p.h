@@ -37,7 +37,7 @@ public:
 
     QStringList error;
     QVariantHash stash;
-    QLocale locale;
+    QLocale locale{QLocale::English, QLocale::LatinScript, QLocale::UnitedStates};
     QStack<Component *> stack;
     QVector<Plugin *> plugins;
     QVector<Component *> pendingAsync;
