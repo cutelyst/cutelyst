@@ -37,6 +37,7 @@ Context::Context(Application *app)
     d_ptr->response               = new Response(app->defaultHeaders(), req);
     d_ptr->request                = new Request(req);
     d_ptr->request->d_ptr->engine = d_ptr->engine;
+    d_ptr->locale                 = app->defaultLocale();
 }
 
 Context::~Context()

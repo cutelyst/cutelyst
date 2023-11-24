@@ -1631,6 +1631,7 @@ bool ServerPrivate::setupApplication()
     if (!localApp) {
         std::cout << "Loading application: " << application.toLatin1().constData() << std::endl;
         QPluginLoader loader(application);
+        loader.setLoadHints(QLibrary::ResolveAllSymbolsHint | QLibrary::PreventUnloadHint);
         if (!loader.load()) {
             qCCritical(CUTELYST_SERVER) << "Could not load application:" << loader.errorString();
             return false;

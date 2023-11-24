@@ -229,7 +229,7 @@ public:
      * @sa loadTranslationsFromDir() loadTranslationsFromDirs()
      * @sa @ref translations
      *
-     * @since Cutelyst 1.5.0
+     * @since %Cutelyst 1.5.0
      */
     void addTranslator(const QLocale &locale, QTranslator *translator);
 
@@ -242,7 +242,7 @@ public:
      *
      * @sa @ref translations
      *
-     * @since Cutelyst 1.5.0
+     * @since %Cutelyst 1.5.0
      */
     void addTranslator(const QString &locale, QTranslator *translator);
 
@@ -256,7 +256,7 @@ public:
      * @sa addTranslator()
      * @sa @ref translations
      *
-     * @since Cutelyst 1.5.0
+     * @since %Cutelyst 1.5.0
      */
     void addTranslators(const QLocale &locale, const QVector<QTranslator *> &translators);
 
@@ -272,7 +272,7 @@ public:
      * @sa Context::translate(), QTranslator::translate()
      * @sa @ref translations
      *
-     * @since Cutelyst 1.5.0
+     * @since %Cutelyst 1.5.0
      */
     QString translate(const QLocale &locale,
                       const char *context,
@@ -310,7 +310,7 @@ public:
      * @sa addTranslator(), loadTranslationsFromDir(), loadTranslationsFromDirs()
      * @sa @ref translations
      *
-     * @since Cuteylst 2.0.0
+     * @since %Cuteylst 2.0.0
      */
     void loadTranslations(const QString &filename,
                           const QString &directory = {},
@@ -348,7 +348,7 @@ public:
      * @sa addTranslator(), loadTranslationsFromDirs()
      * @sa @ref translations
      *
-     * @since Cuteylst 2.1.0
+     * @since %Cuteylst 2.1.0
      */
     QVector<QLocale> loadTranslationsFromDir(const QString &filename,
                                              const QString &directory = QString(),
@@ -379,9 +379,29 @@ public:
      * @sa addTranslator(), loadTranslationsFromDir()
      * @sa @ref translations
      *
-     * @since Cutelyst 2.1.0
+     * @since %Cutelyst 2.1.0
      */
     QVector<QLocale> loadTranslationsFromDirs(const QString &directory, const QString &filename);
+
+    /**
+     * Returns the default locale that will be set to the \link Context::locale() locale()\endlink
+     * of newly created Context objects. By default this will be QLocale(English, Latin, United
+     * States).
+     * @sa setDefaultLocale()
+     * @sa @ref translations
+     * @since %Cutelyst 4.0.0
+     */
+    [[nodiscard]] QLocale defaultLocale() const noexcept;
+
+    /**
+     * Sets the default locale that will be set to the \link Context::locale() locale()\endlink
+     * of newly created Context objects. By default this will be QLocale(English, Latin, United
+     * States).
+     * @sa defaultLocale()
+     * @sa @ref translations
+     * @since %Cutelyst 4.0.0
+     */
+    void setDefaultLocale(const QLocale &locale);
 
 protected:
     /**

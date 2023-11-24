@@ -41,6 +41,7 @@ public:
     bool useStats;
     bool init = false;
     QHash<QLocale, QVector<QTranslator *>> translators;
+    QLocale defaultLocale{QLocale::English, QLocale::LatinScript, QLocale::UnitedStates};
 };
 
 } // namespace Cutelyst
