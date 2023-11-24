@@ -508,9 +508,8 @@ public:
      * Returns the current locale to be used when processing a \ref plugins-view
      * or translating user messages.
      *
-     * If not explicity set by setLocale() it will use a default constructed QLocale
-     * that will either be the locale set by QLocale::setDefault() or QLocale::system()
-     * if no default locale has been set.
+     * If not explicity set by setLocale() it will use the default locale set via
+     * Application::setDefaultLocale().
      *
      * \sa \ref translations
      */
@@ -524,8 +523,8 @@ public:
      * so it’s up to the developer to decide which one to use.
      *
      * For example it’s possible to try to guess the user locale with
-     * the request header Accept-Language, and  or use the chained dispatcher to first
-     * match the locale as in "example.com/pt-br/some_action", and or store
+     * the request header Accept-Language, or use the chained dispatcher to first
+     * match the locale as in "example.com/pt-br/some_action", or store
      * the locale into a cookie or session.
      *
      * Be sure to set it as soon as possible so that all content can be properly localized.

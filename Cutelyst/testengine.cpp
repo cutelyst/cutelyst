@@ -9,7 +9,6 @@ using namespace Cutelyst;
 TestEngine::TestEngine(Application *app, const QVariantMap &opts)
     : Engine{app, 0, opts}
 {
-    QLocale::setDefault(QLocale(QLocale::English));
 }
 
 int TestEngine::workerId() const
