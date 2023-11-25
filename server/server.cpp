@@ -1622,6 +1622,12 @@ bool Server::usingFrontendProxy() const
     return d->usingFrontendProxy;
 }
 
+QVariantMap Server::config() const noexcept
+{
+    Q_D(const Server);
+    return d->config;
+}
+
 bool ServerPrivate::setupApplication()
 {
     Cutelyst::Application *localApp = app;
@@ -1866,25 +1872,24 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
 
     applyConfig(sessionConfig);
 
-    sessionConfig.insert(opt);
-    opt = sessionConfig;
+    opt.insert(sessionConfig);
 
-    auto it = config.begin();
-    while (it != config.end()) {
-        auto itLoaded = loadedConfig.find(it.key());
-        while (itLoaded != loadedConfig.end()) {
-            QVariantMap loadedMap = itLoaded.value().toMap();
-            loadedMap.insert(it.value().toMap());
-
-            it.value() = loadedMap;
-            itLoaded   = loadedConfig.erase(itLoaded);
+    auto loadedIt = loadedConfig.cbegin();
+    while (loadedIt != loadedConfig.cend()) {
+        if (config.contains(loadedIt.key())) {
+            QVariantMap currentMap      = config.value(loadedIt.key()).toMap();
+            const QVariantMap loadedMap = loadedIt.value().toMap();
+            auto loadedMapIt            = loadedMap.cbegin();
+            while (loadedMapIt != loadedMap.cend()) {
+                currentMap.insert(loadedMapIt.key(), loadedMapIt.value());
+                ++loadedMapIt;
+            }
+            config.insert(loadedIt.key(), currentMap);
+        } else {
+            config.insert(loadedIt.key(), loadedIt.value());
         }
-        ++it;
+        ++loadedIt;
     }
-
-    loadedConfig.insert(config);
-
-    config = loadedConfig;
 }
 
 void ServerPrivate::applyConfig(const QVariantMap &config)

@@ -205,16 +205,48 @@ public:
     [[nodiscard]] QString chdir2() const;
 
     /**
-     * Load config from ini file
+     * Load config from INI files that will be read by QSettings. When loading multiple files,
+     * content will be merged and same keys in the sections will be overwritten by content from
+     * later files.
+     *
+     * @code{.ini}
+     * [Cutelst]
+     * home="/path/to/my/home"
+     *
+     * [OtherSection]
+     * key=value
+     * @endcode
+     *
      * @accessors ini(), setIni()
+     * @sa config()
+     * @sa @ref configuration
      */
     Q_PROPERTY(QStringList ini READ ini WRITE setIni NOTIFY changed)
     void setIni(const QStringList &files);
     [[nodiscard]] QStringList ini() const;
 
     /**
-     * Load config from JSON file
+     * Load config from JSON files containing a JSON object. When loading multiple files, content
+     * will be merged and same keys int the sections will be overwritten by content from later
+     * files.
+     *
+     * This is only tested for one single root object with flat child objects as config sections.
+     * @code{.json}
+     * {
+     *      "Cutelyst": {
+     *          "home": "/path/to/my/home",
+     *          ...
+     *      },
+     *      "OtherSection": {
+     *          "key": "value",
+     *          ...
+     *      }
+     * }
+     * @endcode
+     *
      * @accessors json(), setJson()
+     * @sa config()
+     * @sa @ref configuration
      */
     Q_PROPERTY(QStringList json READ json WRITE setJson NOTIFY changed)
     void setJson(const QStringList &files);
@@ -438,6 +470,11 @@ public:
                    changed)
     void setUsingFrontendProxy(bool enable);
     [[nodiscard]] bool usingFrontendProxy() const;
+
+    /**
+     * Returns the configuration set by setIni() and setJson().
+     */
+    [[nodiscard]] QVariantMap config() const noexcept;
 
 Q_SIGNALS:
     /**
