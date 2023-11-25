@@ -1,4 +1,4 @@
-.TH cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2021-09-01" "cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
+.TH cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2023-11-25" "cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
 cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Fast, developer friendly WSGI server for Cutelyst applications.
@@ -66,10 +66,12 @@ Like static-map but completely appending the requested resource to the docroot.
 .BI \-\^\-ini " file"
 Load configuration from ini
 .IR file .
+When used multiple times, content will be merged and same keys in the sections will be overwritten by content from later files.
 .TP
 .BI "\-j\fR,\fP \-\^\-json" " file"
 Load configuration from JSON
 .IR file .
+When used multiple times, content will be merged and same keys in the sections will be overwritten by content from later files.
 .TP
 .BI \-\^\-touch-reload " file"
 Reload the application if the specified
@@ -86,11 +88,13 @@ Set lazy mode (load application in workers instead of master).
 .BI "\-p\fR,\fP \-\^\-processes" " processes"
 Spawn the specified number of
 .IR processes .
+If set to “auto”, the ideal process count is used.
 .TP
 .BI "\-t\fR,\fP \-\^\-threads" " threads"
 Number of
 .I threads
 to use.
+If set to “auto”, the ideal thread count is used.
 .TP
 .BI \-\^\-cpu-affinity " core count"
 Set CPU affinity with the number of CPUs available for each wokrker core.
