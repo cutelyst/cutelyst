@@ -9,9 +9,10 @@
         <translation>Schneller, entwicklerfreundlicher Server.</translation>
     </message>
     <message id="cutelystd-opt-ini-desc">
-        <source>Load config from ini file.</source>
+        <source>Load config from INI file. When used multiple times, content will be merged and same keys in the sections will be overwritten by content from later files.</source>
+        <oldsource>Load config from ini file.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Lade Konfiguration aus ini-Datei.</translation>
+        <translation>Lade Konfiguration aus INI-Datei. Wenn mehrfach angegeben, werden die Werte gleicher Schlüssel in den Sektionen durch Werte aus später angegebenen Dateien überschrieben.</translation>
     </message>
     <message id="cutelystd-opt-value-file">
         <source>file</source>
@@ -19,9 +20,10 @@
         <translation>Datei</translation>
     </message>
     <message id="cutelystd-opt-json-desc">
-        <source>Load config from JSON file.</source>
+        <source>Load config from JSON file. When used multiple times, content will be merged and same keys in the sections will be overwritten by content from later files.</source>
+        <oldsource>Load config from JSON file.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Lade Konfiguration aus JSON-Datei.</translation>
+        <translation>Lade Konfiguration aus JSON-Datei. Wenn mehrfach angegeben, werden die Werte gleicher Schlüssel in den Sektionen durch Werte aus später angegebenen Dateien überschrieben.</translation>
     </message>
     <message id="cutelystd-opt-chdir-desc">
         <source>Change to the specified directory before the application is loaded.</source>
@@ -49,9 +51,10 @@
         <translation>Die zu ladende Anwendung.</translation>
     </message>
     <message id="cutelystd-opt-threads-desc">
-        <source>The number of threads to use.</source>
+        <source>The number of threads to use. If set to “auto”, the ideal thread count is used.</source>
+        <oldsource>The number of threads to use.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Die Anzahl der zu nutzenden Threads.</translation>
+        <translation>Die Anzahl der zu nutzenden Threads. Sie können „auto“ angeben, um automatisch die ideale Anzahl zu nutzen.</translation>
     </message>
     <message id="cutelystd-opt-threads-value">
         <source>threads</source>
@@ -59,9 +62,10 @@
         <translation>Threads</translation>
     </message>
     <message id="cutelystd-opt-processes-desc">
-        <source>Spawn the specified number of processes.</source>
+        <source>Spawn the specified number of processes. If set to “auto”, the ideal process count is used.</source>
+        <oldsource>Spawn the specified number of processes.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Erzeuge die angegebene Anzahl von Prozessen.</translation>
+        <translation>Erzeuge die angegebene Anzahl von Prozessen. Sie können „auto“ angeben, um automatisch die ideale Anzahl zu nutzen.</translation>
     </message>
     <message id="cutelystd-opt-processes-value">
         <source>processes</source>
