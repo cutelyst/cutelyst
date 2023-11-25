@@ -100,7 +100,9 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption iniOpt(QStringLiteral("ini"),
                               //: CLI option description
-                              //% "Load config from ini file."
+                              //% "Load config from INI file. When used multiple times, content "
+                              //% "will be merged and same keys in the sections will be "
+                              //% "overwritten by content from later files."
                               qtTrId("cutelystd-opt-ini-desc"),
                               //: CLI option value name
                               //% "file"
@@ -109,7 +111,9 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption jsonOpt({QStringLiteral("j"), QStringLiteral("json")},
                                //: CLI option description
-                               //% "Load config from JSON file."
+                               //% "Load config from JSON file. When used multiple times, content "
+                               //% "will be merged and same keys in the sections will be "
+                               //% "overwritten by content from later files."
                                qtTrId("cutelystd-opt-json-desc"),
                                qtTrId("cutelystd-opt-value-file"));
     parser.addOption(jsonOpt);
@@ -148,7 +152,8 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption threads({QStringLiteral("threads"), QStringLiteral("t")},
                                //: CLI option description
-                               //% "The number of threads to use."
+                               //% "The number of threads to use. If set to “auto”, the ideal "
+                               //% "thread count is used."
                                qtTrId("cutelystd-opt-threads-desc"),
                                //: CLI option value name
                                //% "threads"
@@ -158,7 +163,8 @@ void Server::parseCommandLine(const QStringList &arguments)
 #ifdef Q_OS_UNIX
     QCommandLineOption processes({QStringLiteral("processes"), QStringLiteral("p")},
                                  //: CLI option description
-                                 //% "Spawn the specified number of processes."
+                                 //% "Spawn the specified number of processes. If set to “auto”, "
+                                 //% "the ideal process count is used."
                                  qtTrId("cutelystd-opt-processes-desc"),
                                  //: CLI option value name
                                  //% "processes"
