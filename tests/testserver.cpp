@@ -58,7 +58,7 @@ void TestServer::writeIniFile(const QString &fileName, const QMap<QString, QVari
 void TestServer::writeJsonFile(const QString &fileName, const QJsonObject &data)
 {
     QFile f{m_tmpDir.filePath(fileName)};
-    QVERIFY(f.open(QIODeviceBase::WriteOnly));
+    QVERIFY(f.open(QIODeviceBase::WriteOnly | QIODeviceBase::Text));
 
     const QJsonDocument json{data};
 
