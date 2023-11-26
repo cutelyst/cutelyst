@@ -1858,10 +1858,16 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
     configLoaded.append(file);
 
     QString section = QStringLiteral("server");
-    if (filename.contains(QLatin1Char(':'))) {
-        section  = filename.section(QLatin1Char(':'), -1, 1);
-        filename = filename.section(QLatin1Char(':'), 0, -2);
-    }
+
+    // The following does not work on Windows as it removes the drive letter like
+    // C:\path\to\config\file from the path and so the path is invalid. We should
+    // either choose an alternative implementation to set the server section name
+    // or omit this feature. Not sure for what it should be used anyway.
+
+    //    if (filename.contains(QLatin1Char(':'))) {
+    //        section  = filename.section(QLatin1Char(':'), -1, 1);
+    //        filename = filename.section(QLatin1Char(':'), 0, -2);
+    //    }
 
     QVariantMap loadedConfig;
     if (json) {
