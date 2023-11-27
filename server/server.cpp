@@ -1854,37 +1854,16 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
         return;
     }
 
-    QString filename = file;
     configLoaded.append(file);
-
-    QString section = QStringLiteral("server");
-
-    // The following does not work on Windows as it removes the drive letter like
-    // C:\path\to\config\file from the path and so the path is invalid. We should
-    // either choose an alternative implementation to set the server section name
-    // or omit this feature. Not sure for what it should be used anyway.
-
-    //    if (filename.contains(QLatin1Char(':'))) {
-    //        section  = filename.section(QLatin1Char(':'), -1, 1);
-    //        filename = filename.section(QLatin1Char(':'), 0, -2);
-    //    }
 
     QVariantMap loadedConfig;
     if (json) {
-        std::cout << "Loading JSON configuration: " << qPrintable(filename)
-                  << " section: " << qPrintable(section) << std::endl;
-        loadedConfig = Engine::loadJsonConfig(filename);
+        std::cout << "Loading JSON configuration: " << qPrintable(file) << std::endl;
+        loadedConfig = Engine::loadJsonConfig(file);
     } else {
-        std::cout << "Loading INI configuration: " << qPrintable(filename)
-                  << " section: " << qPrintable(section) << std::endl;
-        loadedConfig = Engine::loadIniConfig(filename);
+        std::cout << "Loading INI configuration: " << qPrintable(file) << std::endl;
+        loadedConfig = Engine::loadIniConfig(file);
     }
-
-    QVariantMap sessionConfig = loadedConfig.value(section).toMap();
-
-    applyConfig(sessionConfig);
-
-    opt.insert(sessionConfig);
 
     auto loadedIt = loadedConfig.cbegin();
     while (loadedIt != loadedConfig.cend()) {
@@ -1902,6 +1881,12 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
         }
         ++loadedIt;
     }
+
+    QVariantMap sessionConfig = loadedConfig.value(u"server"_qs).toMap();
+
+    applyConfig(sessionConfig);
+
+    opt.insert(sessionConfig);
 }
 
 void ServerPrivate::applyConfig(const QVariantMap &config)
