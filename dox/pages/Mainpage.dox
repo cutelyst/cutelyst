@@ -65,7 +65,9 @@ namespace Cutelyst
       - RenderView
       - ActionREST
       - RoleACL
-    </td><td></td></tr>
+    </td><td>
+      - Server
+    </td></tr>
   </table>
 
   @section start_community Community
