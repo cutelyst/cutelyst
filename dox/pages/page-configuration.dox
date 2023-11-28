@@ -5,11 +5,163 @@ namespace Cutelyst {
 You can load configuration settings for your application from configuration files in different
 formats. Currently %Cutelyst supports the INI format read by QSettings and the JSON format read
 by QJsonDocument. To load the configuration file you have to provide them to the cutelyst server
-executable that will load them into your application.
+executable \c \serverexec that will load them into your application or set the file paths to
+Server::ini Server::json when integrating it in your own executable.
 
 \section loading Load your configuration
 When loading your application with \c \serverexec server, you can add the parameter
-<tt>\-\-ini &lt;path&gt;</tt> to load a configuration file in INI format or
-<tt>\-\-json &lt;path&gt;</tt> to load a configuration file in JSON format.
+<tt>\-\-ini &lt;file&gt;</tt> to load a configuration file in INI format or
+<tt>\-\-json &lt;file&gt;</tt> to load a configuration file in JSON format. When integrating
+the server into your own executable, you can also directly use Server::json or Server::ini property.
+
+You can specify multiple configuration files that will be processed in order from left to right. The
+content will be merged together. You could even mix INI and JSON files, but note, that JSON files will
+be loaded after INI files.
+
+\subsection loading-limitations Limitations
+As configuration internally is stored in a QVariantMap, all keys in the sections have to be unique. It
+is not possible to specify multiple keys, as later keys will overwrite the content of previous keys.
+When using JSON, only a depth of one level is supported and tested, to be common with the limitations
+of the INI format. JSON configuration files should contain one root object that contains multiple flat
+objects similar to the sections of INI files.
+
+\subsection loading-exmaple-ini INI file example
+\code{.ini}
+[Section1]
+key=value
+
+[Section2]
+foo=bar
+\endcode
+
+\subsection loading-example-json JSON file example
+\code{.json}
+{
+    "Section1": {
+        "key": "value"
+    },
+    "Section2": {
+        "foo": "bar"
+    }
+}
+\endcode
+
+\subsection loading-example Loading example
+Loading two INI configuration files where content will be merged and content from later files will
+overwrite content from previous files.
+
+<tt>\serverexec \-\-ini file1.ini \-\-ini file2.ini [other options...]</tt>
+
+\code{.ini}
+; file1.ini
+
+[MySection]
+hello=world1
+foo=bar
+
+[Section1]
+foo=bar
+\endcode
+
+\code{.ini}
+; file2.ini
+
+[MySection]
+hello=world2
+fu=baz
+
+[Section2]
+fu=baz
+\endcode
+
+This will result in a configuration that would look like the following, if loaded from one single
+file:
+
+\code{.ini}
+[MySection]
+hello=world2
+foo=bar
+fu=baz
+
+[Section1]
+foo=bar
+
+[Section2]
+fu=baz
+\endcode
+
+\subsection loading-filefromfile Loading files from files
+You can use the \c ini or \c json key from the \link Server server\endlink section to specify
+additional config files to load. You can use this key one time per configuration file. But note,
+that config files from this keys will be added to the end of the list of configuration files to
+load. See this example of four files where two are specified on command line and two inside the
+files loaded via command line:
+<tt>\serverexec \-\-ini file1.ini \-\-ini file2.ini [other options...]</tt>
+\code{.ini}
+; file1.ini
+[server]
+ini=file4.ini
+\endcode
+\code{.ini}
+; file2.ini
+[server]
+ini=file3.ini
+\endcode
+This will load the files in following order: file1.ini, file2.ini, file4.ini, file3.ini
+
+\section configsections Available configuration sections
+Some parts of %Cutelyst will read their configuration (optionally) from the configuration file(s)
+from specific sections. Read the documentation of the component to see what configuration is
+available.
+
+<table>
+    <tr>
+        <th>%Component</th>
+        <th>Config section name</th>
+    </tr>
+    <tr>
+        <td>Application</td>
+        <td>%Cutelyst</td>
+    </tr>
+    <tr>
+        <td>Server</td>
+        <td>server</td>
+    </tr>
+    <tr>
+        <td>CSRFProtection</td>
+        <td>Cutelyst_CSRFProtection_Plugin</td>
+    </tr>
+    <tr>
+        <td>LangSelect</td>
+        <td>Cutelyst_LangSelect_Plugin</td>
+    </tr>
+    <tr>
+        <td>Memcached</td>
+        <td>Cutelyst_Memcached_Plugin</td>
+    </tr>
+    <tr>
+        <td>MemcachedSessionStore</td>
+        <td>Cutelyst_MemcachedSessionStore_Plugin</td>
+    </tr>
+    <tr>
+        <td>Session</td>
+        <td>Cutelyst_Session_Plugin</td>
+    </tr>
+    <tr>
+        <td>StaticCompressed</td>
+        <td>Cutelyst_StaticCompressed_Plugin</td>
+    </tr>
+</table>
+
+\section ownconfig Add your own configuration
+If you have only a few own configuration keys, you could simply add them to the \c %Cutelyst
+section. If you have more complex configuration options you can add your own configuration
+file sections. Look at the section and key names already used by %Cutelyst to not use that
+sections/keys.
+
+\section readconfig Read configuration entries
+Configuration keys added to the \c %Cutelyst section of your configuration file are available
+via Application::config(). All other sections, including your own, can be returned by
+Engine::config().
  */
 }
