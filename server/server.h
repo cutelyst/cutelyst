@@ -14,9 +14,27 @@ namespace Cutelyst {
 
 class Application;
 class ServerPrivate;
-/*! \class WSGI wsgi.h Cutelyst/Server
- * \brief Implements a %WSGI server.
+/**
+ * \ingroup server
+ * \class Server server.h Cutelyst/Server/server.h
+ * \brief Implements a web server.
  *
+ * The %Server class implements a web server that can either act on it’s own or
+ * behind another server like nginx or Apache. This class is used by \c \serverexec but
+ * can also be integrated into your own application to start() and stop() a %Cutelyst
+ * server.
+ *
+ * <h3 id="configfile">Configuration file options</h3>
+ * All command line options from \c \serverexec have their counterparts as properties of this class.
+ * Using the \c server section of your \ref configuration "application configuration file" you
+ * can set this properties via configuration file options. Simply use the property names as
+ * configuration keys.
+ * <h4>Example</h4>
+ * \code{.ini}
+ * [server]
+ * http_socket="localhost:3001"
+ * threads=4
+ * \endcode
  */
 class CUTELYST_SERVER_EXPORT Server : public QObject
 {
@@ -24,24 +42,29 @@ class CUTELYST_SERVER_EXPORT Server : public QObject
     Q_DECLARE_PRIVATE(Server)
 public:
     /**
-     * @brief Server
+     * Constructs a new %Server object with the given \a parent.
      *
      * \note When on Linux the constructor will try install our EPoll
      * event loop, so creating this class must be done before creating
-     * a QCoreApplition or any of it's subclasses.
-     * @param parent
+     * a QCoreApplition or any of it’s subclasses.
      */
     explicit Server(QObject *parent = nullptr);
+
+    /**
+     * Destroys the %Server object.
+     */
     virtual ~Server();
 
     void parseCommandLine(const QStringList &args);
 
     /**
-     * This function will start the WSGI server.
+     * This function will start the %server.
      *
-     * If an application is provided it will ignore the value of
-     * setApplication and/or the Application configuration in case
-     * Ini is set, meaning it won't dynamically load an Application
+     * If an application \a app is provided, it will ignore the value of
+     * \link Server::application setApplication\endlink and/or the
+     * <A HREF="#configfile">application configuration key</A> in case
+     * \link Server::ini ini\endlink or \link Server::json json\endlink
+     * is set, meaning it won’t dynamically load an Application
      * but use this to create new instances (if the app constructor is
      * marked as Q_INVOKABLE and threads settings are greater than 1).
      *
@@ -52,12 +75,12 @@ public:
      * the event loop must not be running otherwise we get undefined
      * behavior. So exit main after this function.
      *
-     * @note This method does not take ownership of application \pa appp
+     * @note This method does not take ownership of application \a app.
      */
     int exec(Cutelyst::Application *app = nullptr);
 
-    /*!
-     * This function will start the Cutelyst::Server in user application mode.
+    /**
+     * This function will start the server in user application mode.
      *
      * Use this when you would like to embed the server in an
      * application that is able to start/stop the server at will, for
@@ -69,11 +92,11 @@ public:
      * New application instances will be created if the app constructor is
      * marked as Q_INVOKABLE and threads settings are greater than 1.
      *
-     * @note This method does not take ownership of application \pa appp
+     * @note This method does not take ownership of application \a app.
      */
     bool start(Cutelyst::Application *app = nullptr);
 
-    /*!
+    /**
      * Terminates the server execution, when started with start(),
      * it does nothing when started by exec().
      */
@@ -81,7 +104,7 @@ public:
 
     /**
      * Defines application file path to be loaded, an alternative is to provide
-     * the Cutelyst::Application pointer to exec()
+     * the Cutelyst::Application pointer to exec().
      * @accessors application(), setApplication()
      */
     Q_PROPERTY(QString application READ application WRITE setApplication NOTIFY changed)
@@ -89,7 +112,7 @@ public:
     [[nodiscard]] QString application() const;
 
     /**
-     * Defines the number of threads to use, if set to "auto" the ideal thread count is used
+     * Defines the number of threads to use, if set to "auto" the ideal thread count is used.
      * @accessors threads(), setThreads()
      *
      * A new thread is only created when > "2" or if "auto" reports more than 1 core, when
@@ -105,7 +128,7 @@ public:
     [[nodiscard]] QString threads() const;
 
     /**
-     * Defines the number of processes to use, if set to "auto" the ideal processes count is used
+     * Defines the number of processes to use, if set to "auto" the ideal processes count is used.
      * @accessors threads(), setThreads()
      * \note UNIX only
      */
@@ -114,7 +137,7 @@ public:
     [[nodiscard]] QString processes() const;
 
     /**
-     * Defines directory to chdir to before application loading
+     * Defines directory to change into before application loading.
      * @accessors chdir(), setChdir()
      */
     Q_PROPERTY(QString chdir READ chdir WRITE setChdir NOTIFY changed)
@@ -122,7 +145,7 @@ public:
     [[nodiscard]] QString chdir() const;
 
     /**
-     * Defines how an HTTP socket should be binded
+     * Defines how an HTTP socket should be binded.
      * @accessors httpSocket(), setHttpSocket()
      */
     Q_PROPERTY(QStringList http_socket READ httpSocket WRITE setHttpSocket NOTIFY changed)
@@ -130,7 +153,7 @@ public:
     [[nodiscard]] QStringList httpSocket() const;
 
     /**
-     * Defines how an HTTP2 socket should be binded
+     * Defines how an HTTP2 socket should be binded.
      * @accessors http2Socket(), setHttp2Socket()
      */
     Q_PROPERTY(QStringList http2_socket READ http2Socket WRITE setHttp2Socket NOTIFY changed)
@@ -138,7 +161,7 @@ public:
     [[nodiscard]] QStringList http2Socket() const;
 
     /**
-     * Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
+     * Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096.
      * @accessors http2Socket(), setHttp2Socket()
      */
     Q_PROPERTY(quint32 http2_header_table_size READ http2HeaderTableSize WRITE
@@ -147,8 +170,8 @@ public:
     [[nodiscard]] quint32 http2HeaderTableSize() const;
 
     /**
-     * Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text)
-     * Defaults to false
+     * Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
+     * Defaults to \c false.
      * @accessors http2Socket(), setHttp2Socket()
      */
     Q_PROPERTY(bool upgrade_h2c READ upgradeH2c WRITE setUpgradeH2c NOTIFY changed)
@@ -156,8 +179,8 @@ public:
     [[nodiscard]] bool upgradeH2c() const;
 
     /**
-     * Defines if HTTPS sockect should use ALPN to negotiate HTTP/2
-     * Defaults to false
+     * Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
+     * Defaults to \c false.
      * @accessors http2Socket(), setHttp2Socket()
      */
     Q_PROPERTY(bool https_h2 READ httpsH2 WRITE setHttpsH2 NOTIFY changed)
@@ -165,7 +188,7 @@ public:
     [[nodiscard]] bool httpsH2() const;
 
     /**
-     * Defines how an HTTPS socket should be binded
+     * Defines how an HTTPS socket should be binded.
      * @accessors httpsSocket(), setHttpsSocket()
      */
     Q_PROPERTY(QStringList https_socket READ httpsSocket WRITE setHttpsSocket NOTIFY changed)
@@ -173,7 +196,7 @@ public:
     [[nodiscard]] QStringList httpsSocket() const;
 
     /**
-     * Defines how an FastCGI socket should be binded
+     * Defines how an FastCGI socket should be binded.
      * @accessors fastcgiSocket(), setFastcgiSocket()
      */
     Q_PROPERTY(QStringList fastcgi_socket READ fastcgiSocket WRITE setFastcgiSocket NOTIFY changed)
@@ -181,7 +204,7 @@ public:
     [[nodiscard]] QStringList fastcgiSocket() const;
 
     /**
-     * Defines the file permissions of a local socket, u = user, g = group, o = others
+     * Defines the file permissions of a local socket, u = user, g = group, o = others.
      * @accessors socketAccess(), setSocketAccess()
      */
     Q_PROPERTY(QString socket_access READ socketAccess WRITE setSocketAccess NOTIFY changed)
@@ -189,7 +212,7 @@ public:
     [[nodiscard]] QString socketAccess() const;
 
     /**
-     * Defines set internal socket timeout
+     * Defines internal socket timeout.
      * @accessors socketTimeout(), setSocketTimeout()
      */
     Q_PROPERTY(int socket_timeout READ socketTimeout WRITE setSocketTimeout NOTIFY changed)
@@ -197,7 +220,7 @@ public:
     [[nodiscard]] int socketTimeout() const;
 
     /**
-     * Defines directory to chdir to after application loading
+     * Defines directory to change into after application loading.
      * @accessors chdir2(), setChdir2()
      */
     Q_PROPERTY(QString chdir2 READ chdir2 WRITE setChdir2 NOTIFY changed)
@@ -270,8 +293,8 @@ public:
     [[nodiscard]] QStringList staticMap2() const;
 
     /**
-     * Defines if a master process should be created to watch for it's
-     * child processes
+     * Defines if a master process should be created to watch for it’s
+     * child processes.
      * @accessors master(), setMaster()
      */
     Q_PROPERTY(bool master READ master WRITE setMaster NOTIFY changed)
@@ -279,7 +302,7 @@ public:
     [[nodiscard]] bool master() const;
 
     /**
-     * Reload application if the application file is modified or touched
+     * Reload application if the application file is modified or touched.
      * @accessors autoReload(), setAutoReload()
      */
     Q_PROPERTY(bool auto_reload READ autoReload WRITE setAutoReload NOTIFY changed)
@@ -287,7 +310,7 @@ public:
     [[nodiscard]] bool autoReload() const;
 
     /**
-     * Reload application if the specified file is modified or touched
+     * Reload application if one of the specified files is modified or touched.
      * @accessors touchReload(), setTouchReload()
      */
     Q_PROPERTY(QStringList touch_reload READ touchReload WRITE setTouchReload NOTIFY changed)
@@ -305,7 +328,7 @@ public:
     [[nodiscard]] int listenQueue() const;
 
     /**
-     * Defines the buffer size used when parsing requests
+     * Defines the buffer size used when parsing requests.
      * @accessors bufferSize(), setBufferSize()
      */
     Q_PROPERTY(int buffer_size READ bufferSize WRITE setBufferSize NOTIFY changed)
@@ -313,8 +336,8 @@ public:
     [[nodiscard]] int bufferSize() const;
 
     /**
-     * Defines the maximum buffer size of POST request, if a request has a content length
-     * that is bigger than the post buffer size a temporary file is created instead
+     * Defines the maximum buffer size of POST request. Ff a request has a content length
+     * that is bigger than the post buffer size, a temporary file is created instead.
      * @accessors postBuffering(), setPostBuffering()
      */
     Q_PROPERTY(qint64 post_buffering READ postBuffering WRITE setPostBuffering NOTIFY changed)
@@ -322,7 +345,7 @@ public:
     [[nodiscard]] qint64 postBuffering() const;
 
     /**
-     * Defines the buffer size when reading a POST request
+     * Defines the buffer size when reading a POST request.
      * @accessors postBufferingBufsize(), setPostBufferingBufsize()
      */
     Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize
@@ -331,7 +354,7 @@ public:
     [[nodiscard]] qint64 postBufferingBufsize() const;
 
     /**
-     * Enable TCP NODELAY on each request
+     * Enable TCP NODELAY on each request.
      * @accessors tcpNodelay(), setTcpNodelay()
      */
     Q_PROPERTY(bool tcp_nodelay READ tcpNodelay WRITE setTcpNodelay NOTIFY changed)
@@ -339,7 +362,7 @@ public:
     [[nodiscard]] bool tcpNodelay() const;
 
     /**
-     * Enable SO_KEEPALIVE for the sockets
+     * Enable SO_KEEPALIVE for the sockets.
      * @accessors %soKeepalive(), setSoKeepalive()
      */
     Q_PROPERTY(bool so_keepalive READ soKeepalive WRITE setSoKeepalive NOTIFY changed)
@@ -348,7 +371,7 @@ public:
 
     /**
      * Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket
-     * option
+     * option.
      * @accessors %socketSndbuf(), setSocketSndbuf()
      */
     Q_PROPERTY(int socket_sndbuf READ socketSndbuf WRITE setSocketSndbuf NOTIFY changed)
@@ -357,7 +380,7 @@ public:
 
     /**
      * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF
-     * socket option
+     * socket option.
      * @accessors %socketRcvbuf(), setSocketRcvbuf()
      */
     Q_PROPERTY(int socket_rcvbuf READ socketRcvbuf WRITE setSocketRcvbuf NOTIFY changed)
@@ -365,7 +388,7 @@ public:
     [[nodiscard]] int socketRcvbuf() const;
 
     /**
-     * Sets the maximum allowed size of websocket messages (in Kbytes, default 1024)
+     * Sets the maximum allowed size of websocket messages (in Kbytes, default 1024).
      * @accessors %websocketMaxSize(), setWebsocketMaxSize()
      */
     Q_PROPERTY(
@@ -374,7 +397,7 @@ public:
     [[nodiscard]] int websocketMaxSize() const;
 
     /**
-     * Defines the pid file to be written before privileges drop
+     * Defines the pid file to be written before privileges drop.
      * @accessors pidfile(), setPidfile()
      */
     Q_PROPERTY(QString pidfile READ pidfile WRITE setPidfile NOTIFY changed)
@@ -382,7 +405,7 @@ public:
     [[nodiscard]] QString pidfile() const;
 
     /**
-     * Defines the pid file to be written before privileges drop
+     * Defines the pid file to be written after privileges drop.
      * @accessors pidfile(), setPidfile()
      */
     Q_PROPERTY(QString pidfile2 READ pidfile2 WRITE setPidfile2 NOTIFY changed)
@@ -408,7 +431,7 @@ public:
     [[nodiscard]] QString gid() const;
 
     /**
-     * Disable additional groups set via initgroups()
+     * Disable additional groups set via initgroups().
      * @accessors noInitgroups(), setNoInitgroups()
      * \note UNIX only
      */
@@ -426,7 +449,7 @@ public:
     [[nodiscard]] QString chownSocket() const;
 
     /**
-     * Defines file mode creation mask
+     * Defines file mode creation mask.
      * @accessors umask(), setUmask()
      * \note UNIX only
      */
@@ -435,7 +458,7 @@ public:
     [[nodiscard]] QString umask() const;
 
     /**
-     * Defines CPU affinity
+     * Defines CPU affinity.
      * @accessors cpuAffinity(), setCpuAffinity()
      * \note UNIX only
      */
@@ -444,7 +467,7 @@ public:
     [[nodiscard]] int cpuAffinity() const;
 
     /**
-     * Enable SO_REUSEPORT for the sockets
+     * Enable SO_REUSEPORT for the sockets.
      * @accessors reusePort(), setReusePort()
      * \note Linux only
      */
@@ -462,8 +485,8 @@ public:
 
     /**
      * Defines if a reverse proxy operates in front of this application server.
-     * If enabled, parses the http headers X-Forwarded-For, X-Forwarded-Host and X-Forwarded-Proto
-     * and uses this info to update Cutelyst::EngineRequest
+     * If enabled, parses the HTTP headers X-Forwarded-For, X-Forwarded-Host and X-Forwarded-Proto
+     * and uses this info to update Cutelyst::EngineRequest.
      * @accessors usingFrontendProxy(), setUsingFrontendProxy()
      */
     Q_PROPERTY(bool using_frontend_proxy READ usingFrontendProxy WRITE setUsingFrontendProxy NOTIFY
@@ -487,6 +510,9 @@ Q_SIGNALS:
      */
     void stopped();
 
+    /**
+     * It is emitted once config changes.
+     */
     void changed();
 
     /**

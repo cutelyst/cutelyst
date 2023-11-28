@@ -1,0 +1,8 @@
+namespace Cutelyst {
+
+/**
+\defgroup server Server
+\brief Classes to create a %Cutelyst server.
+*/
+
+}
