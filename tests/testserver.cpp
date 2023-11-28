@@ -254,7 +254,9 @@ void TestServer::testSetServerConfigFromFile()
         {m_tmpDir.filePath(u"serverConfig2.ini"_qs), m_tmpDir.filePath(u"serverConfig3.ini"_qs)});
     QCOMPARE(server.config(), m_expectedServerConfig);
     QCOMPARE(server.threads(), u"2"_qs);
+#ifdef Q_OS_UNIX
     QCOMPARE(server.processes(), u"3"_qs);
+#endif
     QCOMPARE(server.chdir(), u"/path/to/chdir"_qs);
     QCOMPARE(server.httpSocket(), QStringList(u"localhost:3000"_qs));
     QCOMPARE(server.http2Socket(), QStringList(u"localhost:3001"_qs));

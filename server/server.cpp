@@ -1246,9 +1246,17 @@ void Server::setIni(const QStringList &files)
     d->ini.removeDuplicates();
     Q_EMIT changed();
 
-    for (const QString &ini : d->ini) {
-        d->loadConfig(ini, false);
+    for (const QString &file : files) {
+        if (!d->configLoaded.contains(file)) {
+            auto fileToLoad = std::make_pair(file, ServerPrivate::ConfigFormat::Ini);
+            if (!d->configToLoad.contains(fileToLoad)) {
+                qCDebug(CUTELYST_SERVER) << "Enqueue INI config file:" << file;
+                d->configToLoad.enqueue(fileToLoad);
+            }
+        }
     }
+
+    d->loadConfig();
 }
 
 QStringList Server::ini() const
@@ -1264,9 +1272,17 @@ void Server::setJson(const QStringList &files)
     d->json.removeDuplicates();
     Q_EMIT changed();
 
-    for (const QString &json : d->json) {
-        d->loadConfig(json, true);
+    for (const QString &file : files) {
+        if (!d->configLoaded.contains(file)) {
+            auto fileToLoad = std::make_pair(file, ServerPrivate::ConfigFormat::Json);
+            if (!d->configToLoad.contains(fileToLoad)) {
+                qCDebug(CUTELYST_SERVER) << "Enqueue JSON config file:" << file;
+                d->configToLoad.enqueue(fileToLoad);
+            }
+        }
     }
+
+    d->loadConfig();
 }
 
 QStringList Server::json() const
@@ -1848,21 +1864,44 @@ ServerEngine *ServerPrivate::createEngine(Application *app, int workerCore)
     return engine;
 }
 
-void ServerPrivate::loadConfig(const QString &file, bool json)
+void ServerPrivate::loadConfig()
 {
-    if (configLoaded.contains(file)) {
+    if (loadingConfig) {
         return;
     }
 
-    configLoaded.append(file);
+    loadingConfig = true;
+
+    if (configToLoad.isEmpty()) {
+        loadingConfig = false;
+        return;
+    }
+
+    auto fileToLoad = configToLoad.dequeue();
+
+    if (fileToLoad.first.isEmpty()) {
+        qCWarning(CUTELYST_SERVER) << "Can not load config from empty config file name";
+        loadingConfig = false;
+        return;
+    }
+
+    if (configLoaded.contains(fileToLoad.first)) {
+        loadingConfig = false;
+        return;
+    }
+
+    configLoaded.append(fileToLoad.first);
 
     QVariantMap loadedConfig;
-    if (json) {
-        std::cout << "Loading JSON configuration: " << qPrintable(file) << std::endl;
-        loadedConfig = Engine::loadJsonConfig(file);
-    } else {
-        std::cout << "Loading INI configuration: " << qPrintable(file) << std::endl;
-        loadedConfig = Engine::loadIniConfig(file);
+    switch (fileToLoad.second) {
+    case ConfigFormat::Ini:
+        qCInfo(CUTELYST_SERVER) << "Loading INI configuratin:" << fileToLoad.first;
+        loadedConfig = Engine::loadIniConfig(fileToLoad.first);
+        break;
+    case ConfigFormat::Json:
+        qCInfo(CUTELYST_SERVER) << "Loading JSON configuration:" << fileToLoad.first;
+        loadedConfig = Engine::loadJsonConfig(fileToLoad.first);
+        break;
     }
 
     auto loadedIt = loadedConfig.cbegin();
@@ -1887,6 +1926,12 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
     applyConfig(sessionConfig);
 
     opt.insert(sessionConfig);
+
+    loadingConfig = false;
+
+    if (!configToLoad.empty()) {
+        loadConfig();
+    }
 }
 
 void ServerPrivate::applyConfig(const QVariantMap &config)
