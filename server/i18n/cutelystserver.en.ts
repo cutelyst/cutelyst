@@ -9,7 +9,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-ini-desc">
-        <source>Load config from ini file.</source>
+        <source>Load config from INI file. When used multiple times, content will be merged and same keys in the sections will be overwritten by content from later files.</source>
+        <oldsource>Load config from ini file.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -19,7 +20,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-json-desc">
-        <source>Load config from JSON file.</source>
+        <source>Load config from JSON file. When used multiple times, content will be merged and same keys in the sections will be overwritten by content from later files.</source>
+        <oldsource>Load config from JSON file.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -49,7 +51,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-threads-desc">
-        <source>The number of threads to use.</source>
+        <source>The number of threads to use. If set to “auto”, the ideal thread count is used.</source>
+        <oldsource>The number of threads to use.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -59,7 +62,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-processes-desc">
-        <source>Spawn the specified number of processes.</source>
+        <source>Spawn the specified number of processes. If set to “auto”, the ideal process count is used.</source>
+        <oldsource>Spawn the specified number of processes.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>

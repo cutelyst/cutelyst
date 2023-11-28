@@ -100,7 +100,9 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption iniOpt(QStringLiteral("ini"),
                               //: CLI option description
-                              //% "Load config from ini file."
+                              //% "Load config from INI file. When used multiple times, content "
+                              //% "will be merged and same keys in the sections will be "
+                              //% "overwritten by content from later files."
                               qtTrId("cutelystd-opt-ini-desc"),
                               //: CLI option value name
                               //% "file"
@@ -109,7 +111,9 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption jsonOpt({QStringLiteral("j"), QStringLiteral("json")},
                                //: CLI option description
-                               //% "Load config from JSON file."
+                               //% "Load config from JSON file. When used multiple times, content "
+                               //% "will be merged and same keys in the sections will be "
+                               //% "overwritten by content from later files."
                                qtTrId("cutelystd-opt-json-desc"),
                                qtTrId("cutelystd-opt-value-file"));
     parser.addOption(jsonOpt);
@@ -148,7 +152,8 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption threads({QStringLiteral("threads"), QStringLiteral("t")},
                                //: CLI option description
-                               //% "The number of threads to use."
+                               //% "The number of threads to use. If set to “auto”, the ideal "
+                               //% "thread count is used."
                                qtTrId("cutelystd-opt-threads-desc"),
                                //: CLI option value name
                                //% "threads"
@@ -158,7 +163,8 @@ void Server::parseCommandLine(const QStringList &arguments)
 #ifdef Q_OS_UNIX
     QCommandLineOption processes({QStringLiteral("processes"), QStringLiteral("p")},
                                  //: CLI option description
-                                 //% "Spawn the specified number of processes."
+                                 //% "Spawn the specified number of processes. If set to “auto”, "
+                                 //% "the ideal process count is used."
                                  qtTrId("cutelystd-opt-processes-desc"),
                                  //: CLI option value name
                                  //% "processes"
@@ -1240,9 +1246,17 @@ void Server::setIni(const QStringList &files)
     d->ini.removeDuplicates();
     Q_EMIT changed();
 
-    for (const QString &ini : d->ini) {
-        d->loadConfig(ini, false);
+    for (const QString &file : files) {
+        if (!d->configLoaded.contains(file)) {
+            auto fileToLoad = std::make_pair(file, ServerPrivate::ConfigFormat::Ini);
+            if (!d->configToLoad.contains(fileToLoad)) {
+                qCDebug(CUTELYST_SERVER) << "Enqueue INI config file:" << file;
+                d->configToLoad.enqueue(fileToLoad);
+            }
+        }
     }
+
+    d->loadConfig();
 }
 
 QStringList Server::ini() const
@@ -1258,9 +1272,17 @@ void Server::setJson(const QStringList &files)
     d->json.removeDuplicates();
     Q_EMIT changed();
 
-    for (const QString &json : d->json) {
-        d->loadConfig(json, true);
+    for (const QString &file : files) {
+        if (!d->configLoaded.contains(file)) {
+            auto fileToLoad = std::make_pair(file, ServerPrivate::ConfigFormat::Json);
+            if (!d->configToLoad.contains(fileToLoad)) {
+                qCDebug(CUTELYST_SERVER) << "Enqueue JSON config file:" << file;
+                d->configToLoad.enqueue(fileToLoad);
+            }
+        }
     }
+
+    d->loadConfig();
 }
 
 QStringList Server::json() const
@@ -1622,6 +1644,12 @@ bool Server::usingFrontendProxy() const
     return d->usingFrontendProxy;
 }
 
+QVariantMap Server::config() const noexcept
+{
+    Q_D(const Server);
+    return d->config;
+}
+
 bool ServerPrivate::setupApplication()
 {
     Cutelyst::Application *localApp = app;
@@ -1836,55 +1864,74 @@ ServerEngine *ServerPrivate::createEngine(Application *app, int workerCore)
     return engine;
 }
 
-void ServerPrivate::loadConfig(const QString &file, bool json)
+void ServerPrivate::loadConfig()
 {
-    if (configLoaded.contains(file)) {
+    if (loadingConfig) {
         return;
     }
 
-    QString filename = file;
-    configLoaded.append(file);
+    loadingConfig = true;
 
-    QString section = QStringLiteral("server");
-    if (filename.contains(QLatin1Char(':'))) {
-        section  = filename.section(QLatin1Char(':'), -1, 1);
-        filename = filename.section(QLatin1Char(':'), 0, -2);
+    if (configToLoad.isEmpty()) {
+        loadingConfig = false;
+        return;
     }
+
+    auto fileToLoad = configToLoad.dequeue();
+
+    if (fileToLoad.first.isEmpty()) {
+        qCWarning(CUTELYST_SERVER) << "Can not load config from empty config file name";
+        loadingConfig = false;
+        return;
+    }
+
+    if (configLoaded.contains(fileToLoad.first)) {
+        loadingConfig = false;
+        return;
+    }
+
+    configLoaded.append(fileToLoad.first);
 
     QVariantMap loadedConfig;
-    if (json) {
-        std::cout << "Loading JSON configuration: " << qPrintable(filename)
-                  << " section: " << qPrintable(section) << std::endl;
-        loadedConfig = Engine::loadJsonConfig(filename);
-    } else {
-        std::cout << "Loading INI configuration: " << qPrintable(filename)
-                  << " section: " << qPrintable(section) << std::endl;
-        loadedConfig = Engine::loadIniConfig(filename);
+    switch (fileToLoad.second) {
+    case ConfigFormat::Ini:
+        qCInfo(CUTELYST_SERVER) << "Loading INI configuratin:" << fileToLoad.first;
+        loadedConfig = Engine::loadIniConfig(fileToLoad.first);
+        break;
+    case ConfigFormat::Json:
+        qCInfo(CUTELYST_SERVER) << "Loading JSON configuration:" << fileToLoad.first;
+        loadedConfig = Engine::loadJsonConfig(fileToLoad.first);
+        break;
     }
 
-    QVariantMap sessionConfig = loadedConfig.value(section).toMap();
+    auto loadedIt = loadedConfig.cbegin();
+    while (loadedIt != loadedConfig.cend()) {
+        if (config.contains(loadedIt.key())) {
+            QVariantMap currentMap      = config.value(loadedIt.key()).toMap();
+            const QVariantMap loadedMap = loadedIt.value().toMap();
+            auto loadedMapIt            = loadedMap.cbegin();
+            while (loadedMapIt != loadedMap.cend()) {
+                currentMap.insert(loadedMapIt.key(), loadedMapIt.value());
+                ++loadedMapIt;
+            }
+            config.insert(loadedIt.key(), currentMap);
+        } else {
+            config.insert(loadedIt.key(), loadedIt.value());
+        }
+        ++loadedIt;
+    }
+
+    QVariantMap sessionConfig = loadedConfig.value(u"server"_qs).toMap();
 
     applyConfig(sessionConfig);
 
-    sessionConfig.insert(opt);
-    opt = sessionConfig;
+    opt.insert(sessionConfig);
 
-    auto it = config.begin();
-    while (it != config.end()) {
-        auto itLoaded = loadedConfig.find(it.key());
-        while (itLoaded != loadedConfig.end()) {
-            QVariantMap loadedMap = itLoaded.value().toMap();
-            loadedMap.insert(it.value().toMap());
+    loadingConfig = false;
 
-            it.value() = loadedMap;
-            itLoaded   = loadedConfig.erase(itLoaded);
-        }
-        ++it;
+    if (!configToLoad.empty()) {
+        loadConfig();
     }
-
-    loadedConfig.insert(config);
-
-    config = loadedConfig;
 }
 
 void ServerPrivate::applyConfig(const QVariantMap &config)

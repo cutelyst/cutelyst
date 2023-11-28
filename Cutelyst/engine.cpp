@@ -305,7 +305,7 @@ QVariantMap Engine::loadJsonConfig(const QString &filename)
 {
     QVariantMap ret;
     QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return ret;
     }
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());

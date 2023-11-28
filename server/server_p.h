@@ -9,6 +9,8 @@
 
 #include <Cutelyst/Application>
 
+#include <QQueue>
+
 class QTcpServer;
 class QSettings;
 class AbstractFork;
@@ -29,6 +31,8 @@ public:
     }
     ~ServerPrivate();
 
+    enum class ConfigFormat : quint8 { Ini, Json };
+
     bool listenTcpSockets();
     bool listenTcp(const QString &line, Protocol *protocol, bool secure);
     bool listenLocalSockets();
@@ -42,7 +46,7 @@ public:
 
     ServerEngine *createEngine(Cutelyst::Application *app, int core);
 
-    void loadConfig(const QString &file, bool json);
+    void loadConfig();
     void applyConfig(const QVariantMap &config);
     void loadLoggingRules(QSettings &settings);
 
@@ -69,6 +73,7 @@ public:
     QStringList ini;
     QStringList json;
     QStringList configLoaded;
+    QQueue<std::pair<QString, ConfigFormat>> configToLoad;
     QString application;
     QString chdir;
     QString chdir2;
@@ -107,6 +112,7 @@ public:
     bool upgradeH2c             = false;
     bool httpsH2                = false;
     bool usingFrontendProxy     = false;
+    bool loadingConfig          = false;
 
 Q_SIGNALS:
     void postForked(int workerId);
