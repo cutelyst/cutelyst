@@ -57,7 +57,7 @@ class ApplicationPrivate;
  * Absolute path to your web root directory that contains your template and/or static files. This
  * might be used by plugins to \ref servestatic "serve static files" or by
  * \ref plugins-view "Views" like CuteleeView to find template files. If this is empty (the
- * default), it will be populated as directory below \c "home".
+ * default), it will be populated as directory \c "root" below \c "home".
  * @endconfigblock
  *
  * \logcat{core}
