@@ -1,4 +1,112 @@
+namespace Cutelyst {
 /**
 \page translations Translate your application
 \tableofcontents
+%Cutelyst uses QTranslator to translate source strings. As a web application has to be able
+to serve different languages to different users, translation is done a bit different from a
+desktop application that normally only has one language selected. In %Cutelyst, translations
+are returned by different QTranslator objects bound to QLocale objects, set via
+Application::loadTranslationsFromDir() for example, that specify the list of supported locales.
+Context::translate() and Context::qtTrId() will internally call Application::translate() that
+will try to find a translation based on the locale set to Context::setLocale().
+
+See also
+<A HREF="https://doc.qt.io/qt-6/internationalization.html">Internationalization with Qt</A>.
+
+\section translations-prepare Prepare your code for translation
+%Cutelyst supports both, id based and non-id based translations. The difference to normal %Qt
+is, that you have to use member functions of the Context object to translate your strings:
+Context::qtTrId() for id based translations and Context::translate() for non id based
+translations. You can also - and in some areas you have to - use the \c _NOOP macros
+\c QT_TRANSLATE_* and \c QT_TRID_* to mark text/ids for translation. See also
+<A HREF="https://doc.qt.io/qt-6/qttranslation-qtcore-proxy.html">QtTranslation</A>.
+
+Using the Context functions makes it possible to use a locale for translations that has
+been set via Context::setLocale(), either manually or automatically by for example the LangSelect
+plugin.
+
+\note Do not mix id based and non id based translations in the same translation file.
+
+\note Do not use QObject::tr() or global qtTrId() to translate texts as these are not bound
+to the current context.
+
+Id based translation example:
+\code{.cpp}
+using namespace Cutelyst;
+
+void MyController::myaction(Context *c)
+{
+    //: this is meta data and source string for the translation id
+    //% "Hello world!"
+    c->setStash("hello", c->qtTrId("my-id-hello-world"));
+}
+
+void MyController::myotheraction(Context *c)
+{
+    //% "Hello to my %n world(s)!"
+    const char *id = QT_TRID_N_NOOP("my-id-hello-worlds");
+
+    c->setStash("hello", c->qtTrId(id, 3));
+}
+\endcode
+
+Non id based translation example:
+\code{.cpp}
+using namespace Cutelyst;
+
+void MyController::myaction(Context *c)
+{
+    //: meta data for the translation string
+    c->setStash("hello", c->translate("MyController", "Hello World!"));
+}
+
+void MyController::myotheraction(Context *c)
+{
+    const char *str = QT_TRANSLATE_N_NOOP("MyController", "Hello to my %n world(s)!");
+
+    c->setStash("hello", c->translate("MyController", str, nullptr, 3));
+}
+\endcode
+
+What to use? Easiest way is to use Context::translate(). Context::qtTrId() with id based translations
+might be better when the project has many strings and is somehow a matter of taste. Id based
+translations might require more writing but have the advantage, that the translations are still valid
+even if a typo was fixed in the source string as long as the id does not change. It is also easier to
+change the source string for same ids as the source string is there only one time. But you are free
+what approach to use. The \c _NOOP macros can be used for special situations.
+
+\section translations-extract Extract your translation strings
+Extract your translation strings the same way as you do normally with %Qt applications:
+<a href="https://doc.qt.io/qt-6/linguist-lupdate.html">use lupdate</a>.
+As %Cutelyst uses the \a translate and \a qtTrId keywords, they are automatically recognized, even if
+they are member functions of the Context object.
+
+\section translations-load Load your translations
+You should use your reimplementation of Application::init() to load your translations either via
+Application::loadTranslationsFromDir() or Application::loadTranslationsFromDirs(), as these both
+methods automatically generate a list of supported locales that you can for example use in the LangSelect
+plugin or somewhere else where your users can select a supported language.
+
+\code{.cpp}
+using namespace Cutelyst;
+
+bool MyApp::init()
+{
+    ...
+
+    const auto supportedLocales = loadTranslationsFromDir("myapp", "/path/to/my/translations/dir");
+
+    ...
+}
+\endcode
+
+\section translations-setlocale Set/Select the locale
+To get the correct translation, you have to set the locale to use to Context::setLocale(). You can
+return the current set locale with Context::locale(). If not set, the default locale US English
+will be used. You can use Application::setDefaultLocale() to set a different default locale. See
+the LangSelect plugin for one method to automatically select a locale. Do \b not use QLocale::setDefault(),
+%Cutelyst will not use it. The issue with a default constructed QLocale is that it might be QLocale::system()
+and that is not comparable to locales constructed by string or enums. For more information about this issue
+see the equal operator of \link QLocale::operator==(const QLocale &lhs, const QLocale &rhs) QLocale\endlink.
  */
+}
