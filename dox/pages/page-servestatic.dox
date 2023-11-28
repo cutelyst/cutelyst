@@ -2,5 +2,72 @@ namespace Cutelyst {
 /**
 \page servestatic Serve static files
 \tableofcontents
+There are different ways to serve static files like JavaScript and CSS. The easiest way is
+to simply register StaticSimple or StaticCompressed plugin in your reimplementation of
+Application::init(). Other ways are to use the static maps of %Cutelyst Server or to use a
+web server like Apache in front of your Cutelyst %Server that also serves your static files
+directly without using %Cutelyst.
+
+\section servestatic-plugins Use a plugin to serve static files
+Using a plugin like StaticSimple or StaticCompressed is the most easiest to implement way
+of serving static files with %Cutelyst. Simply register one of the pulgins in your app’s init
+function and set include paths to the directories containing your static files:
+
+\code{.cpp}
+using namespace Cutelyst;
+
+bool MyCutelystApp::init()
+{
+
+    // other initialization stuff
+    // ...
+
+    // construct a new StaticSimple plugin that will automatically be registered
+    auto stat = new StaticSimpe(this);
+    stat->setIncludePaths({"/path/to/my/include/files"});
+
+    // maybe more initialization stuff
+    // ..
+}
+\endcode
+
+StaticCompressed is similar to use. Both plugins either serve files beginning with a specific
+configurable path or try to identify static files as paths ending with something that looks
+like a file extension like <tt>/assets/css/style.css</tt>. From the example above, the plugin
+would try to find <tt>style.css</tt> at <tt>/path/to/my/include/files/assets/css/style.css</tt>
+when your request path is <tt>/assets/css/style.css</tt>.
+
+See the documentation of StaticSimple and StaticCompressed to learn more about these plugins.
+
+\section servestatic-cutelystserver Use the Cutelyst server to serve static files
+The %Cutelyst Server, that is started by \c \serverexec or manually by your own application, can
+also directly serve static files. Using \c \serverexec you have the options <tt>\-\-static-map</tt>
+and <tt>\-\-static-map2</tt> that can be used multiple times to add mappings for static file
+directories. While <tt>static-map</tt> removes the mount point from the request path,
+<tt>static-map2</tt> appends the complete request path.
+
+\subsection servestatic-cutelystserver-staticmap static-map
+The \c static-map option takes values of the form <tt>/mount/point=/path/to/static/files</tt>.
+When searching for the requested file in your local directory, it will remove the mountpoint
+part from the request path and will than append the rest of the request path to your local
+path and will try to find the file.
+
+If you set the following <tt>static-map</tt> for example:
+<tt>\-\-static-map /assets=/path/to/static/assets</tt>. If you than request a file like
+<tt>http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
+for mountpoint \a /assets, that is available. It will than remove the mountpoint from the request
+path \a /assets/js/script.js and will append the rest to the local path. It will than try to find
+the requested file at <tt>/path/to/static/assets/js/scripts.js</tt>.
+
+\subsection servestatic-cutelystserver-staticmap2 static-map2
+The \c static-map2 option takes values of the form <tt>/mount/point=/path/to/static/files</tt>.
+When searching for the requested file in your local directory, it will completely append the
+request path including the mount point to the local path and will try to find the file.
+
+If you set the following<tt>static-map2</tt> for example:
+<tt>\-\-static-map2 /assets=/path/to/static</tt>. If you than request a file like
+<tt>http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
+for mountpoint \a /assets, that is available. It will than append the complete request path to
+the local path will try to find the requested file at <tt>/path/to/static/assets/js/script.js</tt>.
  */
 }
