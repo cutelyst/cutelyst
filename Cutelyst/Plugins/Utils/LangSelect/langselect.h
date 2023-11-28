@@ -309,8 +309,8 @@ class LangSelectPrivate;
  *
  * <H3 id="config-file-options">Configuration file options</H3>
  *
- * There are some options you can set in your application configuration file in the @c
- * Cutelyst_LangSelect_Plugin section. The configuration file options are available since
+ * There are some options you can set in your @ref configuration "application configuration file"
+ * in the @c Cutelyst_LangSelect_Plugin section. The configuration file options are available since
  * %Cutelyst 4.0.0.
  *
  * @configblock{cookie_expiration,string,1 month}
