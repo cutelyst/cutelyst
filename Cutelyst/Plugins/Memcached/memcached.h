@@ -23,9 +23,9 @@ class MemcachedPrivate;
  *
  * The %Memcached plugin for %Cutelyst can be used to store, retrieve, delete and modify data on a
  * <A HREF="https://www.memcached.org/">memcached</A> general-purpose distributed memory caching
- * system. It uses <A HREF="http://docs.libmemcached.org">libmemcached</A> to connect to a pool
- * of memcached servers and to perform the caching operations. In order to build this plugin, the
- * libmemcached development and header files have to be present at build time.
+ * system. It uses <A HREF="https://github.com/awesomized/libmemcached">libmemcached</A> to connect
+ * to a pool of memcached servers and to perform the caching operations. In order to build this
+ * plugin, the libmemcached development and header files have to be present at build time.
  *
  * Basically all values are stored as QByteArray. So, to store simple types, simply convert them
  * into a QByteArray and vice versa on retrieval. For more complex or custom types you can use
@@ -35,17 +35,20 @@ class MemcachedPrivate;
  *
  * <H3>Configuration</h3>
  *
- * The %Memcached plugin can be configured in the \ref configuration "application configuration
- * file" in the @c Cutelyst_Memcached_Plugin section. It uses the same configuration strings as
- * <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
- * but in lowercase and without the dashes in front and for consistence @a - replaced by @a _.
- * So @c --BINARY-PROTOCOL will be @c binary_protocol. To add servers and/or sockets use
- * the @a servers configuration key. Servers can be added with name, port and weight, separated
- * by @c , - multiple servers are separated by a @c ; . To add sockets, use a full path as name.
- * If no configuration has been set or if the @a servers configuration key is empty, a default
- * server at localhost on port 11211 will be used.
+ * The %Memcached plugin can be configured in the
+ * \ref configuration "application configuration file" in the @c Cutelyst_Memcached_Plugin
+ * section. It uses the same configuration strings as
+ * <A
+ * HREF="https://awesomized.github.io/libmemcached/libmemcached/configuration.html">libmemcached</A>
+ * but in lowercase and without the dashes in front and for consistence <tt>'-'</tt> replaced by
+ * <tt>'_'</tt>. So @c --BINARY-PROTOCOL will be @c binary_protocol. To add servers and/or sockets
+ * use the @c servers configuration key. Servers can be added with name, port and weight, separated
+ * by <tt>','</tt> - multiple servers are separated by a <tt>';'</tt> . To add sockets, use a full
+ * path as name. If no configuration has been set or if the @a servers configuration key is empty,
+ * a default server at localhost on port 11211 will be used.
  *
- * Additional to the <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">
+ * Additional to the
+ * <A HREF="https://awesomized.github.io/libmemcached/libmemcached/configuration.html">
  * configuration options of libmemcached</A> there are some plugin specific options:
  *
  * @configblock{compression,bool,fase}
@@ -79,8 +82,8 @@ class MemcachedPrivate;
  * @note If you want to use non-ASCII key names, you have to enable the binary protocol.
  *
  * To set default values directly in your application, use setDefaultConfig(). Configuration values
- * that can not be found in the Cutelyst configuration file will be looked up for default values in
- * that QVariantMap.
+ * that can not be found in the @ref configuration "application configuration file" will be looked
+ * up for default values in that QVariantMap.
  *
  * <H4>Configuration example</h4>
  *
