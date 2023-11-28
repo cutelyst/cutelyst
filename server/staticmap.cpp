@@ -69,9 +69,9 @@ bool StaticMap::tryToServeFile(Cutelyst::Context *c, const MountPoint &mp, const
     QString localPath = path;
     if (!mp.append) {
         localPath = path.mid(mp.mountPoint.size());
-        while (localPath.startsWith(u'/')) {
-            localPath.remove(0, 1);
-        }
+    }
+    while (localPath.startsWith(u'/')) {
+        localPath.remove(0, 1);
     }
 
     QDir dir(mp.path);
