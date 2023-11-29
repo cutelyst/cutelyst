@@ -276,17 +276,34 @@ public:
     [[nodiscard]] QStringList json() const;
 
     /**
-     * Map the mountpoint to static directory (or file)
+     * Defines a list of mountpoint to local path mappings to serve static files. Entries have
+     * to be in the form <tt>“/mountpoint=/path/to/local/dir”</tt>. If there is then a request
+     * for eg. <tt>/mountpoint/css/style.css</tt>, the %Server will remove the mountpoint from the
+     * request path and will append the rest to the local path to try to find the requested file,
+     * like <tt>/path/to/local/dir/css/style.css</tt>.
+     *
+     * Added mappings are automatically sorted by the string length of the mounpoint part from
+     * short to long and will be compared to the request path in that order.
+     *
      * @accessors staticMap(), setStaticMap()
+     * @sa @ref servestatic
      */
     Q_PROPERTY(QStringList static_map READ staticMap WRITE setStaticMap NOTIFY changed)
     void setStaticMap(const QStringList &staticMap);
     [[nodiscard]] QStringList staticMap() const;
 
     /**
-     * Map the mountpoint to static directory (or file), completely appending the requested resource
-     * to the docroot
+     * Defines a list of mountpoint to local path mappings to serve static files. Entries have
+     * to be in the form <tt>“/mountpoint=/path/to/local/dir”</tt>. If there ist then a request
+     * for eg. <tt>/mountpoint/js/script.js</tt>, the %Server will completely append the request
+     * path to the local path to try to find the requested file, like
+     * <tt>/path/to/local/dir/mountpoint/js/script.js</tt>.
+     *
+     * Added mappings are automatically sorted by the string length of the mounpoint part from
+     * short to long and will be compared to the request path in that order.
+     *
      * @accessors staticMap2(), setStaticMap2()
+     * @sa @ref servestatic
      */
     Q_PROPERTY(QStringList static_map2 READ staticMap2 WRITE setStaticMap2 NOTIFY changed)
     void setStaticMap2(const QStringList &staticMap);
@@ -496,6 +513,7 @@ public:
 
     /**
      * Returns the configuration set by setIni() and setJson().
+     * @since %Cutelyst 4.0.0
      */
     [[nodiscard]] QVariantMap config() const noexcept;
 

@@ -41,10 +41,14 @@ See the documentation of StaticSimple and StaticCompressed to learn more about t
 
 \section servestatic-cutelystserver Use the Cutelyst server to serve static files
 The %Cutelyst Server, that is started by \c \serverexec or manually by your own application, can
-also directly serve static files. Using \c \serverexec you have the options <tt>\-\-static-map</tt>
-and <tt>\-\-static-map2</tt> that can be used multiple times to add mappings for static file
+also directly serve static files. Using \c \serverexec you have the options <tt>\--static-map</tt>
+and <tt>\--static-map2</tt> that can be used multiple times to add mappings for static file
 directories. While <tt>static-map</tt> removes the mount point from the request path,
-<tt>static-map2</tt> appends the complete request path.
+<tt>static-map2</tt> appends the complete request path. When integrating the Server class in your
+own application, use the Server::static_map and Server::static_map2 properties.
+
+Added mappings are automatically sorted by the string length of the mounpoint part from
+short to long and will be compared to the request path in that order.
 
 \subsection servestatic-cutelystserver-staticmap static-map
 The \c static-map option takes values of the form <tt>/mount/point=/path/to/static/files</tt>.
@@ -53,7 +57,7 @@ part from the request path and will than append the rest of the request path to 
 path and will try to find the file.
 
 If you set the following <tt>static-map</tt> for example:
-<tt>\-\-static-map /assets=/path/to/static/assets</tt>. If you than request a file like
+<tt>\--static-map /assets=/path/to/static/assets</tt>. If you than request a file like
 <tt>http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
 for mountpoint \a /assets, that is available. It will than remove the mountpoint from the request
 path \a /assets/js/script.js and will append the rest to the local path. It will than try to find
@@ -65,9 +69,39 @@ When searching for the requested file in your local directory, it will completel
 request path including the mount point to the local path and will try to find the file.
 
 If you set the following<tt>static-map2</tt> for example:
-<tt>\-\-static-map2 /assets=/path/to/static</tt>. If you than request a file like
+<tt>\--static-map2 /assets=/path/to/static</tt>. If you than request a file like
 <tt>http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
 for mountpoint \a /assets, that is available. It will than append the complete request path to
 the local path will try to find the requested file at <tt>/path/to/static/assets/js/script.js</tt>.
+
+\subsection servestatc-cutelystserver-statmapcomp static-map vs. static-map2 overview
+Static map comparison with /assets=/path/to/static and a request to /assets/css/style.css.
+<table>
+    <tr>
+        <th></th>
+        <th>static-map</th>
+        <th>static-map2</th>
+    </tr>
+    <tr>
+        <td>Mountpoint</td>
+        <td>/assets</td>
+        <td>/assets</td>
+    </tr>
+    <tr>
+        <td>Path</td>
+        <td>/path/to/static</td>
+        <td>/path/to/static</td>
+    </tr>
+    <tr>
+        <td>%Request path</td>
+        <td>/assets/css/style.css</td>
+        <td>/assets/css/style.css</td>
+    </tr>
+    <tr>
+        <td>Local path</td>
+        <td>/path/to/static/css/style.css</td>
+        <td>/path/to/static/assets/css/style.css</td>
+    </tr>
+</table>
  */
 }

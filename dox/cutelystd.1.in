@@ -1,4 +1,4 @@
-.TH cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2023-11-25" "cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
+.TH cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2023-11-29" "cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
 cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Fast, developer friendly WSGI server for Cutelyst applications.
@@ -57,10 +57,35 @@ after the application has been loaded.
 .BI \-\^\-static-map " mountpoint=path"
 Map
 .I mountpoint
-to static directory (or file).
+to local
+.I path
+to serve static files. The mountpoint will be removed from the request path and the rest will be appended to the local path to find the file to serve. Can be used multiple times.
+
+If for example defining a mountpoint
+.I /assets=/path/to/static
+and then getting a request for
+.IR /assets/css/style.css ,
+the Server will remove
+.I /assets
+from the request path and appends the rest to the local
+.I path
+for that
+.IR mountpoint .
+In the end it will try to find the requested file locally at
+.IR /path/to/static/css/style.css .
 .TP
 .BI \-\^\-static-map2 " mountpoint=path"
-Like static-map but completely appending the requested resource to the docroot.
+Like static-map but completely appending the request path to the local path. Can be used multiple times.
+
+If for example defining a mountpoint
+.I /assets=/path/to/static
+and then getting a request for
+.IR /assets/css/style.css ,
+the Server will append the complete request path to the local
+.I path
+and will try to find the requested file there. In this example the Server would search locally at
+.I /path/to/static/assets/css/style.css
+for the requested file.
 .SS "Load Configuration"
 .TP
 .BI \-\^\-ini " file"
@@ -118,8 +143,8 @@ Defines if HTTPS sockect should use ALPN to negotiate HTTP/2
 .BI "\-\^\-h2\fR,\fP \-\^\-http2-socket" " address"
 Bind to the specified TCP socket using HTTP/2 only protocol.
 .TP
-.B "\-\^\-http2-header-table-size" " size"
-Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
+.BI "\-\^\-http2-header-table-size" " size"
+Set the HTTP2 header table size. Default value: 4096
 .TP
 .BI \-\^\-fastcgi-socket " address"
 Bind to the specified UNIX/TCP socket using FastCGI protocol.
@@ -167,25 +192,29 @@ Set internal buffer size in
 .IR bytes .
 .TP
 .BI \-\^\-post-buffering " bytes"
-Set size in
+Sets the size in
 .I bytes
-after which will buffer to disk insted of memory.
+after which buffering takes place on the hard disk instead of in the main memory.
 .TP
 .BI \-\^\-post-buffering-bufsize " bytes"
-Set buff size in
+Set buffer size in
 .I bytes
 for read() in post buffering mode.
 .TP
 .BI \-\^\-socket-sndbuf " bytes"
-Set SO_SNDBUF in
-.IR bytes .
+Set the socket receive buffer size in bytes
+.I bytes
+at the OS level. This maps to the SO_RCVBUF socket option.
 .TP
 .BI \-\^\-socket-rcvbuf " bytes"
-Set SO_RCVBUF in
-.IR bytes .
+Set the socket receive buffer size in bytes
+.I bytes
+at the OS level. This maps to the SO_RCVBUF socket option.
 .TP
-.BI \-\^\-websocket-max-size " Kbytes"
-Set the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.
+.BI \-\^\-websocket-max-size " kibibytes"
+Set the websocket receive buffer size in
+.I kibibytes
+at the OS level. This maps to the SO_RCVBUF socket option.
 
 .SH "EXIT STATUS"
 0 on success and 1 if something failed.
