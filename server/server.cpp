@@ -284,21 +284,24 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption staticMapOpt(QStringLiteral("static-map"),
                                     //: CLI option description
-                                    //% "Map mountpoint to static directory (or file)."
+                                    //% "Map mountpoint to local directory to serve static files. "
+                                    //% "The mountpoint will be removed from the request path and "
+                                    //% "the rest will be appended to the local path to find the "
+                                    //% "file to serve. Can be used multiple times."
                                     qtTrId("cutelystd-opt-static-map-desc"),
                                     //: CLI option value name
-                                    //% "mountpoint=path"
+                                    //% "/mountpoint=/path"
                                     qtTrId("cutelystd-opt-value-static-map"));
     parser.addOption(staticMapOpt);
 
-    QCommandLineOption staticMap2Opt(
-        QStringLiteral("static-map2"),
-        //: CLI option description
-        //% "Like static-map but completely appending the requested resource to the docroot."
-        qtTrId("cutelystd-opt-static-map2-desc"),
-        //: CLI option value name
-        //% "mountpoint=path"
-        qtTrId("cutelystd-opt-value-static-map"));
+    QCommandLineOption staticMap2Opt(QStringLiteral("static-map2"),
+                                     //: CLI option description
+                                     //% "Like static-map but completely appending the request "
+                                     //% "path to the local path. Can be used multiple times."
+                                     qtTrId("cutelystd-opt-static-map2-desc"),
+                                     //: CLI option value name
+                                     //% "/mountpoint=/path"
+                                     qtTrId("cutelystd-opt-value-static-map"));
     parser.addOption(staticMap2Opt);
 
     QCommandLineOption autoReload({QStringLiteral("auto-restart"), QStringLiteral("r")},

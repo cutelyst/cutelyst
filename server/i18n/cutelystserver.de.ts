@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de" sourcelanguage="en">
+<TS version="2.1" language="de_DE" sourcelanguage="en_US">
 <context>
     <name></name>
     <message id="cutelystd-cli-desc">
@@ -80,7 +80,7 @@
     <message id="cutelystd-opt-listen-desc">
         <source>Set the socket listen queue size.</source>
         <extracomment>CLI option description</extracomment>
-        <translation>Legt die Größe des Socket-Warteschlange fest.</translation>
+        <translation>Legt die Größe der Socket-Warteschlange fest.</translation>
     </message>
     <message id="cutelystd-opt-value-size">
         <source>size</source>
@@ -169,19 +169,22 @@
         <translation>Sekunden</translation>
     </message>
     <message id="cutelystd-opt-static-map-desc">
-        <source>Map mountpoint to static directory (or file).</source>
+        <source>Map mountpoint to local directory to serve static files. The mountpoint will be removed from the request path and the rest will be appended to the local path to find the file to serve. Can be used multiple times.</source>
+        <oldsource>Map mountpoint to static directory (or file).</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Einhängepunkt einem statischen Verzeichnis (oder einer Datei) zuordnen.</translation>
+        <translation>Einhängepunkt einem lokalen Ordner zuordnen um statische Dateien auszuliefern. Der Einhängepunkt wird vom Anfragepfad entfernt und der Rest wird dem lokalen Pfad angehängt, um die auszuliefernde Datei lokal zu finden. Kann mehrfach angegeben werden.</translation>
     </message>
     <message id="cutelystd-opt-value-static-map">
-        <source>mountpoint=path</source>
+        <source>/mountpoint=/path</source>
+        <oldsource>mountpoint=path</oldsource>
         <extracomment>CLI option value name</extracomment>
-        <translation>Einhängepunkt=Pfad</translation>
+        <translation>/Einhängepunkt=/Pfad</translation>
     </message>
     <message id="cutelystd-opt-static-map2-desc">
-        <source>Like static-map but completely appending the requested resource to the docroot.</source>
+        <source>Like static-map but completely appending the request path to the local path. Can be used multiple times.</source>
+        <oldsource>Like static-map but completely appending the requested resource to the docroot.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Wie static-map, hängt die angefragte Ressource aber komplett an den docroot an.</translation>
+        <translation>Wie static-map, hängt den den Anfragepfad aber komplett an den lokalen Pfad an.  Kann mehrfach angegeben werden.</translation>
     </message>
     <message id="cutelystd-opt-auto-restart-desc">
         <source>Auto restarts when the application file changes.</source>

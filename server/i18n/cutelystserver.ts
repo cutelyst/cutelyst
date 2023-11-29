@@ -169,17 +169,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-static-map-desc">
-        <source>Map mountpoint to static directory (or file).</source>
+        <source>Map mountpoint to local directory to serve static files. The mountpoint will be removed from the request path and the rest will be appended to the local path to find the file to serve. Can be used multiple times.</source>
+        <oldsource>Map mountpoint to static directory (or file).</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-value-static-map">
-        <source>mountpoint=path</source>
+        <source>/mountpoint=/path</source>
+        <oldsource>mountpoint=path</oldsource>
         <extracomment>CLI option value name</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-static-map2-desc">
-        <source>Like static-map but completely appending the requested resource to the docroot.</source>
+        <source>Like static-map but completely appending the request path to the local path. Can be used multiple times.</source>
+        <oldsource>Like static-map but completely appending the requested resource to the docroot.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
