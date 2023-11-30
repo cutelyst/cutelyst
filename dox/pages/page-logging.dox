@@ -2,5 +2,356 @@ namespace Cutelyst {
 /**
 \page logging Logging with %Cutelyst
 \tableofcontents
+%Cutelyst uses QLoggingCategory functions to log messages to different logging categories in the
+\c cutelyst logging namespace, meaning each %Cutelyt logging category starts with \c cutelyst
+like <tt>cutelyst.server.tcp</tt>. Get general information about logging with %Qt at
+\qtdoclink{qtlogging.html,QtLogging}. The default priority above that %Cutelyst logs messages
+is QtWarningMsg inclusive, so messages of warning priority and higher will be written to the logs
+by default.
+
+\section logging-pattern Logging message pattern
+%Cutelyst server uses the following pattern by default to generate logging messages:
+
+<tt>%{pid}:%{threadid} %{category}[%{type}] %{message}</tt>
+
+See \qtdoclink{qtlogging.html#qSetMessagePattern,qSetMessagePattern()} on how to change the output
+of the default message handler. %Cutelyst server also respects the existence of the
+\c QT_MESSAGE_PATTERN environment variable.
+
+\section logging-handler Logging message handler
+By default, %Cutelyst uses the default logging message handler set by %Qt. The %Qt default message
+handler will try to detect if the application is started inside a user visible console. If that is
+the case, it will write messages to \c stderr. If you started your %Cutelyst application as eg. a
+systemd service, it will use systemd’s journald to log messages (if the journald feature was enabled
+when compiling %Qt). The same is true for other systems: if there is no user facing console, the
+system logging mechanism will be used (if available). You can set the environment variable
+\c QT_FORCE_STDERR_LOGGING=1 to force logging to \c stderr. So, if you start your application
+with \c \serverexec on the console, you should normally get the logging output directly there.
+
+If you want to have more control over the way your messages are logged, you can install your own
+message handler in the constructor of your application or in your init function (if you need more
+info from config for example) using
+\qtdoclink{qtlogging.html#qInstallMessageHandler,qInstallMessageHandler()}.
+
+\subsection logging-handler-file Log to file
+If you want to log to a specific file, you can install your own message handler.
+
+\note If you want to read a config entry first, like the logging file name, you have to install
+the message handler in your init method.
+
+\code{.cpp}
+#include <stdio.h>
+#include <stdlib.h>
+
+using namespace Cutelyst;
+
+void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    const QString formattedMessage = qFormatLogMessage(type, context, msg);
+
+    if (formattedMessage.isEmpty()) {
+        return;
+    }
+
+    static FILE *f = fopen("log.text", "a");
+    fprintf(f, "%s\n", qPrintable(formattedMessage));
+    fflush(f);
+}
+
+MyCutelystApp::MyCutelystApp(QObject *parent) : Application(parent)
+{
+    qInstallMessageHandler(logToFile);
+}
+\endcode
+
+\subsection logging-handler-syslog Log to syslog
+If you want to explicitely log to syslog, you can install your own message handler to use syslog
+like provided by <a href="https://sourceware.org/glibc/manual/html_node/Syslog.html">glibc</a>.
+
+\note This might already be performed automatically by your %Qt installation. So, there is
+normally no need to force it.
+
+\code{.cpp}
+#include <syslog.h>
+
+using namespace Cutelyst;
+
+void logToSyslog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    const QString formattedMessage = qFormatLogMessage(type, context, message);
+
+    if (formattedMessage.isEmpty()) {
+        return;
+    }
+
+    int prio = LOG_INFO;
+    switch (type) {
+    case QtDebugMsg:
+        prio = LOG_DEBUG;
+        break;
+    case QtInfoMsg:
+        prio = LOG_INFO;
+        break;
+    case QtWarningMsg:
+        prio = LOG_WARNING;
+        break;
+    case QtCriticalMsg:
+        prio = LOG_CRIT;
+        break;
+    case QtFatalMsg:
+        prio = LOG_ALERT;
+        break;
+    }
+
+    openlog(context.category, LOG_NDELAY, LOG_USER)
+    syslog(prio, "%s", formattedMessage.toUtf8().constData());
+    closelog();
+}
+
+MyCutelystApp::MyCutelystApp(QObject *parent) : Application(parent)
+{
+    qInstallMessageHandler(logToSyslog);
+}
+\endcode
+
+\subsection logging-handler-journald Log to journald
+If you want to explicitely log to
+<a href="https://www.freedesktop.org/software/systemd/man/latest/systemd-journald.html">journald</a>,
+you can install your own message handler that uses
+<a href="https://www.freedesktop.org/software/systemd/man/latest/sd_journal_send.html">sd_journal_send</a>.
+
+\note This might already be performed automatically by your %Qt installation. So, there is
+normally no need to force it.
+
+\code{.cpp}
+// We do not want to have the source code location automatically
+// stored in the generated journal message metadata as we will
+// call sd_journal_send from the same place every time. We will
+// add our own data for that in debug mode.
+#define SD_JOURNAL_SUPPRESS_LOCATION
+#include <systemd/sd-journal-h>
+#include <syslog.h> // for the priority definitions
+
+void logToJournald(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    const QString formattedMessage = qFormatLogMessage(type, context, message);
+
+    if (formattedMessage.isEmpty()) {
+        return;
+    }
+
+    int prio = LOG_INFO;
+    switch (type) {
+    case QtDebugMsg:
+        prio = LOG_DEBUG;
+        break;
+    case QtInfoMsg:
+        prio = LOG_INFO;
+        break;
+    case QtWarningMsg:
+        prio = LOG_WARNING;
+        break;
+    case QtCriticalMsg:
+        prio = LOG_CRIT;
+        break;
+    case QtFatalMsg:
+        prio = LOG_ALERT;
+        break;
+    }
+
+    const char *category = context.category ? context.category : "unknown";
+
+    // add some extra information if we have a debug build
+#ifdef QT_DEBUG
+    sd_journal_send("PRIORITY=%i",          prio,
+                    "SYSLOG_FACILITY=%hhu", LOG_USER,
+                    "SYSLOG_IDENTIFIER=%s", category,
+                    "SYSLOG_PID=%lli",      QCoreApplication::applicationPid(),
+                    "MESSAGE=%s",           formattedMessage.toUtf8().constData(),
+                    "QT_CATEGORY",          category,
+                    "CODE_FILE=%s",         context.file ? context.file : "unknown",
+                    "CODE_LINE=%i",         context.line,
+                    "CODE_FUNC=%s",         context.function ? context.function : "unknown",
+                    NULL);
+#else
+    sd_journal_send("PRIORITY=%i",          prio,
+                    "SYSLOG_FACILITY=%hhu", LOG_USER,
+                    "SYSLOG_IDENTIFIER=%s", category,
+                    "SYSLOG_PID=%lli",      QCoreApplication::applicationPid(),
+                    "MESSAGE=%s",           formattedMessage.toUtf8().constData(),
+                    "QT_CATEGORY",          category,
+                    NULL);
+#endif
+}
+
+MyCutelystApp::MyCutelystApp(QObject *parent) : Application(parent)
+{
+    qInstallMessageHandler(logToJournald);
+}
+\endcode
+
+\section logging-categories Logging categories
+%Cutelyst already defines a number of logging categories that are used to log messages from
+different parts of %Cutelyst. All %Cutelyst logging categories start with \c cutelyst. See
+QLoggingCategory if you want to add your own categories in your application. The following
+table gives an overview about the logging categories used by the different %Cutelyst components.
+You can als find information about the used categories in the class/component descriptions.
+
+<table>
+    <tr>
+        <th>Category</th>
+        <th>%Components</th>
+    </tr>
+    <tr>
+        <td>cutelyst.core</td>
+        <td>Application<br>Context<br>Headers</td>
+    </tr>
+    <tr>
+        <td>cutelyst.component</td>
+        <td>Component</td>
+    </tr>
+    <tr>
+        <td>cutelyst.controller</td>
+        <td>Controller</td>
+    </tr>
+    <tr>
+        <td>cutelyst.dispatcher</td>
+        <td>Dispatcher</td>
+    </tr>
+    <tr>
+        <td>cutelyst.dispatcher.chained</td>
+        <td>DispatchTypeChained</td>
+    </tr>
+    <tr>
+        <td>cutelyst.dispatcher.path</td>
+        <td>DispatchTypePath</td>
+    </tr>
+    <tr>
+        <td>cutelyst.engine</td>
+        <td>Engine<br>EngineRequest</td>
+    </tr>
+    <tr>
+        <td>cutelyst.multipart</td>
+        <td>MultiPartFormDataParser</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.authentication</td>
+        <td>Authentication</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.authentication.htpasswd</td>
+        <td>StoreHtpasswd</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.authentication.realm</td>
+        <td>AuthenticationRealm</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.credentialhttp</td>
+        <td>CredentialHttp</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.credentialpassword</td>
+        <td>CredentialPassword</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.csrfprotection</td>
+        <td>CSRFProtection</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.langselect</td>
+        <td>LangSelect</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.memcached</td>
+        <td>Memcached</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.session</td>
+        <td>Session</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.sessionfile</td>
+        <td>SessionStoreFile</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.sessionmemcached</td>
+        <td>MemcachedSessionStore</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.staticcompressed</td>
+        <td>StaticCompressed</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugin.staticsimple</td>
+        <td>StaticSimple</td>
+    </tr>
+    <tr>
+        <td>cutelyst.plugins.statusmessage</td>
+        <td>StatusMessage</td>
+    </tr>
+    <tr>
+        <td>cutelyst.renderview</td>
+        <td>RenderView</td>
+    </tr>
+    <tr>
+        <td>cutelyst.request</td>
+        <td>Request</td>
+    </tr>
+    <tr>
+        <td>cutelyst.response</td>
+        <td>Response</td>
+    </tr>
+    <tr>
+        <td>cutelyst.server<br>cutelyst.server.engine<br>cutelyst.server.fork<br>cutelyst.server.proto<br>cutelyst.serverfcgi<br>cutelyst.server.http<br>cutelyst.serverhttp2<br>cutelyst.server.websocket<br>cutelyst.server.socket<br>cutelyst.server.staticmap<br>cutelyst.server.systemd<br>cutelyst.server.tcp<br>cutelyst.servertcpbalancer<br>cutelyst.server.unix<br>cutelyst.server.windows</td>
+        <td>Server</td>
+    </tr>
+    <tr>
+        <td>cutelyst.upload</td>
+        <td>Upload</td>
+    </tr>
+    <tr>
+        <td>cutelyst.useragent</td>
+        <td>\link Cutelyst::UA UserAgent\endlink</td>
+    </tr>
+    <tr>
+        <td>cutelyst.utils.pagination</td>
+        <td>Pagination</td>
+    </tr>
+    <tr>
+        <td>cutelyst.utils.sql</td>
+        <td>\ref plugins-utils-sql</td>
+    </tr>
+    <tr>
+        <td>cutelyst.utils.validator</td>
+        <td>\ref plugins-utils-validator</td>
+    </tr>
+    <tr>
+        <td>cutelyst.view</td>
+        <td>View</td>
+    </tr>
+    <tr>
+        <td>cutelyst.view.cutelee</td>
+        <td>CuteleeView</td>
+    </tr>
+    <tr>
+        <td>cutelyst.view.email</td>
+        <td>ViewEmail</td>
+    </tr>
+    <tr>
+        <td>cutelyst.view.emailtemplate</td>
+        <td>ViewEmailTemplate</td>
+    </tr>
+</table>
+
+You can use QLoggingCategory to create your own logging categories for your application.
+
+\section logging-configure-categories Configure categories
+See QLoggingCategory to learn how to select categories and message types to log. The easiest
+way to directly set this for development is to set \c QT_LOGGING_RULES environment variable
+before executing \c \serverexec. By default, %Cutelyst only logs messages with a priortiy of
+QtWarningMsg or higher. When using the development helper \c \devhelperexec to start a
+development server, all messages of all types/priorities will be logged by appending
+<tt>"cutelyst.*=true"</tt> to \c QT_LOGGING_RULES.
 */
 }
