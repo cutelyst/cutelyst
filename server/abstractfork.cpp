@@ -10,7 +10,7 @@
 #include <QLoggingCategory>
 #include <QTimer>
 
-Q_LOGGING_CATEGORY(WSGI_FORK, "wsgi.fork", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_FORK, "cutelyst.server.fork", QtWarningMsg)
 
 AbstractFork::AbstractFork(QObject *parent)
     : QObject(parent)
@@ -37,7 +37,7 @@ void AbstractFork::installTouchReload()
         const QStringList ret = m_touchReloadWatcher->addPaths(m_touchReloadPaths);
         if (!ret.empty()) {
             std::cerr << "Failed setup file watcher" << std::endl;
-            qCCritical(WSGI_FORK) << "unwatched files" << ret;
+            qCCritical(C_SERVER_FORK) << "unwatched files" << ret;
             exit(1);
         }
 

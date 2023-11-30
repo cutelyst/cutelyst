@@ -39,7 +39,7 @@
 #include <QThread>
 #include <QTimer>
 
-Q_LOGGING_CATEGORY(WSGI_UNIX, "cutelyst.server.unix", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_UNIX, "cutelyst.server.unix", QtWarningMsg)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
@@ -180,7 +180,7 @@ void UnixFork::killChild()
 
 void UnixFork::killChild(qint64 pid)
 {
-    //    qCDebug(WSGI_UNIX) << "SIGKILL " << pid;
+    //    qCDebug(C_SERVER_UNIX) << "SIGKILL " << pid;
     ::kill(pid_t(pid), SIGKILL);
 }
 
@@ -194,7 +194,7 @@ void UnixFork::terminateChild()
 
 void UnixFork::terminateChild(qint64 pid)
 {
-    //    qCDebug(WSGI_UNIX) << "SIGQUIT " << pid;
+    //    qCDebug(C_SERVER_UNIX) << "SIGQUIT " << pid;
     ::kill(pid_t(pid), SIGQUIT);
 }
 
@@ -382,7 +382,7 @@ int parseProcCpuinfo()
     //    QMutexLocker locker(&mutex);
     QFile file(QStringLiteral("/proc/cpuinfo"));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        qCWarning(WSGI_UNIX) << "Failed to open file" << file.errorString();
+        qCWarning(C_SERVER_UNIX) << "Failed to open file" << file.errorString();
         //        cpuSockets = 1;
         //        cpuCores = QThread::idealThreadCount();
         return cpuSockets;
@@ -460,7 +460,7 @@ void UnixFork::handleSigInt()
     //    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
     m_terminating = true;
     if (m_child || (m_childs.isEmpty())) {
-        qDebug(WSGI_UNIX) << "SIGINT/SIGQUIT received, worker shutting down...";
+        qDebug(C_SERVER_UNIX) << "SIGINT/SIGQUIT received, worker shutting down...";
         Q_EMIT shutdown();
     } else {
         std::cout << "SIGINT/SIGQUIT received, terminating workers..." << std::endl;
@@ -492,7 +492,7 @@ void UnixFork::handleSigChld()
 
     while ((p = waitpid(-1, &status, WNOHANG)) > 0) {
         /* Handle the death of pid p */
-        //        qCDebug(WSGI_UNIX) << "SIGCHLD worker died" << p << WEXITSTATUS(status);
+        //        qCDebug(C_SERVER_UNIX) << "SIGCHLD worker died" << p << WEXITSTATUS(status);
         // SIGTERM is used when CHEAPED (ie post fork failed)
         int exitStatus = WEXITSTATUS(status);
 
@@ -557,7 +557,7 @@ void UnixFork::setSched(Cutelyst::Server *wsgi, int workerId, int workerCore)
         int pos =
             snprintf(buf, 4096, "mapping worker %d core %d to CPUs:", workerId + 1, workerCore + 1);
         if (pos < 25 || pos >= 4096) {
-            qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
+            qCCritical(C_SERVER_UNIX) << "unable to initialize cpu affinity !!!";
             exit(1);
         }
 #if defined(__linux__) || defined(__GNU_kFreeBSD__)
@@ -593,7 +593,7 @@ void UnixFork::setSched(Cutelyst::Server *wsgi, int workerId, int workerCore)
             CPU_SET(base_cpu, &cpuset);
             int ret = snprintf(buf + pos, 4096 - pos, " %d", base_cpu + 1);
             if (ret < 2 || ret >= 4096) {
-                qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
+                qCCritical(C_SERVER_UNIX) << "unable to initialize cpu affinity !!!";
                 exit(1);
             }
             pos += ret;
@@ -680,7 +680,7 @@ void UnixFork::setupSocketPair(bool closeSignalsFD, bool createPair)
         char signal;
         read(signalsFd[1], &signal, sizeof(signal));
 
-        //        qCDebug(WSGI_UNIX) << "Got signal:" << static_cast<int>(signal) << "pid:" <<
+        //        qCDebug(C_SERVER_UNIX) << "Got signal:" << static_cast<int>(signal) << "pid:" <<
         //        QCoreApplication::applicationPid();
         switch (signal) {
         case SIGCHLD:

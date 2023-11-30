@@ -11,7 +11,7 @@
 #include <QLoggingCategory>
 #include <QTemporaryFile>
 
-Q_LOGGING_CATEGORY(CWSGI_PROTO, "cutelyst.server.proto", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_PROTO, "cutelyst.server.proto", QtWarningMsg)
 Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
 
 using namespace Cutelyst;
@@ -53,7 +53,7 @@ QIODevice *Cutelyst::Protocol::createBody(qint64 contentLength) const
     if (m_postBuffering && contentLength > m_postBuffering) {
         auto temp = new QTemporaryFile;
         if (!temp->open()) {
-            qCWarning(CWSGI_PROTO)
+            qCWarning(C_SERVER_PROTO)
                 << "Failed to open temporary file to store post" << temp->errorString();
             // On error close connection immediately
             return nullptr;

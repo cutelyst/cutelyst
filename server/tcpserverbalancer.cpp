@@ -22,7 +22,7 @@
 #    include <sys/types.h>
 #endif
 
-Q_LOGGING_CATEGORY(CWSGI_BALANCER, "wsgi.tcp_server_balancer", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_BALANCER, "cutelyst.server.tcpbalancer", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -220,18 +220,19 @@ int createNewSocket(QAbstractSocket::NetworkLayerProtocol &socketProtocol)
         case EPROTONOSUPPORT:
         case EAFNOSUPPORT:
         case EINVAL:
-            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::UnsupportedSocketOperationError, "
-                                       "ProtocolUnsupportedErrorString)";
+            qCDebug(C_SERVER_BALANCER)
+                << "setError(QAbstractSocket::UnsupportedSocketOperationError, "
+                   "ProtocolUnsupportedErrorString)";
             break;
         case ENFILE:
         case EMFILE:
         case ENOBUFS:
         case ENOMEM:
-            qCDebug(CWSGI_BALANCER)
+            qCDebug(C_SERVER_BALANCER)
                 << "setError(QAbstractSocket::SocketResourceError, ResourceErrorString)";
             break;
         case EACCES:
-            qCDebug(CWSGI_BALANCER)
+            qCDebug(C_SERVER_BALANCER)
                 << "setError(QAbstractSocket::SocketAccessError, AccessErrorString)";
             break;
         default:
@@ -239,7 +240,7 @@ int createNewSocket(QAbstractSocket::NetworkLayerProtocol &socketProtocol)
         }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-        qCDebug(CWSGI_BALANCER,
+        qCDebug(C_SERVER_BALANCER,
                 "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == false (%s)",
                 socketType,
                 socketProtocol,
@@ -250,7 +251,7 @@ int createNewSocket(QAbstractSocket::NetworkLayerProtocol &socketProtocol)
     }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-    qCDebug(CWSGI_BALANCER,
+    qCDebug(C_SERVER_BALANCER,
             "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == true",
             socketType,
             socketProtocol);
@@ -368,7 +369,7 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
         //        }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-        qCDebug(CWSGI_BALANCER,
+        qCDebug(C_SERVER_BALANCER,
                 "QNativeSocketEnginePrivate::nativeBind(%s, %i) == false (%s)",
                 address.toString().toLatin1().constData(),
                 port,
@@ -379,7 +380,7 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
     }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-    qCDebug(CWSGI_BALANCER,
+    qCDebug(C_SERVER_BALANCER,
             "QNativeSocketEnginePrivate::nativeBind(%s, %i) == true",
             address.toString().toLatin1().constData(),
             port);
@@ -398,7 +399,7 @@ int listenReuse(const QHostAddress &address,
 
     int socket = createNewSocket(proto);
     if (socket < 0) {
-        qCCritical(CWSGI_BALANCER) << "Failed to create new socket";
+        qCCritical(C_SERVER_BALANCER) << "Failed to create new socket";
         return -1;
     }
 
@@ -406,24 +407,24 @@ int listenReuse(const QHostAddress &address,
     // SO_REUSEADDR is set by default on QTcpServer and allows to bind again
     // without having to wait all previous connections to close
     if (::setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
-        qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEADDR on socket" << socket;
+        qCCritical(C_SERVER_BALANCER) << "Failed to set SO_REUSEADDR on socket" << socket;
         return -1;
     }
 
     if (reusePort) {
         if (::setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
-            qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEPORT on socket" << socket;
+            qCCritical(C_SERVER_BALANCER) << "Failed to set SO_REUSEPORT on socket" << socket;
             return -1;
         }
     }
 
     if (!nativeBind(socket, address, port)) {
-        qCCritical(CWSGI_BALANCER) << "Failed to bind to socket" << socket;
+        qCCritical(C_SERVER_BALANCER) << "Failed to bind to socket" << socket;
         return -1;
     }
 
     if (startListening && ::listen(socket, listenQueue) < 0) {
-        qCCritical(CWSGI_BALANCER) << "Failed to listen to socket" << socket;
+        qCCritical(C_SERVER_BALANCER) << "Failed to listen to socket" << socket;
         return -1;
     }
 

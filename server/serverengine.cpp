@@ -32,7 +32,7 @@
 #include <QCoreApplication>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CWSGI_ENGINE, "cutelyst.server.engine", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_ENGINE, "cutelyst.server.engine", QtWarningMsg)
 
 using namespace Cutelyst;
 

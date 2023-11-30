@@ -14,7 +14,7 @@
 #include <QLoggingCategory>
 #include <QTemporaryFile>
 
-Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_FCGI, "cutelyst.server.fcgi", QtWarningMsg)
 
 /*
  * Listening socket file number
@@ -141,7 +141,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
     char *watermark = request->buffer + m_bufferSize;
 
     if (buffer + keylen + vallen + 2 + 2 >= watermark) {
-        qCWarning(CWSGI_FCGI,
+        qCWarning(C_SERVER_FCGI,
                   "unable to add %.*s=%.*s to wsgi packet, consider increasing buffer size",
                   keylen,
                   key,
@@ -189,7 +189,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
     }
 
     // #ifdef DEBUG
-    //     qCDebug(CWSGI_FCGI, "add uwsgi var: %.*s = %.*s", keylen, key, vallen, val);
+    //     qCDebug(C_SERVER_FCGI, "add uwsgi var: %.*s = %.*s", keylen, key, vallen, val);
     // #endif
 
     return keylen + vallen + 2 + 2;
@@ -414,13 +414,13 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
                     return;
                 }
             } else {
-                qCWarning(CWSGI_FCGI) << "Failed to parse packet from"
-                                      << sock->remoteAddress.toString() << sock->remotePort;
+                qCWarning(C_SERVER_FCGI) << "Failed to parse packet from"
+                                         << sock->remoteAddress.toString() << sock->remotePort;
                 // On error disconnect immediately
                 io->close();
             }
         } else {
-            qCWarning(CWSGI_FCGI) << "Failed to read from socket" << io->errorString();
+            qCWarning(C_SERVER_FCGI) << "Failed to read from socket" << io->errorString();
             break;
         }
     } while (bytesAvailable);
@@ -539,7 +539,7 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
             continue;
         }
         if (wlen < 0) {
-            qCWarning(CWSGI_FCGI) << "Writing socket error" << io->errorString();
+            qCWarning(C_SERVER_FCGI) << "Writing socket error" << io->errorString();
         }
         return -1;
     }

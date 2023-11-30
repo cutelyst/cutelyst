@@ -13,7 +13,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(CWSGI_H2, "cwsgi.http2", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_H2, "cutelyst.server.http2", QtWarningMsg)
 
 struct h2_frame {
     quint8 size2;
@@ -120,7 +120,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
     auto request = static_cast<ProtoRequestHttp2 *>(sock->protoData);
 
     qint64 bytesAvailable = io->bytesAvailable();
-    //    qCDebug(CWSGI_H2) << sock << "READ available" << bytesAvailable << "buffer size" <<
+    //    qCDebug(C_SERVER_H2) << sock << "READ available" << bytesAvailable << "buffer size" <<
     //    request->buf_size << "default buffer size" << m_bufferSize ;
 
     do {
@@ -138,7 +138,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                 if (request->connState == ProtoRequestHttp2::MethodLine) {
                     if (request->buf_size >= PREFACE_SIZE) {
                         if (memcmp(request->buffer, "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n", 24) == 0) {
-                            //                            qCDebug(CWSGI_H2) << "Got MAGIC" <<
+                            //                            qCDebug(C_SERVER_H2) << "Got MAGIC" <<
                             //                            sizeof(struct h2_frame);
                             request->buf_size -= PREFACE_SIZE;
                             memmove(request->buffer,
@@ -153,8 +153,8 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                                              {SETTINGS_HEADER_TABLE_SIZE, m_headerTableSize},
                                          });
                         } else {
-                            qCDebug(CWSGI_H2) << "Protocol Error: Invalid connection preface"
-                                              << sock->remoteAddress.toString();
+                            qCDebug(C_SERVER_H2) << "Protocol Error: Invalid connection preface"
+                                                 << sock->remoteAddress.toString();
                             // RFC 7540 says this MAY be omitted, so let's reduce further processing
                             //                            ret = sendGoAway(io, request->maxStreamId,
                             //                            ErrorProtocolError);
@@ -245,7 +245,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                             ret = sendGoAway(io, request->maxStreamId, ErrorProtocolError);
                             break;
                         } else {
-                            qCDebug(CWSGI_H2) << "Unknown frame type" << fr->type;
+                            qCDebug(C_SERVER_H2) << "Unknown frame type" << fr->type;
                             // Implementations MUST ignore and discard any frame that has a type
                             // that is unknown.
                         }
@@ -263,7 +263,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                 sock->connectionClose();
             }
         } else {
-            qCWarning(CWSGI_H2) << "Failed to read from socket" << io->errorString();
+            qCWarning(C_SERVER_H2) << "Failed to read from socket" << io->errorString();
             break;
         }
     } while (bytesAvailable);
@@ -312,8 +312,8 @@ int ProtocolHttp2::parseSettings(ProtoRequestHttp2 *request, QIODevice *io, cons
                 while (it != request->streams.end()) {
                     (*it)->windowSize += difference;
                     (*it)->windowUpdated();
-                    //                    qCDebug(CWSGI_H2) << "updating stream" << it.key() << "to
-                    //                    window" << (*it)->windowSize;
+                    //                    qCDebug(C_SERVER_H2) << "updating stream" << it.key() <<
+                    //                    "to window" << (*it)->windowSize;
                     ++it;
                 }
             } else if (identifier == SETTINGS_MAX_FRAME_SIZE) {
@@ -331,7 +331,7 @@ int ProtocolHttp2::parseSettings(ProtoRequestHttp2 *request, QIODevice *io, cons
 
 int ProtocolHttp2::parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
 {
-    //    qCDebug(CWSGI_H2) << "Consuming DATA" << fr.len;
+    //    qCDebug(C_SERVER_H2) << "Consuming DATA" << fr.len;
     if (fr.streamId == 0) {
         return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
     }
@@ -358,7 +358,7 @@ int ProtocolHttp2::parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2
         return sendGoAway(io, request->maxStreamId, ErrorStreamClosed);
     }
 
-    //    qCDebug(CWSGI_H2) << "Frame data" << padLength << "state" << stream->state <<
+    //    qCDebug(C_SERVER_H2) << "Frame data" << padLength << "state" << stream->state <<
     //    "content-length" << stream->contentLength;
 
     if (!stream->body) {
@@ -386,7 +386,7 @@ int ProtocolHttp2::parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2
 
 int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
 {
-    //    qCDebug(CWSGI_H2) << "Consumming HEADERS" << bool(fr.flags & FlagHeadersEndStream);
+    //    qCDebug(C_SERVER_H2) << "Consumming HEADERS" << bool(fr.flags & FlagHeadersEndStream);
     if (fr.streamId == 0) {
         return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
     }
@@ -399,7 +399,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
     if (fr.flags & FlagHeadersPadded) {
         padLength = quint8(*(ptr + pos));
         if (padLength > fr.len) {
-            //            qCDebug(CWSGI_H2) << "header pad length";
+            //            qCDebug(C_SERVER_H2) << "header pad length";
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
 
@@ -412,7 +412,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         // TODO disable exclusive bit
         streamDependency = net_be32(ptr + pos);
         if (fr.streamId == streamDependency) {
-            //            qCDebug(CWSGI_H2) << "header stream dep";
+            //            qCDebug(C_SERVER_H2) << "header stream dep";
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
 
@@ -427,12 +427,12 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
     if (streamIt != request->streams.constEnd()) {
         stream = streamIt.value();
 
-        //        qCDebug(CWSGI_H2) << "------------" << !(fr.flags & FlagHeadersEndStream) <<
+        //        qCDebug(C_SERVER_H2) << "------------" << !(fr.flags & FlagHeadersEndStream) <<
         //        stream->state << request->streamForContinuation ;
 
         if (!(fr.flags & FlagHeadersEndStream) && stream->state == H2Stream::Open &&
             request->streamForContinuation == 0) {
-            qCDebug(CWSGI_H2) << "header FlagHeadersEndStream stream->headers.size()";
+            qCDebug(C_SERVER_H2) << "header FlagHeadersEndStream stream->headers.size()";
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
         if (stream->state == H2Stream::HalfClosed && request->streamForContinuation == 0) {
@@ -443,7 +443,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         }
     } else {
         if (request->maxStreamId >= fr.streamId) {
-            //            qCDebug(CWSGI_H2) << "header maxStreamId ";
+            //            qCDebug(C_SERVER_H2) << "header maxStreamId ";
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
         request->maxStreamId = fr.streamId;
@@ -473,7 +473,8 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
             request->headersBuffer.append(ptr, qint32(fr.len) - pos - padLength);
         }
     } else {
-        //        qCDebug(CWSGI_H2) << "Setting HEADERS for continuation on stream" << fr.streamId;
+        //        qCDebug(C_SERVER_H2) << "Setting HEADERS for continuation on stream" <<
+        //        fr.streamId;
         request->streamForContinuation = fr.streamId;
         request->headersBuffer.append(ptr, qint32(fr.len) - pos - padLength);
         return 0;
@@ -541,7 +542,7 @@ int ProtocolHttp2::parsePriority(ProtoRequestHttp2 *sock, QIODevice *io, const H
 
 int ProtocolHttp2::parsePing(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
 {
-    //    qCDebug(CWSGI_H2) << "Got PING" << fr.flags;
+    //    qCDebug(C_SERVER_H2) << "Got PING" << fr.flags;
     if (fr.len != 8) {
         return sendGoAway(io, request->maxStreamId, ErrorFrameSizeError);
     } else if (fr.streamId) {
@@ -558,7 +559,7 @@ int ProtocolHttp2::parseRstStream(ProtoRequestHttp2 *request,
                                   QIODevice *io,
                                   const H2Frame &fr) const
 {
-    //    qCDebug(CWSGI_H2) << "Consuming RST_STREAM";
+    //    qCDebug(C_SERVER_H2) << "Consuming RST_STREAM";
 
     if (fr.streamId == 0) {
         return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
@@ -571,7 +572,7 @@ int ProtocolHttp2::parseRstStream(ProtoRequestHttp2 *request,
     if (streamIt != request->streams.constEnd()) {
         stream = streamIt.value();
 
-        //        qCDebug(CWSGI_H2) << "Consuming RST_STREAM state" << stream->state;
+        //        qCDebug(C_SERVER_H2) << "Consuming RST_STREAM state" << stream->state;
         if (stream->state == H2Stream::Idle) {
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
@@ -583,7 +584,7 @@ int ProtocolHttp2::parseRstStream(ProtoRequestHttp2 *request,
     stream->state = H2Stream::Closed;
 
     //    quint32 errorCode = h2_be32(request->buffer + 9);
-    //    qCDebug(CWSGI_H2) << "RST frame" << errorCode;
+    //    qCDebug(C_SERVER_H2) << "RST frame" << errorCode;
 
     return 0;
 }
@@ -752,19 +753,19 @@ int ProtocolHttp2::sendFrame(QIODevice *io,
     fr.rbit_stream_id1 = quint8(streamId >> 8);
     fr.rbit_stream_id0 = quint8(streamId);
 
-    //    qCDebug(CWSGI_H2) << "Sending frame"
+    //    qCDebug(C_SERVER_H2) << "Sending frame"
     //                      << type
     //                      << flags
     //                      << streamId
     //                      << dataLen;
 
-    //    qCDebug(CWSGI_H2) << "Frame" << QByteArray(reinterpret_cast<const char *>(&fr),
+    //    qCDebug(C_SERVER_H2) << "Frame" << QByteArray(reinterpret_cast<const char *>(&fr),
     //    sizeof(struct h2_frame)).toHex();
     if (io->write(reinterpret_cast<const char *>(&fr), sizeof(struct h2_frame)) !=
         sizeof(struct h2_frame)) {
         return -1;
     }
-    //    qCDebug(CWSGI_H2) << "Frame data" << QByteArray(data, dataLen).toHex();
+    //    qCDebug(C_SERVER_H2) << "Frame data" << QByteArray(data, dataLen).toHex();
     if (dataLen && io->write(data, dataLen) != dataLen) {
         return -1;
     }
@@ -822,7 +823,7 @@ bool ProtocolHttp2::upgradeH2C(Socket *socket,
 
             // Process request
             queueStream(socket, stream);
-            qCDebug(CWSGI_H2) << "upgraded";
+            qCDebug(C_SERVER_H2) << "upgraded";
             return true;
         }
     }
@@ -872,7 +873,7 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
     qint64 sent          = 0;
     while (remainingData > 0 && state != H2Stream::Closed) {
         qint64 availableWindowSize = qMin(windowSize, protoRequest->windowSize);
-        //        qCDebug(CWSGI_H2) << "H2Stream::doWrite" << len << streamId <<
+        //        qCDebug(C_SERVER_H2) << "H2Stream::doWrite" << len << streamId <<
         //        "availableWindowSize" << availableWindowSize
         //                          << "remaining data" << remainingData
         //                          << "stream" << this << protoRequest;
@@ -888,7 +889,7 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
             return -1;
         }
 
-        //        qCDebug(CWSGI_H2) << "H2Stream::doWrite" << len << streamId <<
+        //        qCDebug(C_SERVER_H2) << "H2Stream::doWrite" << len << streamId <<
         //        "availableWindowSize" << availableWindowSize
         //                          << "remaining data" << remainingData;
 
@@ -916,7 +917,7 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
             sent += availableWindowSize;
         }
 
-        //        qCDebug(CWSGI_H2) << "H2Stream::doWrite ret" << ret << (ret == 0 ? len : -1);
+        //        qCDebug(C_SERVER_H2) << "H2Stream::doWrite ret" << ret << (ret == 0 ? len : -1);
     }
 
     return ret == 0 ? len : -1;
