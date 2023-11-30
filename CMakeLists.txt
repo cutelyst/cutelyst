@@ -250,6 +250,8 @@ if (BUILD_DOCS)
             "endconfigblock=\\endparblock"
             "logcat{1}=\\par Logging category^^ cutelyst.\\1<br>\\ref logging"
             "serverexec=cutelystd${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}"
+            "devhelperexec=cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}"
+            "qtdoclink{2}=<a href='https://doc.qt.io/qt-${QT_VERSION_MAJOR}/\\1'>\\2</a>"
         )
         set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
         # Build related configuration options
