@@ -12,6 +12,8 @@
 
 using namespace Cutelyst;
 
+Q_LOGGING_CATEGORY(C_AUTH_HTPASSWD, "cutelyst.plugin.authentication.htpasswd", QtWarningMsg)
+
 StoreHtpasswd::StoreHtpasswd(const QString &name)
     : m_filename(name)
 {
@@ -28,7 +30,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     QTemporaryFile tmp(m_filename + QLatin1String("-XXXXXXX"));
     tmp.setAutoRemove(false); // sort of a backup
     if (!tmp.open()) {
-        qCWarning(CUTELYST_UTILS_AUTH) << "Failed to open temporary file for writing";
+        qCWarning(C_AUTH_HTPASSWD) << "Failed to open temporary file for writing";
         return;
     }
 
@@ -56,12 +58,12 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     }
 
     if (file.exists() && !file.remove()) {
-        qCWarning(CUTELYST_UTILS_AUTH) << "Failed to remove auth file for replacement";
+        qCWarning(C_AUTH_HTPASSWD) << "Failed to remove auth file for replacement";
         return;
     }
 
     if (!tmp.rename(m_filename)) {
-        qCWarning(CUTELYST_UTILS_AUTH) << "Failed to rename temporary file";
+        qCWarning(C_AUTH_HTPASSWD) << "Failed to rename temporary file";
     }
 }
 

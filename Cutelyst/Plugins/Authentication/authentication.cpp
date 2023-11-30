@@ -12,7 +12,6 @@
 
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CUTELYST_UTILS_AUTH, "cutelyst.utils.auth", QtWarningMsg)
 Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication", QtWarningMsg)
 
 using namespace Cutelyst;
