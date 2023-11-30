@@ -35,6 +35,26 @@ class ServerPrivate;
  * http_socket="localhost:3001"
  * threads=4
  * \endcode
+ *
+ * <h3 id="logging">Logging</h3>
+ * The %Cutelyst server uses the following logging categories:
+ * \arg cutelyst.server
+ * \arg cutelyst.server.engine
+ * \arg cutelyst.server.fork
+ * \arg cutelyst.server.proto
+ * \arg cutelyst.server.fcgi
+ * \arg cutelyst.server.http
+ * \arg cutelyst.server.http2
+ * \arg cutelyst.server.websocket
+ * \arg cutelyst.server.socket
+ * \arg cutelyst.server.staticmap
+ * \arg cutelyst.server.systemd
+ * \arg cutelyst.server.tcp
+ * \arg cutelyst.server.tcpbalancer
+ * \arg cutelyst.server.unix
+ * \arg cutelyst.server.windows
+ *
+ * \sa \ref logging
  */
 class CUTELYST_SERVER_EXPORT Server : public QObject
 {
@@ -55,6 +75,10 @@ public:
      */
     virtual ~Server();
 
+    /**
+     * Parses \a args from the command line and sets the %Server properties.
+     * This will take a list returned by eg. QCoreApplication::arguments().
+     */
     void parseCommandLine(const QStringList &args);
 
     /**
