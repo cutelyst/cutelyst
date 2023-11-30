@@ -9,7 +9,7 @@
 #include <QLoggingCategory>
 #include <QPointer>
 
-Q_LOGGING_CATEGORY(CUTELYST_ASYNC, "cutelyst.async", QtInfoMsg)
+Q_LOGGING_CATEGORY(CUTELYST_ASYNC, "cutelyst.async", QtWarningMsg)
 
 using namespace Cutelyst;
 

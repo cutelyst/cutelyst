@@ -20,11 +20,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#if defined(QT_DEBUG)
-Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect")
-#else
 Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
-#endif
 
 using namespace Cutelyst;
 

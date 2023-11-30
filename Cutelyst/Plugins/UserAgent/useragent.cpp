@@ -18,7 +18,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_USERAGENT, "cutelyst.useragent", QtInfoMsg)
+Q_LOGGING_CATEGORY(C_USERAGENT, "cutelyst.useragent", QtWarningMsg)
 
 static thread_local QNetworkAccessManager m_instance;
 
