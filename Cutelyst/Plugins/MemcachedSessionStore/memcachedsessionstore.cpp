@@ -15,7 +15,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.sessionmemcached", QtWarningMsg)
 
 const QString MemcachedSessionStorePrivate::stashKeyMemcdSave{u"_c_session_store_memcd_save"_qs};
 const QString MemcachedSessionStorePrivate::stashKeyMemcdData{u"_c_session_store_memcd_data"_qs};
