@@ -27,8 +27,8 @@ class StaticSimplePrivate;
  *
  * <h3>Only serve for specific request paths</h3>
  *
- * You can use setDirs() to set a list of directories/path below your web root where files should
- * always be served by this plugin. By default, the plugin also tries to server files from other
+ * You can use setDirs() to set a list of directories/paths below your web root where files should
+ * always be served by this plugin. By default, the plugin also tries to serve files from other
  * paths when they have a file extension when they do not start with one of these paths. You can
  * set setServeDirsOnly() to @c true (since %Cutelyst 4.0.0) to only serve files beginning with
  * these paths. Have a look at setDirs() to learn more.
@@ -63,9 +63,13 @@ class CUTELYST_PLUGIN_STATICSIMPLE_EXPORT StaticSimple : public Plugin
     Q_DECLARE_PRIVATE(StaticSimple)
 public:
     /**
-     * Constructs a new static simple object with the given parent.
+     * Constructs a new %StaticSimple object with the given \a parent.
      */
     StaticSimple(Application *parent);
+
+    /**
+     * Destroys the %StaticSimple object.
+     */
     virtual ~StaticSimple() override;
 
     /**
@@ -94,18 +98,18 @@ public:
      * are not found, a 404 status will be returned.
      *
      * If setServeDirsOnly() is set to @c false (the default), the plugin will still try to serve
-     * files as static if they end with something that looks like a file extension. Set
-     * setServeDirsOnly() to @c true to only serve files as static that start with paths defined
-     * here. If you would than request a file like @c/some/where/else/script@c.js it would
-     * not be tried to be found in the included directories and the dispatcher would try to
-     * find a fitting controller method for it.
+     * files as static if they end with something that looks like a file extension, no matter if
+     * their request path starts with of of the @c dirs. Set setServeDirsOnly() to @c true to only
+     * serve files as static that start with paths defined here. If you would than request a file
+     * like @c/some/where/else/script@c.js it would not be tried to be found in the included
+     * directories and the dispatcher would try to find a fitting controller method for it.
      *
      * @sa setServeDirsOnly()
      */
     void setDirs(const QStringList &dirs);
 
     /**
-     * Set this to @c true to only server static files where their path begins with one
+     * Set this to @c true to only serve static files where their path begins with one
      * of the directories set by setDirs(). The default value is @c false.
      *
      * @sa setDirs()
