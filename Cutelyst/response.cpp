@@ -241,7 +241,7 @@ void Response::redirect(const QUrl &url, quint16 status)
         setBody(buf);
     } else {
         d->headers.removeHeader("Location"_qba);
-        qCDebug(CUTELYST_ENGINE) << "Invalid redirect removing header" << url << status;
+        qCDebug(CUTELYST_RESPONSE) << "Invalid redirect removing header" << url << status;
     }
 }
 
