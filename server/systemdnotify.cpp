@@ -20,7 +20,7 @@
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
 
-Q_LOGGING_CATEGORY(C_SYSTEMD, "cutelyst.systemd", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_SYSTEMD, "cutelyst.server.systemd", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -45,7 +45,7 @@ systemdNotify::systemdNotify(QObject *parent)
 
     d->notification_fd = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (d->notification_fd < 0) {
-        qCWarning(C_SYSTEMD, "socket()");
+        qCWarning(C_SERVER_SYSTEMD, "socket()");
         return;
     }
 
@@ -108,8 +108,8 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
                     sendWatchdog(QByteArrayLiteral("1"));
                 });
                 d->watchdog->start();
-                qCInfo(C_SYSTEMD) << "watchdog enabled" << d->watchdog_usec
-                                  << d->watchdog->interval();
+                qCInfo(C_SERVER_SYSTEMD)
+                    << "watchdog enabled" << d->watchdog_usec << d->watchdog->interval();
             }
             return true;
         } else {
@@ -142,7 +142,7 @@ void systemdNotify::sendStatus(const QByteArray &data)
     msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(C_SYSTEMD, "sendStatus()");
+        qCWarning(C_SERVER_SYSTEMD, "sendStatus()");
     }
 }
 
@@ -166,7 +166,7 @@ void systemdNotify::sendWatchdog(const QByteArray &data)
     msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(C_SYSTEMD, "sendWatchdog()");
+        qCWarning(C_SERVER_SYSTEMD, "sendWatchdog()");
     }
 }
 
@@ -190,7 +190,7 @@ void systemdNotify::sendReady(const QByteArray &data)
     msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(C_SYSTEMD, "sendReady()");
+        qCWarning(C_SERVER_SYSTEMD, "sendReady()");
     }
 }
 
@@ -276,7 +276,7 @@ int sd_listen_fds()
         return -EINVAL;
     }
 
-    qCInfo(C_SYSTEMD, "systemd socket activation detected");
+    qCInfo(C_SERVER_SYSTEMD, "systemd socket activation detected");
 
     int r = 0;
     for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + n; fd++) {

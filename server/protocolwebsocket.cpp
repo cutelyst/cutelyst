@@ -20,7 +20,7 @@
 #    include <QStringConverter>
 #endif
 
-Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_WS, "cutelyst.server.websocket", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -108,7 +108,7 @@ void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
         quint32 maxlen = qMin(request->websocket_need, static_cast<quint32>(m_postBufferSize));
         qint64 len     = io->read(m_postBuffer, maxlen);
         if (len == -1) {
-            qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
+            qCWarning(C_SERVER_WS) << "Failed to read from socket" << io->errorString();
             sock->connectionClose();
             return;
         }
@@ -366,15 +366,15 @@ bool ProtocolWebSocket::websocket_parse_size(Socket *sock,
     } else if (protoRequest->websocket_payload_size == 127) {
         size = net_be64(buf);
     } else {
-        qCCritical(CWSGI_WS) << "BUG error in websocket parser:"
-                             << protoRequest->websocket_payload_size;
+        qCCritical(C_SERVER_WS) << "BUG error in websocket parser:"
+                                << protoRequest->websocket_payload_size;
         sock->connectionClose();
         return false;
     }
 
     if (size > static_cast<quint64>(websockets_max_message_size)) {
-        qCCritical(CWSGI_WS) << "Payload size too big" << size << "max allowed"
-                             << websockets_max_message_size;
+        qCCritical(C_SERVER_WS) << "Payload size too big" << size << "max allowed"
+                                << websockets_max_message_size;
         sock->connectionClose();
         return false;
     }
@@ -438,8 +438,8 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock,
             send_binary(protoRequest->context, sock, false);
             break;
         default:
-            qCCritical(CWSGI_WS) << "Invalid CONTINUE opcode:"
-                                 << (protoRequest->websocket_finn_opcode & 0xf);
+            qCCritical(C_SERVER_WS)
+                << "Invalid CONTINUE opcode:" << (protoRequest->websocket_finn_opcode & 0xf);
             sock->connectionClose();
             return false;
         }

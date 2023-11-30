@@ -14,7 +14,7 @@
 #include <QFile>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CUTELYST_SM, "cutelyst.server.staticmap", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_SM, "cutelyst.server.staticmap", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -37,7 +37,7 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
         mp.prepend(u'/');
     }
 
-    qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
+    qCInfo(C_SERVER_SM) << "added mapping for" << mp << "=>" << path;
 
     m_staticMaps.push_back({mp, path, append});
     std::sort(m_staticMaps.begin(),
@@ -94,7 +94,7 @@ bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
 
     auto file = new QFile(filename);
     if (file->open(QFile::ReadOnly)) {
-        qCDebug(CUTELYST_SM) << "Serving" << filename;
+        qCDebug(C_SERVER_SM) << "Serving" << filename;
         Headers &headers = res->headers();
 
         // set our open file
@@ -114,7 +114,7 @@ bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
         return true;
     }
 
-    qCWarning(CUTELYST_SM) << "Could not serve" << filename << file->errorString();
+    qCWarning(C_SERVER_SM) << "Could not serve" << filename << file->errorString();
     delete file;
     return false;
 }

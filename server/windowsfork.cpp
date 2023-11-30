@@ -10,7 +10,7 @@
 #include <QLoggingCategory>
 #include <QTimer>
 
-Q_LOGGING_CATEGORY(WSGI_WIN, "wsgi.win", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_WIN, "cutelyst.server.windows", QtWarningMsg)
 
 WindowsFork::WindowsFork(QObject *parent)
     : AbstractFork(parent)
@@ -90,7 +90,7 @@ void WindowsFork::startChild()
 
 void WindowsFork::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    qCDebug(WSGI_WIN) << "Master child finished" << exitCode << exitStatus;
+    qCDebug(C_SERVER_WIN) << "Master child finished" << exitCode << exitStatus;
     if (m_materChildRestartTimer || exitStatus == QProcess::CrashExit) {
         startChild();
     } else {

@@ -8,7 +8,7 @@
 
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CWSGI_SOCK, "cwsgi.socket", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SERVER_SOCK, "cutelyst.server.socket", QtWarningMsg)
 
 using namespace Cutelyst;
 
