@@ -18,7 +18,7 @@
 #include <QTranslator>
 #include <QtCore/QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CUTELYST_CUTELEE, "cutelyst.cutelee", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_CUTELEE, "cutelyst.view.cutelee", QtWarningMsg)
 
 using namespace Cutelyst;
 

@@ -123,7 +123,7 @@ class CuteleeViewPrivate;
  * }
  * @endcode
  *
- * @logcat{cutelee}
+ * @logcat{view.cutelee}
  */
 class CUTELYST_VIEW_CUTELEE_EXPORT CuteleeView final : public View
 {
