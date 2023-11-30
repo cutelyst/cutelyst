@@ -5,7 +5,7 @@ namespace Cutelyst {
 There are different ways to serve static files like JavaScript and CSS. The easiest way is
 to simply register StaticSimple or StaticCompressed plugin in your reimplementation of
 Application::init(). Other ways are to use the static maps of %Cutelyst Server or to use a
-web server like Apache in front of your Cutelyst %Server that also serves your static files
+web server like Apache in front of your %Cutelyst server that also serves your static files
 directly without using %Cutelyst.
 
 \section servestatic-plugins Use a plugin to serve static files
@@ -37,6 +37,9 @@ like a file extension like <tt>/assets/css/style.css</tt>. From the example abov
 would try to find <tt>style.css</tt> at <tt>/path/to/my/include/files/assets/css/style.css</tt>
 when your request path is <tt>/assets/css/style.css</tt>.
 
+Using one of these plugins is also the easiest way to provide methods for your users/customers
+to override static files by adding multiple paths for static files.
+
 See the documentation of StaticSimple and StaticCompressed to learn more about these plugins.
 
 \section servestatic-cutelystserver Use the Cutelyst server to serve static files
@@ -58,7 +61,7 @@ path and will try to find the file.
 
 If you set the following <tt>static-map</tt> for example:
 <tt>\--static-map /assets=/path/to/static/assets</tt>. If you than request a file like
-<tt>http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
+<tt>%http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
 for mountpoint \a /assets, that is available. It will than remove the mountpoint from the request
 path \a /assets/js/script.js and will append the rest to the local path. It will than try to find
 the requested file at <tt>/path/to/static/assets/js/scripts.js</tt>.
@@ -70,9 +73,10 @@ request path including the mount point to the local path and will try to find th
 
 If you set the following<tt>static-map2</tt> for example:
 <tt>\--static-map2 /assets=/path/to/static</tt>. If you than request a file like
-<tt>http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
+<tt>%http://localhost:3000/assets/js/script.js</tt>, %Cutelyst %Server will try the static map
 for mountpoint \a /assets, that is available. It will than append the complete request path to
-the local path will try to find the requested file at <tt>/path/to/static/assets/js/script.js</tt>.
+the local path and will try to find the requested file at
+<tt>/path/to/static/assets/js/script.js</tt>.
 
 \subsection servestatc-cutelystserver-statmapcomp static-map vs. static-map2 overview
 Static map comparison with /assets=/path/to/static and a request to /assets/css/style.css.
@@ -103,5 +107,39 @@ Static map comparison with /assets=/path/to/static and a request to /assets/css/
         <td>/path/to/static/assets/css/style.css</td>
     </tr>
 </table>
- */
+
+\section servestatic-webserver Use a web server to serve static files
+If you already use a web server like Apache or nginx in front of your %Cutelyst application, you
+can also use that to directly serve your static files.
+\subsection servestatic-webserver-apache Apache
+If using the <a href="https://httpd.apache.org/">Apache HTTP server</a> in front of your %Cutelyst
+application with
+<a href="https://httpd.apache.org/docs/2.4/mod/mod_proxy.html">mod_proxy</a>,
+you can for example use
+<a href="https://httpd.apache.org/docs/2.4/mod/mod_alias.html">mod_alias</a> to serve your static
+files omitting %Cutelyst. In the following example we will use a FastCGI proxy.
+\code{.conf}
+# myvhost.conf
+<VirtualHost *:80>
+    ServerName example.org:80
+
+    # set the proxy type
+    ProxyFCGIBackendType GENERIC
+
+    # connect to your Cutelyst app via FastCGI
+    ProxyPass / unix:/path/to/cutelyst/app.socket|fcgi://myapp/
+
+    # create an alias for your assets
+    Alias /assets /path/to/my/application/assets
+    # configure the location and disable the FastCGI proxy for it
+    <Location /assets>
+        ProxyPass !
+        Require all granted
+    </Location>
+</VirtualHost>
+\endcode
+If you now request \c %http://example.org/assets/css/style.css, the Apache server will not try to
+answer the request by giving it via FastCGI to the %Cutelyst application but will try to find
+the requested file at \c /path/to/my/application/assets/css/style.css.
+*/
 }
