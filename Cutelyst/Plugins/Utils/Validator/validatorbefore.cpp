@@ -9,8 +9,6 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before", QtWarningMsg)
-
 ValidatorBefore::ValidatorBefore(const QString &field,
                                  const QVariant &comparison,
                                  const QString &timeZone,
