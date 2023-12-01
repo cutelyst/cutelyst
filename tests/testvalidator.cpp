@@ -883,7 +883,26 @@ public:
     C_ATTR(json, :Local :AutoArgs)
     void json(Context *c)
     {
-        Validator v({new ValidatorJson(QStringLiteral("field"), m_validatorMessages)});
+        Validator v({new ValidatorJson(
+            QStringLiteral("field"), ValidatorJson::ExpectedType::All, m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorJson with object expected ******
+    C_ATTR(jsonObject, :Local :AutoArgs)
+    void jsonObject(Context *c)
+    {
+        Validator v({new ValidatorJson(
+            QStringLiteral("field"), ValidatorJson::ExpectedType::Object, m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorJson with array expected ******
+    C_ATTR(jsonArray, :Local :AutoArgs)
+    void jsonArray(Context *c)
+    {
+        Validator v({new ValidatorJson(
+            QStringLiteral("field"), ValidatorJson::ExpectedType::Array, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -3280,6 +3299,38 @@ void TestValidator::testValidatorJson_data()
             "\"Kinder\":[],\"Partner\":null}}"));
     QTest::newRow("invalid") << QStringLiteral("/json")
                              << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(
+        QStringLiteral("field"),
+        QStringLiteral("{\"Herausgeber\":\"Xema\",\"Nummer\":\"1234-5678-9012-3456\",\"Deckung\":"
+                       "2e%2B6,\"Waehrung\":\"EURO\",\"Inhaber\":{\"Name\":\"Mustermann\","
+                       "\"Vorname\":\"Max\",\"maennlich\":true,\"Hobbys\":[\"Reiten\",\"Golfen\","
+                       "\"Lesen\"],\"Alter\":42,\"Kinder\":[],\"Partner\":null}}"));
+    QTest::newRow("valid-object") << QStringLiteral("/jsonObject")
+                                  << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"),
+                       QStringLiteral("[\"value1\", \"value2\", \"value3\"]"));
+    QTest::newRow("invalid-object") << QStringLiteral("/jsonObject")
+                                    << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"),
+                       QStringLiteral("[\"value1\", \"value2\", \"value3\"]"));
+    QTest::newRow("valid-array") << QStringLiteral("/jsonArray")
+                                 << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(
+        QStringLiteral("field"),
+        QStringLiteral("{\"Herausgeber\":\"Xema\",\"Nummer\":\"1234-5678-9012-3456\",\"Deckung\":"
+                       "2e%2B6,\"Waehrung\":\"EURO\",\"Inhaber\":{\"Name\":\"Mustermann\","
+                       "\"Vorname\":\"Max\",\"maennlich\":true,\"Hobbys\":[\"Reiten\",\"Golfen\","
+                       "\"Lesen\"],\"Alter\":42,\"Kinder\":[],\"Partner\":null}}"));
+    QTest::newRow("invalid-array")
+        << QStringLiteral("/jsonArray") << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 }
 
 void TestValidator::testValidatorMax_data()

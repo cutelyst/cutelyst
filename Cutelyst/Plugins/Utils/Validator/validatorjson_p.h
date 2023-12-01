@@ -13,10 +13,16 @@ namespace Cutelyst {
 class ValidatorJsonPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorJsonPrivate(const QString &f, const ValidatorMessages &m, const QString &dvk)
+    ValidatorJsonPrivate(const QString &f,
+                         ValidatorJson::ExpectedType expType,
+                         const ValidatorMessages &m,
+                         const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk, "ValidatorJson")
+        , expectedType(expType)
     {
     }
+
+    ValidatorJson::ExpectedType expectedType{ValidatorJson::ExpectedType::All};
 };
 
 } // namespace Cutelyst
