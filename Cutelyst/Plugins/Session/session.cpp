@@ -4,6 +4,7 @@
  */
 #include "session_p.h"
 #include "sessionstorefile.h"
+#include "utils.h"
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Context>
@@ -54,8 +55,10 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName().toLatin1() + "_session";
 
-    d->loadedConfig    = app->engine()->config(u"Cutelyst_Session_Plugin"_qs);
-    d->sessionExpires  = d->config(u"expires"_qs, 7200).toLongLong();
+    d->loadedConfig   = app->engine()->config(u"Cutelyst_Session_Plugin"_qs);
+    d->sessionExpires = std::chrono::duration_cast<std::chrono::seconds>(
+                            Utils::durationFromString(d->config(u"expires"_qs, 7200).toString()))
+                            .count();
     d->expiryThreshold = d->config(u"expiry_threshold"_qs, 0).toLongLong();
     d->verifyAddress   = d->config(u"verify_address"_qs, false).toBool();
     d->verifyUserAgent = d->config(u"verify_user_agent"_qs, false).toBool();
