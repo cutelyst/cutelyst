@@ -1442,5 +1442,23 @@ than they are displayed.</oldsource>
         <source>Unclosed quoted string in the address in the “%1” field. (Missing double quotation mark)</source>
         <translation>Nicht abgeschlossene Zeichenkette in der Adresse im Feld „%1“. (Fehlende doppelte Anführungsstriche)</translation>
     </message>
+    <message id="cutelyst-valjson-genvalerr-exparray">
+        <source>Not a JSON array.</source>
+        <translation>Kein JSON-Array.</translation>
+    </message>
+    <message id="cutelyst-valjson-genvalerr-exparray-label">
+        <source>The data entered in the “%1” field is not a JSON array.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation>Die Daten im Feld „%1“ ergeben kein JSON‐Array.</translation>
+    </message>
+    <message id="cutelyst-valjson-genvalerr-expobject">
+        <source>Not a JSON object.</source>
+        <translation>Kein JSON-Objekt.</translation>
+    </message>
+    <message id="cutelyst-valjson-genvalerr-expobject-label">
+        <source>The data entered in the “%1” field is not a JSON object.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation>Die Daten im Feld „%1“ ergeben kein JSON‐Objekt.</translation>
+    </message>
 </context>
 </TS>
