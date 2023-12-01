@@ -72,8 +72,9 @@ protected:
     /**
      * Performs the validation on the input \a params and returns the result.
      *
-     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
-     * value converted into a QJsonDocument.
+     * If validation succeeded, ValidatorReturnType::value will contain a QJsonDocument if
+     * \a expectedType is set to ExpectedType::All, a QJsonArray if \a expectedType is set
+     * to ExpectedType::Array, or a QJsonObject if \a expectedType is set to ExpectedType::Object.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
