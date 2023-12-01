@@ -33,7 +33,7 @@ class MemcachedPrivate;
  * template functions for convenience that perform this serialization. The requirement to use
  * them is that the types to store and get provide stream operators for QDataStream.
  *
- * <H3>Configuration</h3>
+ * <H3 id="configfile">Configuration</h3>
  *
  * The %Memcached plugin can be configured in the
  * \ref configuration "application configuration file" in the @c Cutelyst_Memcached_Plugin
@@ -43,7 +43,7 @@ class MemcachedPrivate;
  * but in lowercase and without the dashes in front and for consistence <tt>'-'</tt> replaced by
  * <tt>'_'</tt>. So @c --BINARY-PROTOCOL will be @c binary_protocol. To add servers and/or sockets
  * use the @c servers configuration key. Servers can be added with name, port and weight, separated
- * by <tt>','</tt> - multiple servers are separated by a <tt>';'</tt> . To add sockets, use a full
+ * by <tt>','</tt> - multiple servers are separated by a <tt>';'</tt>. To add sockets, use a full
  * path as name. If no configuration has been set or if the @a servers configuration key is empty,
  * a default server at localhost on port 11211 will be used.
  *
@@ -81,9 +81,10 @@ class MemcachedPrivate;
  *
  * @note If you want to use non-ASCII key names, you have to enable the binary protocol.
  *
- * To set default values directly in your application, use setDefaultConfig(). Configuration values
- * that can not be found in the @ref configuration "application configuration file" will be looked
- * up for default values in that QVariantMap.
+ * To set default values directly in your application, use setDefaultConfig() or the overloaded
+ * constructor taking default values. Configuration values that can not be found in the
+ * @ref configuration "application configuration file" will be looked up for default values in
+ * that QVariantMap.
  *
  * <H4>Configuration example</h4>
  *
@@ -175,6 +176,16 @@ public:
     Memcached(Application *parent);
 
     /**
+     * Contructs a new %Memcached object with the given @a parent and @a defaultConfig.
+     *
+     * Use the @a defaultConfig to set default values for the configuration entries from
+     * the <A HREF="#configfile">configuration file</A>.
+     *
+     * @since %Cutelyst 4.0.0
+     */
+    Memcached(Application *parent, const QVariantMap &defaultConfig);
+
+    /**
      * Deconstructs the %Memcached object.
      */
     ~Memcached() override;
@@ -245,8 +256,6 @@ public:
     /**
      * Sets default configuration values for configuration keys that are not set in
      * the %Cutelyst configuratoin file.
-     *
-     * @todo Add constructor overload that takes default config.
      */
     void setDefaultConfig(const QVariantMap &defaultConfig);
 
