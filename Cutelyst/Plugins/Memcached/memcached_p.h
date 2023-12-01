@@ -13,6 +13,7 @@
 #include <QFlags>
 #include <QMap>
 #include <QString>
+#include <QVariant>
 
 namespace Cutelyst {
 
@@ -21,6 +22,11 @@ class MemcachedPrivate
     Q_DISABLE_COPY(MemcachedPrivate)
 public:
     MemcachedPrivate() = default;
+
+    MemcachedPrivate(const QVariantMap &defConf)
+        : defaultConfig(defConf)
+    {
+    }
 
     ~MemcachedPrivate()
     {
@@ -45,6 +51,8 @@ public:
     static QByteArray compressIfNeeded(const QByteArray &value, Flags &flags);
     static QByteArray uncompressIfNeeded(const QByteArray &value, memcached_result_st *result);
 
+    QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
+
     static constexpr uint16_t defaultPort{11211};
     static constexpr int defaultCompressionThreshold{100};
 
@@ -56,6 +64,7 @@ public:
     int compressionLevel     = -1;
     bool saslEnabled         = false;
 
+    QVariantMap loadedConfig;
     QVariantMap defaultConfig;
 };
 

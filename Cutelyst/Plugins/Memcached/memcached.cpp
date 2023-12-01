@@ -28,6 +28,12 @@ Memcached::Memcached(Application *parent)
 {
 }
 
+Memcached::Memcached(Application *parent, const QVariantMap &defaultConfig)
+    : Plugin(parent)
+    , d_ptr(new MemcachedPrivate(defaultConfig))
+{
+}
+
 Memcached::~Memcached() = default;
 
 void Memcached::setDefaultConfig(const QVariantMap &defaultConfig)
@@ -40,14 +46,13 @@ bool Memcached::setup(Application *app)
 {
     Q_D(Memcached);
 
-    const QVariantMap map = app->engine()->config(u"Cutelyst_Memcached_Plugin"_qs);
-    QStringList config;
+    d->loadedConfig = app->engine()->config(u"Cutelyst_Memcached_Plugin"_qs);
+    QStringList memcConfig;
 
-    const QStringList serverList =
-        map.value(u"servers"_qs, d->defaultConfig.value(u"servers"_qs)).toString().split(u';');
+    const QStringList serverList = d->config(u"servers"_qs).toString().split(u';');
 
     if (serverList.empty()) {
-        config.push_back(u"--SERVER=localhost"_qs);
+        memcConfig.push_back(u"--SERVER=localhost"_qs);
     }
 
     for (const QString &flag : {u"verify_key"_qs,
@@ -62,14 +67,13 @@ bool Memcached::setup(Application *app)
                                 u"use_udp"_qs,
                                 u"tcp_nodelay"_qs,
                                 u"tcp_keepalive"_qs}) {
-        if (map.value(flag, d->defaultConfig.value(flag, false)).toBool()) {
+        if (d->config(flag, false).toBool()) {
             const QString flagStr = u"--" + flag.toUpper().replace(u'_', u'-');
-            config.push_back(flagStr);
+            memcConfig.push_back(flagStr);
         }
     }
 
-    const bool useUDP =
-        map.value(u"use_udp"_qs, d->defaultConfig.value(u"use_udp"_qs, false)).toBool();
+    const bool useUDP = d->config(u"use_udp"_qs, false).toBool();
 
     for (const QString &opt : {
              u"connect_timeout"_qs,
@@ -88,14 +92,14 @@ bool Memcached::setup(Application *app)
              u"io_msg_watermark"_qs,
              u"rcv_timeout"_qs,
          }) {
-        const QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
+        const QString _val = d->config(opt).toString();
         if (!_val.isEmpty()) {
             const QString optStr = u"--" + opt.toUpper().replace(u'_', u'-') + u'=' + _val;
-            config.push_back(optStr); // clazy:exclude=reserve-candidates
+            memcConfig.push_back(optStr); // clazy:exclude=reserve-candidates
         }
     }
 
-    const QByteArray configString = config.join(u' ').toUtf8();
+    const QByteArray configString = memcConfig.join(u' ').toUtf8();
 
     bool ok = false;
 
@@ -189,15 +193,10 @@ bool Memcached::setup(Application *app)
             }
         }
 
-        d->compression =
-            map.value(u"compression"_qs, d->defaultConfig.value(u"compression"_qs, false)).toBool();
-        d->compressionLevel =
-            map.value(u"compression_level"_qs, d->defaultConfig.value(u"compression_level"_qs, -1))
-                .toInt();
+        d->compression      = d->config(u"compression"_qs, false).toBool();
+        d->compressionLevel = d->config(u"compression_level"_qs, -1).toInt();
         d->compressionThreshold =
-            map.value(u"compression_threshold"_qs,
-                      d->defaultConfig.value(u"compression_threshold"_qs,
-                                             MemcachedPrivate::defaultCompressionThreshold))
+            d->config(u"compression_threshold"_qs, MemcachedPrivate::defaultCompressionThreshold)
                 .toInt();
         if (d->compression) {
             qCInfo(C_MEMCACHED).nospace()
@@ -207,7 +206,7 @@ bool Memcached::setup(Application *app)
             qCInfo(C_MEMCACHED) << "Compression: disabled";
         }
 
-        const QString encKey = map.value(u"encryption_key"_qs).toString();
+        const QString encKey = d->config(u"encryption_key"_qs).toString();
         if (!encKey.isEmpty()) {
             const QByteArray encKeyBa = encKey.toUtf8();
             const memcached_return_t rt =
@@ -224,8 +223,8 @@ bool Memcached::setup(Application *app)
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
 #    if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
-        const QString saslUser = map.value(u"sasl_user"_qs).toString();
-        const QString saslPass = map.value(u"sasl_password"_qs).toString();
+        const QString saslUser = d->config(u"sasl_user"_qs).toString();
+        const QString saslPass = d->config(u"sasl_password"_qs).toString();
         if (!saslUser.isEmpty() && !saslPass.isEmpty()) {
             const memcached_return_t rt = memcached_set_sasl_auth_data(
                 new_memc, saslUser.toUtf8().constData(), saslPass.toUtf8().constData());
@@ -1435,7 +1434,7 @@ QByteArray MemcachedPrivate::compressIfNeeded(const QByteArray &value, Flags &fl
 
 /**
  * @internal
- * Reads the stored falgs from @a result and uncompresses the @a value if needed
+ * Reads the stored flags from @a result and uncompresses the @a value if needed
  * with @link QByteArray::qUncompress() qUncompress()@endlink and returns it.
  */
 QByteArray MemcachedPrivate::uncompressIfNeeded(const QByteArray &value,
@@ -1447,6 +1446,18 @@ QByteArray MemcachedPrivate::uncompressIfNeeded(const QByteArray &value,
     } else {
         return value;
     }
+}
+
+/**
+ * @internal
+ * Returns the value stored for @a key from the configuration. First tries to read the
+ * value from the configuration loaded from the config file. If there is no such @a key it
+ * tries to find it in the default configuration. If the @a key is not available there, too,
+ * it will return the @a defaultValue.
+ */
+QVariant MemcachedPrivate::config(const QString &key, const QVariant &defaultValue) const
+{
+    return loadedConfig.value(key, defaultConfig.value(key, defaultValue));
 }
 
 #include "moc_memcached.cpp"
