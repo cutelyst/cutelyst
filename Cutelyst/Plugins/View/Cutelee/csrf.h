@@ -31,6 +31,25 @@ private:
     mutable QString m_cutelystContext = QStringLiteral("c");
 };
 
+class CSRFTokenTag final : public Cutelee::AbstractNodeFactory
+{
+    Q_OBJECT
+public:
+    Cutelee::Node *getNode(const QString &tagContent, Cutelee::Parser *p) const override;
+};
+
+class CSRFToken final : public Cutelee::Node
+{
+    Q_OBJECT
+public:
+    explicit CSRFToken(Cutelee::Parser *parser = nullptr);
+
+    void render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const override;
+
+private:
+    mutable QString m_cutelystContext = QStringLiteral("c");
+};
+
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif // CSRF_H

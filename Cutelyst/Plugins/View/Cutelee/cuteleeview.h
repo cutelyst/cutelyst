@@ -61,6 +61,15 @@ class CuteleeViewPrivate;
  * <tt>{% c_csrf_token %}</tt>
  * \endparblock
  *
+ * \par c_csrf_token_value
+ * \parblock
+ * This tag writes the current CSRF token as returned by CSRFProtection::getToken(). This can
+ * be useful if you only need the token value instead of a complete form field to use it for
+ * example in a meta tag for access with JavaScript.
+ *
+ * <tt>{% c_csrf_token_value %}</tt>
+ * \endparblock
+ *
  * <h3>Usage example</h3>
  * Initialize the view in your reimplementation of Application::init():
  * @code{.cpp}
