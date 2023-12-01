@@ -101,7 +101,7 @@ class MemcachedPrivate;
  *
  * <H3>Logging and return types</H3>
  * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All
- * methods provide the possibility to specify a pointer to a MemcachedReturnType variable that can
+ * methods provide the possibility to specify a pointer to a Memcached::ReturnType variable that can
  * provide further information about occurred errors if methods return @c false or empty results.
  *
  * @sa @ref logging
@@ -181,9 +181,8 @@ public:
 
     /**
      * Return types for memcached operations.
-     * @todo Make it an enum class.
      */
-    enum MemcachedReturnType {
+    enum class ReturnType {
         Success,            /**< The request was successfully executed. */
         Failure,            /**< An unknown failure has occurred in the server. */
         HostLookupFailure,  /**< A DNS failure has occurred. */
@@ -241,7 +240,7 @@ public:
         PluginNotRegisterd /**< The %Cutelyst %Memcached plugin has not been registered to the
                               application. */
     };
-    Q_ENUM(MemcachedReturnType)
+    Q_ENUM(Memcached::ReturnType)
 
     /**
      * Sets default configuration values for configuration keys that are not set in
@@ -259,14 +258,14 @@ public:
      * @param[in] key key of object whose value to set
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool set(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -275,7 +274,7 @@ public:
     inline static bool set(QByteArrayView key,
                            const QByteArray &value,
                            std::chrono::seconds expiration,
-                           MemcachedReturnType *returnType = nullptr);
+                           ReturnType *returnType = nullptr);
 
     /**
      * Writes the @a value of type @a T to the memcached server using @a key. If
@@ -287,7 +286,7 @@ public:
      * @param[in] key key of object whose value to set
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -295,7 +294,7 @@ public:
     static bool set(QByteArrayView key,
                     const T &value,
                     time_t expiration,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -305,7 +304,7 @@ public:
     static bool set(QByteArrayView key,
                     const T &value,
                     std::chrono::seconds expiration,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * Writes the @a value to the memcached server using @a key. If the @a key already
@@ -319,7 +318,7 @@ public:
      * @param[in] key key of object whose value to set
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -327,7 +326,7 @@ public:
                          QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -337,7 +336,7 @@ public:
                                 QByteArrayView key,
                                 const QByteArray &value,
                                 std::chrono::seconds expiration,
-                                MemcachedReturnType *returnType = nullptr);
+                                ReturnType *returnType = nullptr);
 
     /**
      * Writes the @a value of type @a T to the memcached server using @a key. If the @a key
@@ -352,7 +351,7 @@ public:
      * @param[in] key key of object whose value to set
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -361,7 +360,7 @@ public:
                          QByteArrayView key,
                          const T &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -372,7 +371,7 @@ public:
                          QByteArrayView key,
                          const T &value,
                          std::chrono::seconds expiration,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * Adds the @a value to the memcached server using @a key. If the object is found on the server
@@ -385,14 +384,14 @@ public:
      * @param[in] key key of object whose value to add
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool add(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -401,7 +400,7 @@ public:
     inline static bool add(QByteArrayView key,
                            const QByteArray &value,
                            std::chrono::seconds expiration,
-                           MemcachedReturnType *returnType = nullptr);
+                           ReturnType *returnType = nullptr);
 
     /**
      * Adds the @a value of type @a T to the memcached server using @a key. If the object is found
@@ -417,7 +416,7 @@ public:
      * @param[in] key key of object whose value to add
      * @param[in] value value of type @a T of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to MemcachedReturnType variable that takes the return
+     * @param[out] returnType optional pointer to ReturnType variable that takes the return
      *             type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -425,7 +424,7 @@ public:
     static bool add(QByteArrayView key,
                     const T &value,
                     time_t expiration,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -435,7 +434,7 @@ public:
     static bool add(QByteArrayView key,
                     const T &value,
                     std::chrono::seconds expiration,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * Adds the @a value to the memcached server using @a key. If the object is found on the server
@@ -452,7 +451,7 @@ public:
      * @param[in] key key of object whose value to add
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -460,7 +459,7 @@ public:
                          QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -470,7 +469,7 @@ public:
                                 QByteArrayView key,
                                 const QByteArray &value,
                                 std::chrono::seconds expiration,
-                                MemcachedReturnType *returnType = nullptr);
+                                ReturnType *returnType = nullptr);
 
     /**
      * Adds the @a value of type @a T to the memcached server using @a key. If the object is found
@@ -489,7 +488,7 @@ public:
      * @param[in] key key of object whose value to add
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -498,7 +497,7 @@ public:
                          QByteArrayView key,
                          const T &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -509,7 +508,7 @@ public:
                          QByteArrayView key,
                          const T &value,
                          std::chrono::seconds expiration,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of @a key on the server with @a value. If the @a key ist not found on the
@@ -522,14 +521,14 @@ public:
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      *             return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool replace(QByteArrayView key,
                         const QByteArray &value,
                         time_t expiration,
-                        MemcachedReturnType *returnType = nullptr);
+                        ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -538,7 +537,7 @@ public:
     inline static bool replace(QByteArrayView key,
                                const QByteArray &value,
                                std::chrono::seconds expiration,
-                               MemcachedReturnType *returnType = nullptr);
+                               ReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of @a key on the server with @a value of type @a T. If the @a key ist not
@@ -553,7 +552,7 @@ public:
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -561,7 +560,7 @@ public:
     static bool replace(QByteArrayView key,
                         const T &value,
                         time_t expiration,
-                        MemcachedReturnType *returnType = nullptr);
+                        ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -571,7 +570,7 @@ public:
     static bool replace(QByteArrayView key,
                         const T &value,
                         std::chrono::seconds expiration,
-                        MemcachedReturnType *returnType = nullptr);
+                        ReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of @a key on the server with @a value. If the @a key ist not found on the
@@ -588,7 +587,7 @@ public:
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -596,7 +595,7 @@ public:
                              QByteArrayView key,
                              const QByteArray &value,
                              time_t expiration,
-                             MemcachedReturnType *returnType = nullptr);
+                             ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -606,7 +605,7 @@ public:
                                     QByteArrayView key,
                                     const QByteArray &value,
                                     std::chrono::seconds expiration,
-                                    MemcachedReturnType *returnType = nullptr);
+                                    ReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of @a key on the server with @a value of Type @a T. If the @a key ist not
@@ -625,7 +624,7 @@ public:
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -634,7 +633,7 @@ public:
                              QByteArrayView key,
                              const T &value,
                              time_t expiration,
-                             MemcachedReturnType *returnType = nullptr);
+                             ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -645,7 +644,7 @@ public:
                              QByteArrayView key,
                              const T &value,
                              std::chrono::seconds expiration,
-                             MemcachedReturnType *returnType = nullptr);
+                             ReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned QByteArray will
@@ -659,13 +658,13 @@ public:
      *
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return QByteArray containing the data fetched from the server; if an error occurred or the
      * @a key has not been found, this will be @c null.
      */
     static QByteArray
-        get(QByteArrayView key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+        get(QByteArrayView key, uint64_t *cas = nullptr, ReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value of type @a T from the server identified by @a key. The returned
@@ -692,14 +691,13 @@ public:
      *
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return type T containing the data fetched from the server; if an error occurred or the @a
      * key has not been found, this will be a default constructed value
      */
     template <typename T>
-    static T
-        get(QByteArrayView key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+    static T get(QByteArrayView key, uint64_t *cas = nullptr, ReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned QByteArray will
@@ -716,15 +714,15 @@ public:
      * @param[in] groupKey key that specifies the server to fetch from
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return QByteArray containing the data fetched from the server; if an error occurred or the
      * @a key has not been found, this will be @c null.
      */
     static QByteArray getByKey(QByteArrayView groupKey,
                                QByteArrayView key,
-                               uint64_t *cas                   = nullptr,
-                               MemcachedReturnType *returnType = nullptr);
+                               uint64_t *cas          = nullptr,
+                               ReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned type @a T will
@@ -756,7 +754,7 @@ public:
      * @param[in] groupKey key that specifies the server to fetch from
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return type T containing the data fetched from the server; if an error occurred or the @a
      * key has not been found, this will be a default constructed value
@@ -764,18 +762,18 @@ public:
     template <typename T>
     static T getByKey(QByteArrayView groupKey,
                       QByteArrayView key,
-                      uint64_t *cas                   = nullptr,
-                      MemcachedReturnType *returnType = nullptr);
+                      uint64_t *cas          = nullptr,
+                      ReturnType *returnType = nullptr);
 
     /**
      * Directly deletes a particular @a key.
      *
      * @param[in] key key of object to delete
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool remove(QByteArrayView key, MemcachedReturnType *returnType = nullptr);
+    static bool remove(QByteArrayView key, ReturnType *returnType = nullptr);
 
     /**
      * Directly deletes a particular @a key in @a groupKey.
@@ -785,22 +783,21 @@ public:
      *
      * @param[in] groupKey key that specifies the server to delete from
      * @param[in] key key of object to delete
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool removeByKey(QByteArrayView groupKey,
-                            QByteArrayView key,
-                            MemcachedReturnType *returnType = nullptr);
+    static bool
+        removeByKey(QByteArrayView groupKey, QByteArrayView key, ReturnType *returnType = nullptr);
 
     /**
      * Checks if the @a key exists.
      * @param[in] key key to check
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true if the key exists; @c false otherwise
      */
-    static bool exist(QByteArrayView key, MemcachedReturnType *returnType = nullptr);
+    static bool exist(QByteArrayView key, ReturnType *returnType = nullptr);
 
     /**
      * Checks if the @a key exists in @a groupKey. This method behaves in a similar nature as
@@ -809,13 +806,12 @@ public:
      *
      * @param groupKey key that specifies the server to check on
      * @param key key to check
-     * @param returnType optional pointer to a MemcachedReturnType variable that takes the return
+     * @param returnType optional pointer to a ReturnType variable that takes the return
      * type of the operation
      * @return @c true if the key exists; @c false otherwise
      */
-    static bool existByKey(QByteArrayView groupKey,
-                           QByteArrayView key,
-                           MemcachedReturnType *returnType = nullptr);
+    static bool
+        existByKey(QByteArrayView groupKey, QByteArrayView key, ReturnType *returnType = nullptr);
 
     /**
      * Expiration time constant that can be used in the increment/decrement with initial methods.
@@ -844,14 +840,14 @@ public:
      * @param[in] key key to increment
      * @param[in] offset offset for increment
      * @param[out] value optional pointer to a variable that takes the incremented value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool increment(QByteArrayView key,
                           uint32_t offset,
-                          uint64_t *value                 = nullptr,
-                          MemcachedReturnType *returnType = nullptr);
+                          uint64_t *value        = nullptr,
+                          ReturnType *returnType = nullptr);
 
     /**
      * Increments the value of @a key in @a groupKey by @a offset. If there is a valid pointer to @a
@@ -867,15 +863,15 @@ public:
      * @param[in] key key to increment
      * @param[in] offset offset for increment
      * @param[out] value optional pointer to a variable that takes the incremented value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool incrementByKey(QByteArrayView groupKey,
                                QByteArrayView key,
                                uint64_t offset,
-                               uint64_t *value                 = nullptr,
-                               MemcachedReturnType *returnType = nullptr);
+                               uint64_t *value        = nullptr,
+                               ReturnType *returnType = nullptr);
 
     /**
      * Increments the value of @a key by @a offset. If the object specified by @a key does not
@@ -897,7 +893,7 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the incremented or initialized
      * value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -905,8 +901,8 @@ public:
                                      uint64_t offset,
                                      uint64_t initial,
                                      time_t expiration,
-                                     uint64_t *value                 = nullptr,
-                                     MemcachedReturnType *returnType = nullptr);
+                                     uint64_t *value        = nullptr,
+                                     ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -916,8 +912,8 @@ public:
                                             uint64_t offset,
                                             uint64_t initial,
                                             std::chrono::seconds expiration,
-                                            uint64_t *value                 = nullptr,
-                                            MemcachedReturnType *returnType = nullptr);
+                                            uint64_t *value        = nullptr,
+                                            ReturnType *returnType = nullptr);
 
     /**
      * Increments the value of @a key in @a groupKey by @a offset. If the object specified by @a key
@@ -944,7 +940,7 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the incremented or initialized
      * value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -953,8 +949,8 @@ public:
                                           uint64_t offset,
                                           uint64_t initial,
                                           time_t expiration,
-                                          uint64_t *value                 = nullptr,
-                                          MemcachedReturnType *returnType = nullptr);
+                                          uint64_t *value        = nullptr,
+                                          ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -965,8 +961,8 @@ public:
                                                  uint64_t offset,
                                                  uint64_t initial,
                                                  std::chrono::seconds expiration,
-                                                 uint64_t *value                 = nullptr,
-                                                 MemcachedReturnType *returnType = nullptr);
+                                                 uint64_t *value        = nullptr,
+                                                 ReturnType *returnType = nullptr);
 
     /**
      * Decrements the value of @a key by @a offset. If there is a valid pointer to @a value, the
@@ -979,14 +975,14 @@ public:
      * @param[in] key key to decrement
      * @param[in] offset offset for decrement
      * @param[out] value optional pointer to a variable that takes the decremented value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool decrement(QByteArrayView key,
                           uint32_t offset,
-                          uint64_t *value                 = nullptr,
-                          MemcachedReturnType *returnType = nullptr);
+                          uint64_t *value        = nullptr,
+                          ReturnType *returnType = nullptr);
 
     /**
      * Drecrements the value of @a key in @a groupKey by @a offset. If there is a valid pointer to
@@ -1002,15 +998,15 @@ public:
      * @param[in] key key to decrement
      * @param[in] offset offset for decrement
      * @param[out] value optional pointer to a variable that takes the decremented value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool decrementByKey(QByteArrayView groupKey,
                                QByteArrayView key,
                                uint64_t offset,
-                               uint64_t *value                 = nullptr,
-                               MemcachedReturnType *returnType = nullptr);
+                               uint64_t *value        = nullptr,
+                               ReturnType *returnType = nullptr);
 
     /**
      * Decrements the value of @a key by @a offset. If the object specified by @a key does not
@@ -1032,7 +1028,7 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the decremented or initialized
      * value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -1040,8 +1036,8 @@ public:
                                      uint64_t offset,
                                      uint64_t initial,
                                      time_t expiration,
-                                     uint64_t *value                 = nullptr,
-                                     MemcachedReturnType *returnType = nullptr);
+                                     uint64_t *value        = nullptr,
+                                     ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1051,8 +1047,8 @@ public:
                                             uint64_t offset,
                                             uint64_t initial,
                                             std::chrono::seconds expiration,
-                                            uint64_t *value                 = nullptr,
-                                            MemcachedReturnType *returnType = nullptr);
+                                            uint64_t *value        = nullptr,
+                                            ReturnType *returnType = nullptr);
 
     /**
      * Decrements the value of @a key in @a groupKey by @a offset. If the object specified by @a key
@@ -1079,7 +1075,7 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the decremented or initialized
      * value
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -1088,8 +1084,8 @@ public:
                                           uint64_t offset,
                                           uint64_t initial,
                                           time_t expiration,
-                                          uint64_t *value                 = nullptr,
-                                          MemcachedReturnType *returnType = nullptr);
+                                          uint64_t *value        = nullptr,
+                                          ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1100,8 +1096,8 @@ public:
                                                  uint64_t offset,
                                                  uint64_t initial,
                                                  std::chrono::seconds expiration,
-                                                 uint64_t *value                 = nullptr,
-                                                 MemcachedReturnType *returnType = nullptr);
+                                                 uint64_t *value        = nullptr,
+                                                 ReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for @a key in the server as long as the @a cas value is still the same in the
@@ -1111,7 +1107,7 @@ public:
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -1119,7 +1115,7 @@ public:
                     const QByteArray &value,
                     time_t expiration,
                     uint64_t cas,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1129,7 +1125,7 @@ public:
                            const QByteArray &value,
                            std::chrono::seconds expiration,
                            uint64_t cas,
-                           MemcachedReturnType *returnType = nullptr);
+                           ReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for @a key in the server as long as the @a cas value is still the same in the
@@ -1141,7 +1137,7 @@ public:
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -1150,7 +1146,7 @@ public:
                     const T &value,
                     time_t expiration,
                     uint64_t cas,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1161,7 +1157,7 @@ public:
                     const T &value,
                     std::chrono::seconds expiration,
                     uint64_t cas,
-                    MemcachedReturnType *returnType = nullptr);
+                    ReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for @a key in @a groupKey in the server as long as the @a cas value is still
@@ -1177,7 +1173,7 @@ public:
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -1186,7 +1182,7 @@ public:
                          const QByteArray &value,
                          time_t expiration,
                          uint64_t cas,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1197,7 +1193,7 @@ public:
                                 const QByteArray &value,
                                 std::chrono::seconds expiration,
                                 uint64_t cas,
-                                MemcachedReturnType *returnType = nullptr);
+                                ReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for @a key in @a groupKey in the server as long as the @a cas value is still
@@ -1215,7 +1211,7 @@ public:
      * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
@@ -1225,7 +1221,7 @@ public:
                          const T &value,
                          time_t expiration,
                          uint64_t cas,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1237,17 +1233,17 @@ public:
                          const T &value,
                          std::chrono::seconds expiration,
                          uint64_t cas,
-                         MemcachedReturnType *returnType = nullptr);
+                         ReturnType *returnType = nullptr);
 
     /**
      * Used in conjunction with buffer requests enabled to flush all buffers by sending the buffered
      * commands to the server for processing.
      *
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool flushBuffers(MemcachedReturnType *returnType = nullptr);
+    static bool flushBuffers(ReturnType *returnType = nullptr);
 
     /**
      * Wipe cleans the contents of memcached servers. It will either do this immediately or expire
@@ -1256,18 +1252,17 @@ public:
      * server. That is, it will flush the servers in the order that they were added.
      *
      * @param[in] expiration time in seconds
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool flush(time_t expiration, MemcachedReturnType *returnType = nullptr);
+    static bool flush(time_t expiration, ReturnType *returnType = nullptr);
 
     /**
      * @overload
      * @since %Cutelyst 4.0.0
      */
-    inline static bool flush(std::chrono::seconds expiration,
-                             MemcachedReturnType *returnType = nullptr);
+    inline static bool flush(std::chrono::seconds expiration, ReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values from the server identified by a list of @a keys. If a pointer for the
@@ -1278,13 +1273,13 @@ public:
      *
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return QHash containing the keys and values
      */
     static QHash<QByteArray, QByteArray> mget(const QByteArrayList &keys,
                                               QHash<QByteArray, uint64_t> *casValues = nullptr,
-                                              MemcachedReturnType *returnType        = nullptr);
+                                              ReturnType *returnType                 = nullptr);
 
     /**
      * Fetch multiple values of type @a T from the server identified by a list of @a keys. If a
@@ -1297,14 +1292,14 @@ public:
      *
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return QHash containing the keys and values
      */
     template <typename T>
     static QHash<QByteArray, T> mget(const QByteArrayList &keys,
                                      QHash<QByteArray, uint64_t> *casValues = nullptr,
-                                     MemcachedReturnType *returnType        = nullptr);
+                                     ReturnType *returnType                 = nullptr);
 
     /**
      * Fetch multiple values from the server specified by @a groupKey identified by a list of @a
@@ -1321,14 +1316,14 @@ public:
      * @param[in] groupKey key to specify the server to fetch values from
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return QHash containing the keys and values
      */
     static QHash<QByteArray, QByteArray> mgetByKey(QByteArrayView groupKey,
                                                    const QByteArrayList &keys,
                                                    QHash<QByteArray, uint64_t> *casValues = nullptr,
-                                                   MemcachedReturnType *returnType = nullptr);
+                                                   ReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values of type @a T from the server specified by @a groupKey identified by a
@@ -1347,7 +1342,7 @@ public:
      * @param[in] groupKey key to specify the server to fetch values from
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return QHash containing the keys and values
      */
@@ -1355,19 +1350,18 @@ public:
     static QHash<QByteArray, T> mgetByKey(QByteArrayView groupKey,
                                           const QByteArrayList &keys,
                                           QHash<QByteArray, uint64_t> *casValues = nullptr,
-                                          MemcachedReturnType *returnType        = nullptr);
+                                          ReturnType *returnType                 = nullptr);
 
     /**
      * Updates the @a expiration time on an existing @a key.
      *
      * @param[in] key key whose expiration time to update
      * @param[in] expiration new expiration time in seconds
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool
-        touch(QByteArrayView key, time_t expiration, MemcachedReturnType *returnType = nullptr);
+    static bool touch(QByteArrayView key, time_t expiration, ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1375,7 +1369,7 @@ public:
      */
     inline static bool touch(QByteArrayView key,
                              std::chrono::seconds expiration,
-                             MemcachedReturnType *returnType = nullptr);
+                             ReturnType *returnType = nullptr);
 
     /**
      * Updates the @a expiration time on an existing @a key in group @a groupKey.
@@ -1387,14 +1381,14 @@ public:
      * @param[in] groupKey key to specify the server to update the key on
      * @param[in] key key whose expiration time to update
      * @param[in] expiration new expiration time in seconds
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the
+     * @param[out] returnType optional pointer to a ReturnType variable that takes the
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
     static bool touchByKey(QByteArrayView groupKey,
                            QByteArrayView key,
                            time_t expiration,
-                           MemcachedReturnType *returnType = nullptr);
+                           ReturnType *returnType = nullptr);
 
     /**
      * @overload
@@ -1403,12 +1397,12 @@ public:
     inline static bool touchByKey(QByteArrayView groupKey,
                                   QByteArrayView key,
                                   std::chrono::seconds expiration,
-                                  MemcachedReturnType *returnType = nullptr);
+                                  ReturnType *returnType = nullptr);
 
     /**
      * Converts the return type @a rt into human readable error string.
      */
-    static QString errorString(Context *c, MemcachedReturnType rt);
+    static QString errorString(Context *c, ReturnType rt);
 
     /*!
      * Returns the version of the currently used libmemcached.
@@ -1428,16 +1422,13 @@ private:
 inline bool Memcached::set(QByteArrayView key,
                            const QByteArray &value,
                            std::chrono::seconds expiration,
-                           MemcachedReturnType *returnType)
+                           ReturnType *returnType)
 {
     return Memcached::set(key, value, expiration.count(), returnType);
 }
 
 template <typename T>
-bool Memcached::set(QByteArrayView key,
-                    const T &value,
-                    time_t expiration,
-                    MemcachedReturnType *returnType)
+bool Memcached::set(QByteArrayView key, const T &value, time_t expiration, ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1449,7 +1440,7 @@ template <typename T>
 bool Memcached::set(QByteArrayView key,
                     const T &value,
                     std::chrono::seconds expiration,
-                    MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     return Memcached::set<T>(key, value, expiration.count(), returnType);
 }
@@ -1458,7 +1449,7 @@ inline bool Memcached::setByKey(QByteArrayView groupKey,
                                 QByteArrayView key,
                                 const QByteArray &value,
                                 std::chrono::seconds expiration,
-                                MemcachedReturnType *returnType)
+                                ReturnType *returnType)
 {
     return Memcached::setByKey(groupKey, key, value, expiration.count(), returnType);
 }
@@ -1468,7 +1459,7 @@ bool Memcached::setByKey(QByteArrayView groupKey,
                          QByteArrayView key,
                          const T &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1481,7 +1472,7 @@ bool Memcached::setByKey(QByteArrayView groupKey,
                          QByteArrayView key,
                          const T &value,
                          std::chrono::seconds expiration,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     return Memcached::setByKey<T>(groupKey, key, value, expiration.count(), returnType);
 }
@@ -1489,16 +1480,13 @@ bool Memcached::setByKey(QByteArrayView groupKey,
 inline bool Memcached::add(QByteArrayView key,
                            const QByteArray &value,
                            std::chrono::seconds expiration,
-                           MemcachedReturnType *returnType)
+                           ReturnType *returnType)
 {
     return Memcached::add(key, value, expiration.count(), returnType);
 }
 
 template <typename T>
-bool Memcached::add(QByteArrayView key,
-                    const T &value,
-                    time_t expiration,
-                    MemcachedReturnType *returnType)
+bool Memcached::add(QByteArrayView key, const T &value, time_t expiration, ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1510,7 +1498,7 @@ template <typename T>
 bool Memcached::add(QByteArrayView key,
                     const T &value,
                     std::chrono::seconds expiration,
-                    MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     return Memcached::add<T>(key, value, expiration.count(), returnType);
 }
@@ -1519,7 +1507,7 @@ inline bool Memcached::addByKey(QByteArrayView groupKey,
                                 QByteArrayView key,
                                 const QByteArray &value,
                                 std::chrono::seconds expiration,
-                                MemcachedReturnType *returnType)
+                                ReturnType *returnType)
 {
     return Memcached::addByKey(groupKey, key, value, expiration.count(), returnType);
 }
@@ -1529,7 +1517,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
                          QByteArrayView key,
                          const T &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1542,7 +1530,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
                          QByteArrayView key,
                          const T &value,
                          std::chrono::seconds expiration,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     return Memcached::addByKey<T>(groupKey, key, value, expiration.count(), returnType);
 }
@@ -1550,7 +1538,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
 inline bool Memcached::replace(QByteArrayView key,
                                const QByteArray &value,
                                std::chrono::seconds expiration,
-                               MemcachedReturnType *returnType)
+                               ReturnType *returnType)
 {
     return Memcached::replace(key, value, expiration.count(), returnType);
 }
@@ -1559,7 +1547,7 @@ template <typename T>
 bool Memcached::replace(QByteArrayView key,
                         const T &value,
                         time_t expiration,
-                        MemcachedReturnType *returnType)
+                        ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1571,7 +1559,7 @@ template <typename T>
 bool Memcached::replace(QByteArrayView key,
                         const T &value,
                         std::chrono::seconds expiration,
-                        MemcachedReturnType *returnType)
+                        ReturnType *returnType)
 {
     return Memcached::replace<T>(key, value, expiration.count(), returnType);
 }
@@ -1580,7 +1568,7 @@ inline bool Memcached::replaceByKey(QByteArrayView groupKey,
                                     QByteArrayView key,
                                     const QByteArray &value,
                                     std::chrono::seconds expiration,
-                                    MemcachedReturnType *returnType)
+                                    ReturnType *returnType)
 {
     return Memcached::replaceByKey(groupKey, key, value, expiration.count(), returnType);
 }
@@ -1590,7 +1578,7 @@ bool Memcached::replaceByKey(QByteArrayView groupKey,
                              QByteArrayView key,
                              const T &value,
                              time_t expiration,
-                             MemcachedReturnType *returnType)
+                             ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1603,7 +1591,7 @@ bool Memcached::replaceByKey(QByteArrayView groupKey,
                              QByteArrayView key,
                              const T &value,
                              std::chrono::seconds expiration,
-                             MemcachedReturnType *returnType)
+                             ReturnType *returnType)
 {
     return Memcached::replaceByKey<T>(groupKey, key, value, expiration.count(), returnType);
 }
@@ -1613,7 +1601,7 @@ inline bool Memcached::incrementWithInitial(QByteArrayView key,
                                             uint64_t initial,
                                             std::chrono::seconds expiration,
                                             uint64_t *value,
-                                            MemcachedReturnType *returnType)
+                                            ReturnType *returnType)
 {
     return Memcached::incrementWithInitial(
         key, offset, initial, expiration.count(), value, returnType);
@@ -1625,7 +1613,7 @@ inline bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
                                                  uint64_t initial,
                                                  std::chrono::seconds expiration,
                                                  uint64_t *value,
-                                                 MemcachedReturnType *returnType)
+                                                 ReturnType *returnType)
 {
     return Memcached::incrementWithInitialByKey(
         groupKey, key, offset, initial, expiration.count(), value, returnType);
@@ -1636,7 +1624,7 @@ inline bool Memcached::decrementWithInitial(QByteArrayView key,
                                             uint64_t initial,
                                             std::chrono::seconds expiration,
                                             uint64_t *value,
-                                            MemcachedReturnType *returnType)
+                                            ReturnType *returnType)
 {
     return Memcached::decrementWithInitial(
         key, offset, initial, expiration.count(), value, returnType);
@@ -1648,14 +1636,14 @@ inline bool Memcached::decrementWithInitialByKey(QByteArrayView groupKey,
                                                  uint64_t initial,
                                                  std::chrono::seconds expiration,
                                                  uint64_t *value,
-                                                 MemcachedReturnType *returnType)
+                                                 ReturnType *returnType)
 {
     return Memcached::decrementWithInitialByKey(
         groupKey, key, offset, initial, expiration.count(), value, returnType);
 }
 
 template <typename T>
-T Memcached::get(QByteArrayView key, uint64_t *cas, MemcachedReturnType *returnType)
+T Memcached::get(QByteArrayView key, uint64_t *cas, ReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::get(key, cas, returnType);
@@ -1670,7 +1658,7 @@ template <typename T>
 T Memcached::getByKey(QByteArrayView groupKey,
                       QByteArrayView key,
                       uint64_t *cas,
-                      MemcachedReturnType *returnType)
+                      ReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::getByKey(groupKey, key, cas, returnType);
@@ -1685,7 +1673,7 @@ inline bool Memcached::cas(QByteArrayView key,
                            const QByteArray &value,
                            std::chrono::seconds expiration,
                            uint64_t cas,
-                           MemcachedReturnType *returnType)
+                           ReturnType *returnType)
 {
     return Memcached::cas(key, value, expiration.count(), cas, returnType);
 }
@@ -1695,7 +1683,7 @@ bool Memcached::cas(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     uint64_t cas,
-                    MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1708,7 +1696,7 @@ bool Memcached::cas(QByteArrayView key,
                     const T &value,
                     std::chrono::seconds expiration,
                     uint64_t cas,
-                    MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     return Memcached::cas<T>(key, value, expiration.count(), cas, returnType);
 }
@@ -1718,7 +1706,7 @@ inline bool Memcached::casByKey(QByteArrayView groupKey,
                                 const QByteArray &value,
                                 std::chrono::seconds expiration,
                                 uint64_t cas,
-                                MemcachedReturnType *returnType)
+                                ReturnType *returnType)
 {
     return Memcached::casByKey(groupKey, key, value, expiration.count(), cas, returnType);
 }
@@ -1729,7 +1717,7 @@ bool Memcached::casByKey(QByteArrayView groupKey,
                          const T &value,
                          time_t expiration,
                          uint64_t cas,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODeviceBase::WriteOnly);
@@ -1743,12 +1731,12 @@ bool Memcached::casByKey(QByteArrayView groupKey,
                          const T &value,
                          std::chrono::seconds expiration,
                          uint64_t cas,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     return Memcached::casByKey<T>(groupKey, key, value, expiration.count(), cas, returnType);
 }
 
-inline bool Memcached::flush(std::chrono::seconds expiration, MemcachedReturnType *returnType)
+inline bool Memcached::flush(std::chrono::seconds expiration, ReturnType *returnType)
 {
     return Memcached::flush(expiration.count(), returnType);
 }
@@ -1756,7 +1744,7 @@ inline bool Memcached::flush(std::chrono::seconds expiration, MemcachedReturnTyp
 template <typename T>
 QHash<QByteArray, T> Memcached::mget(const QByteArrayList &keys,
                                      QHash<QByteArray, uint64_t> *casValues,
-                                     MemcachedReturnType *returnType)
+                                     ReturnType *returnType)
 {
     QHash<QByteArray, T> hash;
     QHash<QByteArray, QByteArray> _data = Memcached::mget(keys, casValues, returnType);
@@ -1777,7 +1765,7 @@ template <typename T>
 QHash<QByteArray, T> Memcached::mgetByKey(QByteArrayView groupKey,
                                           const QByteArrayList &keys,
                                           QHash<QByteArray, uint64_t> *casValues,
-                                          MemcachedReturnType *returnType)
+                                          ReturnType *returnType)
 {
     QHash<QByteArray, T> hash;
     QHash<QByteArray, QByteArray> _data =
@@ -1795,9 +1783,8 @@ QHash<QByteArray, T> Memcached::mgetByKey(QByteArrayView groupKey,
     return hash;
 }
 
-inline bool Memcached::touch(QByteArrayView key,
-                             std::chrono::seconds expiration,
-                             MemcachedReturnType *returnType)
+inline bool
+    Memcached::touch(QByteArrayView key, std::chrono::seconds expiration, ReturnType *returnType)
 {
     return Memcached::touch(key, expiration.count(), returnType);
 }
@@ -1805,7 +1792,7 @@ inline bool Memcached::touch(QByteArrayView key,
 inline bool Memcached::touchByKey(QByteArrayView groupKey,
                                   QByteArrayView key,
                                   std::chrono::seconds expiration,
-                                  MemcachedReturnType *returnType)
+                                  ReturnType *returnType)
 {
     return Memcached::touchByKey(groupKey, key, expiration.count(), returnType);
 }

@@ -39,9 +39,9 @@ public:
     enum Flag : quint32 { NoFlags = 0x0, Compressed = 0x1 };
     Q_DECLARE_FLAGS(Flags, Flag)
 
-    static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
-    static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
-    static bool isRegistered(Memcached *ptr, Memcached::MemcachedReturnType *rt);
+    static Memcached::ReturnType returnTypeConvert(memcached_return_t rt);
+    static void setReturnType(Memcached::ReturnType *rt1, memcached_return_t rt2);
+    static bool isRegistered(Memcached *ptr, Memcached::ReturnType *rt);
     static QByteArray compressIfNeeded(const QByteArray &value, Flags &flags);
     static QByteArray uncompressIfNeeded(const QByteArray &value, memcached_result_st *result);
 

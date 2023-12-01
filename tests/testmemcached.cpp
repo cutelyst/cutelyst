@@ -66,7 +66,7 @@ public:
     void setByteArray(Context *c)
     {
         auto in = getKeyVal(c);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         if (Memcached::set(in.first, in.second.toUtf8(), std::chrono::minutes{1}, &rt)) {
             setValid(c);
         } else {
@@ -79,7 +79,7 @@ public:
     void getByteArray(Context *c)
     {
         auto in = getKeyVal(c);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         if (Memcached::get(in.first, nullptr, &rt) == in.second.toUtf8()) {
             setValid(c);
         } else {
@@ -91,7 +91,7 @@ public:
     C_ATTR(setEmptyKey, :Local :AutoArgs)
     void setEmptyKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::set({}, QByteArray(), std::chrono::seconds{5}, &rt));
     }
 
@@ -100,7 +100,7 @@ public:
     void setTooLongKey(Context *c)
     {
         QByteArray key(500, 'a');
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::set(key, QByteArray(), std::chrono::seconds{5}, &rt));
     }
 
@@ -109,7 +109,7 @@ public:
     void setByteArrayByKey(Context *c)
     {
         auto in = getKeyVal(c);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         if (Memcached::setByKey(
                 "myLittleGroup", in.first, in.second.toUtf8(), std::chrono::seconds{5}, &rt)) {
             setValid(c);
@@ -123,7 +123,7 @@ public:
     void getByteArrayByKey(Context *c)
     {
         auto in = getKeyVal(c);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         if (Memcached::getByKey("myLittleGroup", in.first, nullptr, &rt) == in.second.toUtf8()) {
             setValid(c);
         } else {
@@ -135,7 +135,7 @@ public:
     C_ATTR(setEmptyKeyByKey, :Local :AutoArgs)
     void setEmptyKeyByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c,
             Memcached::setByKey("myLittleGroup", {}, QByteArray(), std::chrono::seconds{5}, &rt));
@@ -146,7 +146,7 @@ public:
     void setTooLongKeyByKey(Context *c)
     {
         QByteArray key(500, 'a');
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c,
             Memcached::setByKey("myLittleGroup", key, QByteArray(), std::chrono::seconds{5}, &rt));
@@ -157,7 +157,7 @@ public:
     void setQVariantList(Context *c)
     {
         const QVariantList list = getTestVariantList();
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::set("varList", list, std::chrono::seconds{5}, &rt));
     }
 
@@ -165,7 +165,7 @@ public:
     C_ATTR(getQVariantList, :Local :AutoArgs)
     void getQVariantList(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list1 = getTestVariantList();
         const QVariantList list2 = Memcached::get<QVariantList>("varList", nullptr, &rt);
         setValidity(c, list1 == list2);
@@ -176,7 +176,7 @@ public:
     void setQVariantListByKey(Context *c)
     {
         const QVariantList list = getTestVariantList();
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c, Memcached::setByKey("myListGroup", "varList2", list, std::chrono::seconds{5}, &rt));
     }
@@ -185,7 +185,7 @@ public:
     C_ATTR(getQVariantListByKey, :Local :AutoArgs)
     void getQVariantListByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list1 = getTestVariantList();
         const QVariantList list2 =
             Memcached::getByKey<QVariantList>("myListGroup", "varList2", nullptr, &rt);
@@ -196,7 +196,7 @@ public:
     C_ATTR(addByteArrayValid, :Local :AutoArgs)
     void addByteArrayValid(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c,
             Memcached::add("add1", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5}, &rt));
@@ -206,7 +206,7 @@ public:
     C_ATTR(addByteArrayInvalid, :Local :AutoArgs)
     void addByteArrayInvalid(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c,
             Memcached::add("add1", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5}, &rt));
@@ -216,7 +216,7 @@ public:
     C_ATTR(getAfterAddByteArray, :Local :AutoArgs)
     void getAfterAddByteArray(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QByteArray ba1 = Memcached::get("add1", nullptr, &rt);
         const QByteArray ba2 = QByteArrayLiteral("Lorem ipsum");
         setValidity(c, ba1 == ba2);
@@ -226,7 +226,7 @@ public:
     C_ATTR(addQVariantListValid, :Local :AutoArgs)
     void addQVariantListValid(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list = getTestVariantList();
         setValidity(c, Memcached::add("add2", list, std::chrono::seconds{2}, &rt));
     }
@@ -235,7 +235,7 @@ public:
     C_ATTR(addQVariantListInvalid, :Local :AutoArgs)
     void addQVariantListInvalid(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list = getTestVariantList();
         setValidity(c, Memcached::add("add2", list, std::chrono::seconds{2}, &rt));
     }
@@ -244,7 +244,7 @@ public:
     C_ATTR(getAfterAddQVariantList, :Local :AutoArgs)
     void getAfterAddQVariantList(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList l1 = getTestVariantList();
         const QVariantList l2 = Memcached::get<QVariantList>("add2", nullptr, &rt);
         setValidity(c, l1 == l2);
@@ -254,7 +254,7 @@ public:
     C_ATTR(addByteArrayValidByKey, :Local :AutoArgs)
     void addByteArrayValidByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c,
                     Memcached::addByKey("addGroup",
                                         "add3",
@@ -267,7 +267,7 @@ public:
     C_ATTR(addByteArrayInvalidByKey, :Local :AutoArgs)
     void addByteArrayInvalidByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c,
                     Memcached::addByKey("addGruop",
                                         "add3",
@@ -280,7 +280,7 @@ public:
     C_ATTR(getAfterAddByteArrayByKey, :Local :AutoArgs)
     void getAfterAddByteArrayByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QByteArray ba1 = Memcached::getByKey("addGroup", "add3", nullptr, &rt);
         const QByteArray ba2 = QByteArrayLiteral("Lorem ipsum");
         setValidity(c, ba1 == ba2);
@@ -290,7 +290,7 @@ public:
     C_ATTR(addQVariantListValidByKey, :Local :AutoArgs)
     void addQVariantListValidByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list = getTestVariantList();
         setValidity(c, Memcached::addByKey("addGroup", "add4", list, std::chrono::seconds{2}, &rt));
     }
@@ -299,7 +299,7 @@ public:
     C_ATTR(addQVariantListInvalidByKey, :Local :AutoArgs)
     void addQVariantListInvalidByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list = getTestVariantList();
         setValidity(c, Memcached::addByKey("addGroup", "add4", list, std::chrono::seconds{2}, &rt));
     }
@@ -308,7 +308,7 @@ public:
     C_ATTR(getAfterAddQVariantListByKey, :Local :AutoArgs)
     void getAfterAddQVariantListByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList l1 = getTestVariantList();
         const QVariantList l2 = Memcached::getByKey<QVariantList>("addGroup", "add4", nullptr, &rt);
         setValidity(c, l1 == l2);
@@ -319,7 +319,7 @@ public:
     void replaceByteArrayValid(Context *c)
     {
         Memcached::set("replace1", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5});
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c,
             Memcached::replace(
@@ -330,7 +330,7 @@ public:
     C_ATTR(replaceByteArrayInvalid, :Local :AutoArgs)
     void replaceByteArrayInvalid(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(
             c,
             Memcached::replace(
@@ -341,7 +341,7 @@ public:
     C_ATTR(getAfterReplaceByteArray, :Local :AutoArgs)
     void getAfterReplaceByteArray(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QByteArray ba1 = QByteArrayLiteral("Lorem ipsum 2");
         const QByteArray ba2 = Memcached::get("replace1", nullptr, &rt);
         setValidity(c, ba1 == ba2);
@@ -357,7 +357,7 @@ public:
         list1.append(QVariant::fromValue<float>(7848.23423f));
         list1.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 2")));
         Memcached::set("replace3", list1, 5);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list2 = getTestVariantList();
         setValidity(c, Memcached::replace("replace3", list2, std::chrono::seconds{5}, &rt));
     }
@@ -367,7 +367,7 @@ public:
     void replaceQVariantListInvalid(Context *c)
     {
         const QVariantList list = getTestVariantList();
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::replace("replace4", list, std::chrono::seconds{5}, &rt));
     }
 
@@ -375,7 +375,7 @@ public:
     C_ATTR(getAfterReplaceQVariantList, :Local :AutoArgs)
     void getAfterReplaceQVariantList(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList l1 = getTestVariantList();
         const QVariantList l2 = Memcached::get<QVariantList>("replace3", nullptr, &rt);
         setValidity(c, l1 == l2);
@@ -387,7 +387,7 @@ public:
     {
         Memcached::setByKey(
             "replaceGroup", "replace5", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5});
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c,
                     Memcached::replaceByKey("replaceGroup",
                                             "replace5",
@@ -400,7 +400,7 @@ public:
     C_ATTR(replaceByteArrayInvalidByKey, :Local :AutoArgs)
     void replaceByteArrayInvalidByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c,
                     Memcached::replaceByKey("replaceGroup",
                                             "replace6",
@@ -413,7 +413,7 @@ public:
     C_ATTR(getAfterReplaceByteArrayByKey, :Local :AutoArgs)
     void getAfterReplaceByteArrayByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QByteArray ba1 = QByteArrayLiteral("Lorem ipsum 2");
         const QByteArray ba2 = Memcached::getByKey("replaceGroup", "replace5", nullptr, &rt);
         setValidity(c, ba1 == ba2);
@@ -429,7 +429,7 @@ public:
         list1.append(QVariant::fromValue<float>(7848.23423f));
         list1.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 2")));
         Memcached::setByKey("replaceGroup", "replace7", list1, std::chrono::seconds{5});
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList list2 = getTestVariantList();
         setValidity(c,
                     Memcached::replaceByKey(
@@ -441,7 +441,7 @@ public:
     void replaceQVariantListInvalidByKey(Context *c)
     {
         const QVariantList list = getTestVariantList();
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c,
                     Memcached::replaceByKey(
                         "replaceGroup", "replace8", list, std::chrono::seconds{5}, &rt));
@@ -451,7 +451,7 @@ public:
     C_ATTR(getAfterReplaceQVariantListByKey, :Local :AutoArgs)
     void getAfterReplaceQVariantListByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         const QVariantList l1 = getTestVariantList();
         const QVariantList l2 =
             Memcached::getByKey<QVariantList>("replaceGroup", "replace7", nullptr, &rt);
@@ -463,7 +463,7 @@ public:
     void directRemoveValid(Context *c)
     {
         Memcached::set("rem1", QByteArrayLiteral("Lorem ipsum"), 300);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::remove("rem1", &rt));
     }
 
@@ -471,7 +471,7 @@ public:
     C_ATTR(directRemoveInvalid, :Local :AutoArgs)
     void directRemoveInvalid(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::remove("rem2", &rt));
     }
 
@@ -489,7 +489,7 @@ public:
     void directRemoveValidByKey(Context *c)
     {
         Memcached::setByKey("remGroup", "rem3", QByteArrayLiteral("Lorem ipsum"), 300);
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::removeByKey("remGroup", "rem3", &rt));
     }
 
@@ -497,7 +497,7 @@ public:
     C_ATTR(directRemoveInvalidByKey, :Local :AutoArgs)
     void directRemoveInvalidByKey(Context *c)
     {
-        Memcached::MemcachedReturnType rt;
+        Memcached::ReturnType rt;
         setValidity(c, Memcached::removeByKey("remGroup", "rem4", &rt));
     }
 
@@ -996,7 +996,7 @@ private:
 
     void setInvalid(Context *c) { c->res()->setBody(QByteArrayLiteral("invalid")); }
 
-    void setRt(Context *c, Memcached::MemcachedReturnType rt)
+    void setRt(Context *c, Memcached::ReturnType rt)
     {
         c->res()->setBody(Memcached::errorString(c, rt));
     }

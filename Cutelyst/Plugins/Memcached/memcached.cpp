@@ -262,7 +262,7 @@ bool Memcached::setup(Application *app)
 bool Memcached::set(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
-                    Cutelyst::Memcached::MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -295,7 +295,7 @@ bool Memcached::setByKey(QByteArrayView groupKey,
                          QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -330,7 +330,7 @@ bool Memcached::setByKey(QByteArrayView groupKey,
 bool Memcached::add(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
-                    MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -363,7 +363,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
                          QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -397,7 +397,7 @@ bool Memcached::addByKey(QByteArrayView groupKey,
 bool Memcached::replace(QByteArrayView key,
                         const QByteArray &value,
                         time_t expiration,
-                        MemcachedReturnType *returnType)
+                        ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -430,7 +430,7 @@ bool Memcached::replaceByKey(QByteArrayView groupKey,
                              QByteArrayView key,
                              const QByteArray &value,
                              time_t expiration,
-                             MemcachedReturnType *returnType)
+                             ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -462,9 +462,7 @@ bool Memcached::replaceByKey(QByteArrayView groupKey,
     return ok;
 }
 
-QByteArray Memcached::get(QByteArrayView key,
-                          uint64_t *cas,
-                          Cutelyst::Memcached::MemcachedReturnType *returnType)
+QByteArray Memcached::get(QByteArrayView key, uint64_t *cas, ReturnType *returnType)
 {
     QByteArray retData;
 
@@ -512,7 +510,7 @@ QByteArray Memcached::get(QByteArrayView key,
 QByteArray Memcached::getByKey(QByteArrayView groupKey,
                                QByteArrayView key,
                                uint64_t *cas,
-                               MemcachedReturnType *returnType)
+                               ReturnType *returnType)
 {
     QByteArray retData;
 
@@ -558,7 +556,7 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
     return retData;
 }
 
-bool Memcached::remove(QByteArrayView key, MemcachedReturnType *returnType)
+bool Memcached::remove(QByteArrayView key, ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -579,9 +577,7 @@ bool Memcached::remove(QByteArrayView key, MemcachedReturnType *returnType)
     return ok;
 }
 
-bool Memcached::removeByKey(QByteArrayView groupKey,
-                            QByteArrayView key,
-                            MemcachedReturnType *returnType)
+bool Memcached::removeByKey(QByteArrayView groupKey, QByteArrayView key, ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -603,7 +599,7 @@ bool Memcached::removeByKey(QByteArrayView groupKey,
     return ok;
 }
 
-bool Memcached::exist(QByteArrayView key, MemcachedReturnType *returnType)
+bool Memcached::exist(QByteArrayView key, ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -623,9 +619,7 @@ bool Memcached::exist(QByteArrayView key, MemcachedReturnType *returnType)
     return ok;
 }
 
-bool Memcached::existByKey(QByteArrayView groupKey,
-                           QByteArrayView key,
-                           MemcachedReturnType *returnType)
+bool Memcached::existByKey(QByteArrayView groupKey, QByteArrayView key, ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -650,7 +644,7 @@ bool Memcached::existByKey(QByteArrayView groupKey,
 bool Memcached::increment(QByteArrayView key,
                           uint32_t offset,
                           uint64_t *value,
-                          MemcachedReturnType *returnType)
+                          ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -675,7 +669,7 @@ bool Memcached::incrementByKey(QByteArrayView groupKey,
                                QByteArrayView key,
                                uint64_t offset,
                                uint64_t *value,
-                               MemcachedReturnType *returnType)
+                               ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -707,7 +701,7 @@ bool Memcached::incrementWithInitial(QByteArrayView key,
                                      uint64_t initial,
                                      time_t expiration,
                                      uint64_t *value,
-                                     MemcachedReturnType *returnType)
+                                     ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -735,7 +729,7 @@ bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
                                           uint64_t initial,
                                           time_t expiration,
                                           uint64_t *value,
-                                          MemcachedReturnType *returnType)
+                                          ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -767,7 +761,7 @@ bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
 bool Memcached::decrement(QByteArrayView key,
                           uint32_t offset,
                           uint64_t *value,
-                          MemcachedReturnType *returnType)
+                          ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -792,7 +786,7 @@ bool Memcached::decrementByKey(QByteArrayView groupKey,
                                QByteArrayView key,
                                uint64_t offset,
                                uint64_t *value,
-                               MemcachedReturnType *returnType)
+                               ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -824,7 +818,7 @@ bool Memcached::decrementWithInitial(QByteArrayView key,
                                      uint64_t initial,
                                      time_t expiration,
                                      uint64_t *value,
-                                     MemcachedReturnType *returnType)
+                                     ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -852,7 +846,7 @@ bool Memcached::decrementWithInitialByKey(QByteArrayView groupKey,
                                           uint64_t initial,
                                           time_t expiration,
                                           uint64_t *value,
-                                          MemcachedReturnType *returnType)
+                                          ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -885,7 +879,7 @@ bool Memcached::cas(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     uint64_t cas,
-                    MemcachedReturnType *returnType)
+                    ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -920,7 +914,7 @@ bool Memcached::casByKey(QByteArrayView groupKey,
                          const QByteArray &value,
                          time_t expiration,
                          uint64_t cas,
-                         MemcachedReturnType *returnType)
+                         ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -953,7 +947,7 @@ bool Memcached::casByKey(QByteArrayView groupKey,
     return ok;
 }
 
-bool Memcached::flushBuffers(MemcachedReturnType *returnType)
+bool Memcached::flushBuffers(ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -973,7 +967,7 @@ bool Memcached::flushBuffers(MemcachedReturnType *returnType)
     return ok;
 }
 
-bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
+bool Memcached::flush(time_t expiration, ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -995,7 +989,7 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
 
 QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
                                               QHash<QByteArray, uint64_t> *casValues,
-                                              MemcachedReturnType *returnType)
+                                              ReturnType *returnType)
 {
     QHash<QByteArray, QByteArray> ret;
 
@@ -1006,7 +1000,7 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
     if (keys.empty()) {
         qCWarning(C_MEMCACHED) << "Can not get multiple values without a list of keys.";
         if (returnType) {
-            *returnType = Memcached::BadKeyProvided;
+            *returnType = ReturnType::BadKeyProvided;
         }
         return ret;
     }
@@ -1060,7 +1054,7 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
 QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
                                                    const QByteArrayList &keys,
                                                    QHash<QByteArray, uint64_t> *casValues,
-                                                   MemcachedReturnType *returnType)
+                                                   ReturnType *returnType)
 {
     QHash<QByteArray, QByteArray> ret;
 
@@ -1072,7 +1066,7 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
         qCWarning(C_MEMCACHED)
             << "Can not get multiple values from specific server when groupKey is empty.";
         if (returnType) {
-            *returnType = Memcached::BadKeyProvided;
+            *returnType = ReturnType::BadKeyProvided;
         }
         return ret;
     }
@@ -1080,7 +1074,7 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
     if (keys.empty()) {
         qCWarning(C_MEMCACHED) << "Can not get multiple values without a list of keys.";
         if (returnType) {
-            *returnType = Memcached::BadKeyProvided;
+            *returnType = ReturnType::BadKeyProvided;
         }
         return ret;
     }
@@ -1136,7 +1130,7 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
     return ret;
 }
 
-bool Memcached::touch(QByteArrayView key, time_t expiration, MemcachedReturnType *returnType)
+bool Memcached::touch(QByteArrayView key, time_t expiration, ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -1161,7 +1155,7 @@ bool Memcached::touch(QByteArrayView key, time_t expiration, MemcachedReturnType
 bool Memcached::touchByKey(QByteArrayView groupKey,
                            QByteArrayView key,
                            time_t expiration,
-                           MemcachedReturnType *returnType)
+                           ReturnType *returnType)
 {
     if (!MemcachedPrivate::isRegistered(mcd, returnType)) {
         return false;
@@ -1188,139 +1182,140 @@ bool Memcached::touchByKey(QByteArrayView groupKey,
     return ok;
 }
 
-QString Memcached::errorString(Context *c, MemcachedReturnType rt)
+QString Memcached::errorString(Context *c, ReturnType rt)
 {
     switch (rt) {
-    case Memcached::Success:
+        using enum Memcached::ReturnType;
+    case Success:
         //% "The request was successfully executed."
         return c->qtTrId("cutelyst-memc-rt-success");
-    case Memcached::Failure:
+    case Failure:
         //% "An unknown failure has occurred in the Memcached server."
         return c->qtTrId("cutelyst-memc-rt-failure");
-    case Memcached::HostLookupFailure:
+    case HostLookupFailure:
         //% "Failed to look up the hostname while trying to connect to a Memcached server."
         return c->qtTrId("cutelyst-memc-rt-hostlookupfailure");
-    case Memcached::ConnectionFailure:
+    case ConnectionFailure:
         //% "An unknown error has occurred while trying to connect to a Memcached server."
         return c->qtTrId("cutelyst-memc-rt-connectionfailure");
-    case Memcached::WriteFailure:
+    case WriteFailure:
         //% "An error has occurred while trying to write to a Memcached server."
         return c->qtTrId("cutelyst-memc-rt-writefailure");
-    case Memcached::ReadFailure:
+    case ReadFailure:
         //% "An error has occurred while trying to read from a Memcached server."
         return c->qtTrId("cutelyst-memc-rt-readfailure");
-    case Memcached::UnknownReadFailure:
+    case UnknownReadFailure:
         //% "An unknown error has occurred while trying to read from a Memcached server. This "
         //% "only occures when either there is a bug in the server, or in rare cases where an "
         //% "ethernet NIC is reporting dubious information."
         return c->qtTrId("cutelyst-memc-rt-unknownreadfailure");
-    case Memcached::ProtocolError:
+    case ProtocolError:
         //% "An unknown error has occurred in the Memcached protocol."
         return c->qtTrId("cutelyst-memc-rt-protocolerror");
-    case Memcached::ClientError:
+    case ClientError:
         //% "An unknown Memcached client error has occurred internally."
         return c->qtTrId("cutelyst-memc-rt-clienterror");
-    case Memcached::ServerError:
+    case ServerError:
         //% "An unknown error has occurred in the Memcached server."
         return c->qtTrId("cutelyst-memc-rt-servererror");
-    case Memcached::Error:
+    case Error:
         //% "A general error occurred."
         return c->qtTrId("cutelyst-memc-rt-error");
-    case Memcached::DataExists:
+    case DataExists:
         //% "The data for the given key alrey exists."
         return c->qtTrId("cutelyst-memc-rt-dataexists");
-    case Memcached::DataDoesNotExist:
+    case DataDoesNotExist:
         //% "The data requested with the key given was not found."
         return c->qtTrId("cutelyst-memc-rt-datadoesnotexist");
-    case Memcached::NotStored:
+    case NotStored:
         //% "The request to store an object failed."
         return c->qtTrId("cutelyst-memc-rt-notstored");
-    case Memcached::Stored:
+    case Stored:
         //% "The requested object has been successfully stored on the server."
         return c->qtTrId("cutelyst-memc-rt-stored");
-    case Memcached::NotFound:
+    case NotFound:
         //% "The object requested was not found."
         return c->qtTrId("cutelyst-memc-notfound");
-    case Memcached::MemoryAllocationFailure:
+    case MemoryAllocationFailure:
         //% "An error has occurred while trying to allocate memory."
         return c->qtTrId("cutelyst-memc-rt-memallocfailure");
-    case Memcached::PartialRead:
+    case PartialRead:
         //% "The read operation was only partcially successful."
         return c->qtTrId("cutelyst-memc-rt-partread");
-    case Memcached::SomeErrors:
+    case SomeErrors:
         //% "A multi request has been made, and some underterminate number of "
         //% "errors have occurred."
         return c->qtTrId("cutelyst-memc-rt-someerrors");
-    case Memcached::NoServers:
+    case NoServers:
         //% "No servers have been added to the Memcached plugin."
         return c->qtTrId("cutelyst-memc-rt-noservers");
-    case Memcached::End:
+    case End:
         //% "The Memcached server has completed returning all of the objects requested."
         return c->qtTrId("cutelyst-memc-rt-end");
-    case Memcached::Deleted:
+    case Deleted:
         //% "The object requested by the key has been deleted."
         return c->qtTrId("cutelyst-memc-rt-deleted");
-    case Memcached::Stat:
+    case Stat:
         //% "A “stat” command has been returned in the protocol."
         return c->qtTrId("cutelyst-memc-rt-stat");
-    case Memcached::Errno:
+    case Errno:
         //% "An error has occurred in the driver which has set errno."
         return qtTrId("cutelyst-memc-rt-errno");
-    case Memcached::NotSupported:
+    case NotSupported:
         //% "The given method is not supported in the Memcached server."
         return c->qtTrId("cutelyst-memc-rt-notsupported");
-    case Memcached::FetchNotFinished:
+    case FetchNotFinished:
         //% "A request has been made, but the Memcached server has not finished "
         //% "the fetch of the last request."
         return c->qtTrId("cutelyst-memc-rt-fetchnotfinished");
-    case Memcached::Timeout:
+    case Timeout:
         //% "The operation has timed out."
         return c->qtTrId("cutelyst-memc-rt-timeout");
-    case Memcached::Buffered:
+    case Buffered:
         //% "The request has been buffered."
         return c->qtTrId("cutelyst-memc-rt-buffered");
-    case Memcached::BadKeyProvided:
+    case BadKeyProvided:
         //% "The key provided is not a valid key."
         return c->qtTrId("cutelyst-memc-rt-badkeyprov");
-    case Memcached::InvalidHostProtocol:
+    case InvalidHostProtocol:
         //% "The Memcached server you are connecting to has an invalid protocol. Most likely you "
         //% "are connecting to an older server that does not speak the binary protocol."
         return c->qtTrId("cutelyst-memc-rt-invalidhostprot");
-    case Memcached::ServerMarkedDead:
+    case ServerMarkedDead:
         //% "The requested Memcached server has been marked dead."
         return c->qtTrId("cutelyst-memc-rt-servermarkeddead");
-    case Memcached::UnknownStatKey:
+    case UnknownStatKey:
         //% "The Memcached server you are communicating with has a stat key which "
         //% "has not be defined in the protocol."
         return c->qtTrId("cutelyst-memc-rt-unknownstatkey");
-    case Memcached::E2Big:
+    case E2Big:
         //% "Item is too large for the Memcached server to store."
         return c->qtTrId("cutelyst-memc-rt-e2big");
-    case Memcached::InvalidArguments:
+    case InvalidArguments:
         //% "The arguments supplied to the given function were not valid."
         return c->qtTrId("cutelyst-memc-rt-invalidarg");
-    case Memcached::KeyTooBig:
+    case KeyTooBig:
         //% "The key that has been provided is too large for the given Memcached server."
         return c->qtTrId("cutelyst-memc-rt-key2big");
-    case Memcached::AuthProblem:
+    case AuthProblem:
         //% "An unknown issue has occurred during SASL authentication."
         return c->qtTrId("cutelyst-memc-rt-authproblem");
-    case Memcached::AuthFailure:
+    case AuthFailure:
         //% "The credentials provided are not valid for this Memcached server."
         return c->qtTrId("cutelyst-memc-rt-authfailure");
-    case Memcached::AuthContinue:
+    case AuthContinue:
         //% "Authentication has been paused."
         return c->qtTrId("cutelyst-memc-rt-authcont");
-    case Memcached::ParseError:
+    case ParseError:
         //% "An error has occurred while trying to parse the configuration string."
         return c->qtTrId("cutelyst-memc-rt-parseerr");
-    case Memcached::ParseUserError:
+    case ParseUserError:
         //% "An error has occurred in parsing the configuration string."
         return c->qtTrId("cutelyst-memc-rt-parseusererr");
-    case Memcached::Deprecated:
+    case Deprecated:
         //% "The method that was requested has been deprecated."
         return c->qtTrId("cutelyst-memc-rt-deprecated");
-    case Memcached::PluginNotRegisterd:
+    case PluginNotRegisterd:
         //% "The Cutelyst Memcached plugin has not been registered to the application."
         return c->qtTrId("cutelyst-memc-rt-pluginnotregistered");
     default:
@@ -1337,58 +1332,59 @@ QVersionNumber Memcached::libMemcachedVersion()
 // clang-format off
 /**
  * @internal
- * Converts the @a rt returned by libmemcached into a MemcachedReturnType enum.
+ * Converts the @a rt returned by libmemcached into a ReturnType enum.
  */
-Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_return_t rt)
+Memcached::ReturnType MemcachedPrivate::returnTypeConvert(memcached_return_t rt)
 {
     switch (rt) {
-    case MEMCACHED_SUCCESS:                             return Memcached::Success;
-    case MEMCACHED_FAILURE:                             return Memcached::Failure;
-    case MEMCACHED_HOST_LOOKUP_FAILURE:                 return Memcached::HostLookupFailure;
-    case MEMCACHED_CONNECTION_FAILURE:                  return Memcached::ConnectionFailure;
-    case MEMCACHED_CONNECTION_BIND_FAILURE:             return Memcached::HostLookupFailure;
-    case MEMCACHED_WRITE_FAILURE:                       return Memcached::WriteFailure;
-    case MEMCACHED_READ_FAILURE:                        return Memcached::ReadFailure;
-    case MEMCACHED_UNKNOWN_READ_FAILURE:                return Memcached::UnknownReadFailure;
-    case MEMCACHED_PROTOCOL_ERROR:                      return Memcached::ProtocolError;
-    case MEMCACHED_CLIENT_ERROR:                        return Memcached::ClientError;
-    case MEMCACHED_SERVER_ERROR:                        return Memcached::ServerError;
-    case MEMCACHED_ERROR:                               return Memcached::Error;
-    case MEMCACHED_DATA_EXISTS:                         return Memcached::DataExists;
-    case MEMCACHED_DATA_DOES_NOT_EXIST:                 return Memcached::DataDoesNotExist;
-    case MEMCACHED_NOTSTORED:                           return Memcached::NotStored;
-    case MEMCACHED_STORED:                              return Memcached::Stored;
-    case MEMCACHED_NOTFOUND:                            return Memcached::NotFound;
-    case MEMCACHED_MEMORY_ALLOCATION_FAILURE:           return Memcached::MemoryAllocationFailure;
-    case MEMCACHED_PARTIAL_READ:                        return Memcached::PartialRead;
-    case MEMCACHED_SOME_ERRORS:                         return Memcached::SomeErrors;
-    case MEMCACHED_NO_SERVERS:                          return Memcached::NoServers;
-    case MEMCACHED_END:                                 return Memcached::End;
-    case MEMCACHED_DELETED:                             return Memcached::Deleted;
-    case MEMCACHED_STAT:                                return Memcached::Stat;
-    case MEMCACHED_ERRNO:                               return Memcached::Errno;
-    case MEMCACHED_NOT_SUPPORTED:                       return Memcached::NotSupported;
-    case MEMCACHED_FETCH_NOTFINISHED:                   return Memcached::FetchNotFinished;
-    case MEMCACHED_TIMEOUT:                             return Memcached::Timeout;
-    case MEMCACHED_BUFFERED:                            return Memcached::Buffered;
-    case MEMCACHED_BAD_KEY_PROVIDED:                    return Memcached::BadKeyProvided;
-    case MEMCACHED_INVALID_HOST_PROTOCOL:               return Memcached::InvalidHostProtocol;
-    case MEMCACHED_SERVER_MARKED_DEAD:                  return Memcached::ServerMarkedDead;
-    case MEMCACHED_UNKNOWN_STAT_KEY:                    return Memcached::UnknownStatKey;
-    case MEMCACHED_E2BIG:                               return Memcached::E2Big;
-    case MEMCACHED_INVALID_ARGUMENTS:                   return Memcached::InvalidArguments;
-    case MEMCACHED_KEY_TOO_BIG:                         return Memcached::KeyTooBig;
-    case MEMCACHED_AUTH_PROBLEM:                        return Memcached::AuthProblem;
-    case MEMCACHED_AUTH_FAILURE:                        return Memcached::AuthFailure;
-    case MEMCACHED_AUTH_CONTINUE:                       return Memcached::AuthContinue;
-    case MEMCACHED_PARSE_ERROR:                         return Memcached::ParseError;
-    case MEMCACHED_PARSE_USER_ERROR:                    return Memcached::ParseUserError;
-    case MEMCACHED_DEPRECATED:                          return Memcached::Deprecated;
-    case MEMCACHED_IN_PROGRESS:                         return Memcached::InProgress;
-    case MEMCACHED_SERVER_TEMPORARILY_DISABLED:         return Memcached::ServerTemporaryDisabled;
-    case MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE:    return Memcached::ServerMemoryAllocationFailure;
-    case MEMCACHED_MAXIMUM_RETURN:                      return Memcached::MaximumReturn;
-    default:                                            return Memcached::Success;
+    using enum Memcached::ReturnType;
+    case MEMCACHED_SUCCESS:                             return Success;
+    case MEMCACHED_FAILURE:                             return Failure;
+    case MEMCACHED_HOST_LOOKUP_FAILURE:                 return HostLookupFailure;
+    case MEMCACHED_CONNECTION_FAILURE:                  return ConnectionFailure;
+    case MEMCACHED_CONNECTION_BIND_FAILURE:             return HostLookupFailure;
+    case MEMCACHED_WRITE_FAILURE:                       return WriteFailure;
+    case MEMCACHED_READ_FAILURE:                        return ReadFailure;
+    case MEMCACHED_UNKNOWN_READ_FAILURE:                return UnknownReadFailure;
+    case MEMCACHED_PROTOCOL_ERROR:                      return ProtocolError;
+    case MEMCACHED_CLIENT_ERROR:                        return ClientError;
+    case MEMCACHED_SERVER_ERROR:                        return ServerError;
+    case MEMCACHED_ERROR:                               return Error;
+    case MEMCACHED_DATA_EXISTS:                         return DataExists;
+    case MEMCACHED_DATA_DOES_NOT_EXIST:                 return DataDoesNotExist;
+    case MEMCACHED_NOTSTORED:                           return NotStored;
+    case MEMCACHED_STORED:                              return Stored;
+    case MEMCACHED_NOTFOUND:                            return NotFound;
+    case MEMCACHED_MEMORY_ALLOCATION_FAILURE:           return MemoryAllocationFailure;
+    case MEMCACHED_PARTIAL_READ:                        return PartialRead;
+    case MEMCACHED_SOME_ERRORS:                         return SomeErrors;
+    case MEMCACHED_NO_SERVERS:                          return NoServers;
+    case MEMCACHED_END:                                 return End;
+    case MEMCACHED_DELETED:                             return Deleted;
+    case MEMCACHED_STAT:                                return Stat;
+    case MEMCACHED_ERRNO:                               return Errno;
+    case MEMCACHED_NOT_SUPPORTED:                       return NotSupported;
+    case MEMCACHED_FETCH_NOTFINISHED:                   return FetchNotFinished;
+    case MEMCACHED_TIMEOUT:                             return Timeout;
+    case MEMCACHED_BUFFERED:                            return Buffered;
+    case MEMCACHED_BAD_KEY_PROVIDED:                    return BadKeyProvided;
+    case MEMCACHED_INVALID_HOST_PROTOCOL:               return InvalidHostProtocol;
+    case MEMCACHED_SERVER_MARKED_DEAD:                  return ServerMarkedDead;
+    case MEMCACHED_UNKNOWN_STAT_KEY:                    return UnknownStatKey;
+    case MEMCACHED_E2BIG:                               return E2Big;
+    case MEMCACHED_INVALID_ARGUMENTS:                   return InvalidArguments;
+    case MEMCACHED_KEY_TOO_BIG:                         return KeyTooBig;
+    case MEMCACHED_AUTH_PROBLEM:                        return AuthProblem;
+    case MEMCACHED_AUTH_FAILURE:                        return AuthFailure;
+    case MEMCACHED_AUTH_CONTINUE:                       return AuthContinue;
+    case MEMCACHED_PARSE_ERROR:                         return ParseError;
+    case MEMCACHED_PARSE_USER_ERROR:                    return ParseUserError;
+    case MEMCACHED_DEPRECATED:                          return Deprecated;
+    case MEMCACHED_IN_PROGRESS:                         return InProgress;
+    case MEMCACHED_SERVER_TEMPORARILY_DISABLED:         return ServerTemporaryDisabled;
+    case MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE:    return ServerMemoryAllocationFailure;
+    case MEMCACHED_MAXIMUM_RETURN:                      return MaximumReturn;
+    default:                                            return Success;
     }
 }
 // clang-format on
@@ -1396,9 +1392,9 @@ Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_ret
 /**
  * @internal
  * Convenience function to set @a rt2 returned by libmemcached to a pointer to
- * a MemcachedReturnType at @a rt1 if @a rt1 is not a @c nullptr.
+ * a ReturnType at @a rt1 if @a rt1 is not a @c nullptr.
  */
-void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2)
+void MemcachedPrivate::setReturnType(Memcached::ReturnType *rt1, memcached_return_t rt2)
 {
     if (rt1) {
         *rt1 = MemcachedPrivate::returnTypeConvert(rt2);
@@ -1410,12 +1406,12 @@ void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcac
  * Checks if the %Memcached plugin @a ptr is registered to the application and sets
  * the @a rt accordingly.
  */
-bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::MemcachedReturnType *rt)
+bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::ReturnType *rt)
 {
     if (!ptr) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
         if (rt) {
-            *rt = Memcached::PluginNotRegisterd;
+            *rt = Memcached::ReturnType::PluginNotRegisterd;
         }
         return false;
     }
