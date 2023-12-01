@@ -229,7 +229,6 @@ class CSRFProtectionPrivate;
  * @logcat{plugin.csrfprotection}
  *
  * @since Cutelyst 1.12.0
- * @todo Add Cutelee tag to only get the token value instead of a complete input field.
  */
 class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection
     : public Plugin // clazy:exclude=ctor-missing-parent-argument
@@ -340,6 +339,9 @@ public:
 
     /**
      * Returns the current token.
+     *
+     * This method is also used by the \link CuteleeView Cutelee\endlink
+     * tag <CODE>{% c_csrf_token_value %}</CODE>.
      */
     static QByteArray getToken(Context *c);
 

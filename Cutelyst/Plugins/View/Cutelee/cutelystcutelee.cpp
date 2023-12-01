@@ -19,7 +19,7 @@ QHash<QString, Cutelee::AbstractNodeFactory *> CutelystCutelee::nodeFactories(co
     QHash<QString, Cutelee::AbstractNodeFactory *> ret{
         {QStringLiteral("c_uri_for"), new UriForTag()},
         {QStringLiteral("c_csrf_token"), new CSRFTag()},
-    };
+        {QStringLiteral("c_csrf_token_value"), new CSRFTokenTag()}};
 
     return ret;
 }
