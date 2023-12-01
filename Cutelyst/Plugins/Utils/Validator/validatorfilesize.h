@@ -125,11 +125,11 @@ public:
     /**
      * Puts an HTML input pattern for file sizes into the stash.
      *
-     * This will either put \c "^\\d+[,.٫]?\\d*\\s*[KkMmGgTt]?[Ii]?[Bb]?" into the \a stashKey if
-     * the \link Context::locale() current locale's\endlink direction is from left to right, or \c
-     * "[KkMmGgTt]?[Ii]?[Bb]?\\s*\\d+[,.٫]?\\d*" if the direction is right to left.
-     *
-     * \todo Put the decimal point returned by QLocale::decimalPoint() into the regex.
+     * This will either put \c "^\\d+[%1]?\\d*\\s*[KkMmGgTt]?[Ii]?[Bb]?" into
+     * the \a stashKey if the \link Context::locale() current locale’s\endlink direction is from
+     * left to right, or \c "[KkMmGgTt]?[Ii]?[Bb]?\\s*\\d+[%1]?\\d*" if the
+     * direction is right to left, where \c %1 will be replaced by the return value of
+     * QLocale::decimalPoint().
      *
      * \param c         Pointer to the current context.
      * \param stashKey  Name of the stash key to put the pattern in.
