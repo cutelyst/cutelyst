@@ -122,8 +122,10 @@ class SessionPrivate;
  * in the @c Cutelyst_Session_Plugin section. You can set your own default values using the
  * @a defaultConfig parameter of the overloaded constructor.
  *
- * @configblock{expires,integer,7200}
- * Expiration duration of the session in seconds.
+ * @configblock{expires,integer or string,2 hours}
+ * The expiration duration of the session. The value will be parsed by Utils::durationFromString()
+ * (since %Cutelyst 4.0.0, before that, it took simple seconds), so you can use one of the
+ * supported human readable time spans.
  * @endconfigblock
  *
  * @configblock{verify_address,bool,false}
@@ -149,7 +151,8 @@ class SessionPrivate;
  * @configblock{cookie_same_site,string,strict,default\,none\,lax\,strict}
  * Defines the SameSite attribute of the session cookie. See <A
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN</A> to
- * learn more about SameSite cookies. This configuration key is available since %Cutelyst 3.8.0.
+ * learn more about SameSite cookies. Also have a look at QNetworkCookie::SameSite. This
+ * configuration key is available since %Cutelyst 3.8.0.
  * @endconfigblock
  *
  * @logcat{plugin.session}
