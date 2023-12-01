@@ -51,12 +51,15 @@ public:
     static inline void
         extendSessionId(Session *session, Context *c, const QByteArray &sid, qint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QByteArray &sid);
+    QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 
     Session *q_ptr;
 
     qint64 sessionExpires  = 7200;
     qint64 expiryThreshold = 0;
     std::unique_ptr<SessionStore> store;
+    QVariantMap loadedConfig;
+    QVariantMap defaultConfig;
     QByteArray sessionName;
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
     bool cookieHttpOnly                     = true;

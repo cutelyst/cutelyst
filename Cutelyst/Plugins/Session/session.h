@@ -116,10 +116,11 @@ class SessionPrivate;
  * }
  * @endcode
  *
- * <H3>Configuration file options</H3>
+ * <H3 id="configfile">Configuration file options</H3>
  *
  * There are some options you can set in your \ref configuration "application configuration file"
- * in the @c Cutelyst_Session_Plugin section:
+ * in the @c Cutelyst_Session_Plugin section. You can set your own default values using the
+ * @a defaultConfig parameter of the overloaded constructor.
  *
  * @configblock{expires,integer,7200}
  * Expiration duration of the session in seconds.
@@ -160,9 +161,22 @@ class CUTELYST_PLUGIN_SESSION_EXPORT Session : public Plugin
 public:
     /**
      * Constructs a new %Session object with the given @a parent.
-     * @todo Add constructor overload for config file defaults.
      */
     Session(Application *parent);
+
+    /**
+     * Constructs a new %Session object with the given @a parent and @a defaultConfig.
+     *
+     * Use the @a defaultConfig to set default values for the configuration entries from
+     * the <A HREF="#configfile">configuration file</A>.
+     *
+     * @since %Cutelyst 4.0.0
+     */
+    Session(Application *parent, const QVariantMap &defaultConfig);
+
+    /**
+     * Destroys the %Session object.
+     */
     virtual ~Session();
 
     /**

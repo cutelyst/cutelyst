@@ -37,6 +37,13 @@ Session::Session(Cutelyst::Application *parent)
 {
 }
 
+Session::Session(Cutelyst::Application *parent, const QVariantMap &defaultConfig)
+    : Plugin(parent)
+    , d_ptr(new SessionPrivate(this))
+{
+    d_ptr->defaultConfig = defaultConfig;
+}
+
 Cutelyst::Session::~Session()
 {
     delete d_ptr;
@@ -47,15 +54,15 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName().toLatin1() + "_session";
 
-    const QVariantMap config = app->engine()->config(QLatin1String("Cutelyst_Session_Plugin"));
-    d->sessionExpires        = config.value(QLatin1String("expires"), 7200).toLongLong();
-    d->expiryThreshold       = config.value(QLatin1String("expiry_threshold"), 0).toLongLong();
-    d->verifyAddress         = config.value(QLatin1String("verify_address"), false).toBool();
-    d->verifyUserAgent       = config.value(QLatin1String("verify_user_agent"), false).toBool();
-    d->cookieHttpOnly        = config.value(QLatin1String("cookie_http_only"), true).toBool();
-    d->cookieSecure          = config.value(QLatin1String("cookie_secure"), false).toBool();
+    d->loadedConfig    = app->engine()->config(u"Cutelyst_Session_Plugin"_qs);
+    d->sessionExpires  = d->config(u"expires"_qs, 7200).toLongLong();
+    d->expiryThreshold = d->config(u"expiry_threshold"_qs, 0).toLongLong();
+    d->verifyAddress   = d->config(u"verify_address"_qs, false).toBool();
+    d->verifyUserAgent = d->config(u"verify_user_agent"_qs, false).toBool();
+    d->cookieHttpOnly  = d->config(u"cookie_http_only"_qs, true).toBool();
+    d->cookieSecure    = d->config(u"cookie_secure"_qs, false).toBool();
 
-    const QString _sameSite = config.value(u"cookie_same_site"_qs, u"strict"_qs).toString();
+    const QString _sameSite = d->config(u"cookie_same_site"_qs, u"strict"_qs).toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -616,6 +623,11 @@ void SessionPrivate::setSessionId(Session *session, Context *c, const QByteArray
                                           sid,
                                           QDateTime::fromMSecsSinceEpoch(
                                               initialSessionExpires(session, c) * 1000)));
+}
+
+QVariant SessionPrivate::config(const QString &key, const QVariant &defaultValue) const
+{
+    return loadedConfig.value(key, defaultConfig.value(key, defaultValue));
 }
 
 SessionStore::SessionStore(QObject *parent)
