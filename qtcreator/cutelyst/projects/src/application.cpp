@@ -19,4 +19,3 @@ bool %{ProjectName}::init()
 
     return true;
 }
-

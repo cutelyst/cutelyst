@@ -43,4 +43,3 @@ void Root::defaultPage(Context *c)
     c->response()->setBody(QStringLiteral("Page not found!"));
     c->response()->setStatus(404);
 }
-
