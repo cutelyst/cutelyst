@@ -395,10 +395,10 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        out << "project(" << appName << ")"
+        out << "cmake_minimum_required(VERSION 3.16 FATAL_ERROR)"
             << "\n";
         out << "\n";
-        out << "cmake_minimum_required(VERSION 3.16 FATAL_ERROR)"
+        out << "project(" << appName << ")"
             << "\n";
         out << "\n";
         out << "if(WIN32)\n";
