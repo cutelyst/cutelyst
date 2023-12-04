@@ -18,7 +18,7 @@ public:
 
     C_ATTR(index, :Path)
     void index(Context *c);
-    
+
 private Q_SLOTS:
 @if %{BeginMethod}
     bool Begin(Context *c);
