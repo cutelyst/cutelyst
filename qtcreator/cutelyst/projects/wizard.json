@@ -1,147 +1,118 @@
 {
-  "version": 1,
-  "kind": "project",
-  "id": "A.Cutelyst Application",
-  "category": "I.WebProjects",
-  "trDescription": "Creates Cutelyst Web application using CMake to build.",
-  "trDisplayName": "Cutelyst Web Application",
-  "trDisplayCategory": "Web Project",
-  "enabled": "%{JS: [ %{Plugins} ].indexOf('QmakeProjectManager') >= 0 || [ %{Plugins} ].indexOf('QbsProjectManager') >= 0 || [ %{Plugins} ].indexOf('CMakeProjectManager') >= 0}",
-  "options":
-      [
-        {
-          "key": "ProjectFile",
-          "value": "%{JS: '%{BuildSystem}' === 'qmake' ? '%{ProFile}' : ('%{BuildSystem}' === 'cmake' ? '%{CMakeFile}' : '%{QbsFile}')}"
-        },
-        {
-          "key": "ProFile",
-          "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'pro')}"
-        },
-        {
-          "key": "QbsFile",
-          "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'qbs')}"
-        },
-        {
-          "key": "CMakeFile",
-          "value": "%{ProjectDirectory}/CMakeLists.txt"
-        },
-        {
-          "key": "ProjectNameUpper",
-          "value": "%{JS: '%{ProjectName}'.toUpperCase()}"
-        },
-        {
-          "key": "AppSrcFileName",
-          "value": "%{JS: '%{ProjectName}.'.toLowerCase() + Util.preferredSuffix('text/x-c++src')}"
-        },
-        {
-          "key": "AppHdrFileName",
-          "value": "%{JS: '%{ProjectName}.'.toLowerCase() + Util.preferredSuffix('text/x-c++hdr')}"
-        },
-        {
-          "key": "GUARD",
-          "value": "%{JS: Cpp.headerGuard('%{AppHdrFileName}')}"
-        },
-        {
-          "key": "IsTopLevelProject",
-          "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}"
-        }
-      ],
+    "version": 1,
+    "kind": "project",
+    "id": "A.Cutelyst Application",
+    "category": "I.WebProjects",
+    "trDescription": "Creates Cutelyst Web application using CMake to build.",
+    "trDisplayName": "Cutelyst Web Application",
+    "trDisplayCategory": "Web Project",
+    "enabled": "%{JS: [ %{Plugins} ].indexOf('QmakeProjectManager') >= 0 || [ %{Plugins} ].indexOf('QbsProjectManager') >= 0 || [ %{Plugins} ].indexOf('CMakeProjectManager') >= 0}",
+    "options":
+    [
+        { "key": "ProjectFile", "value": "%{JS: '%{BuildSystem}' === 'qmake' ? '%{ProFile}' : ('%{BuildSystem}' === 'cmake' ? '%{CMakeFile}' : '%{QbsFile}')}" },
+        { "key": "ProFile", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'pro')}" },
+        { "key": "QbsFile", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'qbs')}" },
+        { "key": "CMakeFile", "value": "%{ProjectDirectory}/CMakeLists.txt" },
+        { "key": "ProjectNameUpper", "value": "%{JS: '%{ProjectName}'.toUpperCase()}" },
+        { "key": "AppSrcFileName", "value": "%{JS: '%{ProjectName}.'.toLowerCase() + Util.preferredSuffix('text/x-c++src')}" },
+        { "key": "AppHdrFileName", "value": "%{JS: '%{ProjectName}.'.toLowerCase() + Util.preferredSuffix('text/x-c++hdr')}" },
+        { "key": "GUARD", "value": "%{JS: Cpp.headerGuard('%{AppHdrFileName}')}" },
+        { "key": "IsTopLevelProject", "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}" }
+    ],
 
-  "pages":
-      [
+    "pages":
+    [
         {
-          "trDisplayName": "Project Location",
-          "trShortTitle": "Location",
-          "typeId": "Project"
+            "trDisplayName": "Project Location",
+            "trShortTitle": "Location",
+            "typeId": "Project"
         },
         {
-          "trDisplayName": "Define Build System",
-          "trShortTitle": "Build System",
-          "typeId": "Fields",
-          "data":
-              [
+            "trDisplayName": "Define Build System",
+            "trShortTitle": "Build System",
+            "typeId": "Fields",
+            "data":
+            [
                 {
-                  "name": "BuildSystem",
-                  "trDisplayName": "Build system:",
-                  "type": "ComboBox",
-                  "data":
-                      {
+                    "name": "BuildSystem",
+                    "trDisplayName": "Build system:",
+                    "type": "ComboBox",
+                    "data":
+                    {
                         "index": 0,
                         "items":
-                            [
-                              {
+                        [
+                            {
                                 "trKey": "CMake",
                                 "value": "cmake",
                                 "condition": "%{JS: [ %{Plugins} ].indexOf('CMakeProjectManager') >= 0}"
-                              }
-                            ]
-                      }
+                            }
+                        ]
+                    }
                 }
-              ]
+            ]
         },
 
         {
-          "trDisplayName": "Kit Selection",
-          "trShortTitle": "Kits",
-          "typeId": "Kits",
-          "enabled": "%{IsTopLevelProject}",
-          "data": {
-            "projectFilePath": "%{ProjectFile}"
-          }
+            "trDisplayName": "Kit Selection",
+            "trShortTitle": "Kits",
+            "typeId": "Kits",
+            "enabled": "%{IsTopLevelProject}",
+            "data": { "projectFilePath": "%{ProjectFile}" }
         },
         {
-          "trDisplayName": "Project Management",
-          "trShortTitle": "Summary",
-          "typeId": "Summary"
+            "trDisplayName": "Project Management",
+            "trShortTitle": "Summary",
+            "typeId": "Summary"
         }
-      ],
-  "generators":
-      [
+    ],
+    "generators":
+    [
         {
-          "typeId": "File",
-          "data":
-              [
+            "typeId": "File",
+            "data":
+            [
                 {
-                  "source": "file.pro",
-                  "target": "%{ProFile}",
-                  "openAsProject": true,
-                  "condition": "%{JS: '%{BuildSystem}' === 'qmake'}"
+                    "source": "file.pro",
+                    "target": "%{ProFile}",
+                    "openAsProject": true,
+                    "condition": "%{JS: '%{BuildSystem}' === 'qmake'}"
                 },
                 {
-                  "source": "CMakeLists.txt",
-                  "openAsProject": true,
-                  "condition": "%{JS: '%{BuildSystem}' === 'cmake'}"
+                    "source": "CMakeLists.txt",
+                    "openAsProject": true,
+                    "condition": "%{JS: '%{BuildSystem}' === 'cmake'}"
                 },
                 {
-                  "source": "file.qbs",
-                  "target": "%{QbsFile}",
-                  "openAsProject": true,
-                  "condition": "%{JS: '%{BuildSystem}' === 'qbs'}"
+                    "source": "file.qbs",
+                    "target": "%{QbsFile}",
+                    "openAsProject": true,
+                    "condition": "%{JS: '%{BuildSystem}' === 'qbs'}"
                 },
                 {
-                  "source": "src/CMakeLists.txt"
+                    "source": "src/CMakeLists.txt"
                 },
                 {
-                  "source": "src/application.h",
-                  "target": "src/%{AppHdrFileName}"
+                    "source": "src/application.h",
+                    "target": "src/%{AppHdrFileName}"
                 },
                 {
-                  "source": "src/application.cpp",
-                  "target": "src/%{AppSrcFileName}"
+                    "source": "src/application.cpp",
+                    "target": "src/%{AppSrcFileName}"
                 },
                 {
-                  "source": "src/root.h",
-                  "openInEditor": true
+                    "source": "src/root.h",
+                    "openInEditor": true
                 },
                 {
-                  "source": "src/root.cpp"
+                    "source": "src/root.cpp"
                 },
                 {
-                  "source": "git.ignore",
-                  "target": "%{ProjectDirectory}/.gitignore",
-                  "condition": "%{JS: ! %{IsSubproject} && '%{VersionControl}' === 'G.Git'}"
+                    "source": "git.ignore",
+                    "target": "%{ProjectDirectory}/.gitignore",
+                    "condition": "%{JS: ! %{IsSubproject} && '%{VersionControl}' === 'G.Git'}"
                 }
-              ]
+            ]
         }
-      ]
+    ]
 }

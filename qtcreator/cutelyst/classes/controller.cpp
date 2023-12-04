@@ -1,76 +1,41 @@
-%
-{
-Cpp:
-    LicenseTemplate
-}
+%{Cpp:LicenseTemplate}\
 #include "%{HdrFileName}"
 
 using namespace Cutelyst;
-% {JS: Cpp.openNamespaces('%{Class}')}
+%{JS: Cpp.openNamespaces('%{Class}')}\
 
-    %
-{
-    CN
-}
-:: % {CN}(QObject *parent)
+%{CN}::%{CN}(QObject *parent)
     : Controller(parent)
 {
 }
 
-void %
-{
-    CN
-}
-::index(Context *c)
+void %{CN}::index(Context *c)
 {
     // FIXME: Implement me!
 }
-@ if %
-{
-    BeginMethod
-}
+@if %{BeginMethod}
 
-bool %
-{
-    CN
-}
-::Begin(Context *c)
+bool %{CN}::Begin(Context *c)
 {
     // FIXME: Implement me!
     return true;
 }
-@endif @ if %
-{
-    AutoMethod
-}
+@endif
+@if %{AutoMethod}
 
-bool %
-{
-    CN
-}
-::Auto(Context *c)
+bool %{CN}::Auto(Context *c)
 {
     // FIXME: Implement me!
     return true;
 }
-@endif @ if %
-{
-    EndMethod
-}
+@endif
+@if %{EndMethod}
 
-bool %
-{
-    CN
-}
-::End(Context *c)
+bool %{CN}::End(Context *c)
 {
     // FIXME: Implement me!
     return true;
 }
 @endif
 
-    %
-{
-JS:
-    Cpp.closeNamespaces('%{Class}')
-}\
+%{JS: Cpp.closeNamespaces('%{Class}')}\
