@@ -22,7 +22,14 @@ class ValidatorRequiredUnlessStashPrivate;
  *
  * If the \link Context::stash() stash\endlink content identified by \a stashKey does \b not contain
  * \b any of the values specified in the \a stashValues list, the \a field under validation must be
- * present and not empty. This validator ist the opposite of ValidatorRequiredIfStash and is similar
+ * present and not empty. \a stashValues can contain a QString, a QStringList or a QVariantList.
+ * If it is a QString, it is interpreted as a stash key that contains the comparison list, that has
+ * to be either a QStringList or a QVariantList. If \a stashValues or the content of the there
+ * specified stash key is a QStringList, the content of \a stashKey will be converted into a
+ * QString to compare. If \a stashValues or the content of the there specified stash key is a
+ * QVariantList, the variants will be compared.
+ *
+ * This validator ist the opposite of ValidatorRequiredIfStash and is similar
  * to ValidatorRequiredUnless.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link
@@ -38,9 +45,6 @@ class ValidatorRequiredUnlessStashPrivate;
  * \sa ValidatorRequired, ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith,
  * ValidatorRequiredWithAll, ValidatorRequiredWithout, ValidatorRequiredWithoutAll,
  * ValidatorRequiredIfStash
- *
- * \todo Change stashValues to a pure QVariant that can either contain QStringList with values
- * or a QString pointing to a stash key with a list of values.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequiredUnlessStash : public ValidatorRule
 {
@@ -50,13 +54,16 @@ public:
      *
      * \param field         Name of the input field to validate.
      * \param stashKey      Name of the stash key to compare against.
-     * \param stashValues   Values in the \a stashKey from which no one must match the content of
-     *                      the stash key to require the \a field.
+     * \param stashValues   Can be a QString pointing to a stash key containing a QStringList or a
+     *                      QVariantList, directly a QStringList or directly a QVariantList. The
+     *                      list content must match the content of the \a stashKey to require the
+     *                      \a field. No entry from the list must match the content of the
+     *                      \a stashKey to require the \a field.
      * \param messages      Custom error messages if validation fails.
      */
     ValidatorRequiredUnlessStash(const QString &field,
                                  const QString &stashKey,
-                                 const QVariantList &stashValues,
+                                 const QVariant &stashValues,
                                  const ValidatorMessages &messages = ValidatorMessages());
 
     /**
