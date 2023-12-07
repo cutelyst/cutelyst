@@ -1050,6 +1050,20 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorRequiredIfStash with stash match in other stash key *****
+    C_ATTR(requiredIfStashMatchStashKey, :Local :AutoArgs)
+    void requiredIfStashMatchStashKey(Context *c)
+    {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("eins"));
+        c->setStash(QStringLiteral("otherStashKey"),
+                    QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}));
+        Validator v({new ValidatorRequiredIfStash(QStringLiteral("field"),
+                                                  QStringLiteral("stashkey"),
+                                                  QStringLiteral("otherStashKey"),
+                                                  m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
     // ***** Endpoint for ValidatorRequiredIfStash with stash not match *****
     C_ATTR(requiredIfStashNotMatch, :Local :AutoArgs)
     void requiredIfStashNotMatch(Context *c)
@@ -1060,6 +1074,20 @@ public:
             QStringLiteral("stashkey"),
             QVariantList({QStringLiteral("eins"), QStringLiteral("zwei")}),
             m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorRequiredIfStash with stash match in other stash key *****
+    C_ATTR(requiredIfStashNotMatchStashKey, :Local :AutoArgs)
+    void requiredIfStashNotMatchStashKey(Context *c)
+    {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("drei"));
+        c->setStash(QStringLiteral("otherStashKey"),
+                    QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}));
+        Validator v({new ValidatorRequiredIfStash(QStringLiteral("field"),
+                                                  QStringLiteral("stashkey"),
+                                                  QStringLiteral("otherStashKey"),
+                                                  m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -3707,14 +3735,34 @@ void TestValidator::testValidatorRequiredIfStash_data()
                              << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
+    QTest::newRow("valid03") << QStringLiteral("/requiredIfStashMatchStashKey")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
+    QTest::newRow("valid04") << QStringLiteral("/requiredIfStashNotMatchStashKey")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
-    QTest::newRow("invalid03") << QStringLiteral("/requiredIfStashNotMatch")
+    QTest::newRow("invalid01") << QStringLiteral("/requiredIfStashNotMatch")
                                << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
-    QTest::newRow("invalid") << QStringLiteral("/requiredIfStashMatch")
-                             << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+    QTest::newRow("invalid02") << QStringLiteral("/requiredIfStashMatch")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
+    QTest::newRow("invalid03") << QStringLiteral("/requiredIfStashNotMatchStashKey")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
+    QTest::newRow("invalid04") << QStringLiteral("/requiredIfStashMatchStashKey")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 }
 
 void TestValidator::testValidatorRequiredUnless_data()
