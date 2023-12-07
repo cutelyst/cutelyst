@@ -1116,6 +1116,20 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorRequiredUnlessStash with stash match in other stash key *****
+    C_ATTR(requiredUnlessStashMatchStashKey, :Local :AutoArgs)
+    void requiredUnlessStashMatchStashKey(Context *c)
+    {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("eins"));
+        c->setStash(QStringLiteral("otherStashKey"),
+                    QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}));
+        Validator v({new ValidatorRequiredUnlessStash(QStringLiteral("field"),
+                                                      QStringLiteral("stashkey"),
+                                                      QStringLiteral("otherStashKey"),
+                                                      m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
     // ***** Endpoint for ValidatorRequiredUnlessStash with stash not match *****
     C_ATTR(requiredUnlessStashNotMatch, :Local :AutoArgs)
     void requiredUnlessStashNotMatch(Context *c)
@@ -1126,6 +1140,20 @@ public:
             QStringLiteral("stashkey"),
             QVariantList({QStringLiteral("eins"), QStringLiteral("zwei")}),
             m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorRequiredUnlessStash with stash not match in other stash key *****
+    C_ATTR(requiredUnlessStashNotMatchStashKey, :Local :AutoArgs)
+    void requiredUnlessStashNotMatchStashKey(Context *c)
+    {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("drei"));
+        c->setStash(QStringLiteral("otherStashKey"),
+                    QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}));
+        Validator v({new ValidatorRequiredUnlessStash(QStringLiteral("field"),
+                                                      QStringLiteral("stashkey"),
+                                                      QStringLiteral("otherStashKey"),
+                                                      m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -3832,6 +3860,16 @@ void TestValidator::testValidatorRequiredUnlessStash_data()
                              << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
 
     query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdf"));
+    QTest::newRow("valid03") << QStringLiteral("/requiredUnlessStashMatchStashKey")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
+    QTest::newRow("valid04") << QStringLiteral("/requiredUnlessStashMatchStashKey")
+                             << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
     QTest::newRow("invalid00") << QStringLiteral("/requiredUnlessStashNotMatch")
                                << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
@@ -3839,6 +3877,11 @@ void TestValidator::testValidatorRequiredUnlessStash_data()
     query.clear();
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("%20"));
     QTest::newRow("invalid01") << QStringLiteral("/requiredUnlessStashNotMatch")
+                               << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
+    QTest::newRow("invalid03") << QStringLiteral("/requiredUnlessStashNotMatchStashKey")
                                << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 }
 

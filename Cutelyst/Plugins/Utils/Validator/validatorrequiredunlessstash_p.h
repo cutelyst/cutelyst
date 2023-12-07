@@ -16,7 +16,7 @@ class ValidatorRequiredUnlessStashPrivate : public ValidatorRulePrivate
 public:
     ValidatorRequiredUnlessStashPrivate(const QString &f,
                                         QString sk,
-                                        QVariantList sv,
+                                        QVariant sv,
                                         const ValidatorMessages &m)
         : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredUnlessStash")
         , stashKey(std::move(sk))
@@ -25,7 +25,7 @@ public:
     }
 
     QString stashKey;
-    QVariantList stashValues;
+    QVariant stashValues;
 };
 
 } // namespace Cutelyst
