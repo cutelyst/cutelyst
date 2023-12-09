@@ -236,7 +236,8 @@ public:
     [[nodiscard]] QString socketAccess() const;
 
     /**
-     * Defines internal socket timeout.
+     * Defines internal socket timeout in seconds.
+     * Defaults to \c 4.
      * @accessors socketTimeout(), setSocketTimeout()
      */
     Q_PROPERTY(int socket_timeout READ socketTimeout WRITE setSocketTimeout NOTIFY changed)
@@ -361,6 +362,7 @@ public:
     /**
      * Defines the socket listen queue size.
      * This setting currently works only on Linux for TCP sockets.
+     * Default value: \c 100.
      *
      * @accessors listenQueue(), setListenQueue()
      */
@@ -369,7 +371,8 @@ public:
     [[nodiscard]] int listenQueue() const;
 
     /**
-     * Defines the buffer size used when parsing requests.
+     * Defines the buffer size in bytes used when parsing requests.
+     * Default value: \c 4096.
      * @accessors bufferSize(), setBufferSize()
      */
     Q_PROPERTY(int buffer_size READ bufferSize WRITE setBufferSize NOTIFY changed)
@@ -377,8 +380,9 @@ public:
     [[nodiscard]] int bufferSize() const;
 
     /**
-     * Defines the maximum buffer size of POST request. Ff a request has a content length
+     * Defines the maximum buffer size in bytes of POST request. If a request has a content length
      * that is bigger than the post buffer size, a temporary file is created instead.
+     * Default value: \c -1.
      * @accessors postBuffering(), setPostBuffering()
      */
     Q_PROPERTY(qint64 post_buffering READ postBuffering WRITE setPostBuffering NOTIFY changed)
@@ -386,7 +390,8 @@ public:
     [[nodiscard]] qint64 postBuffering() const;
 
     /**
-     * Defines the buffer size when reading a POST request.
+     * Defines the buffer size in bytes when reading a POST request.
+     * Default value: \c 4096.
      * @accessors postBufferingBufsize(), setPostBufferingBufsize()
      */
     Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize
@@ -413,6 +418,7 @@ public:
     /**
      * Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket
      * option.
+     * Default value: \c -1.
      * @accessors %socketSndbuf(), setSocketSndbuf()
      */
     Q_PROPERTY(int socket_sndbuf READ socketSndbuf WRITE setSocketSndbuf NOTIFY changed)
@@ -422,6 +428,7 @@ public:
     /**
      * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF
      * socket option.
+     * Default value: \c -1.
      * @accessors %socketRcvbuf(), setSocketRcvbuf()
      */
     Q_PROPERTY(int socket_rcvbuf READ socketRcvbuf WRITE setSocketRcvbuf NOTIFY changed)
@@ -429,7 +436,7 @@ public:
     [[nodiscard]] int socketRcvbuf() const;
 
     /**
-     * Sets the maximum allowed size of websocket messages (in Kbytes, default 1024).
+     * Sets the maximum allowed size of websocket messages (in KiB, default 1024).
      * @accessors %websocketMaxSize(), setWebsocketMaxSize()
      */
     Q_PROPERTY(

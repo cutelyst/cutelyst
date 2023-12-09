@@ -98,7 +98,7 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineParser parser;
     parser.setApplicationDescription(
         //: CLI app description
-        //% "Fast, developer-friendliy server."
+        //% "Fast, developer-friendly server."
         qtTrId("cutelystd-cli-desc"));
     parser.addHelpOption();
     parser.addVersionOption();
@@ -150,7 +150,7 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption application({QStringLiteral("application"), QStringLiteral("a")},
                                    //: CLI option description
-                                   //% "The Application to load."
+                                   //% "Path to the application file to load."
                                    qtTrId("cutelystd-opt-application-desc"),
                                    qtTrId("cutelystd-opt-value-file"));
     parser.addOption(application);
@@ -185,7 +185,7 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption listenQueue({QStringLiteral("listen"), QStringLiteral("l")},
                                    //: CLI option description
-                                   //% "Set the socket listen queue size."
+                                   //% "Set the socket listen queue size. Default value: 100."
                                    qtTrId("cutelystd-opt-listen-desc"),
                                    //: CLI option value name
                                    //% "size"
@@ -194,7 +194,7 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption bufferSize({QStringLiteral("buffer-size"), QStringLiteral("b")},
                                   //: CLI option description
-                                  //% "Set the internal buffer size."
+                                  //% "Set the internal buffer size. Default value: 4096."
                                   qtTrId("cutelystd-opt-buffer-size-desc"),
                                   //: CLI option value name
                                   //% "bytes"
@@ -204,7 +204,8 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption postBuffering(QStringLiteral("post-buffering"),
                                      //: CLI option description
                                      //% "Sets the size after which buffering takes place on the "
-                                     //% "hard disk instead of in the main memory."
+                                     //% "hard disk instead of in the main memory. "
+                                     //% "Default value: -1."
                                      qtTrId("cutelystd-opt-post-buffering-desc"),
                                      qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(postBuffering);
@@ -212,7 +213,7 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption postBufferingBufsize(
         QStringLiteral("post-buffering-bufsize"),
         //: CLI option description
-        //% "Set the buffer size for read() in post buffering mode."
+        //% "Set the buffer size for read() in post buffering mode. Default value: 4096."
         qtTrId("cutelystd-opt-post-buffering-bufsize-desc"),
         qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(postBufferingBufsize);
@@ -280,7 +281,7 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption socketTimeout({QStringLiteral("socket-timeout"), QStringLiteral("z")},
                                      //: CLI option description
-                                     //% "Set internal socket timeouts."
+                                     //% "Set internal socket timeouts. Default value: 4."
                                      qtTrId("cutelystd-opt-socket-timeout-desc"),
                                      //: CLI option value name
                                      //% "seconds"
@@ -338,7 +339,8 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption socketSndbuf(QStringLiteral("socket-sndbuf"),
                                     //: CLI option description
                                     //% "Sets the socket send buffer size in bytes at the OS "
-                                    //% "level. This maps to the SO_SNDBUF socket option."
+                                    //% "level. This maps to the SO_SNDBUF socket option. "
+                                    //% "Default value: -1."
                                     qtTrId("cutelystd-opt-socket-sndbuf-desc"),
                                     qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(socketSndbuf);
@@ -346,7 +348,8 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption socketRcvbuf(QStringLiteral("socket-rcvbuf"),
                                     //: CLI option description
                                     //% "Sets the socket receive buffer size in bytes at the OS "
-                                    //% "level. This maps to the SO_RCVBUF socket option."
+                                    //% "level. This maps to the SO_RCVBUF socket option. "
+                                    //% "Default value: -1."
                                     qtTrId("cutelystd-opt-socket-rcvbuf-desc"),
                                     qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(socketRcvbuf);
@@ -354,7 +357,8 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption wsMaxSize(QStringLiteral("websocket-max-size"),
                                  //: CLI option description
                                  //% "Sets the websocket receive buffer size in kibibytes at the "
-                                 //% "OS level. This maps to the SO_RCVBUF socket option."
+                                 //% "OS level. This maps to the SO_RCVBUF socket option. "
+                                 //% "Default value: 1024."
                                  qtTrId("cutelystd-opt-websocket-max-size-desc"),
                                  //: CLI option value name
                                  //% "kibibyte"
