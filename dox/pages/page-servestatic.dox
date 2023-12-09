@@ -43,8 +43,8 @@ to override static files by adding multiple paths for static files.
 See the documentation of StaticSimple and StaticCompressed to learn more about these plugins.
 
 \section servestatic-cutelystserver Use the Cutelyst server to serve static files
-The %Cutelyst Server, that is started by \c \serverexec or manually by your own application, can
-also directly serve static files. Using \c \serverexec you have the options <tt>\--static-map</tt>
+The %Cutelyst Server, that is started by \ref cutelystd or manually by your own application, can
+also directly serve static files. Using \ref cutelystd you have the options <tt>\--static-map</tt>
 and <tt>\--static-map2</tt> that can be used multiple times to add mappings for static file
 directories. While <tt>static-map</tt> removes the mount point from the request path,
 <tt>static-map2</tt> appends the complete request path. When integrating the Server class in your

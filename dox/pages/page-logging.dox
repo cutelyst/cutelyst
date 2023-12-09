@@ -26,7 +26,7 @@ systemd service, it will use systemd’s journald to log messages (if the journa
 when compiling %Qt). The same is true for other systems: if there is no user facing console, the
 system logging mechanism will be used (if available). You can set the environment variable
 \c QT_FORCE_STDERR_LOGGING=1 to force logging to \c stderr. So, if you start your application
-with \c \serverexec on the console, you should normally get the logging output directly there.
+with \ref cutelystd on the console, you should normally get the logging output directly there.
 
 If you want to have more control over the way your messages are logged, you can install your own
 message handler in the constructor of your application or in your init function (if you need more
@@ -349,7 +349,7 @@ You can use QLoggingCategory to create your own logging categories for your appl
 \section logging-configure-categories Configure categories
 See QLoggingCategory to learn how to select categories and message types to log. The easiest
 way to directly set this for development is to set \c QT_LOGGING_RULES environment variable
-before executing \c \serverexec. By default, %Cutelyst only logs messages with a priortiy of
+before executing \ref cutelystd. By default, %Cutelyst only logs messages with a priortiy of
 QtWarningMsg or higher. When using the development helper \c \devhelperexec to start a
 development server, all messages of all types/priorities will be logged by appending
 <tt>"cutelyst.*=true"</tt> to \c QT_LOGGING_RULES.
