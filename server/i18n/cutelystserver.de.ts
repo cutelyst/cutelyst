@@ -4,7 +4,8 @@
 <context>
     <name></name>
     <message id="cutelystd-cli-desc">
-        <source>Fast, developer-friendliy server.</source>
+        <source>Fast, developer-friendly server.</source>
+        <oldsource>Fast, developer-friendliy server.</oldsource>
         <extracomment>CLI app description</extracomment>
         <translation>Schneller, entwicklerfreundlicher Server.</translation>
     </message>
@@ -46,9 +47,10 @@
         <translation>Nutze den Lazy-Modus (lädt die Anwendung in den Workern anstatt im Master).</translation>
     </message>
     <message id="cutelystd-opt-application-desc">
-        <source>The Application to load.</source>
+        <source>Path to the application file to load.</source>
+        <oldsource>The Application to load.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Die zu ladende Anwendung.</translation>
+        <translation>Pfad zur zu ladenden Anwendungsdatei.</translation>
     </message>
     <message id="cutelystd-opt-threads-desc">
         <source>The number of threads to use. If set to “auto”, the ideal thread count is used.</source>
@@ -78,9 +80,10 @@
         <translation>Master-Prozess aktivieren.</translation>
     </message>
     <message id="cutelystd-opt-listen-desc">
-        <source>Set the socket listen queue size.</source>
+        <source>Set the socket listen queue size. Default value: 100.</source>
+        <oldsource>Set the socket listen queue size.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Legt die Größe der Socket-Warteschlange fest.</translation>
+        <translation>Legt die Größe der Socket-Warteschlange fest. Standardwert: 100.</translation>
     </message>
     <message id="cutelystd-opt-value-size">
         <source>size</source>
@@ -88,9 +91,10 @@
         <translation>Größe</translation>
     </message>
     <message id="cutelystd-opt-buffer-size-desc">
-        <source>Set the internal buffer size.</source>
+        <source>Set the internal buffer size. Default value: 4096.</source>
+        <oldsource>Set the internal buffer size.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Legt die Größe des internen Zwischenspeichers fest.</translation>
+        <translation>Legt die Größe des internen Zwischenspeichers fest. Standardwert: 4096.</translation>
     </message>
     <message id="cutelystd-opt-value-bytes">
         <source>bytes</source>
@@ -98,14 +102,16 @@
         <translation>Bytes</translation>
     </message>
     <message id="cutelystd-opt-post-buffering-desc">
-        <source>Sets the size after which buffering takes place on the hard disk instead of in the main memory.</source>
+        <source>Sets the size after which buffering takes place on the hard disk instead of in the main memory. Default value: -1.</source>
+        <oldsource>Sets the size after which buffering takes place on the hard disk instead of in the main memory.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Legt die Größe fest, ab der die Pufferung auf der Festplatte statt im Hauptspeicher erfolgt.</translation>
+        <translation>Legt die Größe fest, ab der die Pufferung auf der Festplatte statt im Hauptspeicher erfolgt. Standardwert: -1.</translation>
     </message>
     <message id="cutelystd-opt-post-buffering-bufsize-desc">
-        <source>Set the buffer size for read() in post buffering mode.</source>
+        <source>Set the buffer size for read() in post buffering mode. Default value: 4096.</source>
+        <oldsource>Set the buffer size for read() in post buffering mode.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Legt die Puffergröße für read() im Post-Buffering-Modus fest.</translation>
+        <translation>Legt die Puffergröße für read() im Post-Buffering-Modus fest. Standardwert: 4096.</translation>
     </message>
     <message id="cutelystd-opt-http-socket-desc">
         <source>Bind to the specified TCP socket using the HTTP protocol.</source>
@@ -159,9 +165,10 @@
         <translation>Optionen</translation>
     </message>
     <message id="cutelystd-opt-socket-timeout-desc">
-        <source>Set internal socket timeouts.</source>
+        <source>Set internal socket timeouts. Default value: 4.</source>
+        <oldsource>Set internal socket timeouts.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Legt interne Zeitfristen für Sockets fest.</translation>
+        <translation>Legt interne Zeitfristen für Sockets fest. Standardwert: 4.</translation>
     </message>
     <message id="cutelystd-opt-socket-timeout-value">
         <source>seconds</source>
@@ -207,23 +214,22 @@
         <translation>Aktiviere TCP KEEPALIVEs.</translation>
     </message>
     <message id="cutelystd-opt-socket-sndbuf-desc">
-        <source>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option.</source>
-        <oldsource>Set SO_SNDBUF.</oldsource>
+        <source>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option. Default value: -1.</source>
+        <oldsource>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Setzt die Größe des Socket-Sendepuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_SNDBUF.</translation>
+        <translation>Setzt die Größe des Socket-Sendepuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_SNDBUF. Standardwert: -1.</translation>
     </message>
     <message id="cutelystd-opt-socket-rcvbuf-desc">
-        <source>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.</source>
-        <oldsource>Set SO_RCVBUF.</oldsource>
+        <source>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.</source>
+        <oldsource>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Setzt die Größe des Socket-Empfangspuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF.</translation>
+        <translation>Setzt die Größe des Socket-Empfangspuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF. Standardwert: -1.</translation>
     </message>
     <message id="cutelystd-opt-websocket-max-size-desc">
-        <source>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option.</source>
-        <oldsource>Sets the websocket receive buffer size in kibibytes at the OS
-level. This maps to the SO_RCVBUF socket option.</oldsource>
+        <source>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: 1024.</source>
+        <oldsource>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Setzt die Größe des Websocket-Empfangspuffers in Kibibytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF.</translation>
+        <translation>Setzt die Größe des Websocket-Empfangspuffers in Kibibytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF. Standardwert: 1024.</translation>
     </message>
     <message id="cutelystd-opt-websocket-max-size-value">
         <source>kibibyte</source>
@@ -322,9 +328,10 @@ level. This maps to the SO_RCVBUF socket option.</oldsource>
         <translation>Verteilt neue Verbindungen gleichmäßig auf den Threads nach dem Round-Robin-Verfahren.</translation>
     </message>
     <message id="cutelystd-opt-using-frontend-proxy-desc">
-        <source>Enable frontend (reverse-)prox support.</source>
+        <source>Enable frontend (reverse-)proxy support.</source>
+        <oldsource>Enable frontend (reverse-)prox support.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviere Unterstützung für Reverse Proxy.</translation>
     </message>
     <message id="cutelystd-err-no-socket-opened">
         <source>No specified sockets were able to be opened</source>
