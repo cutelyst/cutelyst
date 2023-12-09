@@ -24,7 +24,9 @@ and exit.
 .SS "Load Application"
 .TP
 .BI "\-a\fR,\fP \-\^\-application" " file"
-Application to load.
+Path to the application
+.I file
+to load.
 .TP
 .BR \-r ", " \-\^\-auto-restart
 Automatically restart when the application file changes.
@@ -61,7 +63,7 @@ to local
 .I path
 to serve static files. The mountpoint will be removed from the request path and the rest will be appended to the local path to find the file to serve. Can be used multiple times.
 
-If for example defining a mountpoint
+If for example defining a static map
 .I /assets=/path/to/static
 and then getting a request for
 .IR /assets/css/style.css ,
@@ -77,7 +79,7 @@ In the end it will try to find the requested file locally at
 .BI \-\^\-static-map2 " mountpoint=path"
 Like static-map but completely appending the request path to the local path. Can be used multiple times.
 
-If for example defining a mountpoint
+If for example defining a static map
 .I /assets=/path/to/static
 and then getting a request for
 .IR /assets/css/style.css ,
@@ -122,7 +124,7 @@ to use.
 If set to “auto”, the ideal thread count is used.
 .TP
 .BI \-\^\-cpu-affinity " core count"
-Set CPU affinity with the number of CPUs available for each wokrker core.
+Set CPU affinity with the number of CPUs available for each worker core.
 .TP
 .B \-\^\-experimental-thread-balancer
 Balances new connections to threads using round-robin.
@@ -132,19 +134,19 @@ Balances new connections to threads using round-robin.
 Bind to the specified TCP socket using HTTP protocol.
 .TP
 .B \-\^\-upgrade-h2c
-Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text)
+Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
 .TP
 .BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " address"
-Bind to the specified TCP socket using HTTPS protocol
+Bind to the specified TCP socket using HTTPS protocol.
 .TP
 .B \-\^\-https-h2
-Defines if HTTPS sockect should use ALPN to negotiate HTTP/2
+Defines if HTTPS sockect should use ALPN to negotiate HTTP/2.
 .TP
 .BI "\-\^\-h2\fR,\fP \-\^\-http2-socket" " address"
 Bind to the specified TCP socket using HTTP/2 only protocol.
 .TP
 .BI "\-\^\-http2-header-table-size" " size"
-Set the HTTP2 header table size. Default value: 4096
+Set the HTTP2 header table size. Default value: 4096.
 .TP
 .BI \-\^\-fastcgi-socket " address"
 Bind to the specified UNIX/TCP socket using FastCGI protocol.
@@ -153,14 +155,25 @@ Bind to the specified UNIX/TCP socket using FastCGI protocol.
 Set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access.
 .TP
 .BI \-\^\-chown-socket " uid:gid"
-Chown unix sockets.
+Chown UNIX sockets.
 .TP
 .B \-\^\-reuse-port
-Enable SO_REUSEPORT flag on socket (Linux 3.9+)
+Enable SO_REUSEPORT flag on socket (Linux 3.9+).
 .TP
 .BI "\-z\fR,\fP \-\^\-socket-timeout" " seconds"
 Set internal sockets timeout in
 .IR seconds .
+Default value: 4.
+.TP
+.BI "\-l\fR,\fP \-\^\-listen" " size"
+Set the socket listen queue
+.IR size .
+Default value: 100.
+.TP
+.B \-\^\-using-frontend-proxy
+Defines if a reverse proxy operates in front of this application server. If enabled, parses the
+HTTP headers X-Forwarded-For, X-Forwarded-Host and X-Forwarded-Proto and uses this info to update
+Cutelyst::EngineRequest.
 .SS "User and Group"
 .TP
 .BI \-\^\-uid " user/uid"
@@ -190,26 +203,27 @@ Enable TCP KEEPALIVEs.
 .BI "\-b\fR,\fP \-\^\-buffer-size" " bytes"
 Set internal buffer size in
 .IR bytes .
+Default value: 4096.
 .TP
 .BI \-\^\-post-buffering " bytes"
 Sets the size in
 .I bytes
-after which buffering takes place on the hard disk instead of in the main memory.
+after which buffering takes place on the hard disk instead of in the main memory. Default value: -1.
 .TP
 .BI \-\^\-post-buffering-bufsize " bytes"
 Set buffer size in
 .I bytes
-for read() in post buffering mode.
+for read() in post buffering mode. Default value: 4096.
 .TP
 .BI \-\^\-socket-sndbuf " bytes"
-Set the socket receive buffer size in bytes
+Set the socket send buffer size in
 .I bytes
-at the OS level. This maps to the SO_RCVBUF socket option.
+at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.
 .TP
 .BI \-\^\-socket-rcvbuf " bytes"
-Set the socket receive buffer size in bytes
+Set the socket receive buffer size in
 .I bytes
-at the OS level. This maps to the SO_RCVBUF socket option.
+at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.
 .TP
 .BI \-\^\-websocket-max-size " kibibytes"
 Set the websocket receive buffer size in
