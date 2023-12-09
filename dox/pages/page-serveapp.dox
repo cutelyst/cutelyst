@@ -1,0 +1,8 @@
+namespace Cutelyst {
+
+/**
+\page serveapp Serve your application
+\brief Serve your %Cutelyst application using \ref cutelystd.
+*/
+
+}
