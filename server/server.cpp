@@ -454,7 +454,7 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption frontendProxy(QStringLiteral("using-frontend-proxy"),
                                      //: CLI option description
-                                     //% "Enable frontend (reverse-)prox support."
+                                     //% "Enable frontend (reverse-)proxy support."
                                      qtTrId("cutelystd-opt-using-frontend-proxy-desc"));
     parser.addOption(frontendProxy);
 
