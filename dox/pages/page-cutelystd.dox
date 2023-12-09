@@ -1,0 +1,222 @@
+namespace Cutelyst {
+
+/**
+\page cutelystd \serverexec
+\tableofcontents
+\brief Fast, developer-friendly server.
+
+\serverexec is a developer friendly WSGI server for %Cutelyst applications that can either be used as
+standalone HTTP server or as a gateway between your %Cutelyst application and another webserver like
+Apache or nginx. It supports HTTP, HTTPS, HTTP/2 and FastCGI sockets. See \ref serveapp for
+usage instructions; this page documents the options available for \serverexec.
+
+\section cutelystd-options Options
+\subsection cutelystd-options-generic Generic program information
+
+\par -h, \--help
+Output a usage message and exit.
+
+\par -v, \--version
+Output the version number of \serverexec and ext.
+
+\subsection cutelystd-options-load Load application
+
+\par -a, \--application <em>file</em>
+Path to the application \a file to load.
+
+\par -r, \--auto-restart
+Automatically restart when the application file changes.
+
+\par \--pidfile <em>file</em>
+Create PID \a file (before privileges drop).
+
+\par \--pidfile2 <em>file</em>
+Create PID \a file (after privileges drop).
+
+\par \--stop <em>pidfile</em>
+Stop an instance identified by \a pidfile.
+
+\subsection cutelystd-options-dirs Directories and mount points
+
+\par \--chdir <em>directory</em>
+Change to the specified \a directory before the application loads.
+
+\par \--chdir2 <em>directory</em>
+Change to the specified \a directory after the application has been loaded.
+
+\par \--static-map <em>mountpoint=path</em>
+\parblock
+Map \a mountpoint to local \a path to serve static files. The \a mountpoint will be removed from
+the request path and the rest will be appended to the local \a path to find the file to serve.
+Can be used multiple times.
+
+If for example defining a static map <tt>/assets=/path/to/static</tt> and then getting a request
+for <tt>/assets/css/style.css</tt>, the server will remove <tt>/assets</tt> from the  request path
+and appends the rest to the local \a path for that \a mountpoint. In the end it will try to find
+the requested file locally at </tt>/path/to/static/css/style.css</tt>.
+
+See also \ref servestatic.
+\endparblock
+
+\par \--static-map2 <em>mountpoint=path</em>
+\parblock
+Like static‐map but completely appending the request path to the local \a path. Can be used
+multiple times.
+
+If  for  example  defining a static map <tt>/assets=/path/to/static</tt> and then getting a
+request for <tt>/assets/css/style.css</tt>, the server will append the complete request path to the
+local \a path and will try to find the requested file there. In this example the server would
+search locally at <tt>/path/to/static/assets/css/style.css</tt> for  the  requested file.
+
+See also \ref servestatic.
+\endparblock
+
+\subsection cutelystd-options-config Load configuration
+
+\par \--ini <em>file</em>
+\parblock
+Load configuration from INI \a file. When used multiple times, content will be merged and same
+keys in the sections will be overwritten by content from later files.
+
+See also \ref configuration.
+\endparblock
+
+\par -j, \--json <em>file</em>
+\parblock
+Load configuration from JSON \a file. When used multiple times, content will be merged and same
+keys in the sections will be overwritten by content from later files.
+
+See also \ref configuration.
+\endparblock
+
+\par \--touch-reload <em>file</em>
+Reload the application if the specified \a file is modified/touched.
+
+\subsection cutelystd-options-threads Threads and processes
+
+\par -M, \--master
+Enable master process.
+
+\par \--lazy
+Enable lazy mode to load application in workers instead of master.
+
+\par -p, \--processes <em>processes</em>
+Spawn the specified number of \a processes. If set to \c auto, the ideal process count is used.
+
+\par -t, \--threads <em>threads</em>
+Number of \a threads to use. If set to \a auto, the ideal thread count is used.
+
+\par \--cpu-affinity <em>cores</em>
+Set CPU affinity with the number of CPUs available for each worker core.
+
+\par \--experimental-thread-balancer
+Balances new connections to threads using round‐robin.
+
+\subsection cutelystd-options-sockets Sockets
+
+\par \--h1, \--http-socket <em>address</em>
+Bind to the specified TCP socket using HTTP protocol.
+
+\par \--upgrade-h2c
+Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
+
+\par \--hs1, \--https-socket <em>address</em>
+Bind to the specified TCP socket using HTTPS protocol.
+
+\par \--https-h2
+Defines if HTTPS sockect should use ALPN to negotiate HTTP/2.
+
+\par \--h2, \--http2-socket <em>address</em>
+Bind to the specified TCP socket using HTTP/2 only protocol.
+
+\par \--http2-header-table <em>size</em>
+Set the HTTP2 header table \a size. Default value: \c 4096.
+
+\par \--fastcgi-socket <em>address</em>
+Bind to the specified UNIX/TCP socket using FastCGI protocol.
+
+\par \--socket-access <em>options</em>
+Set the LOCAL socket access, such as ’ugo’ standing for User, Group, Other access.
+
+\par \--chown-socket <em>uid:gid</em>
+Chown UNIX sockets.
+
+\par \--reuse-port
+Enable SO_REUSEPORT flag on socket (Linux 3.9+).
+
+\par -z, \--socket-timeout <em>seconds</em>
+Set internal sockets timeout in \a seconds. Default value: \c 4.
+
+\par -l, \--listen <em>size</em>
+Set the socket listen queue \a size. Default value: \c 100.
+
+\par \--using-frontend-proxy
+Defines if a reverse proxy operates in front of this application server. If enabled, parses the
+HTTP headers \c X-Forwarded-For, \c X-Forwarded-Host and \c X-Forwarded-Proto and uses this info
+to update Cutelyst::EngineRequest.
+
+\subsection cutelystd-options-usergroup User and group
+
+\par \--uid <em>user/uid</em>
+Setuid to the specified \a user/uid.
+
+\par \--gid <em>group/gid</em>
+Setgid to the specified \a group/gid.
+
+\par \--no-initgroups
+Disable additional groups set via initgroups().
+
+\par \--umask <em>mode</em>
+Set file \a mode creation mask.
+
+\subsection cutelystd-options-tcp TCP settings
+
+\par \--tcp-nodelay
+Enable TCP NODELAY on each request.
+
+\par \--so-keepalive
+Enable TCP KEEPALIVEs.
+
+\subsection cutelystd-options-buffers Buffer sizes
+
+\par -b, \--buffer-size <em>bytes</em>
+Set internal buffer size in \a bytes. Default value: \c 4096.
+
+\par \--post-buffering <em>bytes</em>
+Sets the size in \a bytes after which buffering takes place on the hard disk instead of in the
+main memory. Default value: \c -1.
+
+\par \--post-buffering-bufsize <em>bytes</em>
+Set buffer size in bytes for read() in post buffering mode. Default value: \c 4096.
+
+\par \--socket-sndbuf <em>bytes</em>
+Set the socket send buffer size in \a bytes at the OS level.
+This maps to the SO_RCVBUF socket option. Default value: \c -1.
+
+\par \--socket-rcvbuf <em>bytes</em>
+Set the socket receive buffer size in \a bytes at the OS level.
+This maps to the SO_RCVBUF socket option. Default value: \c ‐1.
+
+\par \--websocket-max-size <em>kibibytes</em>
+Set the websocket receive buffer size in \a kibibytes at the OS level.
+This maps to the SO_RCVBUF socket option. Default value: \c 1024 KiB.
+
+\section cutelystd-exit Exit status
+\c 0 on success and \c 1 if something failed.
+
+\section cutelystd-exampled Examples
+
+Start application with HTTP socket and load INI config file:\n
+<code>\serverexec -M -a /path/to/cutelystapp.so --h1 localhost:3000 --ini /path/to/appconfig.ini</code>
+
+Start application on local FastCGI socket and protect socket file:\n
+<code>\serverexec -M  -a  /path/to/cutelystapp.so --fastcgi‐socket /run/cutelystapp.sock --chown‐socket myuser:www --socket‐access ug --uid myuser</code>
+
+Start application on local FastCGI socket and store PID in file:\n
+<code>\serverexec -M -a /path/to/cutelystapp.so --fastcgi‐socket /run/cutelystapp.sock --pidfile /run/cutelystapp.pid</code>
+
+Stop application using pid file:\n
+<code>\serverexec --stop /run/cutelystapp.pid</code>
+*/
+
+}
