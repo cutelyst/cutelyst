@@ -267,9 +267,9 @@ public:
      * sourceText for the given @a context into the target locale. Optionally you can use a @a
      * disambiguation and/or the @a n parameter to translate a pluralized version.
      *
-     * Do not use this method directly but use Context::translat() or Context::qtTrId().
+     * Do not use this method directly but use Context::translate() or Context::qtTrId().
      *
-     * @sa Context::translate(), QTranslator::translate()
+     * @sa Context::translate(), Context::qtTrId(), QTranslator::translate()
      * @sa @ref translations
      *
      * @since %Cutelyst 1.5.0

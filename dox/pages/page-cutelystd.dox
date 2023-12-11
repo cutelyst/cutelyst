@@ -8,7 +8,8 @@ namespace Cutelyst {
 \serverexec is a developer friendly WSGI server for %Cutelyst applications that can either be used as
 standalone HTTP server or as a gateway between your %Cutelyst application and another webserver like
 Apache or nginx. It supports HTTP, HTTPS, HTTP/2 and FastCGI sockets. See \ref serveapp for
-usage instructions; this page documents the options available for \serverexec.
+usage instructions; this page documents the options available for \serverexec. All options can also
+be set via configuration file options. See \ref configuration.
 
 \section cutelystd-options Options
 \subsection cutelystd-options-generic Generic program information
@@ -207,16 +208,16 @@ This maps to the SO_RCVBUF socket option. Default value: \c 1024 KiB.
 \section cutelystd-exampled Examples
 
 Start application with HTTP socket and load INI config file:\n
-<code>\serverexec -M -a /path/to/cutelystapp.so --h1 localhost:3000 --ini /path/to/appconfig.ini</code>
+<code>\serverexec -M -a /path/to/cutelystapp.so \--h1 localhost:3000 \--ini /path/to/appconfig.ini</code>
 
 Start application on local FastCGI socket and protect socket file:\n
-<code>\serverexec -M  -a  /path/to/cutelystapp.so --fastcgi‐socket /run/cutelystapp.sock --chown‐socket myuser:www --socket‐access ug --uid myuser</code>
+<code>\serverexec -M  -a  /path/to/cutelystapp.so \--fastcgi‐socket /run/cutelystapp.sock \--chown‐socket myuser:www \--socket‐access ug \--uid myuser</code>
 
 Start application on local FastCGI socket and store PID in file:\n
-<code>\serverexec -M -a /path/to/cutelystapp.so --fastcgi‐socket /run/cutelystapp.sock --pidfile /run/cutelystapp.pid</code>
+<code>\serverexec -M -a /path/to/cutelystapp.so \--fastcgi‐socket /run/cutelystapp.sock \--pidfile /run/cutelystapp.pid</code>
 
 Stop application using pid file:\n
-<code>\serverexec --stop /run/cutelystapp.pid</code>
+<code>\serverexec \--stop /run/cutelystapp.pid</code>
 */
 
 }

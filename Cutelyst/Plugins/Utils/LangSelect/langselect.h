@@ -330,7 +330,7 @@ class LangSelectPrivate;
  * @endconfigblock
  *
  * @configblock{cookie_same_site,string,lax,default\,none\,lax\,strict}
- * Defines the SameSite attribute of the CSRF cookie. See <A
+ * Defines the SameSite attribute of the cookie. See <A
  * HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value">MDN</A>
  * to learn more about SameSite cookies. See also QNetworkCookie::SameSite.
  * @endconfigblock
