@@ -20,12 +20,12 @@ class ServerPrivate;
  * \brief Implements a web server.
  *
  * The %Server class implements a web server that can either act on it’s own or
- * behind another server like nginx or Apache. This class is used by \c \serverexec but
+ * behind another server like nginx or Apache. This class is used by \ref cutelystd but
  * can also be integrated into your own application to start() and stop() a %Cutelyst
  * server.
  *
  * <h3 id="configfile">Configuration file options</h3>
- * All command line options from \c \serverexec have their counterparts as properties of this class.
+ * All command line options from \ref cutelystd have their counterparts as properties of this class.
  * Using the \c server section of your \ref configuration "application configuration file" you
  * can set this properties via configuration file options. Simply use the property names as
  * configuration keys.
