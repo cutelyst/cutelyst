@@ -31,7 +31,7 @@ BraceWrapping:
     AfterCaseLabel: true
     AfterClass: true
     AfterEnum: false
-    AfterFunction:   true
+    AfterFunction: true
     SplitEmptyFunction: true
     SplitEmptyRecord: true
     SplitEmptyNamespace: true
