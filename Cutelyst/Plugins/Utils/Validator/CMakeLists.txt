@@ -177,7 +177,7 @@ target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Utils
     PUBLIC
         Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE
-        Qt${QT_VERSION_MAJOR}::Network
+        Qt::Network
 )
 
 # used to populate pkgconfig file

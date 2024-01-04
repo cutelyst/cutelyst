@@ -29,7 +29,7 @@ target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Utils
         Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE
         Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session
-        Qt${QT_VERSION_MAJOR}::Network
+        Qt::Network
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsLangSelect PROPERTY PUBLIC_HEADER ${plugin_langselect_HEADERS})

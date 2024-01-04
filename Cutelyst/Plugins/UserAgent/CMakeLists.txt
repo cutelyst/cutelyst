@@ -21,8 +21,8 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UserA
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UserAgent
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Qt${QT_VERSION_MAJOR}::Network
+    PRIVATE Qt::Core
+    PRIVATE Qt::Network
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UserAgent PROPERTY PUBLIC_HEADER ${plugin_useragent_HEADERS})

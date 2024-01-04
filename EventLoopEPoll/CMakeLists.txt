@@ -25,7 +25,7 @@ set_target_properties(${target_name} PROPERTIES
 set_compiler_flags(${target_name})
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll
-    Qt${QT_VERSION_MAJOR}::Core
+    Qt::Core
 )
 if(TARGET epoll-shim::epoll-shim) # FreeBSD only
     target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll epoll-shim::epoll-shim)

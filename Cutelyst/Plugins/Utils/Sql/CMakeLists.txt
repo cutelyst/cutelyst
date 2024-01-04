@@ -23,7 +23,7 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Utils
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsSql
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Qt${QT_VERSION_MAJOR}::Sql
+    PRIVATE Qt::Sql
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsSql PROPERTY PUBLIC_HEADER ${plugin_sql_HEADERS})

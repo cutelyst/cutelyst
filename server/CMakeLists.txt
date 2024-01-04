@@ -114,7 +114,7 @@ if(ENABLE_LTO)
 endif()
 
 target_link_libraries(cutelystd
-    PRIVATE Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE Qt::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
 )
