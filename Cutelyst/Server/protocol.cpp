@@ -12,7 +12,7 @@
 #include <QTemporaryFile>
 
 Q_LOGGING_CATEGORY(C_SERVER_PROTO, "cutelyst.server.proto", QtWarningMsg)
-Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_STATS)
 
 using namespace Cutelyst;
 
