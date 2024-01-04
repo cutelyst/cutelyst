@@ -10,25 +10,11 @@ add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.h
   ${_testresource_rcc_src}
 )
-target_compile_features(coverage_test
-  PRIVATE
-    cxx_auto_type
-  PUBLIC
-    cxx_nullptr
-    cxx_override
-)
 target_link_libraries(coverage_test Qt::Test Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core Qt::Network)
 
 function(cute_test _testname _link1 _link2 _link3)
     add_executable(${_testname}_exec ${_testname}.cpp)
     add_test(NAME ${_testname} COMMAND ${_testname}_exec)
-    target_compile_features(${_testname}_exec
-      PRIVATE
-        cxx_auto_type
-      PUBLIC
-        cxx_nullptr
-        cxx_override
-    )
     target_link_libraries(${_testname}_exec ${_link1} ${_link2} ${_link3} Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core coverage_test)
 endfunction()
 
