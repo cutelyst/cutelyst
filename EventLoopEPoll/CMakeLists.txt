@@ -15,7 +15,7 @@ add_library(${target_name}
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
+add_library(Cutelyst::EventLoopEPoll ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
 
 set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME EventLoopEPoll

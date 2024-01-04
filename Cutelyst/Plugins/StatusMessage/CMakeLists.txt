@@ -12,7 +12,7 @@ add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StatusMessage
     ${plugin_statusmessage_SRC}
     ${plugin_statusmessage_HEADERS}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::StatusMessage ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StatusMessage)
+add_library(Cutelyst::StatusMessage ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StatusMessage)
 
 set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StatusMessage PROPERTIES
     EXPORT_NAME StatusMessage
@@ -21,8 +21,8 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Statu
 )
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StatusMessage
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session
+    PRIVATE Cutelyst::Core
+    PRIVATE Cutelyst::Session
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StatusMessage PROPERTY PUBLIC_HEADER ${plugin_statusmessage_HEADERS})

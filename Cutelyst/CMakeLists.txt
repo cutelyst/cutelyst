@@ -100,7 +100,7 @@ add_library(${target_name}
     ${cutelystqt_HEADERS}
     ${cutelystqt_HEADERS_PRIVATE}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
+add_library(Cutelyst::Core ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
 set_compiler_flags(${target_name})
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")

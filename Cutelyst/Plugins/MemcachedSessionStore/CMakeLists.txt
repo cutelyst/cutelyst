@@ -15,7 +15,7 @@ add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessio
     ${plugin_memcachedsessionstore_SRC}
     ${plugin_memcachedsessionstore_HEADERS}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::MemcachedSessionStore ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore)
+add_library(Cutelyst::MemcachedSessionStore ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore)
 
 set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore PROPERTIES
     EXPORT_NAME MemcachedSessionStore
@@ -24,8 +24,8 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Memca
 )
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore
-    PUBLIC Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Memcached
+    PUBLIC Cutelyst::Session
+    PRIVATE Cutelyst::Memcached
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore PROPERTY PUBLIC_HEADER ${plugin_memcachedsessionstore_HEADERS})

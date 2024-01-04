@@ -68,7 +68,7 @@ set(target_name_server Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Serv
 
 add_library(${target_name_server} ${cutelyst_server_SRC})
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server ALIAS ${target_name_server})
+add_library(Cutelyst::Server ALIAS ${target_name_server})
 
 set_target_properties(${target_name_server} PROPERTIES
     EXPORT_NAME Server
@@ -78,12 +78,12 @@ set_target_properties(${target_name_server} PROPERTIES
 set_compiler_flags(${target_name_server})
 
 target_link_libraries(${target_name_server}
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE Cutelyst::Core
 )
 
-if (TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll)
+if (TARGET Cutelyst::EventLoopEPoll)
 target_link_libraries(${target_name_server}
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll
+    PRIVATE Cutelyst::EventLoopEPoll
 )
 target_compile_definitions(${target_name_server} PRIVATE HAS_EventLoopEPoll)
 endif ()
@@ -114,14 +114,15 @@ if(ENABLE_LTO)
 endif()
 
 target_link_libraries(cutelystd
-    PRIVATE Qt::Core
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
+    PRIVATE
+    Qt::Core
+    Cutelyst::Core
+    Cutelyst::Server
 )
 
-if (TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll)
+if (TARGET Cutelyst::EventLoopEPoll)
 target_link_libraries(cutelystd
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll
+    PRIVATE Cutelyst::EventLoopEPoll
 )
 endif ()
 

@@ -8,7 +8,7 @@ add_executable(cutelyst-hello-world ${hello_SRCS})
 target_link_libraries(cutelyst-hello-world PRIVATE
     Qt::Core
     Qt::Network
-    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
-    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session
+    Cutelyst::Core
+    Cutelyst::Server
+    Cutelyst::Session
 )

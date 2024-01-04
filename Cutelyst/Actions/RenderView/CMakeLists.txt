@@ -6,7 +6,7 @@ add_library(ActionRenderView MODULE
 )
 
 target_link_libraries(ActionRenderView
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE Cutelyst::Core
 )
 
 if(ENABLE_LTO)

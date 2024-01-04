@@ -15,6 +15,6 @@ add_executable(${target_name} ${hello_SRCS})
 target_link_libraries(${target_name} PRIVATE
     Qt::Widgets
     Qt::Network
-    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
+    Cutelyst::Core
+    Cutelyst::Server
 )

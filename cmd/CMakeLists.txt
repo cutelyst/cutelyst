@@ -15,12 +15,12 @@ endif()
 target_link_libraries(cutelyst-skell
     PRIVATE Qt::Core
     PRIVATE Qt::Network
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
+    PRIVATE Cutelyst::Core
+    PRIVATE Cutelyst::Server
 )
 if (LINUX)
 target_link_libraries(cutelyst-skell
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll
+    PRIVATE Cutelyst::EventLoopEPoll
 )
 endif ()
 

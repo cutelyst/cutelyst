@@ -6,7 +6,7 @@ add_library(ActionREST MODULE
 )
 
 target_link_libraries(ActionREST
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE Cutelyst::Core
 )
 
 if(ENABLE_LTO)
