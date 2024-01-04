@@ -5,7 +5,7 @@
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
-#include <server/server.h>
+#include <Cutelyst/Server/server.h>
 
 #include <QMessageBox>
 #include <QNetworkAccessManager>

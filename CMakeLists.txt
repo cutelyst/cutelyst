@@ -170,8 +170,6 @@ install(EXPORT CutelystTargets
 
 add_subdirectory(3rdparty)
 
-add_subdirectory(Cutelyst)
-
 # CMake 3.25 introduces LINUX and FREEBSD as automatically-set variables,
 # but before then need to set them by hand.
 if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
@@ -197,7 +195,7 @@ if (LINUX OR FREEBSD)
     endif()
 endif()
 
-add_subdirectory(server)
+add_subdirectory(Cutelyst)
 
 add_subdirectory(cmd)
 

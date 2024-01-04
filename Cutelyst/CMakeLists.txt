@@ -170,3 +170,4 @@ install(FILES ${cutelystcore_QM_FILES} DESTINATION ${I18NDIR})
 
 add_subdirectory(Plugins)
 add_subdirectory(Actions)
+add_subdirectory(Server)

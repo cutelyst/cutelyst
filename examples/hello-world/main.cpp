@@ -4,7 +4,7 @@
  */
 #include "hello.h"
 
-#include <server/server.h>
+#include <Cutelyst/Server/server.h>
 
 #include <QCoreApplication>
 
