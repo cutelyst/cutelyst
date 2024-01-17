@@ -203,7 +203,7 @@ bool DispatchTypeChained::registerAction(Action *action)
         return false;
     }
 
-    const QString chainedTo = chainedList.first();
+    const QString &chainedTo = chainedList.first();
     if (chainedTo == u'/' + action->name()) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
             << "Actions cannot chain to themselves registering /" << action->name();
