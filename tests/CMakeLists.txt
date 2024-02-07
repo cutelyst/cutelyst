@@ -34,6 +34,7 @@ cutelyst_templates_unit_tests(
     testdispatcherchained
     testactionrest
     testactionrenderview
+    tst_dispatcher
 )
 
 cute_test(testvalidator Cutelyst::Utils::Validator "" "")
