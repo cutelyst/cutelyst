@@ -359,8 +359,8 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
                 case LabelTooLong:
                     qCDebug(C_VALIDATOR).noquote()
                         << debugString(c)
-                        << "At least on of the domain name labels exceeds the maximum"
-                        << "size of" << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
+                        << "At least on of the domain name labels exceeds the maximum" << "size of"
+                        << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
                     break;
                 case TooLong:
                     qCDebug(C_VALIDATOR).noquote()
