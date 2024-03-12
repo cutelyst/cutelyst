@@ -66,9 +66,8 @@ bool ValidatorFileSize::validate(const QString &value,
                      (startsWith == ValidatorFileSizePrivate::StartsWith::SymbolPart))) {
                     digitPart.append(ch);
                 } else {
-                    qCDebug(C_VALIDATOR).nospace()
-                        << "ValidatorFileSize: Validation failed for " << value << ": "
-                        << "symbol inside digit part";
+                    qCDebug(C_VALIDATOR).nospace() << "ValidatorFileSize: Validation failed for "
+                                                   << value << ": " << "symbol inside digit part";
                     valid = false;
                     break;
                 }

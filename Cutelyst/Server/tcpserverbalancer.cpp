@@ -459,15 +459,10 @@ TcpServer *TcpServerBalancer::createServer(ServerEngine *engine)
     connect(engine, &ServerEngine::shutdown, server, &TcpServer::shutdown);
 
     if (m_balancer) {
-        connect(
-            engine,
-            &ServerEngine::started,
-            this,
-            [this, server]() {
+        connect(engine, &ServerEngine::started, this, [this, server]() {
             m_servers.push_back(server);
             resumeAccepting();
-        },
-            Qt::QueuedConnection);
+        }, Qt::QueuedConnection);
         connect(server,
                 &TcpServer::createConnection,
                 server,
@@ -477,18 +472,13 @@ TcpServer *TcpServerBalancer::createServer(ServerEngine *engine)
 
 #ifdef Q_OS_LINUX
         if (m_wsgi->reusePort()) {
-            connect(
-                engine,
-                &ServerEngine::started,
-                this,
-                [this, server]() {
+            connect(engine, &ServerEngine::started, this, [this, server]() {
                 int socket = listenReuse(
                     m_address, m_wsgi->listenQueue(), m_port, m_wsgi->reusePort(), true);
                 if (!server->setSocketDescriptor(socket)) {
                     qFatal("Failed to set server socket descriptor, reuse-port");
                 }
-            },
-                Qt::DirectConnection);
+            }, Qt::DirectConnection);
             return server;
         }
 #endif
