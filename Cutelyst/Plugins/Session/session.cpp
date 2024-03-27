@@ -412,31 +412,31 @@ QVariant SessionPrivate::loadSession(Context *c)
                     .toHash();
             c->setStash(SESSION_VALUES, sessionData);
 
-            if (m_instance->d_ptr->verifyAddress &&
-                sessionData.contains(QStringLiteral("__address")) &&
-                sessionData.value(QStringLiteral("__address")).toString() !=
-                    c->request()->address().toString()) {
-                qCWarning(C_SESSION) << "Deleting session" << sid << "due to address mismatch:"
-                                     << sessionData.value(QStringLiteral("__address")).toString()
-                                     << "!=" << c->request()->address().toString();
-                deleteSession(m_instance, c, QStringLiteral("address mismatch"));
-                return ret;
+            if (m_instance->d_ptr->verifyAddress) {
+                auto it = sessionData.constFind(u"__address"_qs);
+                if (it != sessionData.constEnd() &&
+                    it->toString() != c->request()->address().toString()) {
+                    qCWarning(C_SESSION)
+                        << "Deleting session" << sid << "due to address mismatch:" << *it
+                        << "!=" << c->request()->address().toString();
+                    deleteSession(m_instance, c, QStringLiteral("address mismatch"));
+                    return ret;
+                }
             }
 
             if (m_instance->d_ptr->verifyUserAgent) {
                 auto it = sessionData.constFind(u"__user_agent"_qs);
                 if (it != sessionData.constEnd() &&
-                    it.value().toByteArray() != c->request()->userAgent()) {
+                    it->toByteArray() != c->request()->userAgent()) {
                     qCWarning(C_SESSION)
-                        << "Deleting session" << sid << "due to user agent mismatch:"
-                        << sessionData.value(QStringLiteral("__user_agent")).toString()
+                        << "Deleting session" << sid << "due to user agent mismatch:" << *it
                         << "!=" << c->request()->userAgent();
                     deleteSession(m_instance, c, QStringLiteral("user agent mismatch"));
                     return ret;
                 }
             }
 
-            qCDebug(C_SESSION) << "Restored session" << sid;
+            qCDebug(C_SESSION) << "Restored session" << sid << "keys" << sessionData.size();
 
             ret = sessionData;
         }
@@ -614,18 +614,16 @@ void SessionPrivate::extendSessionId(Session *session,
                                      const QByteArray &sid,
                                      qint64 expires)
 {
-    updateSessionCookie(
-        c, makeSessionCookie(session, c, sid, QDateTime::fromSecsSinceEpoch(expires)));
+    updateSessionCookie(c,
+                        makeSessionCookie(session, c, sid, QDateTime::fromSecsSinceEpoch(expires)));
 }
 
 void SessionPrivate::setSessionId(Session *session, Context *c, const QByteArray &sid)
 {
-    updateSessionCookie(c,
-                        makeSessionCookie(session,
-                                          c,
-                                          sid,
-                                          QDateTime::fromSecsSinceEpoch(
-                                              initialSessionExpires(session, c))));
+    updateSessionCookie(
+        c,
+        makeSessionCookie(
+            session, c, sid, QDateTime::fromSecsSinceEpoch(initialSessionExpires(session, c))));
 }
 
 QVariant SessionPrivate::config(const QString &key, const QVariant &defaultValue) const

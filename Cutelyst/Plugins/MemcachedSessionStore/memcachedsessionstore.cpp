@@ -117,7 +117,8 @@ QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteA
                 ok = Memcached::removeByKey(groupKey, sessionKey);
             }
             if (!ok) {
-                qCWarning(C_MEMCACHEDSESSIONSTORE) << "Failed to remove session from Memcached.";
+                qCWarning(C_MEMCACHEDSESSIONSTORE)
+                    << "Failed to remove session from Memcached." << groupKey << sessionKey;
             }
         } else {
             bool ok            = false;
