@@ -162,26 +162,27 @@ DispatchType::MatchType
 
     Q_D(const DispatchTypeChained);
 
-    // TODO avoid toString()
-    // TODO remove mid(1)
-    const BestActionMatch ret =
-        d->recurseMatch(args.size(), u"/"_s, path.mid(1).toString().split(QLatin1Char('/')));
-    const ActionList chain = ret.actions;
+    const BestActionMatch ret = d->recurseMatch(args.size(), u"/"_qs, path.mid(1).split(u'/'));
+    const ActionList chain    = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;
     }
 
     QStringList decodedArgs;
-    const QStringList parts = ret.parts;
-    for (const QString &arg : parts) {
-        QString aux = arg;
+    const auto parts = ret.parts;
+    for (const auto &arg : parts) {
+        QString aux = arg.toString();
         decodedArgs.append(Utils::decodePercentEncoding(&aux));
     }
 
     ActionChain *action = new ActionChain(chain, c);
     Request *request    = c->request();
     request->setArguments(decodedArgs);
-    request->setCaptures(ret.captures);
+    QStringList captures;
+    for (const auto a : ret.captures) {
+        captures.append(a.toString());
+    }
+    request->setCaptures(captures);
     request->setMatch(QLatin1Char('/') + action->reverse());
     setupMatchedAction(c, action);
 
@@ -356,10 +357,10 @@ bool DispatchTypeChained::inUse()
 
 BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                                                          const QString &parent,
-                                                         const QStringList &pathParts) const
+                                                         const QList<QStringView> &pathParts) const
 {
     BestActionMatch bestAction;
-    auto it = childrenOf.constFind(parent);
+    const auto it = childrenOf.constFind(parent);
     if (it == childrenOf.constEnd()) {
         return bestAction;
     }
@@ -372,13 +373,25 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
     });
 
     for (const QString &tryPart : keys) {
-        QStringList parts = pathParts;
+        auto parts = pathParts;
         if (!tryPart.isEmpty()) {
             // We want to count the number of parts a split would give
             // and remove the number of parts from tryPart
-            int tryPartCount               = tryPart.count(QLatin1Char('/')) + 1;
-            const QStringList possiblePart = parts.mid(0, tryPartCount);
-            if (tryPart != possiblePart.join(QLatin1Char('/'))) {
+            int tryPartCount         = tryPart.count(u'/') + 1;
+            const auto possibleParts = parts.mid(0, tryPartCount);
+
+            QString possiblePartsString;
+            bool first = true;
+            for (const auto part : possibleParts) {
+                if (first) {
+                    possiblePartsString = part.toString();
+                    first               = false;
+                } else {
+                    possiblePartsString.append(u'/' + part);
+                }
+            }
+
+            if (tryPart != possiblePartsString) {
                 continue;
             }
             parts = parts.mid(tryPartCount);
@@ -387,7 +400,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
         const Actions tryActions = children.value(tryPart);
         for (Action *action : tryActions) {
             const ParamsMultiMap attributes = action->attributes();
-            if (attributes.contains(QStringLiteral("CaptureArgs"))) {
+            if (attributes.contains(u"CaptureArgs"_qs)) {
                 const int captureCount = action->numberOfCaptures();
                 // Short-circuit if not enough remaining parts
                 if (parts.size() < captureCount) {
@@ -395,14 +408,14 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                 }
 
                 // strip CaptureArgs into list
-                const QStringList captures = parts.mid(0, captureCount);
+                const auto captures = parts.mid(0, captureCount);
 
                 // check if the action may fit, depending on a given test by the app
                 if (!action->matchCaptures(captures.size())) {
                     continue;
                 }
 
-                const QStringList localParts = parts.mid(captureCount);
+                const auto localParts = parts.mid(captureCount);
 
                 // try the remaining parts against children of this action
                 const BestActionMatch ret =
@@ -411,10 +424,10 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                 //    No best action currently
                 // OR The action has less parts
                 // OR The action has equal parts but less captured data (ergo more defined)
-                ActionList actions               = ret.actions;
-                const QStringList actionCaptures = ret.captures;
-                const QStringList actionParts    = ret.parts;
-                int bestActionParts              = bestAction.parts.size();
+                ActionList actions        = ret.actions;
+                const auto actionCaptures = ret.captures;
+                const auto actionParts    = ret.parts;
+                int bestActionParts       = bestAction.parts.size();
 
                 if (!actions.isEmpty() &&
                     (bestAction.isNull || actionParts.size() < bestActionParts ||
@@ -422,8 +435,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                       actionCaptures.size() < bestAction.captures.size() &&
                       ret.n_pathParts > bestAction.n_pathParts))) {
                     actions.prepend(action);
-                    int pathparts =
-                        attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
+                    int pathparts          = attributes.value(u"PathPart"_qs).count(u'/') + 1;
                     bestAction.actions     = actions;
                     bestAction.captures    = captures + actionCaptures;
                     bestAction.parts       = actionParts;
@@ -435,9 +447,8 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                     continue;
                 }
 
-                const QString argsAttr = attributes.value(QStringLiteral("Args"));
-                const int pathparts =
-                    attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
+                const QString argsAttr = attributes.value(u"Args"_qs);
+                const int pathparts    = attributes.value(u"PathPart"_qs).count(u'/') + 1;
                 //    No best action currently
                 // OR This one matches with fewer parts left than the current best action,
                 //    And therefore is a better match
@@ -448,7 +459,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                 if (bestAction.isNull || parts.size() < bestAction.parts.size() ||
                     (parts.isEmpty() && !argsAttr.isEmpty() && action->numberOfArgs() == 0)) {
                     bestAction.actions     = {action};
-                    bestAction.captures    = QStringList();
+                    bestAction.captures    = {};
                     bestAction.parts       = parts;
                     bestAction.n_pathParts = pathparts;
                     bestAction.isNull      = false;
