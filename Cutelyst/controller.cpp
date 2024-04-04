@@ -653,8 +653,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
     }
 
     // If the method is private add a Private attribute
-    if (!ret.contains(QStringLiteral("Private")) && method.access() == QMetaMethod::Private) {
-        ret.replace(QStringLiteral("Private"), QString());
+    if (!ret.contains(u"Private"_qs) && method.access() == QMetaMethod::Private) {
+        ret.insert(u"Private"_qs, {});
     }
 
     return ret;
@@ -714,12 +714,13 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
 {
     QString instanceName = name;
     if (!instanceName.isEmpty()) {
-        instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
+        static const QRegularExpression wordOnly(u"\\W"_qs);
+        instanceName.remove(wordOnly);
 
         QMetaType id = QMetaType::fromName(instanceName.toLatin1().data());
         if (!id.isValid()) {
-            if (!instanceName.endsWith(QLatin1Char('*'))) {
-                instanceName.append(QLatin1Char('*'));
+            if (!instanceName.endsWith(u'*')) {
+                instanceName.append(u'*');
             }
 
             id = QMetaType::fromName(instanceName.toLatin1().data());

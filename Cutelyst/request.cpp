@@ -269,7 +269,7 @@ QStringList Request::queryParameters(const QString &key) const
     return ret;
 }
 
-QByteArray Request::cookie(QByteArrayView name) const
+QByteArray Request::cookie(QAnyStringView name) const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
@@ -279,7 +279,7 @@ QByteArray Request::cookie(QByteArrayView name) const
     return d->cookies.value(name).value;
 }
 
-QByteArrayList Request::cookies(QByteArrayView name) const
+QByteArrayList Request::cookies(QAnyStringView name) const
 {
     QByteArrayList ret;
     Q_D(const Request);
@@ -295,7 +295,7 @@ QByteArrayList Request::cookies(QByteArrayView name) const
     return ret;
 }
 
-QMultiMap<QByteArrayView, Request::Cookie> Request::cookies() const
+QMultiMap<QAnyStringView, Request::Cookie> Request::cookies() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
@@ -379,7 +379,7 @@ QVector<Upload *> Request::uploads() const
     return d->uploads;
 }
 
-QMultiMap<QStringView, Cutelyst::Upload *> Request::uploadsMap() const
+QMultiMap<QAnyStringView, Cutelyst::Upload *> Request::uploadsMap() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
@@ -388,7 +388,7 @@ QMultiMap<QStringView, Cutelyst::Upload *> Request::uploadsMap() const
     return d->uploadsMap;
 }
 
-Uploads Request::uploads(QStringView name) const
+Uploads Request::uploads(QAnyStringView name) const
 {
     Uploads ret;
     const auto map   = uploadsMap();
