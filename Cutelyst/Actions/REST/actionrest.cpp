@@ -115,7 +115,7 @@ bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) con
     Response *response = c->response();
     response->setContentType("text/plain"_qba);
     response->setStatus(Response::OK); // 200
-    response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
+    response->setHeader("Allow", getAllowedMethods(c->controller(), methodName));
     response->body().clear();
     return true;
 }
@@ -124,7 +124,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 {
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
-    response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
+    response->setHeader("Allow", getAllowedMethods(c->controller(), methodName));
     const QByteArray body = "Method " + c->req()->method() + " not implemented for " +
                             c->uriFor(methodName).toString().toLatin1();
     response->setBody(body);

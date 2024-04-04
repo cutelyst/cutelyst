@@ -503,8 +503,8 @@ void Context::finalize()
         qCDebug(CUTELYST_STATS,
                 "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 d->response->status(),
-                d->response->headers().header("Content-Type"_qba, "unknown"_qba).constData(),
-                d->response->headers().header("Content-Length"_qba, "unknown"_qba).constData());
+                d->response->headers().header("Content-Type", "unknown"_qba).constData(),
+                d->response->headers().header("Content-Length", "unknown"_qba).constData());
 
         const std::chrono::duration<double> duration =
             std::chrono::steady_clock::now() - d->engineRequest->startOfRequest;
