@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - master
+      - dantti/v5
   pull_request:
     branches:
       - master
+      - dantti/v5
 
 jobs:
   build:
