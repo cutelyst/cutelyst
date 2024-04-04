@@ -18,8 +18,8 @@ typedef QHash<QString, StringActionsMap> StringStringActionsMap;
 
 struct BestActionMatch {
     ActionList actions;
-    QStringList captures;
-    QStringList parts;
+    QList<QStringView> captures;
+    QList<QStringView> parts;
     int n_pathParts = 0;
     bool isNull     = true;
 };
@@ -27,8 +27,9 @@ struct BestActionMatch {
 class DispatchTypeChainedPrivate
 {
 public:
-    BestActionMatch
-        recurseMatch(int reqArgsSize, const QString &parent, const QStringList &pathParts) const;
+    BestActionMatch recurseMatch(int reqArgsSize,
+                                 const QString &parent,
+                                 const QList<QStringView> &pathParts) const;
     bool checkArgsAttr(Action *action, const QString &name) const;
     static QString listExtraHttpMethods(Action *action);
     static QString listExtraConsumes(Action *action);
