@@ -16,10 +16,10 @@ inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth);
 
 namespace {
 QVector<Headers::HeaderKeyValue>::const_iterator
-    findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QByteArrayView key) noexcept
+    findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QAnyStringView key) noexcept
 {
     auto matchKey = [key](Headers::HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
+        return QAnyStringView::compare(key, entry.key, Qt::CaseInsensitive) == 0;
     };
     return std::find_if(headers.cbegin(), headers.cend(), matchKey);
 }
@@ -236,7 +236,7 @@ bool Headers::ifModifiedSince(const QDateTime &lastModified) const
     return true;
 }
 
-bool Headers::ifMatch(const QByteArray &etag) const
+bool Headers::ifMatch(QAnyStringView etag) const
 {
     auto value = header("If-Match");
     if (!value.isEmpty()) {
@@ -247,7 +247,7 @@ bool Headers::ifMatch(const QByteArray &etag) const
     return true;
 }
 
-bool Headers::ifNoneMatch(const QByteArray &etag) const
+bool Headers::ifNoneMatch(QAnyStringView etag) const
 {
     auto value = header("If-None-Match");
     if (!value.isEmpty()) {
@@ -389,7 +389,7 @@ Headers::Authorization Headers::proxyAuthorizationBasicObject() const
     return decodeBasicAuthPair(proxyAuthorization());
 }
 
-QByteArray Headers::header(QByteArrayView key) const noexcept
+QByteArray Headers::header(QAnyStringView key) const noexcept
 {
     if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
         return result->value;
@@ -397,12 +397,12 @@ QByteArray Headers::header(QByteArrayView key) const noexcept
     return {};
 }
 
-QString Headers::headerAsString(QByteArrayView key) const
+QString Headers::headerAsString(QAnyStringView key) const
 {
     return QString::fromLatin1(header(key));
 }
 
-QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) const noexcept
+QByteArray Headers::header(QAnyStringView key, const QByteArray &defaultValue) const noexcept
 {
     if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
         return result->value;
@@ -410,12 +410,15 @@ QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) c
     return defaultValue;
 }
 
-QString Headers::headerAsString(QByteArrayView key, const QByteArray &defaultValue) const
+QString Headers::headerAsString(QAnyStringView key, const QString &defaultValue) const
 {
-    return QString::fromLatin1(header(key, defaultValue));
+    if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
+        return QString::fromLatin1(result->value);
+    }
+    return defaultValue;
 }
 
-QByteArrayList Headers::headers(QByteArrayView key) const
+QByteArrayList Headers::headers(QAnyStringView key) const
 {
     QByteArrayList ret;
     for (auto result = findHeaderConst(m_data, key); result != m_data.end(); ++result) {
@@ -424,7 +427,7 @@ QByteArrayList Headers::headers(QByteArrayView key) const
     return ret;
 }
 
-QStringList Headers::headersAsStrings(QByteArrayView key) const
+QStringList Headers::headersAsStrings(QAnyStringView key) const
 {
     QStringList ret;
     for (auto result = findHeaderConst(m_data, key); result != m_data.end(); ++result) {
@@ -467,13 +470,14 @@ void Headers::pushHeader(const QByteArray &key, const QByteArrayList &values)
     m_data.push_back({key, values.join(", ")});
 }
 
-void Headers::removeHeader(QByteArrayView key)
+void Headers::removeHeader(QAnyStringView key)
 {
-    m_data.removeIf(
-        [key](HeaderKeyValue entry) { return key.compare(entry.key, Qt::CaseInsensitive) == 0; });
+    m_data.removeIf([key](HeaderKeyValue entry) {
+        return QAnyStringView::compare(key, entry.key, Qt::CaseInsensitive) == 0;
+    });
 }
 
-bool Headers::contains(QByteArrayView key) const noexcept
+bool Headers::contains(QAnyStringView key) const noexcept
 {
     auto result = findHeaderConst(m_data, key);
     return result != m_data.end();
@@ -500,7 +504,7 @@ QByteArrayList Headers::keys() const
     return ret;
 }
 
-QByteArray Headers::operator[](QByteArrayView key) const noexcept
+QByteArray Headers::operator[](QAnyStringView key) const noexcept
 {
     return header(key);
 }

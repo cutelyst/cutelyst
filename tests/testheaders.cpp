@@ -22,6 +22,10 @@ void TestHeaders::testCombining()
 
     // insensitive
     headers.setHeader("x-test"_qba, "test1"_qba);
+    QCOMPARE(headers.header("x-test"), "test1"_qba);
+    QCOMPARE(headers.header(u"x-test"), "test1"_qba);
+    QCOMPARE(headers.header(u8"x-test"), "test1"_qba);
+    QCOMPARE(headers.header(u"x-test"_qs), "test1"_qba);
     QCOMPARE(headers.header("x-test"_qba), "test1"_qba);
 
     headers.setHeader("x-TEST"_qba, "test2"_qba);

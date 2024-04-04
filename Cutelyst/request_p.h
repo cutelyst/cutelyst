@@ -49,14 +49,13 @@ public:
 
     mutable QUrl url;
     mutable QString base;
-    mutable QMultiMap<QByteArrayView, Request::Cookie> cookies;
+    mutable QMultiMap<QAnyStringView, Request::Cookie> cookies;
     mutable ParamsMultiMap queryParam;
     mutable QString queryKeywords;
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
     mutable QString remoteHostname;
-    // TODO maybe QByteArrayView?
-    mutable QMultiMap<QStringView, Upload *> uploadsMap;
+    mutable QMultiMap<QAnyStringView, Upload *> uploadsMap;
     mutable QVector<Upload *> uploads;
     mutable ParserStatus parserStatus = NotParsed;
 };

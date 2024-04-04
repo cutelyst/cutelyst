@@ -201,7 +201,7 @@ public:
      * In case of false client should usually discard posted data and return
      * status code of 412 - Response::PreconditionFailed.
      */
-    [[nodiscard]] bool ifMatch(const QByteArray &etag) const;
+    [[nodiscard]] bool ifMatch(QAnyStringView etag) const;
 
     /**
      * Checks for If-None-Match header to see if the client has the most recent
@@ -211,7 +211,7 @@ public:
      * In case of true client should usually return an empty body along with a
      * status code of 304 - Response::NotModified.
      */
-    [[nodiscard]] bool ifNoneMatch(const QByteArray &etag) const;
+    [[nodiscard]] bool ifNoneMatch(QAnyStringView etag) const;
 
     /**
      * Sets the ETag header in strong form by not prepending a 'W/' (weak etag)
@@ -352,36 +352,36 @@ public:
     /**
      * Returns the value associated with \p key
      */
-    [[nodiscard]] QByteArray header(QByteArrayView key) const noexcept;
+    [[nodiscard]] QByteArray header(QAnyStringView key) const noexcept;
 
     /**
      * Returns the value associated with \p key from latin1
      * \note This allocates memory so avoid when possible
      */
-    [[nodiscard]] QString headerAsString(QByteArrayView key) const;
+    [[nodiscard]] QString headerAsString(QAnyStringView key) const;
 
     /**
      * Returns the value associated with \p key, if field is not set \p defaultValue is returned
      */
-    [[nodiscard]] QByteArray header(QByteArrayView key,
+    [[nodiscard]] QByteArray header(QAnyStringView key,
                                     const QByteArray &defaultValue) const noexcept;
 
     /**
      * Returns the value associated with \p key from latin1, if field is not set \p defaultValue is
      * returned \note This allocates memory so avoid when possible
      */
-    [[nodiscard]] QString headerAsString(QByteArrayView key, const QByteArray &defaultValue) const;
+    [[nodiscard]] QString headerAsString(QAnyStringView key, const QString &defaultValue) const;
 
     /**
      * Returns all values associated with \p key
      */
-    [[nodiscard]] QByteArrayList headers(QByteArrayView key) const;
+    [[nodiscard]] QByteArrayList headers(QAnyStringView key) const;
 
     /**
      * Returns all values associated with \p key
      * \note This allocates memory so avoid when possible
      */
-    [[nodiscard]] QStringList headersAsStrings(QByteArrayView key) const;
+    [[nodiscard]] QStringList headersAsStrings(QAnyStringView key) const;
 
     /**
      * Sets the header field to value
@@ -406,7 +406,7 @@ public:
     /**
      * This method removes a header identified by \p field.
      */
-    void removeHeader(QByteArrayView key);
+    void removeHeader(QAnyStringView key);
 
     /**
      * Clears all headers.
@@ -421,14 +421,14 @@ public:
     /**
      * Returns \c true if the header field specified by \a key is defined.
      */
-    [[nodiscard]] bool contains(QByteArrayView key) const noexcept;
+    [[nodiscard]] bool contains(QAnyStringView key) const noexcept;
 
     [[nodiscard]] QByteArrayList keys() const;
 
     /**
      * Returns the value associated with \a key.
      */
-    QByteArray operator[](QByteArrayView key) const noexcept;
+    QByteArray operator[](QAnyStringView key) const noexcept;
 
     /**
      * Assigns \a other to this Header and returns a reference to this Header.
