@@ -343,24 +343,24 @@ public:
     /**
      * Returns the first cookie value with the given name
      */
-    [[nodiscard]] QByteArray cookie(QByteArrayView name) const;
+    [[nodiscard]] QByteArray cookie(QAnyStringView name) const;
 
     /**
      * Returns a list of cookies that match with the given name
      *
      * \note this return values in insertion order.
      */
-    [[nodiscard]] QByteArrayList cookies(QByteArrayView name) const;
+    [[nodiscard]] QByteArrayList cookies(QAnyStringView name) const;
 
     /**
      * Returns all the cookies from the request
      */
-    [[nodiscard]] QMultiMap<QByteArrayView, Cookie> cookies() const;
+    [[nodiscard]] QMultiMap<QAnyStringView, Cookie> cookies() const;
 
     /**
      * Short for headers().header(key);
      */
-    [[nodiscard]] inline QByteArray header(QByteArrayView key) const noexcept;
+    [[nodiscard]] inline QByteArray header(QAnyStringView key) const noexcept;
 
     /**
      * Returns the HTTP request headers
@@ -437,19 +437,19 @@ public:
      * Returns a map containing uploads, where their key is
      * the field name.
      */
-    [[nodiscard]] QMultiMap<QStringView, Upload *> uploadsMap() const;
+    [[nodiscard]] QMultiMap<QAnyStringView, Upload *> uploadsMap() const;
 
     /**
      * Returns all (if any) Upload objects for the given field.
      */
-    [[nodiscard]] Uploads uploads(QStringView name) const;
+    [[nodiscard]] Uploads uploads(QAnyStringView name) const;
 
     /**
      * Returns the first Upload object for the given field,
      * if no upload matches the field name this function
      * returns 0.
      */
-    [[nodiscard]] inline Upload *upload(QStringView name) const;
+    [[nodiscard]] inline Upload *upload(QAnyStringView name) const;
 
     /**
      * Returns a ParamsMultiMap of parameters stemming from the current request's params,
@@ -608,7 +608,7 @@ inline QByteArray Request::contentType() const
     return headers().contentType();
 }
 
-inline QByteArray Request::header(QByteArrayView key) const noexcept
+inline QByteArray Request::header(QAnyStringView key) const noexcept
 {
     return headers().header(key);
 }
@@ -623,7 +623,7 @@ inline QByteArray Request::referer() const noexcept
     return headers().referer();
 }
 
-inline Upload *Request::upload(QStringView name) const
+inline Upload *Request::upload(QAnyStringView name) const
 {
     return uploadsMap().value(name);
 }
