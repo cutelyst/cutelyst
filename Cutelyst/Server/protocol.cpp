@@ -14,7 +14,7 @@
 #include <QTemporaryFile>
 
 Q_LOGGING_CATEGORY(C_SERVER_PROTO, "cutelyst.server.proto", QtWarningMsg)
-#if defined(Cutelyst4Qt6Server_EXPORTS)
+#if defined(CUTELYST_SERVER_EXPORT_STATS)
 Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
 #else
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_STATS)
