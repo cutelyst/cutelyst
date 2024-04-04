@@ -24,7 +24,7 @@ TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
                                                    QByteArray *body)
 {
     QIODevice *bodyDevice = nullptr;
-    if (headers.header("Sequential"_ba).isEmpty()) {
+    if (headers.header("Sequential").isEmpty()) {
         bodyDevice = new QBuffer(body);
     } else {
         bodyDevice = new SequentialBuffer(body);

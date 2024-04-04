@@ -40,7 +40,7 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!(d->engineRequest->status & EngineRequest::FinalizedHeaders)) {
-        if (d->headers.header("Transfer-Encoding"_ba).compare("chunked") == 0) {
+        if (d->headers.header("Transfer-Encoding").compare("chunked") == 0) {
             d->engineRequest->status |= EngineRequest::IOWrite | EngineRequest::Chunked;
         } else {
             // When chunked encoding is not set the client can only know
