@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(cutelyst
-    VERSION 4.2.1
+    VERSION 5.0.0
     DESCRIPTION "A C++ Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework."
     HOMEPAGE_URL "https://cutelyst.org/"
     LANGUAGES CXX)
@@ -9,8 +9,7 @@ project(cutelyst
 include(GNUInstallDirs)
 
 set(QT_VERSION_MAJOR 6)
-set(QT_MINIMUM_VERSION 6.2)
-# TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
+set(QT_MINIMUM_VERSION 6.4)
 find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
 set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})
