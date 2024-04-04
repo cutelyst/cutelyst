@@ -691,14 +691,13 @@ bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &
 bool LangSelectPrivate::getFromHeader(Context *c, const QByteArray &name) const
 {
     if (detectFromHeader) {
-        // TODO Qt::SkipEmptyParts
-        const auto accpetedLangs = c->req()->header(name).split(',');
+        const auto accpetedLangs =
+            c->req()->headers().headerAsString(name).split(u',', Qt::SkipEmptyParts);
         if (Q_LIKELY(!accpetedLangs.empty())) {
             std::map<float, QLocale> langMap;
-            for (const auto &ba : accpetedLangs) {
-                const QString al = QString::fromLatin1(ba);
-                const auto idx   = al.indexOf(u';');
-                float priority   = 1.0f;
+            for (const auto &al : accpetedLangs) {
+                const auto idx = al.indexOf(u';');
+                float priority = 1.0f;
                 QString langPart;
                 bool ok = true;
                 if (idx > -1) {
