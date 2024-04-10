@@ -356,16 +356,12 @@ void Context::attachAsync()
 {
     Q_D(Context);
 
-    auto guard = qScopeGuard([d] {
-        // ASync might be destroyed at the same stack level it was created
-        // allowing this method to call finished() twice, with
-        // a null context the second time this is why we decrease when
-        // leaving this method, so when that happens the next if
-        // will skip this method
-        --d->actionRefCount;
-    });
-
-    if (d->actionRefCount - 1 != 0) {
+    // ASync might be destroyed at the same stack level it was created
+    // resulting in this method being called while it was caller,
+    // allowing this method to call finished() twice, with
+    // a null context the second time so we check also check
+    // if the action stack is not empty to skip this method
+    if (--d->actionRefCount || !d->stack.isEmpty()) {
         return;
     }
 
@@ -379,8 +375,7 @@ void Context::attachAsync()
             Component *action = d->pendingAsync.dequeue();
             const bool ret    = execute(action);
 
-            // the executed action increased our ref count
-            if (d->actionRefCount != 1) {
+            if (d->actionRefCount) {
                 return;
             }
 
