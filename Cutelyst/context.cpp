@@ -361,7 +361,17 @@ void Context::detachAsync() noexcept
 void Context::attachAsync()
 {
     Q_D(Context);
-    if (--d->actionRefCount) {
+
+    auto guard = qScopeGuard([d] {
+        // ASync might be destroyed at the same stack level it was created
+        // allowing this method to call finished() twice, with
+        // a null context the second time this is why we decrease when
+        // leaving this method, so when that happens the next if
+        // will skip this method
+        --d->actionRefCount;
+    });
+
+    if (d->actionRefCount - 1 != 0) {
         return;
     }
 
@@ -371,11 +381,12 @@ void Context::attachAsync()
     }
 
     if (d->engineRequest->status & EngineRequest::Async) {
-        while (d->asyncAction < d->pendingAsync.size()) {
-            Component *action = d->pendingAsync[d->asyncAction++];
+        while (!d->pendingAsync.isEmpty()) {
+            Component *action = d->pendingAsync.dequeue();
             const bool ret    = execute(action);
 
-            if (d->actionRefCount) {
+            // the executed action increased our ref count
+            if (d->actionRefCount != 1) {
                 return;
             }
 
