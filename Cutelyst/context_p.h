@@ -11,6 +11,7 @@
 #include "request_p.h"
 #include "response.h"
 
+#include <QQueue>
 #include <QStack>
 #include <QVariantHash>
 
@@ -40,7 +41,7 @@ public:
     QLocale locale{QLocale::English, QLocale::LatinScript, QLocale::UnitedStates};
     QStack<Component *> stack;
     QVector<Plugin *> plugins;
-    QVector<Component *> pendingAsync;
+    QQueue<Component *> pendingAsync;
 
     Application *app;
     Engine *engine;
@@ -54,7 +55,6 @@ public:
     Action *action      = nullptr;
     View *view          = nullptr;
     Stats *stats        = nullptr;
-    int asyncAction     = 0;
     int actionRefCount  = 0;
     int chainedCaptured = 0;
     int chainedIx       = 0;

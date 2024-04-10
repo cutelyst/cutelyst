@@ -386,7 +386,7 @@ bool Controller::_DISPATCH(Context *c)
     const auto beginAutoList = d->beginAutoList;
     for (Action *action : beginAutoList) {
         if (actionRefCount) {
-            c->d_ptr->pendingAsync.append(action);
+            c->d_ptr->pendingAsync.enqueue(action);
         } else if (!action->dispatch(c)) {
             ret = false;
             break;
@@ -396,7 +396,7 @@ bool Controller::_DISPATCH(Context *c)
     // Dispatch to Action
     if (ret) {
         if (actionRefCount) {
-            c->d_ptr->pendingAsync.append(c->action());
+            c->d_ptr->pendingAsync.enqueue(c->action());
         } else {
             ret = c->action()->dispatch(c);
         }
@@ -405,7 +405,7 @@ bool Controller::_DISPATCH(Context *c)
     // Dispatch to End
     if (d->end) {
         if (actionRefCount) {
-            c->d_ptr->pendingAsync.append(d->end);
+            c->d_ptr->pendingAsync.enqueue(d->end);
         } else if (!d->end->dispatch(c)) {
             ret = false;
         }
