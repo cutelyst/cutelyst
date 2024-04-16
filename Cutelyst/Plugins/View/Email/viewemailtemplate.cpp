@@ -49,7 +49,8 @@ void ViewEmailTemplate::setDefaultView(const QString &view)
     Q_EMIT changedProp();
 }
 
-MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)
+std::shared_ptr<MimePart>
+    generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)
 {
     const QString defaultView = d->defaultView;
 
@@ -95,7 +96,7 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
     }
     c->stash() = currentStash;
 
-    MimePart *part = new MimePart();
+    auto part = std::make_shared<MimePart>();
     part->setContent(output);
 
     d->setupAttributes(part, partHash);
@@ -121,7 +122,7 @@ QByteArray ViewEmailTemplate::render(Context *c) const
         // multipart API
         for (const QVariant &part : templateList) {
             const QVariantHash partHash = part.toHash();
-            MimePart *partObj           = generatePart(c, d, partHash);
+            auto partObj                = generatePart(c, d, partHash);
             parts.append(QVariant::fromValue(partObj));
         }
 
@@ -135,7 +136,7 @@ QByteArray ViewEmailTemplate::render(Context *c) const
         if (contentTypeIt != email.constEnd() && !contentTypeIt.value().toString().isEmpty()) {
             partArgs.insert(QStringLiteral("content_type"), contentTypeIt.value().toString());
         }
-        MimePart *partObj = generatePart(c, d, partArgs);
+        auto partObj = generatePart(c, d, partArgs);
         parts.append(QVariant::fromValue(partObj));
     }
     email.insert(QStringLiteral("parts"), parts);

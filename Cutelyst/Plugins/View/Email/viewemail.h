@@ -44,10 +44,6 @@ class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
      */
     Q_PROPERTY(
         QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding NOTIFY changed)
-    /**
-     * \c True if async mode is on.
-     */
-    Q_PROPERTY(bool async READ async WRITE setAsync NOTIFY changed)
 public:
     /**  This value defines which kind of connection should be used */
     enum ConnectionType {
@@ -203,19 +199,6 @@ public:
      * \sa senderPassword()
      */
     void setSenderPassword(const QString &password);
-
-    /**
-     * Returns \c true if async mode is on.
-     * \sa setAsync()
-     */
-    [[nodiscard]] bool async() const;
-
-    /**
-     * Enable sending mails in async mode, it will use SimpleMail::Server class,
-     * and render() will directly return regardless of mail sending success.
-     * \sa async()
-     */
-    void setAsync(bool enable);
 
     /**
      * Renders and sends the email. This will always return an emty byte array,

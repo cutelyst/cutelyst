@@ -9,7 +9,7 @@ endif ()
 add_subdirectory(JSON)
 
 if (PLUGIN_VIEW_EMAIL)
-    find_package(SimpleMail2Qt${QT_VERSION_MAJOR} 2.0.0 REQUIRED)
+    find_package(SimpleMail3Qt${QT_VERSION_MAJOR} 3.0.0 REQUIRED)
     message(STATUS "PLUGIN: View::Email, enabled.")
     add_subdirectory(Email)
 else ()
