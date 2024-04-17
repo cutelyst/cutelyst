@@ -165,35 +165,35 @@ QByteArray ViewEmail::render(Context *c) const
     QVariant value;
     value = email.value(QStringLiteral("to"));
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
-        message.addTo(value.toString());
+        message.addTo(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
-            message.addTo(rcpt);
+            message.addTo(SimpleMail::EmailAddress{rcpt});
         }
     }
 
     value = email.value(QStringLiteral("cc"));
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
-        message.addCc(value.toString());
+        message.addCc(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
-            message.addCc(rcpt);
+            message.addCc(SimpleMail::EmailAddress{rcpt});
         }
     }
 
     value = email.value(QStringLiteral("bcc"));
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
-        message.addBcc(value.toString());
+        message.addBcc(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
-            message.addBcc(rcpt);
+            message.addBcc(SimpleMail::EmailAddress{rcpt});
         }
     }
 
-    message.setSender(email.value(QStringLiteral("from")).toString());
+    message.setSender(SimpleMail::EmailAddress{email.value(QStringLiteral("from")).toString()});
     message.setSubject(email.value(QStringLiteral("subject")).toString());
 
     QVariant body  = email.value(QStringLiteral("body"));
