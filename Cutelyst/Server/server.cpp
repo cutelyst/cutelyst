@@ -312,14 +312,16 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption autoReload({QStringLiteral("auto-restart"), QStringLiteral("r")},
                                   //: CLI option description
-                                  //% "Auto restarts when the application file changes."
+                                  //% "Auto restarts when the application file changes. Master "
+                                  //% "process and lazy mode have to be enabled."
                                   qtTrId("cutelystd-opt-auto-restart-desc"));
     parser.addOption(autoReload);
 
     QCommandLineOption touchReloadOpt(
         QStringLiteral("touch-reload"),
         //: CLI option description
-        //% "Reload the application if the specified file is modified/touched."
+        //% "Reload the application if the specified file is modified/touched. Master process "
+        //% "and lazy mode have to be enabled."
         qtTrId("cutelystd-opt-touch-reload-desc"),
         qtTrId("cutelystd-opt-value-file"));
     parser.addOption(touchReloadOpt);
