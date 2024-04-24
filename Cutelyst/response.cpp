@@ -89,6 +89,7 @@ QByteArray &Response::body()
         delete d->bodyIODevice;
         d->bodyIODevice = nullptr;
     }
+    // Content-Length is set at finalizeHeaders() as we can't know it here
 
     return d->bodyData;
 }
@@ -110,7 +111,8 @@ void Response::setBody(QIODevice *body)
             delete d->bodyIODevice;
         }
         d->bodyIODevice = body;
-        d->headers.setContentLength(body->size());
+        // Content-Length is set at finalizeHeaders()
+        // because & ::body() reference might change it
     }
 }
 
@@ -354,7 +356,8 @@ void ResponsePrivate::setBodyData(const QByteArray &body)
             bodyIODevice = nullptr;
         }
         bodyData = body;
-        headers.setContentLength(body.size());
+        // Content-Length is set at finalizeHeaders()
+        // because & ::body() reference might change it
     }
 }
 

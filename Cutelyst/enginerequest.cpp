@@ -102,13 +102,22 @@ void EngineRequest::finalizeCookies()
 
 bool EngineRequest::finalizeHeaders()
 {
+    Response *response = context->response();
+    Headers &headers   = response->headers();
+
+    // Fix missing content length
+    if (!headers.contains("Content-Length"_qba)) {
+        qint64 size = response->size();
+        if (size >= 0) {
+            headers.setContentLength(size);
+        }
+    }
+
     finalizeCookies();
 
     // Done
     status |= EngineRequest::FinalizedHeaders;
-
-    Response *response = context->response();
-    return writeHeaders(response->status(), response->headers());
+    return writeHeaders(response->status(), headers);
 }
 
 qint64 EngineRequest::write(const char *data, qint64 len)
