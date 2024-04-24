@@ -117,20 +117,25 @@ Balances new connections to threads using round‐robin.
 
 \subsection cutelystd-options-sockets Sockets
 
-\par \--h1, \--http-socket <em>address</em>
-Bind to the specified TCP socket using HTTP protocol.
+\par \--h1, \--http-socket <em>&lt;address&gt;:port</em>
+Bind to the specified TCP socket using HTTP protocol. To bind to all interfaces, simply
+only provide the \a port.
 
 \par \--upgrade-h2c
 Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
 
-\par \--hs1, \--https-socket <em>address</em>
-Bind to the specified TCP socket using HTTPS protocol.
+\par \--hs1, \--https-socket <em>&lt;address&gt;:port,certPath,keyPath&lt;,algorithm&gt;</em>
+Bind to the specified TCP socket using HTTPS protocol. This expects a comma separated list of options.
+\a address is optional, if omitted, will bind to all interfaces. \a certPath is the full path to the
+TLS certificate in PEM format. \a keyPath is the full path to the private TLS key in PEM. The optional
+last part \a algorithm can be either \c rsa or \c ec. If omitted, \c rsa will be used as defaut.
 
 \par \--https-h2
-Defines if HTTPS sockect should use ALPN to negotiate HTTP/2.
+Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
 
-\par \--h2, \--http2-socket <em>address</em>
-Bind to the specified TCP socket using HTTP/2 only protocol.
+\par \--h2, \--http2-socket <em>&lt;address&gt;:port</em>
+Bind to the specified TCP socket using HTTP/2 Clear Text only protocol. To bind to all interfaces,
+simply only provide the \a port.
 
 \par \--http2-header-table <em>size</em>
 Set the HTTP2 header table \a size. Default value: \c 4096.
@@ -178,7 +183,7 @@ Set file \a mode creation mask.
 Enable TCP NODELAY on each request.
 
 \par \--so-keepalive
-Enable TCP KEEPALIVEs.
+Enable TCP KEEPALIVE.
 
 \subsection cutelystd-options-buffers Buffer sizes
 
@@ -194,23 +199,25 @@ Set buffer size in bytes for read() in post buffering mode. Default value: \c 40
 
 \par \--socket-sndbuf <em>bytes</em>
 Set the socket send buffer size in \a bytes at the OS level.
-This maps to the SO_SNDBUF socket option. Default value: \c -1.
+This maps to the SO_SNDBUF socket option.
 
 \par \--socket-rcvbuf <em>bytes</em>
 Set the socket receive buffer size in \a bytes at the OS level.
-This maps to the SO_RCVBUF socket option. Default value: \c ‐1.
+This maps to the SO_RCVBUF socket option.
 
 \par \--websocket-max-size <em>kibibytes</em>
-Set the websocket receive buffer size in \a kibibytes at the OS level.
-This maps to the SO_RCVBUF socket option. Default value: \c 1024 KiB.
+Maximum allowed payload size for websocket in \a kibibytes. Default value: \c 1024 KiB.
 
 \section cutelystd-exit Exit status
 \c 0 on success and \c 1 if something failed.
 
-\section cutelystd-exampled Examples
+\section cutelystd-examples Examples
 
 Start application with HTTP socket and load INI config file:\n
 <code>\serverexec -M -a /path/to/cutelystapp.so \--h1 localhost:3000 \--ini /path/to/appconfig.ini</code>
+
+Start application with HTTPS socket on all interfaces and offer upgrade to HTTP/2:\n
+<code>\serverexec -M -a /path/to/cutelystapp.so \--hs1 :3000,/path/to/cert.pem,/path/to/rsakey.pem \--https-h2</code>
 
 Start application on local FastCGI socket and protect socket file:\n
 <code>\serverexec -M -a /path/to/cutelystapp.so \--fastcgi‐socket /run/cutelystapp.sock \--chown‐socket myuser:www \--socket‐access ug \--uid myuser</code>

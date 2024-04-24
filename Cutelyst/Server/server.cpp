@@ -223,14 +223,14 @@ void Server::parseCommandLine(const QStringList &arguments)
                                      //% "Bind to the specified TCP socket using the HTTP protocol."
                                      qtTrId("cutelystd-opt-http-socket-desc"),
                                      //: CLI option value name
-                                     //% "address"
+                                     //% "[address]:port"
                                      qtTrId("cutelystd-opt-value-address"));
     parser.addOption(httpSocketOpt);
 
     QCommandLineOption http2SocketOpt(
         {QStringLiteral("http2-socket"), QStringLiteral("h2")},
         //: CLI option description
-        //% "Bind to the specified TCP socket using the HTTP/2 protocol."
+        //% "Bind to the specified TCP socket using the HTTP/2 Clear Text protocol."
         qtTrId("cutelystd-opt-http2-socket-desc"),
         qtTrId("cutelystd-opt-value-address"));
     parser.addOption(http2SocketOpt);
@@ -258,7 +258,8 @@ void Server::parseCommandLine(const QStringList &arguments)
                                       //: CLI option description
                                       //% "Bind to the specified TCP socket using HTTPS protocol."
                                       qtTrId("cutelystd-opt-https-socket-desc"),
-                                      qtTrId("cutelystd-opt-value-address"));
+                                      //% "[address]:port,certFile,keyFile[,algorithm]
+                                      qtTrId("cutelystd-opt-value-httpsaddress"));
     parser.addOption(httpsSocketOpt);
 
     QCommandLineOption fastcgiSocketOpt(
@@ -334,15 +335,14 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     QCommandLineOption soKeepAlive(QStringLiteral("so-keepalive"),
                                    //: CLI option description
-                                   //% "Enable TCP KEEPALIVEs."
+                                   //% "Enable TCP KEEPALIVE."
                                    qtTrId("cutelystd-opt-so-keepalive-desc"));
     parser.addOption(soKeepAlive);
 
     QCommandLineOption socketSndbuf(QStringLiteral("socket-sndbuf"),
                                     //: CLI option description
                                     //% "Sets the socket send buffer size in bytes at the OS "
-                                    //% "level. This maps to the SO_SNDBUF socket option. "
-                                    //% "Default value: -1."
+                                    //% "level. This maps to the SO_SNDBUF socket option."
                                     qtTrId("cutelystd-opt-socket-sndbuf-desc"),
                                     qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(socketSndbuf);
@@ -351,16 +351,14 @@ void Server::parseCommandLine(const QStringList &arguments)
                                     //: CLI option description
                                     //% "Sets the socket receive buffer size in bytes at the OS "
                                     //% "level. This maps to the SO_RCVBUF socket option. "
-                                    //% "Default value: -1."
                                     qtTrId("cutelystd-opt-socket-rcvbuf-desc"),
                                     qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(socketRcvbuf);
 
     QCommandLineOption wsMaxSize(QStringLiteral("websocket-max-size"),
                                  //: CLI option description
-                                 //% "Sets the websocket receive buffer size in kibibytes at the "
-                                 //% "OS level. This maps to the SO_RCVBUF socket option. "
-                                 //% "Default value: 1024."
+                                 //% "Maximum allowed payload size for websocket in kibibytes. "
+                                 //% "Default value: 1024 KiB."
                                  qtTrId("cutelystd-opt-websocket-max-size-desc"),
                                  //: CLI option value name
                                  //% "kibibyte"

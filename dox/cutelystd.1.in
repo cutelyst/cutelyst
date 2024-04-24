@@ -138,20 +138,37 @@ Set CPU affinity with the number of CPUs available for each worker core.
 Balances new connections to threads using round-robin.
 .SS "Sockets"
 .TP
-.BI "\-\^\-h1\fR,\fP \-\^\-http-socket" " address"
-Bind to the specified TCP socket using HTTP protocol.
+.BI "\-\^\-h1\fR,\fP \-\^\-http-socket" " <address>:port"
+Bind to the specified TCP socket using HTTP protocol. To bind to all interfaces,
+simply only provide the
+.IR port .
 .TP
 .B \-\^\-upgrade-h2c
 Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
 .TP
-.BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " address"
-Bind to the specified TCP socket using HTTPS protocol.
+.BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " <address>:port,certPath,keyPath<,algorithm>"
+Bind to the specified TCP socket using HTTPS protocol. This expects a comma separated
+list of options.
+.I address
+is optional, if omitted, will bind to all interfaces.
+.I certPath
+is the full path to the TLS certificate in PEM format.
+.I keyPath
+is the full path to the private TLS key in PEM. The optional last part
+.I algorithm
+can be either
+.IR rsa " or " ec .
+If omitted,
+.I rsa
+will be used as defaut.
 .TP
 .B \-\^\-https-h2
-Defines if HTTPS sockect should use ALPN to negotiate HTTP/2.
+Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
 .TP
-.BI "\-\^\-h2\fR,\fP \-\^\-http2-socket" " address"
-Bind to the specified TCP socket using HTTP/2 only protocol.
+.BI "\-\^\-h2\fR,\fP \-\^\-http2-socket" " <address>:port"
+Bind to the specified TCP socket using HTTP/2 Clear Text only protocol. To bind to all
+interfaces, simply only provide the
+.IR port .
 .TP
 .BI "\-\^\-http2-header-table-size" " size"
 Set the HTTP2 header table size. Default value: 4096.
@@ -226,17 +243,21 @@ for read() in post buffering mode. Default value: 4096.
 .BI \-\^\-socket-sndbuf " bytes"
 Set the socket send buffer size in
 .I bytes
-at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.
+at the OS level. This maps to the SO_RCVBUF
+.IR socket (7)
+option.
 .TP
 .BI \-\^\-socket-rcvbuf " bytes"
 Set the socket receive buffer size in
 .I bytes
-at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.
+at the OS level. This maps to the SO_RCVBUF
+.IR socket (7)
+option.
 .TP
 .BI \-\^\-websocket-max-size " kibibytes"
-Set the websocket receive buffer size in
-.I kibibytes
-at the OS level. This maps to the SO_RCVBUF socket option.
+Maximum allowed payload size for websocket in
+.IR kibibytes .
+Default value: \c 1024 KiB.
 
 .SH "EXIT STATUS"
 0 on success and 1 if something failed.
