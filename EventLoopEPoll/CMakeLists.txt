@@ -15,7 +15,7 @@ add_library(${target_name}
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
+add_library(Cutelyst::EventLoopEPoll ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
 
 set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME EventLoopEPoll
@@ -25,7 +25,7 @@ set_target_properties(${target_name} PROPERTIES
 set_compiler_flags(${target_name})
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll
-    Qt${QT_VERSION_MAJOR}::Core
+    Qt::Core
 )
 if(TARGET epoll-shim::epoll-shim) # FreeBSD only
     target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll epoll-shim::epoll-shim)

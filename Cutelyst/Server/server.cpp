@@ -47,8 +47,13 @@ Server::Server(QObject *parent)
 {
     QCoreApplication::addLibraryPath(QDir().absolutePath());
 
-    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        qSetMessagePattern(QStringLiteral("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
+    if (!qEnvironmentVariableIsSet("QT_MESSAGE_PATTERN")) {
+        if (qEnvironmentVariableIsSet("JOURNAL_STREAM")) {
+            // systemd journal already logs PID, check if it logs threadid as well
+            qSetMessagePattern(u"%{category}[%{type}] %{message}"_qs);
+        } else {
+            qSetMessagePattern(u"%{pid}:%{threadid} %{category}[%{type}] %{message}"_qs);
+        }
     }
 
 #ifdef Q_OS_LINUX

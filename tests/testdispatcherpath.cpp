@@ -78,8 +78,6 @@ void TestDispatcherPath::testController_data()
     QTest::addColumn<QByteArray>("output");
 
     // Path dispatcher
-    QTest::newRow("path-test00") << QStringLiteral("/test/unknown_resource")
-                                 << QByteArrayLiteral("Unknown resource '/test/unknown_resource'.");
     QTest::newRow("path-test01") << QStringLiteral("/test/controller")
                                  << QByteArrayLiteral("path /test/controller args ");
     QTest::newRow("path-test02") << QStringLiteral("/test/controller/hello")
@@ -123,6 +121,9 @@ void TestDispatcherPath::testController_data()
     // Test if we break chain with auto returning false
     QTest::newRow("path-autoFalse00")
         << QStringLiteral("/global?autoFalse=1") << QByteArrayLiteral("autoFalse");
+
+    QTest::newRow("path-not-found00")
+        << QStringLiteral("/foo_bar_not_found") << QByteArrayLiteral("404 - Not Found.");
 }
 
 QTEST_MAIN(TestDispatcherPath)

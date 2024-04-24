@@ -46,9 +46,8 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
 
     if (_min > _max) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR).noquote()
-            << debugString(c) << "Minimum comparison length" << _min << "is larger than"
-            << "maximum comparison length" << _max;
+        qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Minimum comparison length" << _min
+                                         << "is larger than" << "maximum comparison length" << _max;
         return result;
     }
 

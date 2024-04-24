@@ -101,11 +101,6 @@ bool Engine::postForkApplication()
     return d->app->enginePostFork();
 }
 
-quint64 Engine::time()
-{
-    return quint64(QDateTime::currentMSecsSinceEpoch() * 1000);
-}
-
 const char *Engine::httpStatusMessage(quint16 status, int *len)
 {
     const char *ret;

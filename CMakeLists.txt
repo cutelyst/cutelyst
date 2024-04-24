@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(cutelyst
-    VERSION 4.0.0
+    VERSION 4.2.1
     DESCRIPTION "A C++ Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework."
     HOMEPAGE_URL "https://cutelyst.org/"
     LANGUAGES CXX)
@@ -10,7 +10,6 @@ include(GNUInstallDirs)
 
 set(QT_VERSION_MAJOR 6)
 set(QT_MINIMUM_VERSION 6.2)
-#find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
 # TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
 find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
@@ -170,8 +169,6 @@ install(EXPORT CutelystTargets
 
 add_subdirectory(3rdparty)
 
-add_subdirectory(Cutelyst)
-
 # CMake 3.25 introduces LINUX and FREEBSD as automatically-set variables,
 # but before then need to set them by hand.
 if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
@@ -197,7 +194,7 @@ if (LINUX OR FREEBSD)
     endif()
 endif()
 
-add_subdirectory(server)
+add_subdirectory(Cutelyst)
 
 add_subdirectory(cmd)
 

@@ -59,6 +59,13 @@ public:
         c->response()->setBody(c->actionName());
     }
 
+    C_ATTR(default404, :Path)
+    void default404(Context *c)
+    {
+        c->response()->setStatus(Response::NotFound);
+        c->response()->setBody("404 - Not Found."_qba);
+    }
+
 private:
     C_ATTR(Begin,)
     bool Begin(Context *) { return true; }
@@ -258,10 +265,15 @@ public:
     virtual bool init()
     {
         new TestController(this);
-        new RootController(this);
+
+        if (m_enableRootController) {
+            new RootController(this);
+        }
 
         return true;
     }
+
+    bool m_enableRootController = true;
 };
 
 #endif

@@ -94,13 +94,6 @@ public:
     [[nodiscard]] static QVariantMap loadJsonConfig(const QString &filename);
 
     /**
-     * Returns current micro seconds time to be used for stats. The default implementation returns
-     * QDateTime::currentMSecsSinceEpoch() * 1000, to become micro seconds, so if the engine
-     * supports a more precise value it can reimplement this method.
-     */
-    virtual quint64 time();
-
-    /**
      * Process the \a request. The caller must delete the context when the request is finished.
      *
      * This method allows for engines to keep the Context alive while processing websocket data.

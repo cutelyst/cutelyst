@@ -73,7 +73,7 @@ bool ValidatorDomain::validate(const QString &value,
                             if (parts.last().length() > 1) {
                                 for (int i = 0; i < parts.size(); ++i) {
                                     if (valid) {
-                                        const QString part = parts.at(i);
+                                        const QString &part = parts.at(i);
                                         if (!part.isEmpty()) {
                                             // labels/parts can have a maximum length of 63 chars
                                             if (part.length() <=
@@ -359,8 +359,8 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
                 case LabelTooLong:
                     qCDebug(C_VALIDATOR).noquote()
                         << debugString(c)
-                        << "At least on of the domain name labels exceeds the maximum"
-                        << "size of" << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
+                        << "At least on of the domain name labels exceeds the maximum" << "size of"
+                        << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
                     break;
                 case TooLong:
                     qCDebug(C_VALIDATOR).noquote()

@@ -7,12 +7,18 @@
 #include "server.h"
 #include "socket.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QBuffer>
 #include <QLoggingCategory>
 #include <QTemporaryFile>
 
 Q_LOGGING_CATEGORY(C_SERVER_PROTO, "cutelyst.server.proto", QtWarningMsg)
+#if defined(CUTELYST_SERVER_EXPORT_STATS)
 Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
+#else
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_STATS)
+#endif
 
 using namespace Cutelyst;
 

@@ -197,7 +197,7 @@ void DispatcherPrivate::prepareAction(Context *c, QStringView path) const
         }
 
         // leave the loop if we are at the root "/"
-        if (path.isEmpty()) {
+        if (path.length() == 1) {
             break;
         }
 
@@ -205,7 +205,11 @@ void DispatcherPrivate::prepareAction(Context *c, QStringView path) const
 
         args.emplaceFront(path.mid(pos + 1).toString());
 
-        path.truncate(pos);
+        if (pos == 0) {
+            path.truncate(pos + 1);
+        } else {
+            path.truncate(pos);
+        }
     }
 }
 

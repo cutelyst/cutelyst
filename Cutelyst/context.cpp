@@ -355,7 +355,13 @@ void Context::detachAsync() noexcept
 void Context::attachAsync()
 {
     Q_D(Context);
-    if (--d->actionRefCount) {
+
+    // ASync might be destroyed at the same stack level it was created
+    // resulting in this method being called while it was caller,
+    // allowing this method to call finished() twice, with
+    // a null context the second time so we check also check
+    // if the action stack is not empty to skip this method
+    if (--d->actionRefCount || !d->stack.isEmpty()) {
         return;
     }
 
@@ -365,8 +371,8 @@ void Context::attachAsync()
     }
 
     if (d->engineRequest->status & EngineRequest::Async) {
-        while (d->asyncAction < d->pendingAsync.size()) {
-            Component *action = d->pendingAsync[d->asyncAction++];
+        while (!d->pendingAsync.isEmpty()) {
+            Component *action = d->pendingAsync.dequeue();
             const bool ret    = execute(action);
 
             if (d->actionRefCount) {

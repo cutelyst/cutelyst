@@ -100,13 +100,7 @@ add_library(${target_name}
     ${cutelystqt_HEADERS}
     ${cutelystqt_HEADERS_PRIVATE}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
-target_compile_features(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
-  PRIVATE
-    cxx_auto_type
-  PUBLIC
-    cxx_nullptr
-)
+add_library(Cutelyst::Core ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
 set_compiler_flags(${target_name})
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
@@ -133,8 +127,8 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PROP
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Network
+    Qt::Core
+    Qt::Network
 )
 
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
@@ -176,3 +170,4 @@ install(FILES ${cutelystcore_QM_FILES} DESTINATION ${I18NDIR})
 
 add_subdirectory(Plugins)
 add_subdirectory(Actions)
+add_subdirectory(Server)

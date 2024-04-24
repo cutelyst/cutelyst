@@ -6,8 +6,8 @@ add_library(ActionRoleACL MODULE
 )
 
 target_link_libraries(ActionRoleACL
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Authentication
+    PRIVATE Cutelyst::Core
+    PRIVATE Cutelyst::Authentication
 )
 
 if(ENABLE_LTO)

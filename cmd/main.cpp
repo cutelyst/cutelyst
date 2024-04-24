@@ -2,8 +2,8 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include <Cutelyst/Server/server.h>
 #include <iostream>
-#include <server/server.h>
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -82,41 +82,26 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
         QFileInfo fileInfo(filename);
-        out << "#include \"" << fileInfo.baseName() << ".h\""
-            << "\n";
+        out << "#include \"" << fileInfo.baseName() << ".h\"" << "\n";
         out << "\n";
-        out << "#include \"root.h\""
-            << "\n";
+        out << "#include \"root.h\"" << "\n";
         out << "\n";
-        out << "using namespace Cutelyst;"
-            << "\n";
+        out << "using namespace Cutelyst;" << "\n";
         out << "\n";
-        out << appName << "::" << appName << "(QObject *parent) : Application(parent)"
-            << "\n";
-        out << "{"
-            << "\n";
-        out << "}"
-            << "\n";
+        out << appName << "::" << appName << "(QObject *parent) : Application(parent)" << "\n";
+        out << "{" << "\n";
+        out << "}" << "\n";
         out << "\n";
-        out << appName << "::~" << appName << "()"
-            << "\n";
-        out << "{"
-            << "\n";
-        out << "}"
-            << "\n";
+        out << appName << "::~" << appName << "()" << "\n";
+        out << "{" << "\n";
+        out << "}" << "\n";
         out << "\n";
-        out << "bool " << appName << "::init"
-            << "()"
-            << "\n";
-        out << "{"
-            << "\n";
-        out << "    new Root(this);"
-            << "\n";
+        out << "bool " << appName << "::init" << "()" << "\n";
+        out << "{" << "\n";
+        out << "    new Root(this);" << "\n";
         out << "\n";
-        out << "    return true;"
-            << "\n";
-        out << "}"
-            << "\n";
+        out << "    return true;" << "\n";
+        out << "}" << "\n";
         out << "\n";
 
         std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
@@ -140,39 +125,25 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        out << "#ifndef " << appName.toUpper() << "_H"
-            << "\n";
-        out << "#define " << appName.toUpper() << "_H"
-            << "\n";
+        out << "#ifndef " << appName.toUpper() << "_H" << "\n";
+        out << "#define " << appName.toUpper() << "_H" << "\n";
         out << "\n";
-        out << "#include <Cutelyst/Application>"
-            << "\n";
+        out << "#include <Cutelyst/Application>" << "\n";
         out << "\n";
-        out << "using namespace Cutelyst;"
-            << "\n";
+        out << "using namespace Cutelyst;" << "\n";
         out << "\n";
-        out << "class " << appName << " : public Application"
-            << "\n";
-        out << "{"
-            << "\n";
-        out << "    Q_OBJECT"
-            << "\n";
-        out << "    CUTELYST_APPLICATION(IID \"" << appName << "\")"
-            << "\n";
-        out << "public:"
-            << "\n";
-        out << "    Q_INVOKABLE explicit " << appName << "(QObject *parent = nullptr);"
-            << "\n";
-        out << "    ~" << appName << "();"
-            << "\n";
+        out << "class " << appName << " : public Application" << "\n";
+        out << "{" << "\n";
+        out << "    Q_OBJECT" << "\n";
+        out << "    CUTELYST_APPLICATION(IID \"" << appName << "\")" << "\n";
+        out << "public:" << "\n";
+        out << "    Q_INVOKABLE explicit " << appName << "(QObject *parent = nullptr);" << "\n";
+        out << "    ~" << appName << "();" << "\n";
         out << "\n";
-        out << "    bool init();"
-            << "\n";
-        out << "};"
-            << "\n";
+        out << "    bool init();" << "\n";
+        out << "};" << "\n";
         out << "\n";
-        out << "#endif //" << appName.toUpper() << "_H"
-            << "\n";
+        out << "#endif //" << appName.toUpper() << "_H" << "\n";
         out << "\n";
 
         std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
@@ -199,54 +170,35 @@ bool buildControllerImplementation(const QString &filename,
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
         QFileInfo fileInfo(filename);
-        out << "#include \"" << fileInfo.baseName() << ".h\""
-            << "\n";
+        out << "#include \"" << fileInfo.baseName() << ".h\"" << "\n";
         out << "\n";
-        out << "using namespace Cutelyst;"
-            << "\n";
+        out << "using namespace Cutelyst;" << "\n";
         out << "\n";
         out << controllerName << "::" << controllerName << "(QObject *parent) : Controller(parent)"
             << "\n";
-        out << "{"
-            << "\n";
-        out << "}"
-            << "\n";
+        out << "{" << "\n";
+        out << "}" << "\n";
         out << "\n";
-        out << controllerName << "::~" << controllerName << "()"
-            << "\n";
-        out << "{"
-            << "\n";
-        out << "}"
-            << "\n";
+        out << controllerName << "::~" << controllerName << "()" << "\n";
+        out << "{" << "\n";
+        out << "}" << "\n";
         out << "\n";
-        out << "void " << controllerName << "::index"
-            << "(Context *c)"
-            << "\n";
-        out << "{"
-            << "\n";
+        out << "void " << controllerName << "::index" << "(Context *c)" << "\n";
+        out << "{" << "\n";
         if (helpers) {
-            out << "    c->response()->body() = \"Welcome to Cutelyst!\";"
-                << "\n";
+            out << "    c->response()->body() = \"Welcome to Cutelyst!\";" << "\n";
         } else {
             out << "    c->response()->body() = \"Matched Controller::" << controllerName << " in "
-                << controllerName << ".\";"
-                << "\n";
+                << controllerName << ".\";" << "\n";
         }
-        out << "}"
-            << "\n";
+        out << "}" << "\n";
         out << "\n";
         if (helpers) {
-            out << "void " << controllerName << "::defaultPage"
-                << "(Context *c)"
-                << "\n";
-            out << "{"
-                << "\n";
-            out << "    c->response()->body() = \"Page not found!\";"
-                << "\n";
-            out << "    c->response()->setStatus(404);"
-                << "\n";
-            out << "}"
-                << "\n";
+            out << "void " << controllerName << "::defaultPage" << "(Context *c)" << "\n";
+            out << "{" << "\n";
+            out << "    c->response()->body() = \"Page not found!\";" << "\n";
+            out << "    c->response()->setStatus(404);" << "\n";
+            out << "}" << "\n";
             out << "\n";
         }
 
@@ -271,56 +223,37 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        out << "#ifndef " << controllerName.toUpper() << "_H"
-            << "\n";
-        out << "#define " << controllerName.toUpper() << "_H"
-            << "\n";
+        out << "#ifndef " << controllerName.toUpper() << "_H" << "\n";
+        out << "#define " << controllerName.toUpper() << "_H" << "\n";
         out << "\n";
-        out << "#include <Cutelyst/Controller>"
-            << "\n";
+        out << "#include <Cutelyst/Controller>" << "\n";
         out << "\n";
-        out << "using namespace Cutelyst;"
-            << "\n";
+        out << "using namespace Cutelyst;" << "\n";
         out << "\n";
-        out << "class " << controllerName << " : public Controller"
-            << "\n";
-        out << "{"
-            << "\n";
-        out << "    Q_OBJECT"
-            << "\n";
+        out << "class " << controllerName << " : public Controller" << "\n";
+        out << "{" << "\n";
+        out << "    Q_OBJECT" << "\n";
         if (helpers) {
-            out << "    C_NAMESPACE(\"\")"
-                << "\n";
+            out << "    C_NAMESPACE(\"\")" << "\n";
         }
-        out << "public:"
-            << "\n";
-        out << "    explicit " << controllerName << "(QObject *parent = nullptr);"
-            << "\n";
-        out << "    ~" << controllerName << "();"
-            << "\n";
+        out << "public:" << "\n";
+        out << "    explicit " << controllerName << "(QObject *parent = nullptr);" << "\n";
+        out << "    ~" << controllerName << "();" << "\n";
         out << "\n";
-        out << "    C_ATTR(index, :Path :AutoArgs)"
-            << "\n";
-        out << "    void index(Context *c);"
-            << "\n";
+        out << "    C_ATTR(index, :Path :AutoArgs)" << "\n";
+        out << "    void index(Context *c);" << "\n";
         if (helpers) {
             out << "\n";
-            out << "    C_ATTR(defaultPage, :Path)"
-                << "\n";
-            out << "    void defaultPage(Context *c);"
-                << "\n";
+            out << "    C_ATTR(defaultPage, :Path)" << "\n";
+            out << "    void defaultPage(Context *c);" << "\n";
             out << "\n";
             out << "private:\n";
-            out << "    C_ATTR(End, :ActionClass(\"RenderView\"))"
-                << "\n";
-            out << "    void End(Context *c) { Q_UNUSED(c); }"
-                << "\n";
+            out << "    C_ATTR(End, :ActionClass(\"RenderView\"))" << "\n";
+            out << "    void End(Context *c) { Q_UNUSED(c); }" << "\n";
         }
-        out << "};"
-            << "\n";
+        out << "};" << "\n";
         out << "\n";
-        out << "#endif //" << controllerName.toUpper() << "_H"
-            << "\n";
+        out << "#endif //" << controllerName.toUpper() << "_H" << "\n";
         out << "\n";
 
         std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
@@ -344,34 +277,22 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        out << "file(GLOB_RECURSE " << appName << "_SRCS *.cpp *.h)"
-            << "\n";
+        out << "file(GLOB_RECURSE " << appName << "_SRCS *.cpp *.h)" << "\n";
         out << "\n";
-        out << "set(" << appName << "_SRCS"
-            << "\n";
-        out << "    ${" << appName << "_SRCS}"
-            << "\n";
-        out << "    ${TEMPLATES_SRC}"
-            << "\n";
-        out << ")"
-            << "\n";
+        out << "set(" << appName << "_SRCS" << "\n";
+        out << "    ${" << appName << "_SRCS}" << "\n";
+        out << "    ${TEMPLATES_SRC}" << "\n";
+        out << ")" << "\n";
         out << "\n";
-        out << "# Create the application"
-            << "\n";
-        out << "add_library(" << appName << " SHARED ${" << appName << "_SRCS})"
-            << "\n";
+        out << "# Create the application" << "\n";
+        out << "add_library(" << appName << " SHARED ${" << appName << "_SRCS})" << "\n";
         out << "\n";
-        out << "# Link to Cutelyst"
-            << "\n";
+        out << "# Link to Cutelyst" << "\n";
         out << "target_link_libraries(" << appName << "\n";
-        out << "    Cutelyst::Core"
-            << "\n";
-        out << "    Qt::Core"
-            << "\n";
-        out << "    Qt::Network"
-            << "\n";
-        out << ")"
-            << "\n";
+        out << "    Cutelyst::Core" << "\n";
+        out << "    Qt::Core" << "\n";
+        out << "    Qt::Network" << "\n";
+        out << ")" << "\n";
         out << "\n";
 
         std::cout << OUT_CREATED << qPrintable(name) << std::endl;
@@ -395,11 +316,9 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        out << "cmake_minimum_required(VERSION 3.16 FATAL_ERROR)"
-            << "\n";
+        out << "cmake_minimum_required(VERSION 3.16 FATAL_ERROR)" << "\n";
         out << "\n";
-        out << "project(" << appName << ")"
-            << "\n";
+        out << "project(" << appName << ")" << "\n";
         out << "\n";
         out << "if(WIN32)\n";
         out << "  if(MSVC)\n";
@@ -410,26 +329,18 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "find_package(Qt" << QT_VERSION_MAJOR << " COMPONENTS Core Network REQUIRED)"
             << "\n";
         out << "find_package(Cutelyst" << CUTELYST_VERSION_MAJOR << "Qt" << QT_VERSION_MAJOR
-            << " REQUIRED)"
-            << "\n";
+            << " REQUIRED)" << "\n";
         out << "\n";
-        out << "# Auto generate moc files"
-            << "\n";
-        out << "set(CMAKE_AUTOMOC ON)"
-            << "\n";
+        out << "# Auto generate moc files" << "\n";
+        out << "set(CMAKE_AUTOMOC ON)" << "\n";
         out << "\n";
-        out << "# As moc files are generated in the binary dir, tell CMake"
-            << "\n";
-        out << "# to always look for includes there:"
-            << "\n";
-        out << "set(CMAKE_INCLUDE_CURRENT_DIR ON)"
-            << "\n";
+        out << "# As moc files are generated in the binary dir, tell CMake" << "\n";
+        out << "# to always look for includes there:" << "\n";
+        out << "set(CMAKE_INCLUDE_CURRENT_DIR ON)" << "\n";
         out << "\n";
-        out << "file(GLOB_RECURSE TEMPLATES_SRC root/*)"
-            << "\n";
+        out << "file(GLOB_RECURSE TEMPLATES_SRC root/*)" << "\n";
         out << "\n";
-        out << "add_subdirectory(src)"
-            << "\n";
+        out << "add_subdirectory(src)" << "\n";
 
         std::cout << OUT_CREATED << qPrintable(name) << std::endl;
 

@@ -3,7 +3,7 @@
 
 #include "coverageobject.h"
 
-#include <server/server.h>
+#include <Cutelyst/Server/server.h>
 
 #include <QFile>
 #include <QJsonDocument>
