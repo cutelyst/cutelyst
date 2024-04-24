@@ -29,7 +29,11 @@ Path to the application
 to load.
 .TP
 .BR \-r ", " \-\^\-auto-restart
-Automatically restart when the application file changes.
+Automatically restart when the application file changes. Requires that master process
+.RB ( \-\-master )
+and lazy mode
+.RB ( \-\-lazy )
+are enabled.
 .TP
 .BI \-\^\-pidfile " file"
 Create pid
@@ -52,7 +56,7 @@ Change to the specified
 before the application loads.
 .TP
 .BI \-\^\-chdir2 " directory"
-Change to the specifie
+Change to the specified
 .I directory
 after the application has been loaded.
 .TP
@@ -103,7 +107,11 @@ When used multiple times, content will be merged and same keys in the sections w
 .BI \-\^\-touch-reload " file"
 Reload the application if the specified
 .I file
-is modified/touched.
+is modified/touched. Requires that master process
+.RB ( \-\-master )
+and lazy mode
+.RB ( \-\-lazy )
+are enabled.
 .SS "Threads and Processes"
 .TP
 .BR \-M ", " \-\^\-master

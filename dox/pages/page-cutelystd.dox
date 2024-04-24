@@ -18,7 +18,7 @@ be set via configuration file options. See \ref configuration.
 Output a usage message and exit.
 
 \par -v, \--version
-Output the version number of \serverexec and ext.
+Output the version number of \serverexec and exit.
 
 \subsection cutelystd-options-load Load application
 
@@ -26,7 +26,8 @@ Output the version number of \serverexec and ext.
 Path to the application \a file to load.
 
 \par -r, \--auto-restart
-Automatically restart when the application file changes.
+Automatically restart when the application file changes. Requires that master process
+(<tt>--master</tt> and lazy mode (<tt>--lazy</tt>) are enabled.
 
 \par \--pidfile <em>file</em>
 Create PID \a file (before privileges drop).
@@ -91,7 +92,8 @@ See also \ref configuration.
 \endparblock
 
 \par \--touch-reload <em>file</em>
-Reload the application if the specified \a file is modified/touched.
+Reload the application if the specified \a file is modified/touched. Requires that master
+process (<tt>--master</tt> and lazy mode (<tt>--lazy</tt>) are enabled.
 
 \subsection cutelystd-options-threads Threads and processes
 
@@ -192,7 +194,7 @@ Set buffer size in bytes for read() in post buffering mode. Default value: \c 40
 
 \par \--socket-sndbuf <em>bytes</em>
 Set the socket send buffer size in \a bytes at the OS level.
-This maps to the SO_RCVBUF socket option. Default value: \c -1.
+This maps to the SO_SNDBUF socket option. Default value: \c -1.
 
 \par \--socket-rcvbuf <em>bytes</em>
 Set the socket receive buffer size in \a bytes at the OS level.
@@ -211,7 +213,7 @@ Start application with HTTP socket and load INI config file:\n
 <code>\serverexec -M -a /path/to/cutelystapp.so \--h1 localhost:3000 \--ini /path/to/appconfig.ini</code>
 
 Start application on local FastCGI socket and protect socket file:\n
-<code>\serverexec -M  -a  /path/to/cutelystapp.so \--fastcgi‐socket /run/cutelystapp.sock \--chown‐socket myuser:www \--socket‐access ug \--uid myuser</code>
+<code>\serverexec -M -a /path/to/cutelystapp.so \--fastcgi‐socket /run/cutelystapp.sock \--chown‐socket myuser:www \--socket‐access ug \--uid myuser</code>
 
 Start application on local FastCGI socket and store PID in file:\n
 <code>\serverexec -M -a /path/to/cutelystapp.so \--fastcgi‐socket /run/cutelystapp.sock \--pidfile /run/cutelystapp.pid</code>
