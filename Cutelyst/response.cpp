@@ -175,17 +175,6 @@ qint64 Response::contentLength() const
     return d->headers.contentLength();
 }
 
-void Response::setContentLength(qint64 length)
-{
-    Q_D(Response);
-    Q_ASSERT_X(!(d->engineRequest->status & EngineRequest::FinalizedHeaders),
-               "setContentLength",
-               "setting a header value after finalize_headers and the response callback has been "
-               "called. Not what you want.");
-
-    d->headers.setContentLength(length);
-}
-
 QByteArray Response::contentType() const
 {
     Q_D(const Response);

@@ -212,16 +212,8 @@ public:
     /**
      * Short for headers().contentLength();
      * \sa Headers::contentLength()
-     * \sa setContentLength()
      */
     qint64 contentLength() const;
-
-    /**
-     * Short for headers().setContentLength(length);
-     * \sa Headers::setContentLength()
-     * \sa contentLength()
-     */
-    void setContentLength(qint64 length);
 
     /**
      * Short for headers().contentType();
