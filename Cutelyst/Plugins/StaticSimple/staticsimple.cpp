@@ -125,7 +125,6 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
                 if (mimeType.isValid()) {
                     headers.setContentType(mimeType.name().toLatin1());
                 }
-                headers.setContentLength(file->size());
 
                 headers.setLastModified(currentDateTime);
                 // Tell Firefox & friends its OK to cache, even over SSL

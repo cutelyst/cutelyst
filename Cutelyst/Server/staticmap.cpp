@@ -105,7 +105,6 @@ bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
         if (mimeType.isValid()) {
             headers.setContentType(mimeType.name().toLatin1());
         }
-        headers.setContentLength(file->size());
 
         headers.setLastModified(currentDateTime);
         // Tell Firefox & friends its OK to cache, even over SSL
