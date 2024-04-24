@@ -110,6 +110,7 @@ void Response::setBody(QIODevice *body)
             delete d->bodyIODevice;
         }
         d->bodyIODevice = body;
+        d->headers.setContentLength(body->size());
     }
 }
 
