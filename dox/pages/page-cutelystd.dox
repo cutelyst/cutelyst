@@ -27,7 +27,7 @@ Path to the application \a file to load.
 
 \par -r, \--auto-restart
 Automatically restart when the application file changes. Requires that master process
-(<tt>--master</tt> and lazy mode (<tt>--lazy</tt>) are enabled.
+(<tt>\--master</tt>) and lazy mode (<tt>\--lazy</tt>) are enabled.
 
 \par \--pidfile <em>file</em>
 Create PID \a file (before privileges drop).
@@ -93,7 +93,7 @@ See also \ref configuration.
 
 \par \--touch-reload <em>file</em>
 Reload the application if the specified \a file is modified/touched. Requires that master
-process (<tt>--master</tt> and lazy mode (<tt>--lazy</tt>) are enabled. Can be used multiple
+process (<tt>\--master</tt>) and lazy mode (<tt>\--lazy</tt>) are enabled. Can be used multiple
 times.
 
 \subsection cutelystd-options-threads Threads and processes
@@ -123,7 +123,7 @@ Bind to the specified TCP socket using HTTP protocol. To bind to all interfaces,
 only provide the \a port. Can be used multiple times to add multiple sockets.
 
 \par \--upgrade-h2c
-Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
+Defines if an HTTP/1 connection set with \c \--h1 can be upgraded to H2C (HTTP 2 Clear Text).
 
 \par \--hs1, \--https-socket <em>&lt;address&gt;:port,certPath,keyPath&lt;,algorithm&gt;</em>
 Bind to the specified TCP socket using HTTPS protocol. This expects a comma separated list of options.
@@ -133,7 +133,7 @@ last part \a algorithm can be either \c rsa or \c ec. If omitted, \c rsa will be
 Can be used multiple times to add multiple sockets.
 
 \par \--https-h2
-Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
+Defines if HTTPS socket set with \c \--hs1 should use ALPN to negotiate HTTP/2.
 
 \par \--h2, \--http2-socket <em>&lt;address&gt;:port</em>
 Bind to the specified TCP socket using HTTP/2 Clear Text only protocol. To bind to all interfaces,
