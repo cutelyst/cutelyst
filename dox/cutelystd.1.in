@@ -145,7 +145,9 @@ simply only provide the
 Can be used multiple times to add multiple sockets.
 .TP
 .B \-\^\-upgrade-h2c
-Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
+Defines if an HTTP/1 connection set with
+.B \-\-h1
+can be upgraded to H2C (HTTP 2 Clear Text).
 .TP
 .BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " <address>:port,certPath,keyPath<,algorithm>"
 Bind to the specified TCP socket using HTTPS protocol. This expects a comma separated
@@ -165,7 +167,9 @@ will be used as defaut.
 Can be used multiple times to add multiple sockets.
 .TP
 .B \-\^\-https-h2
-Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
+Defines if HTTPS socket set with
+.B \-\-hs1
+should use ALPN to negotiate HTTP/2.
 .TP
 .BI "\-\^\-h2\fR,\fP \-\^\-http2-socket" " <address>:port"
 Bind to the specified TCP socket using HTTP/2 Clear Text only protocol. To bind to all
@@ -187,7 +191,9 @@ Set the LOCAL socket access, such as 'ugo' standing for User, Group, Other acces
 Chown UNIX sockets.
 .TP
 .B \-\^\-reuse-port
-Enable SO_REUSEPORT flag on socket (Linux 3.9+).
+Enable SO_REUSEPORT flag on
+.IR socket (7)
+(Linux 3.9+).
 .TP
 .BI "\-z\fR,\fP \-\^\-socket-timeout" " seconds"
 Set internal sockets timeout in
