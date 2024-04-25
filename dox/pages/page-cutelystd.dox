@@ -93,7 +93,8 @@ See also \ref configuration.
 
 \par \--touch-reload <em>file</em>
 Reload the application if the specified \a file is modified/touched. Requires that master
-process (<tt>--master</tt> and lazy mode (<tt>--lazy</tt>) are enabled.
+process (<tt>--master</tt> and lazy mode (<tt>--lazy</tt>) are enabled. Can be used multiple
+times.
 
 \subsection cutelystd-options-threads Threads and processes
 
@@ -119,7 +120,7 @@ Balances new connections to threads using round‐robin.
 
 \par \--h1, \--http-socket <em>&lt;address&gt;:port</em>
 Bind to the specified TCP socket using HTTP protocol. To bind to all interfaces, simply
-only provide the \a port.
+only provide the \a port. Can be used multiple times to add multiple sockets.
 
 \par \--upgrade-h2c
 Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
@@ -129,19 +130,21 @@ Bind to the specified TCP socket using HTTPS protocol. This expects a comma sepa
 \a address is optional, if omitted, will bind to all interfaces. \a certPath is the full path to the
 TLS certificate in PEM format. \a keyPath is the full path to the private TLS key in PEM. The optional
 last part \a algorithm can be either \c rsa or \c ec. If omitted, \c rsa will be used as defaut.
+Can be used multiple times to add multiple sockets.
 
 \par \--https-h2
 Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
 
 \par \--h2, \--http2-socket <em>&lt;address&gt;:port</em>
 Bind to the specified TCP socket using HTTP/2 Clear Text only protocol. To bind to all interfaces,
-simply only provide the \a port.
+simply only provide the \a port. Can be used multiple times to add multiple sockets.
 
 \par \--http2-header-table <em>size</em>
 Set the HTTP2 header table \a size. Default value: \c 4096.
 
 \par \--fastcgi-socket <em>address</em>
 Bind to the specified UNIX/TCP socket using FastCGI protocol.
+Can be used multiple times to add multiple sockets.
 
 \par \--socket-access <em>options</em>
 Set the LOCAL socket access, such as ’ugo’ standing for User, Group, Other access.
@@ -174,8 +177,8 @@ Setgid to the specified \a group/gid.
 \par \--no-initgroups
 Disable additional groups set via initgroups().
 
-\par \--umask <em>mode</em>
-Set file \a mode creation mask.
+\par \--umask <em>mask</em>
+Set file creation \a mask.
 
 \subsection cutelystd-options-tcp TCP settings
 
