@@ -49,6 +49,7 @@ option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
 option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 option(BUILD_DOCS "Add the make docs target to build the documentationn. Requires doxygen and dot" ${BUILD_ALL})
 cmake_dependent_option(BUILD_DOCS_QUIET "Tell doxygen to be quiet while building the documentation." OFF "BUILD_DOCS" OFF)
+cmake_dependent_option(BUILD_DOCS_AWESOME "Use Doxygen Awesome theme to butify the documentation." ON "BUILD_DOCS" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
@@ -231,6 +232,7 @@ if (BUILD_DOCS)
         add_custom_target(docs)
 
         # Project related configuration options
+        set(DOXYGEN_PROJECT_LOGO "${CMAKE_SOURCE_DIR}/dox/doxygen/cutelyst-logo.png")
         set(DOXYGEN_REPEAT_BRIEF "NO")
         set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_CURRENT_SOURCE_DIR})
         set(DOXYGEN_QT_AUTOBRIEF "YES")
@@ -299,6 +301,14 @@ if (BUILD_DOCS)
             set(DOXYGEN_DOT_FONTNAME "FreeSans")
             set(DOXYGEN_DOT_FONTSIZE 10)
         endif (DOXYGEN_VERSION VERSION_GREATER_EQUAL 1.9.5)
+
+        if (BUILD_DOCS_AWESOME)
+            set(DOXYGEN_GENERATE_TREEVIEW "YES")
+            set(DOXYGEN_DISABLE_INDEX "NO")
+            set(DOXYGEN_FULL_SIDEBAR "NO")
+            set(DOXYGEN_HTML_COLORSTYLE "LIGHT")
+            set(DOXYGEN_HTML_EXTRA_STYLESHEET "${CMAKE_SOURCE_DIR}/dox/doxygen/doxygen-awesome.css" "${CMAKE_SOURCE_DIR}/dox/doxygen/doxygen-awesome-sidebar-only.css")
+        endif (BUILD_DOCS_AWESOME)
 
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
         set (DOCS_STLTAGFILE "${CMAKE_CURRENT_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
