@@ -4,6 +4,99 @@ namespace Cutelyst {
 \page serveapp Serve your application
 \tableofcontents
 \brief Serve your %Cutelyst application using \ref cutelystd.
+
+\ref cutelystd is the main executable to serve your %Cutelyst applications to your users.
+\devhelperexec on the other site is meant to help you with developing your application and to start a development
+server. \ref cutelystd can serve your application on its own but can also act behind a frontend
+proxy like Apache or nginx. It provides support for multiple sockets of different types like
+HTTP/1, HTTP/2 and FastCGI. The page \ref cutelystd provides information about all available options.
+See also \ref servestatic to learn more about how to serve static files. Options for \serverexec
+can also be specified in configuration files loaded with \c \--ini or \c --json, read \ref configuration
+to see how to use them.
+
+\section serveapp-own Directly use \serverexec
+\subsection serveapp-own-http Serve app with HTTP
+
+Serve your %Cutelyst application on port \c 3000 bound to localhost with HTTP/1 procotol:
+
+<code>\serverexec -M \--lazy -a /path/to/cutelystapp.so \--h1 localhost:3000</code>
+
+\subsection serveapp-own-https Serve app with HTTPS
+
+To serve your application using the HTTPS protocol, you also need a SSL/TLS certificate and
+a key file in PEM format of either type \c RSA or \c EC. In the example we will create
+a HTTPS socket on port \c 3000 bound to all interfaces and use ALPN to negotiate to HTTP/2.
+
+<code>\serverexec -M \--lazy -a /path/to/cutelystapp.so \--hs1 :3000,/path/to/cert.pem,/path/to/eckey.pem,ec \--https-h2</code>
+
+\section serveapp-apache Use \serverexec behind Apache
+\subsection serveapp-apache-fastcgi Use FastCGI proxy
+
+To use the \serverexec behind an Apache frontend proxy, you can use the FastCGI protocol bound
+to a local UNIX socket. In the example we will run the %Cutelyst server under dedicated user and
+group ids and will protect the socket file by changing the group owner and access rights, so that
+only Apache (belonging to group \c www) and \serverexec have access to the socket. This normally
+requires that your start \serverexec as \a root:
+<pre>
+\serverexec -M \--lazy -a /path/to/cutelystapp.so \
+               \--fastcgi-socket /run/cutelystapp.sock \
+               \--socket-access ug \--chown-socket appuser:www \
+               \--uid appuser \--gid appuser
+</pre>
+
+For Apache we create a virtual host configuration for our application. We will also use Apache
+to server our static assets:
+\code{.conf}
+<VirtualHost :80>
+    Servername app.example.com:80
+
+    ProxyFCGIBackendType GENERIC
+
+    ProxyPass / unix:/run/cutelystapp.sock|fcgi://cutelystapp/
+
+    # serve our static assets via apache
+    Alias /assets /path/to/our/static/assets
+    <Location /assets>
+        ProxyPass !
+        Require all granted
+    </Location>
+</VirtualHost>
+\endcode
+
+\section serveapp-stop Stop the \serverexec server
+\serverexec provides the \c \--stop option to stop a server instance identified by a PID written
+to a file using \c \--pidfile or \c \-pidfile2 option.
+
+Start the server and write the PID to a file:
+
+<code>\serverexec -M \--lazy -a /path/to/cutelystapp.so \--h1 localhost:3000 \--pidfile /run/cutelystapp.pid</code>
+
+Stop the server using the PID file:
+
+<code>\serverexec \--stop /run/cutelystapp.pid</code>
+
+\section serveapp-systemd Use systemd
+On GNU/Linux based operating systems you may want to use systemd to manage your %Cutelyst application services.
+%Cutelyst supports systemd notifications. Here is an example systemd service file implementation using a local
+FastCGI socket.
+
+\code{.ini}
+[Unit]
+Description=My little application
+After=network.target
+Before=httpd.service nginx.service lighttpd.service
+
+[Service]
+Type=notify
+PIDFile=${RUNTIME_DIRECTORY}/myapp.pid
+ExecStart=/usr/bin/cutelystd4-qt6 -M --lazy -a /path/to/myapp.so --pidfile ${RUNTIME_DIRECTORY}/myapp.pid --fastcgi-socket ${RUNTIME_DIRECTORY}/myapp.sock --socket-access ug --chown-socket myappuser:www --uid myappuser --gid myappgroup
+ExecStop=/usr/bin/cutelyst4d-qt6 --stop ${RUNTIME_DIRECTORY}/myapp.pid
+NotifyAccess=all
+RuntimeDirectory=myapp
+
+[Install]
+WantedBy=multi-user.target
+\endcode
 */
 
 }
