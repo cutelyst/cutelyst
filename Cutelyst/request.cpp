@@ -191,6 +191,11 @@ QVariant Request::bodyData() const
     return d->bodyData;
 }
 
+QCborValue Request::bodyCbor() const
+{
+    return bodyData().value<QCborValue>();
+}
+
 QJsonDocument Request::bodyJsonDocument() const
 {
     return bodyData().toJsonDocument();
@@ -500,6 +505,12 @@ void RequestPrivate::parseBody() const
         }
         uploads = ups;
         //        bodyData = QVariant::fromValue(uploadsMap);
+    } else if (contentType.startsWith("application/cbor")) {
+        if (posOrig) {
+            body->seek(0);
+        }
+
+        bodyData = QVariant::fromValue(QCborValue::fromCbor(body->readAll()));
     } else if (contentType.startsWith("application/json")) {
         if (posOrig) {
             body->seek(0);

@@ -204,6 +204,12 @@ public:
     [[nodiscard]] QVariant bodyData() const;
 
     /**
+     * When request Content-Type is 'application/cbor' this will
+     * contain the parsed CBOR value.
+     */
+    [[nodiscard]] QCborValue bodyCbor() const;
+
+    /**
      * When request Content-Type is 'application/json' this will
      * contain the parsed JSON representation document.
      */

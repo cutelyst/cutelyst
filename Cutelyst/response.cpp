@@ -122,6 +122,18 @@ void Response::setBody(const QByteArray &body)
     d->setBodyData(body);
 }
 
+void Response::setCborBody(const QByteArray &cbor)
+{
+    Q_D(Response);
+    d->setBodyData(cbor);
+    d->headers.setContentType("application/cbor"_qba);
+}
+
+void Response::setCborValueBody(const QCborValue &value)
+{
+    setCborBody(value.toCbor());
+}
+
 void Response::setJsonBody(const QByteArray &json)
 {
     Q_D(Response);
