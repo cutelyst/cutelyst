@@ -427,7 +427,7 @@ void Server::parseCommandLine(const QStringList &arguments)
                                    //% "Set file mode creation mask."
                                    qtTrId("cutelystd-opt-umask-desc"),
                                    //: CLI option value name
-                                   //% "mode"
+                                   //% "mask"
                                    qtTrId("cutelystd-opt-umask-value"));
     parser.addOption(umaskOption);
 

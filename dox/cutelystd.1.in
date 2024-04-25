@@ -111,7 +111,7 @@ is modified/touched. Requires that master process
 .RB ( \-\-master )
 and lazy mode
 .RB ( \-\-lazy )
-are enabled.
+are enabled. Can be used multiple times.
 .SS "Threads and Processes"
 .TP
 .BR \-M ", " \-\^\-master
@@ -142,6 +142,7 @@ Balances new connections to threads using round-robin.
 Bind to the specified TCP socket using HTTP protocol. To bind to all interfaces,
 simply only provide the
 .IR port .
+Can be used multiple times to add multiple sockets.
 .TP
 .B \-\^\-upgrade-h2c
 Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text).
@@ -161,6 +162,7 @@ can be either
 If omitted,
 .I rsa
 will be used as defaut.
+Can be used multiple times to add multiple sockets.
 .TP
 .B \-\^\-https-h2
 Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
@@ -169,12 +171,14 @@ Defines if HTTPS socket should use ALPN to negotiate HTTP/2.
 Bind to the specified TCP socket using HTTP/2 Clear Text only protocol. To bind to all
 interfaces, simply only provide the
 .IR port .
+Can be used multiple times to add multiple sockets.
 .TP
 .BI "\-\^\-http2-header-table-size" " size"
 Set the HTTP2 header table size. Default value: 4096.
 .TP
 .BI \-\^\-fastcgi-socket " address"
 Bind to the specified UNIX/TCP socket using FastCGI protocol.
+Can be used multiple times to add multiple sockets.
 .TP
 .BI \-\^\-socket-access " options"
 Set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access.
@@ -212,10 +216,11 @@ Setgid to the specified
 .B \-\^\-no-initgroups
 Disable additional groups set via initgroups().
 .TP
-.BI \-\^\-umask " mode"
-Set file
-.I mode
-creation mask.
+.BI \-\^\-umask " mask"
+Set file creation
+.IR mask .
+See also
+.IR umask (2).
 .SS "TCP Settings"
 .TP
 .B \-\^\-tcp-nodelay
@@ -271,6 +276,8 @@ issue system of the GitHub project
 .SH EXAMPLE
 .SS "Start application with HTTP socket and load ini config file"
 cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-h1 localhost:3000 \-\^\-ini /path/to/appconfig.ini
+.SS "Start application with HTTPS socket on all interfaces and offer upgrade to HTTP/2:"
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-hs1 :3000,/path/to/cert.pem,/path/to/rsakey.pem \-\^\-https-h2
 .SS "Start application on local FastCGI socket and protect socket file"
 cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-chown-socket myuser:www \-\^\-socket-access ug \-\^\-uid myuser
 .SS "Start application on local FastCGI socket and store PID in file"
