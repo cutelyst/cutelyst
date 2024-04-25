@@ -105,12 +105,10 @@ bool EngineRequest::finalizeHeaders()
     Response *response = context->response();
     Headers &headers   = response->headers();
 
-    // Fix missing content length
-    if (headers.contentLength() < 0) {
-        qint64 size = response->size();
-        if (size >= 0) {
-            headers.setContentLength(size);
-        }
+    // Set content length if we have a valid one
+    const qint64 size = response->size();
+    if (size >= 0) {
+        headers.setContentLength(size);
     }
 
     finalizeCookies();

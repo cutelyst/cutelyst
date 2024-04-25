@@ -9,8 +9,8 @@
 #include "viewemail.h"
 
 #include <SimpleMail/mimepart.h>
-#include <SimpleMail/sender.h>
 #include <SimpleMail/server.h>
+#include <memory>
 
 #include <QtCore/QStringList>
 
@@ -20,15 +20,14 @@ namespace Cutelyst {
 class ViewEmailPrivate : public ViewPrivate
 {
 public:
-    void setupAttributes(MimePart *part, const QVariantHash &attrs) const;
-    void setupEncoding(MimePart *part, const QByteArray &encoding) const;
+    void setupAttributes(std::shared_ptr<MimePart> part, const QVariantHash &attrs) const;
+    void setupEncoding(std::shared_ptr<MimePart> part, const QByteArray &encoding) const;
 
     QString stashKey              = QStringLiteral("email");
     QByteArray defaultContentType = QByteArrayLiteral("text/plain");
     QByteArray defaultCharset;
     QByteArray defaultEncoding;
     QStringList exposeKeys;
-    Sender *sender;
     Server *server = nullptr;
 };
 

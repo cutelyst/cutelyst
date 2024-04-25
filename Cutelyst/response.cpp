@@ -89,6 +89,7 @@ QByteArray &Response::body()
         delete d->bodyIODevice;
         d->bodyIODevice = nullptr;
     }
+    // Content-Length is set at finalizeHeaders() as we can't know it here
 
     return d->bodyData;
 }
@@ -110,6 +111,8 @@ void Response::setBody(QIODevice *body)
             delete d->bodyIODevice;
         }
         d->bodyIODevice = body;
+        // Content-Length is set at finalizeHeaders()
+        // because & ::body() reference might change it
     }
 }
 
@@ -117,6 +120,18 @@ void Response::setBody(const QByteArray &body)
 {
     Q_D(Response);
     d->setBodyData(body);
+}
+
+void Response::setCborBody(const QByteArray &cbor)
+{
+    Q_D(Response);
+    d->setBodyData(cbor);
+    d->headers.setContentType("application/cbor"_qba);
+}
+
+void Response::setCborValueBody(const QCborValue &value)
+{
+    setCborBody(value.toCbor());
 }
 
 void Response::setJsonBody(const QByteArray &json)
@@ -353,7 +368,8 @@ void ResponsePrivate::setBodyData(const QByteArray &body)
             bodyIODevice = nullptr;
         }
         bodyData = body;
-        headers.setContentLength(body.size());
+        // Content-Length is set at finalizeHeaders()
+        // because & ::body() reference might change it
     }
 }
 

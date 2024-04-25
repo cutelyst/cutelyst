@@ -80,117 +80,73 @@ void ViewEmail::setDefaultEncoding(const QByteArray &encoding)
 QString ViewEmail::senderHost() const
 {
     Q_D(const ViewEmail);
-    return d->sender->host();
+    return d->server->host();
 }
 
 void ViewEmail::setSenderHost(const QString &host)
 {
     Q_D(ViewEmail);
-    d->sender->setHost(host);
-    if (d->server) {
-        d->server->setHost(host);
-    }
+    d->server->setHost(host);
 }
 
 int ViewEmail::senderPort() const
 {
     Q_D(const ViewEmail);
-    return d->sender->port();
+    return d->server->port();
 }
 
 void ViewEmail::setSenderPort(int port)
 {
     Q_D(ViewEmail);
-    d->sender->setPort(quint16(port));
-    if (d->server) {
-        d->server->setPort(quint16(port));
-    }
+    d->server->setPort(quint16(port));
 }
 
 ViewEmail::ConnectionType ViewEmail::senderConnectionType() const
 {
     Q_D(const ViewEmail);
-    return static_cast<ViewEmail::ConnectionType>(d->sender->connectionType());
+    return static_cast<ViewEmail::ConnectionType>(d->server->connectionType());
 }
 
 void ViewEmail::setSenderConnectionType(ViewEmail::ConnectionType ct)
 {
     Q_D(ViewEmail);
-    d->sender->setConnectionType(static_cast<Sender::ConnectionType>(ct));
-    if (d->server) {
-        d->server->setConnectionType(static_cast<Server::ConnectionType>(ct));
-    }
+    d->server->setConnectionType(static_cast<Server::ConnectionType>(ct));
 }
 
 ViewEmail::AuthMethod ViewEmail::senderAuthMethod() const
 {
     Q_D(const ViewEmail);
-    return static_cast<ViewEmail::AuthMethod>(d->sender->authMethod());
+    return static_cast<ViewEmail::AuthMethod>(d->server->authMethod());
 }
 
 void ViewEmail::setSenderAuthMethod(ViewEmail::AuthMethod method)
 {
     Q_D(ViewEmail);
-    d->sender->setAuthMethod(static_cast<Sender::AuthMethod>(method));
-    if (d->server) {
-        d->server->setAuthMethod(static_cast<Server::AuthMethod>(method));
-    }
+    d->server->setAuthMethod(static_cast<Server::AuthMethod>(method));
 }
 
 QString ViewEmail::senderUser() const
 {
     Q_D(const ViewEmail);
-    return d->sender->user();
+    return d->server->username();
 }
 
 void ViewEmail::setSenderUser(const QString &user)
 {
     Q_D(ViewEmail);
-    d->sender->setUser(user);
-    if (d->server) {
-        d->server->setUsername(user);
-    }
+    d->server->setUsername(user);
 }
 
 QString ViewEmail::senderPassword() const
 {
     Q_D(const ViewEmail);
-    return d->sender->password();
+    return d->server->password();
 }
 
 void ViewEmail::setSenderPassword(const QString &password)
 {
     Q_D(ViewEmail);
-    d->sender->setPassword(password);
-    if (d->server) {
-        d->server->setPassword(password);
-    }
-}
-
-bool ViewEmail::async() const
-{
-    Q_D(const ViewEmail);
-    return d->server;
-}
-
-void ViewEmail::setAsync(bool enable)
-{
-    Q_D(ViewEmail);
-    if (enable) {
-        if (!d->server) {
-            d->server = new Server(this);
-            d->server->setHost(d->sender->host());
-            d->server->setPort(d->sender->port());
-            d->server->setUsername(d->sender->user());
-            d->server->setPassword(d->sender->password());
-            d->server->setAuthMethod(static_cast<Server::AuthMethod>(d->sender->authMethod()));
-            d->server->setConnectionType(
-                static_cast<Server::ConnectionType>(d->sender->connectionType()));
-        }
-    } else {
-        delete d->server;
-        d->server = nullptr;
-    }
+    d->server->setPassword(password);
 }
 
 QByteArray ViewEmail::render(Context *c) const
@@ -209,35 +165,35 @@ QByteArray ViewEmail::render(Context *c) const
     QVariant value;
     value = email.value(QStringLiteral("to"));
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
-        message.addTo(value.toString());
+        message.addTo(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
-            message.addTo(rcpt);
+            message.addTo(SimpleMail::EmailAddress{rcpt});
         }
     }
 
     value = email.value(QStringLiteral("cc"));
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
-        message.addCc(value.toString());
+        message.addCc(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
-            message.addCc(rcpt);
+            message.addCc(SimpleMail::EmailAddress{rcpt});
         }
     }
 
     value = email.value(QStringLiteral("bcc"));
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
-        message.addBcc(value.toString());
+        message.addBcc(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
-            message.addBcc(rcpt);
+            message.addBcc(SimpleMail::EmailAddress{rcpt});
         }
     }
 
-    message.setSender(email.value(QStringLiteral("from")).toString());
+    message.setSender(SimpleMail::EmailAddress{email.value(QStringLiteral("from")).toString()});
     message.setSubject(email.value(QStringLiteral("subject")).toString());
 
     QVariant body  = email.value(QStringLiteral("body"));
@@ -250,7 +206,7 @@ QByteArray ViewEmail::render(Context *c) const
     if (!parts.isNull()) {
         const QVariantList partsVariant = parts.toList();
         for (const QVariant &part : partsVariant) {
-            auto mime = part.value<MimePart *>();
+            auto mime = part.value<std::shared_ptr<MimePart>>();
             if (mime) {
                 message.addPart(mime);
             } else {
@@ -269,18 +225,13 @@ QByteArray ViewEmail::render(Context *c) const
             message.getContent().setContentType(d->defaultContentType);
         }
     } else {
-        auto part = new MimeText(body.toString());
+        auto part = std::make_shared<MimeText>(body.toString());
         d->setupAttributes(part, email);
         message.setContent(part);
     }
 
-    if (d->server) {
-        ServerReply *reply = d->server->sendMail(message);
-        connect(reply, &ServerReply::finished, reply, &ServerReply::deleteLater);
-    } else if (!d->sender->sendMail(message)) {
-        c->appendError(QString::fromLatin1(d->sender->responseText()));
-        return ret;
-    }
+    ServerReply *reply = d->server->sendMail(message);
+    connect(reply, &ServerReply::finished, reply, &ServerReply::deleteLater);
 
     return ret;
 }
@@ -294,7 +245,7 @@ ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name)
 void ViewEmail::initSender()
 {
     Q_D(ViewEmail);
-    d->sender = new Sender(this);
+    d->server = new Server(this);
 
     QVariantHash config;
     const auto app = qobject_cast<Application *>(parent());
@@ -305,20 +256,21 @@ void ViewEmail::initSender()
     d->stashKey = config.value(QStringLiteral("stash_key"), QStringLiteral("email")).toString();
 
     if (!config.value(QStringLiteral("sender_host")).isNull()) {
-        d->sender->setHost(config.value(QStringLiteral("sender_host")).toString());
+        d->server->setHost(config.value(QStringLiteral("sender_host")).toString());
     }
     if (!config.value(QStringLiteral("sender_port")).isNull()) {
-        d->sender->setPort(quint16(config.value(QStringLiteral("sender_port")).toInt()));
+        d->server->setPort(quint16(config.value(QStringLiteral("sender_port")).toInt()));
     }
     if (!config.value(QStringLiteral("sender_username")).isNull()) {
-        d->sender->setUser(config.value(QStringLiteral("sender_username")).toString());
+        d->server->setUsername(config.value(QStringLiteral("sender_username")).toString());
     }
     if (!config.value(QStringLiteral("sender_password")).isNull()) {
-        d->sender->setPassword(config.value(QStringLiteral("sender_password")).toString());
+        d->server->setPassword(config.value(QStringLiteral("sender_password")).toString());
     }
 }
 
-void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs) const
+void ViewEmailPrivate::setupAttributes(std::shared_ptr<MimePart> part,
+                                       const QVariantHash &attrs) const
 {
     auto contentTypeIt = attrs.constFind(QStringLiteral("content_type"));
     if (contentTypeIt != attrs.constEnd() && !contentTypeIt.value().isNull() &&
@@ -354,7 +306,8 @@ void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs
     }
 }
 
-void ViewEmailPrivate::setupEncoding(MimePart *part, const QByteArray &encoding) const
+void ViewEmailPrivate::setupEncoding(std::shared_ptr<MimePart> part,
+                                     const QByteArray &encoding) const
 {
     if (encoding == "7bit") {
         part->setEncoding(MimePart::_7Bit);

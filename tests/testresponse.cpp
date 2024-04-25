@@ -74,9 +74,23 @@ public:
     C_ATTR(contentLength, :Local :AutoArgs)
     void contentLength(Context *c)
     {
+        auto buffer = new QBuffer;
+        buffer->open(QBuffer::ReadWrite);
+        buffer->write("something_to_test_for_updated_content_type");
+        c->response()->setBody(buffer);
+
         c->response()->setBody(c->request()->queryParam(QStringLiteral("data")));
-        c->response()->setContentLength(c->response()->body().size());
-        c->response()->setBody(QByteArray::number(c->response()->contentLength()));
+    }
+
+    C_ATTR(contentLengthIODevice, :Local :AutoArgs)
+    void contentLengthIODevice(Context *c)
+    {
+        c->response()->setBody("something_to_test_for_updated_content_type"_qba);
+
+        auto buffer = new QBuffer;
+        buffer->open(QBuffer::ReadWrite);
+        buffer->write(c->request()->queryParam(QStringLiteral("data")).toLatin1());
+        c->response()->setBody(buffer);
     }
 
     C_ATTR(contentType, :Local :AutoArgs)
@@ -311,8 +325,13 @@ void TestResponse::testController_data()
 
     QTest::newRow("contentLength-test00")
         << get << QStringLiteral("/response/test/contentLength?data=Hello") << headers
-        << QByteArray() << QByteArrayLiteral("200 OK") << Headers{{"Content-Length", "1"}}
-        << QByteArrayLiteral("5");
+        << QByteArray() << QByteArrayLiteral("200 OK") << Headers{{"Content-Length", "5"}}
+        << QByteArrayLiteral("Hello");
+
+    QTest::newRow("contentLengthIODevice-test00")
+        << get << QStringLiteral("/response/test/contentLengthIODevice?data=HelloWorld") << headers
+        << QByteArray() << QByteArrayLiteral("200 OK") << Headers{{"Content-Length", "10"}}
+        << QByteArrayLiteral("HelloWorld");
 
     query.clear();
     query.addQueryItem(QStringLiteral("data"), QStringLiteral("appplication/json"));

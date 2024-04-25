@@ -158,6 +158,18 @@ public:
     inline void setBody(QStringView body);
 
     /**
+     * Sets a \a CBOR data as the response body,
+     * this method is provided for convenience as it sets the content-type to application/cbor.
+     */
+    void setCborBody(const QByteArray &cbor);
+
+    /**
+     * Sets a \a CBOR value without transformation as the response body,
+     * this method is provided for convenience as it sets the content-type to application/json.
+     */
+    void setCborValueBody(const QCborValue &value);
+
+    /**
      * Sets a \a JSON string as the response body,
      * this method is provided for convenience as it sets the content-type to application/json.
      */

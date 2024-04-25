@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(cutelyst
-    VERSION 4.2.1
+    VERSION 4.3.0
     DESCRIPTION "A C++ Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework."
     HOMEPAGE_URL "https://cutelyst.org/"
     LANGUAGES CXX)
@@ -15,12 +15,13 @@ find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network
 
 set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})
 
-# CMakeLists for Cutelyst library
-set(CMAKE_AUTOMOC ON)
-
 # Include our cmake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
@@ -136,10 +137,6 @@ add_definitions(
     -DQT_USE_FAST_OPERATOR_PLUS
     -DQT_DISABLE_DEPRECATED_BEFORE=0x060200
 )
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
