@@ -258,7 +258,7 @@ void Server::parseCommandLine(const QStringList &arguments)
                                       //: CLI option description
                                       //% "Bind to the specified TCP socket using HTTPS protocol."
                                       qtTrId("cutelystd-opt-https-socket-desc"),
-                                      //% "[address]:port,certFile,keyFile[,algorithm]
+                                      //% "[address]:port,certFile,keyFile[,algorithm]"
                                       qtTrId("cutelystd-opt-value-httpsaddress"));
     parser.addOption(httpsSocketOpt);
 
@@ -350,7 +350,7 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption socketRcvbuf(QStringLiteral("socket-rcvbuf"),
                                     //: CLI option description
                                     //% "Sets the socket receive buffer size in bytes at the OS "
-                                    //% "level. This maps to the SO_RCVBUF socket option. "
+                                    //% "level. This maps to the SO_RCVBUF socket option."
                                     qtTrId("cutelystd-opt-socket-rcvbuf-desc"),
                                     qtTrId("cutelystd-opt-value-bytes"));
     parser.addOption(socketRcvbuf);

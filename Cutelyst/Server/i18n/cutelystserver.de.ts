@@ -119,14 +119,16 @@
         <translation>Bindung an den angegebenen TCP-Socket unter Verwendung des HTTP-Protokolls.</translation>
     </message>
     <message id="cutelystd-opt-value-address">
-        <source>address</source>
+        <source>[address]:port</source>
+        <oldsource>address</oldsource>
         <extracomment>CLI option value name</extracomment>
-        <translation>Adresse</translation>
+        <translation>[Adresse]:Port</translation>
     </message>
     <message id="cutelystd-opt-http2-socket-desc">
-        <source>Bind to the specified TCP socket using the HTTP/2 protocol.</source>
+        <source>Bind to the specified TCP socket using the HTTP/2 Clear Text protocol.</source>
+        <oldsource>Bind to the specified TCP socket using the HTTP/2 protocol.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Bindung an den angegebenen TCP-Socket unter Verwendung des HTTP/2-Protokolls.</translation>
+        <translation>Bindung an den angegebenen TCP-Socket unter Verwendung des HTTP/2-Protokolls im Klartextmodus.</translation>
     </message>
     <message id="cutelystd-opt-http2-header-table-size-desc">
         <source>Sets the HTTP/2 header table size.</source>
@@ -194,14 +196,16 @@
         <translation>Wie static-map, hängt den den Anfragepfad aber komplett an den lokalen Pfad an.  Kann mehrfach angegeben werden.</translation>
     </message>
     <message id="cutelystd-opt-auto-restart-desc">
-        <source>Auto restarts when the application file changes.</source>
+        <source>Auto restarts when the application file changes. Master process and lazy mode have to be enabled.</source>
+        <oldsource>Auto restarts when the application file changes.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Startet automatisch neu sobald sich die Anwendungsdatei ändert.</translation>
+        <translation>Startet automatisch neu sobald sich die Anwendungsdatei ändert. Master-Prozess und lazy-Modus müssen aktiviert sein.</translation>
     </message>
     <message id="cutelystd-opt-touch-reload-desc">
-        <source>Reload the application if the specified file is modified/touched.</source>
+        <source>Reload the application if the specified file is modified/touched. Master process and lazy mode have to be enabled.</source>
+        <oldsource>Reload the application if the specified file is modified/touched.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Startet die Anwendung neu wenn sich die angegebene Datei ändert.</translation>
+        <translation>Startet die Anwendung neu wenn sich die angegebene Datei ändert. Master-Prozess und lazy-Modus müssen aktiviert sein.</translation>
     </message>
     <message id="cutelystd-opt-tcp-nodelay-desc">
         <source>Enable TCP NODELAY on each request.</source>
@@ -209,27 +213,28 @@
         <translation>Aktiviere bei jeder Anfrage TCP NODELAY.</translation>
     </message>
     <message id="cutelystd-opt-so-keepalive-desc">
-        <source>Enable TCP KEEPALIVEs.</source>
+        <source>Enable TCP KEEPALIVE.</source>
+        <oldsource>Enable TCP KEEPALIVEs.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Aktiviere TCP KEEPALIVEs.</translation>
+        <translation>Aktiviere TCP KEEPALIVE.</translation>
     </message>
     <message id="cutelystd-opt-socket-sndbuf-desc">
-        <source>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option. Default value: -1.</source>
-        <oldsource>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option.</oldsource>
+        <source>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option.</source>
+        <oldsource>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option. Default value: -1.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Setzt die Größe des Socket-Sendepuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_SNDBUF. Standardwert: -1.</translation>
+        <translation>Setzt die Größe des Socket-Sendepuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_SNDBUF.</translation>
     </message>
     <message id="cutelystd-opt-socket-rcvbuf-desc">
-        <source>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.</source>
-        <oldsource>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.</oldsource>
+        <source>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.</source>
+        <oldsource>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option. </oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Setzt die Größe des Socket-Empfangspuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF. Standardwert: -1.</translation>
+        <translation>Setzt die Größe des Socket-Empfangspuffers in Bytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF.</translation>
     </message>
     <message id="cutelystd-opt-websocket-max-size-desc">
-        <source>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: 1024.</source>
-        <oldsource>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option.</oldsource>
+        <source>Maximum allowed payload size for websocket in kibibytes. Default value: 1024 KiB.</source>
+        <oldsource>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: 1024.</oldsource>
         <extracomment>CLI option description</extracomment>
-        <translation>Setzt die Größe des Websocket-Empfangspuffers in Kibibytes auf OS-Ebene. Dies entspricht der Socket-Option SO_RCVBUF. Standardwert: 1024.</translation>
+        <translation>Maximal erlaubte Nutzlastgröße für Websockets in Kibibyts. Standardwert: 1024 KiB.</translation>
     </message>
     <message id="cutelystd-opt-websocket-max-size-value">
         <source>kibibyte</source>
@@ -302,9 +307,10 @@
         <translation>Lege die Maske zum Erstellen neuer Dateien fest.</translation>
     </message>
     <message id="cutelystd-opt-umask-value">
-        <source>mode</source>
+        <source>mask</source>
+        <oldsource>mode</oldsource>
         <extracomment>CLI option value name</extracomment>
-        <translation>umask</translation>
+        <translation>Maske</translation>
     </message>
     <message id="cutelystd-opt-cpu-affinity-desc">
         <source>Set CPU affinity with the number of CPUs available for each worker core.</source>
@@ -360,6 +366,12 @@
     <message id="cutelystd-err-server-not-fully-stopped">
         <source>Server not fully stopped.</source>
         <translation>Der Server wurde nicht vollständig gestoppt.</translation>
+    </message>
+    <message id="cutelystd-opt-value-httpsaddress">
+        <source>[address]:port,certFile,keyFile[,algorithm]</source>
+        <oldsource>[address]:port,certFile,keyFile[,algorithm]
+</oldsource>
+        <translation>[Adresse]:Port,Zertifikat,Schlüssel[,Algorithmus]</translation>
     </message>
 </context>
 </TS>

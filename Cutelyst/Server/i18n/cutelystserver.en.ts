@@ -119,12 +119,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-value-address">
-        <source>address</source>
+        <source>[address]:port</source>
+        <oldsource>address</oldsource>
         <extracomment>CLI option value name</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-http2-socket-desc">
-        <source>Bind to the specified TCP socket using the HTTP/2 protocol.</source>
+        <source>Bind to the specified TCP socket using the HTTP/2 Clear Text protocol.</source>
+        <oldsource>Bind to the specified TCP socket using the HTTP/2 protocol.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -194,12 +196,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-auto-restart-desc">
-        <source>Auto restarts when the application file changes.</source>
+        <source>Auto restarts when the application file changes. Master process and lazy mode have to be enabled.</source>
+        <oldsource>Auto restarts when the application file changes.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-touch-reload-desc">
-        <source>Reload the application if the specified file is modified/touched.</source>
+        <source>Reload the application if the specified file is modified/touched. Master process and lazy mode have to be enabled.</source>
+        <oldsource>Reload the application if the specified file is modified/touched.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -209,25 +213,26 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-so-keepalive-desc">
-        <source>Enable TCP KEEPALIVEs.</source>
+        <source>Enable TCP KEEPALIVE.</source>
+        <oldsource>Enable TCP KEEPALIVEs.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-socket-sndbuf-desc">
-        <source>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option. Default value: -1.</source>
-        <oldsource>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option.</oldsource>
+        <source>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option.</source>
+        <oldsource>Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option. Default value: -1.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-socket-rcvbuf-desc">
-        <source>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: -1.</source>
-        <oldsource>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.</oldsource>
+        <source>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.</source>
+        <oldsource>Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option. </oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-websocket-max-size-desc">
-        <source>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: 1024.</source>
-        <oldsource>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option.</oldsource>
+        <source>Maximum allowed payload size for websocket in kibibytes. Default value: 1024 KiB.</source>
+        <oldsource>Sets the websocket receive buffer size in kibibytes at the OS level. This maps to the SO_RCVBUF socket option. Default value: 1024.</oldsource>
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -302,7 +307,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelystd-opt-umask-value">
-        <source>mode</source>
+        <source>mask</source>
+        <oldsource>mode</oldsource>
         <extracomment>CLI option value name</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -359,6 +365,12 @@
     </message>
     <message id="cutelystd-err-server-not-fully-stopped">
         <source>Server not fully stopped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelystd-opt-value-httpsaddress">
+        <source>[address]:port,certFile,keyFile[,algorithm]</source>
+        <oldsource>[address]:port,certFile,keyFile[,algorithm]
+</oldsource>
         <translation type="unfinished"></translation>
     </message>
 </context>
