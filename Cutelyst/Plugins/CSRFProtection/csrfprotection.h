@@ -266,8 +266,18 @@ public:
     /**
      * Sets the name for the hidden form field that takes the CSRF token. This field name is used
      * by CSRFProtection::getTokenFormField(). The default value is @a "csrfprotectiontoken".
+     * @sa formFieldName()
      */
     void setFormFieldName(const QByteArray &fieldName);
+
+    /**
+     * Returns the name used for the hidden form filed that takes the CSRF token. This field name
+     * can be used for own field implementatoin is also used by
+     * CSRFProtection::getTokenFormField(). The default value is @a "csrfprotectiontoken".
+     * @sa setFormFieldName()
+     * @since Cuteyst 4.3.0
+     */
+    static QByteArray formFieldName() noexcept;
 
     /**
      * Sets the name of the stash key that will contain the error message if the CSRF
@@ -333,6 +343,7 @@ public:
     /**
      * Sets the content @a type for the error message set by setGenericErrorMessage(), defaults
      * to <code>text/plain; charset=utf-8</code>.
+     * @sa setGenericErrorMessage()
      * @since Cutelyst 2.2.0
      */
     void setGenericErrorContentType(const QByteArray &type);
