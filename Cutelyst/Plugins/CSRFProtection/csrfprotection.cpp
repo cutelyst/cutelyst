@@ -177,6 +177,16 @@ void CSRFProtection::setFormFieldName(const QByteArray &fieldName)
     d->formInputName = fieldName;
 }
 
+QByteArray CSRFProtection::formFieldName() noexcept
+{
+    if (!csrf) {
+        qCCritical(C_CSRFPROTECTION) << "CSRFProtection plugin not registered";
+        return {};
+    }
+
+    return csrf->d_ptr->formInputName;
+}
+
 void CSRFProtection::setErrorMsgStashKey(const QString &keyName)
 {
     Q_D(CSRFProtection);
@@ -255,7 +265,7 @@ QString CSRFProtection::getTokenFormField(Context *c)
     }
 
     form = QStringLiteral("<input type=\"hidden\" name=\"%1\" value=\"%2\" />")
-               .arg(QString::fromLatin1(csrf->d_ptr->formInputName),
+               .arg(QString::fromLatin1(CSRFProtection::formFieldName()),
                     QString::fromLatin1(CSRFProtection::getToken(c)));
 
     return form;

@@ -143,6 +143,7 @@ void TestCsrfProtection::initTestCase()
         QVERIFY(!m_cookie.value().isEmpty());
         initTest();
     }
+    QCOMPARE(CSRFProtection::formFieldName(), m_fieldName);
 }
 
 TestEngine *TestCsrfProtection::getEngine()
