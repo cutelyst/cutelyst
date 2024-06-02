@@ -122,11 +122,19 @@ bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) con
 
 bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodName) const
 {
+    Q_Q(const ActionREST);
+
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
     response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
-    const QByteArray body = "Method " + c->req()->method() + " not implemented for " +
-                            c->uriFor(methodName).toString().toLatin1();
+
+    const Action *action = q;
+    const QUrl uri       = c->uriFor(const_cast<Action *>(action),
+                               c->request()->captures(),
+                               c->request()->arguments(),
+                               c->request()->queryParameters());
+    const QByteArray body =
+        "Method " + c->req()->method() + " not implemented for " + uri.toString().toLatin1();
     response->setBody(body);
     return true;
 }
