@@ -180,7 +180,7 @@ void TestActionREST::testController_data()
     // Test default NOT implemented
     QTest::newRow("rest-test2-03")
         << put << QStringLiteral("/action/rest/test2/") << 405
-        << QByteArrayLiteral("Method PUT not implemented for http://127.0.0.1/test2")
+        << QByteArrayLiteral("Method PUT not implemented for http://127.0.0.1/action/rest/test2/")
         << QStringLiteral("DELETE, GET, HEAD");
     QTest::newRow("rest-test2-04") << methodDELETE << QStringLiteral("/action/rest/test2/") << 200
                                    << QByteArrayLiteral("test2.test2 DELETE.") << QString();
