@@ -36,6 +36,19 @@ public:
     [[nodiscard]] bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
 #endif
 
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+    void loadZstdConfig(const QVariantMap &conf);
+
+    struct ZstdConfig {
+        constexpr static int compressionLevelDefault{3};
+        constexpr static int compressionLevelMin{1};
+        constexpr static int compressionLevelMax{19};
+        int compressionLevel{compressionLevelDefault};
+        constexpr static int compressionThreadsDefault{1};
+        int compressionThreads{compressionThreadsDefault};
+    } zstd;
+#endif
+
     QVariantMap defaultConfig;
     QStringList dirs;
     QStringList mimeTypes;
