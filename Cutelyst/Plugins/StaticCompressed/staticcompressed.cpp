@@ -210,6 +210,11 @@ bool StaticCompressed::setup(Application *app)
     supportedCompressions << u"brotli"_qs;
 #endif
 
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+    d->loadZstdConfig(config);
+    supportedCompressions << u"zstd"_qs;
+#endif
+
     qCInfo(C_STATICCOMPRESSED) << "Supported compressions:" << supportedCompressions.join(u',');
     qCInfo(C_STATICCOMPRESSED) << "Include paths:" << d->includePaths;
 
@@ -790,6 +795,38 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath,
     }
 
     return ok;
+}
+#endif
+
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+void StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
+{
+    bool ok = false;
+
+    zstd.compressionLevel =
+        conf.value(u"zstd_compression_level"_qs,
+                   defaultConfig.value(u"zstd_compression_level"_qs, zstd.compressionLevelDefault))
+            .toInt(&ok);
+    if (!ok || zstd.compressionLevel < zstd.compressionLevelMin ||
+        zstd.compressionLevel > zstd.compressionLevelMax) {
+        qCWarning(C_STATICCOMPRESSED).nospace()
+            << "Invalid value for zstd_compression_level. Has to be an integer value between "
+            << zstd.compressionLevelMin << " and " << zstd.compressionLevelMax
+            << " inclusive. Using default value " << zstd.compressionLevelDefault;
+        zstd.compressionLevel = zstd.compressionLevelDefault;
+    }
+
+    zstd.compressionThreads = conf.value(u"zstd_compression_threads"_qs,
+                                         defaultConfig.value(u"zstd_compression_threads"_qs,
+                                                             zstd.compressionThreadsDefault))
+                                  .toInt(&ok);
+    if (!ok || zstd.compressionThreads < 0) {
+        qCWarning(C_STATICCOMPRESSED).nospace()
+            << "Invalid value for zstd_compression_threads. Has to be an integer value "
+               "greater than or equal to 0. Using default value "
+            << zstd.compressionThreadsDefault;
+        zstd.compressionThreads = zstd.compressionThreadsDefault;
+    }
 }
 #endif
 
