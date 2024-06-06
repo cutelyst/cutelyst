@@ -50,8 +50,6 @@ public:
 
         ZSTD_CCtx *ctx{nullptr};
         constexpr static int compressionLevelDefault{9};
-        constexpr static int compressionLevelMin{1};
-        constexpr static int compressionLevelMax{19};
         int compressionLevel{compressionLevelDefault};
     } zstd;
 #endif

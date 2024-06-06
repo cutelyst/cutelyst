@@ -838,12 +838,12 @@ bool StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
         conf.value(u"zstd_compression_level"_qs,
                    defaultConfig.value(u"zstd_compression_level"_qs, zstd.compressionLevelDefault))
             .toInt(&ok);
-    if (!ok || zstd.compressionLevel < zstd.compressionLevelMin ||
-        zstd.compressionLevel > zstd.compressionLevelMax) {
+    if (!ok || zstd.compressionLevel < ZSTD_minCLevel() ||
+        zstd.compressionLevel > ZSTD_maxCLevel()) {
         qCWarning(C_STATICCOMPRESSED).nospace()
             << "Invalid value for zstd_compression_level. Has to be an integer value between "
-            << zstd.compressionLevelMin << " and " << zstd.compressionLevelMax
-            << " inclusive. Using default value " << zstd.compressionLevelDefault;
+            << ZSTD_minCLevel() << " and " << ZSTD_maxCLevel() << " inclusive. Using default value "
+            << zstd.compressionLevelDefault;
         zstd.compressionLevel = zstd.compressionLevelDefault;
     }
 
