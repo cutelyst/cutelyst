@@ -18,7 +18,7 @@ class Context;
 class StaticCompressedPrivate
 {
 public:
-    enum Compression { Gzip, Zopfli, Brotli, Deflate };
+    enum Compression { Gzip, Zopfli, Brotli, Deflate, Zstd };
 
     void beforePrepareAction(Context *c, bool *skipMethod);
     bool locateCompressedFile(Context *c, const QString &relPath) const;
@@ -38,6 +38,8 @@ public:
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
     void loadZstdConfig(const QVariantMap &conf);
+
+    [[nodiscard]] bool compressZstd(const QString &inputPath, const QString &outputPath) const;
 
     struct ZstdConfig {
         constexpr static int compressionLevelDefault{3};
