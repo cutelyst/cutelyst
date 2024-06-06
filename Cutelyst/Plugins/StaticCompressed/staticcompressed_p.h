@@ -89,11 +89,12 @@ public:
     } zstd;
 #endif
 
-    QVariantMap defaultConfig;
     QStringList dirs;
     QStringList mimeTypes;
     QStringList suffixes;
+    QStringList compressionFormatOrder;
     QVector<QDir> includePaths;
+    QVariantMap defaultConfig;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
     QDir cacheDir;
     bool checkPreCompressed{true};

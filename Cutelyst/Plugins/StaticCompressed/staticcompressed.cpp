@@ -130,12 +130,12 @@ bool StaticCompressed::setup(Application *app)
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     d->loadZopfliConfig(config);
-    supportedCompressions << u"zopfli"_qs;
+    qCInfo(C_STATICCOMPRESSED) << "Use Zopfli:" << d->zopfli.use;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     d->loadBrotliConfig(config);
-    supportedCompressions << u"brotli"_qs;
+    supportedCompressions << u"br"_qs;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
@@ -145,7 +145,47 @@ bool StaticCompressed::setup(Application *app)
     supportedCompressions << u"zstd"_qs;
 #endif
 
+    const QStringList defaultCompressionFormatOrder{
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
+        u"br"_qs,
+#endif
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+        u"zstd"_qs,
+#endif
+        u"gzip"_qs,
+        u"deflate"_qs};
+
+    QStringList _compressionFormatOrder =
+        config
+            .value(u"compression_format_order"_qs,
+                   d->defaultConfig.value(u"compression_format_order"_qs,
+                                          defaultCompressionFormatOrder.join(u',')))
+            .toString()
+            .split(u',', Qt::SkipEmptyParts);
+    if (Q_UNLIKELY(_compressionFormatOrder.empty())) {
+        _compressionFormatOrder = defaultCompressionFormatOrder;
+        qCWarning(C_STATICCOMPRESSED)
+            << "Invalid or empty value for compression_format_order. Has to be a string list "
+               "containing supported values. Using default value"
+            << defaultCompressionFormatOrder.join(u',');
+    }
+    for (const auto &cfo : std::as_const(_compressionFormatOrder)) {
+        const QString order = cfo.trimmed().toLower();
+        if (supportedCompressions.contains(order)) {
+            d->compressionFormatOrder << order;
+        }
+    }
+    if (Q_UNLIKELY(d->compressionFormatOrder.empty())) {
+        d->compressionFormatOrder = defaultCompressionFormatOrder;
+        qCWarning(C_STATICCOMPRESSED)
+            << "Invalid or empty value for compression_format_order. Has to be a string list "
+               "containing supported values. Using default value"
+            << defaultCompressionFormatOrder.join(u',');
+    }
+
     qCInfo(C_STATICCOMPRESSED) << "Supported compressions:" << supportedCompressions.join(u',');
+    qCInfo(C_STATICCOMPRESSED) << "Compression format order:"
+                               << d->compressionFormatOrder.join(u',');
     qCInfo(C_STATICCOMPRESSED) << "Include paths:" << d->includePaths;
 
     connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
@@ -227,43 +267,59 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 
                     const auto acceptEncoding = c->req()->header("Accept-Encoding");
 
-#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-                    if (acceptEncoding.contains("zstd")) {
-                        compressedPath = locateCacheFile(path, currentDateTime, Zstd);
-                        if (!compressedPath.isEmpty()) {
-                            qCDebug(C_STATICCOMPRESSED)
-                                << "Serving zstd compressed data from" << compressedPath;
-                            contentEncoding = "zstd"_qba;
+                    for (const QString &format : std::as_const(compressionFormatOrder)) {
+                        if (!acceptEncoding.contains(format.toLatin1())) {
+                            continue;
                         }
-                    } else
-#endif
-
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-                        if (acceptEncoding.contains("br")) {
-                        compressedPath = locateCacheFile(path, currentDateTime, Brotli);
-                        if (!compressedPath.isEmpty()) {
-                            qCDebug(C_STATICCOMPRESSED)
-                                << "Serving brotli compressed data from" << compressedPath;
-                            contentEncoding = "br"_qba;
-                        }
-                    } else
+                        if (format == QLatin1String("br")) {
+                            compressedPath = locateCacheFile(path, currentDateTime, Brotli);
+                            if (compressedPath.isEmpty()) {
+                                continue;
+                            } else {
+                                qCDebug(C_STATICCOMPRESSED)
+                                    << "Serving brotli compressed data from" << compressedPath;
+                                contentEncoding = "br"_qba;
+                                break;
+                            }
+                        } else
 #endif
-                        if (acceptEncoding.contains("gzip")) {
-                        compressedPath =
-                            locateCacheFile(path, currentDateTime, zopfli.use ? ZopfliGzip : Gzip);
-                        if (!compressedPath.isEmpty()) {
-                            qCDebug(C_STATICCOMPRESSED)
-                                << "Serving" << (zopfli.use ? "zopfli" : "gzip")
-                                << "compressed data from" << compressedPath;
-                            contentEncoding = "gzip"_qba;
-                        }
-                    } else if (acceptEncoding.contains("deflate")) {
-                        compressedPath = locateCacheFile(
-                            path, currentDateTime, zopfli.use ? ZopfliDeflate : Deflate);
-                        if (!compressedPath.isEmpty()) {
-                            qCDebug(C_STATICCOMPRESSED)
-                                << "Serving deflate compressed data from" << compressedPath;
-                            contentEncoding = "deflate"_qba;
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+                            if (format == QLatin1String("zstd")) {
+                            compressedPath = locateCacheFile(path, currentDateTime, Zstd);
+                            if (compressedPath.isEmpty()) {
+                                continue;
+                            } else {
+                                qCDebug(C_STATICCOMPRESSED)
+                                    << "Serving zstd compressed data from" << compressedPath;
+                                contentEncoding = "zstd"_qba;
+                                break;
+                            }
+                        } else
+#endif
+                            if (format == QLatin1String("gzip")) {
+                            compressedPath = locateCacheFile(
+                                path, currentDateTime, zopfli.use ? ZopfliGzip : Gzip);
+                            if (compressedPath.isEmpty()) {
+                                continue;
+                            } else {
+                                qCDebug(C_STATICCOMPRESSED)
+                                    << "Serving" << (zopfli.use ? "zopfli" : "gzip")
+                                    << "compressed data from" << compressedPath;
+                                contentEncoding = "gzip"_qba;
+                                break;
+                            }
+                        } else if (format == QLatin1String("deflate")) {
+                            compressedPath = locateCacheFile(
+                                path, currentDateTime, zopfli.use ? ZopfliDeflate : Deflate);
+                            if (compressedPath.isEmpty()) {
+                                continue;
+                            } else {
+                                qCDebug(C_STATICCOMPRESSED)
+                                    << "Serving deflate compressed data from" << compressedPath;
+                                contentEncoding = "deflate"_qba;
+                                break;
+                            }
                         }
                     }
                 }
