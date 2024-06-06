@@ -183,30 +183,7 @@ bool StaticCompressed::setup(Application *app)
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-    d->brotliQualityLevel =
-        config
-            .value(u"brotli_quality_level"_qs,
-                   d->defaultConfig.value(u"brotli_quality_level"_qs,
-                                          StaticCompressedPrivate::brotliQualityLevelDefault))
-            .toInt(&ok);
-    if (!ok) {
-        qCWarning(C_STATICCOMPRESSED).nospace()
-            << "Invalid value for brotli_quality_level. "
-               "Has to be an integer value between "
-            << BROTLI_MIN_QUALITY << " and " << BROTLI_MAX_QUALITY
-            << " inclusive. Using default value "
-            << StaticCompressedPrivate::brotliQualityLevelDefault;
-        d->brotliQualityLevel = StaticCompressedPrivate::brotliQualityLevelDefault;
-    }
-
-    if (d->brotliQualityLevel < BROTLI_MIN_QUALITY || d->brotliQualityLevel > BROTLI_MAX_QUALITY) {
-        qCWarning(C_STATICCOMPRESSED).nospace()
-            << "Invalid value " << d->brotliQualityLevel
-            << " set for brotli_quality_level. Value has to be between " << BROTLI_MIN_QUALITY
-            << " and " << BROTLI_MAX_QUALITY << " inclusive. Using default value "
-            << StaticCompressedPrivate::brotliQualityLevelDefault;
-        d->brotliQualityLevel = StaticCompressedPrivate::brotliQualityLevelDefault;
-    }
+    d->loadBrotliConfig(config);
     supportedCompressions << u"brotli"_qs;
 #endif
 
@@ -749,6 +726,24 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath,
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
+void StaticCompressedPrivate::loadBrotliConfig(const QVariantMap &conf)
+{
+    bool ok = false;
+    brotli.qualityLevel =
+        conf.value(u"brotli_quality_level"_qs,
+                   defaultConfig.value(u"brotli_quality_level"_qs, brotli.qualityLevelDefault))
+            .toInt(&ok);
+
+    if (!ok || brotli.qualityLevel < BROTLI_MIN_QUALITY ||
+        brotli.qualityLevel > BROTLI_MAX_QUALITY) {
+        qCWarning(C_STATICCOMPRESSED).nospace()
+            << "Invalid value for brotli_quality_level. "
+               "Has to be an integer value between "
+            << BROTLI_MIN_QUALITY << " and " << BROTLI_MAX_QUALITY
+            << " inclusive. Using default value " << brotli.qualityLevelDefault;
+    }
+}
+
 bool StaticCompressedPrivate::compressBrotli(const QString &inputPath,
                                              const QString &outputPath) const
 {
@@ -770,56 +765,51 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath,
 
     input.close();
 
-    bool ok = false;
-
     size_t outSize = BrotliEncoderMaxCompressedSize(static_cast<size_t>(data.size()));
-    if (Q_LIKELY(outSize > 0)) {
-        const auto in = reinterpret_cast<const uint8_t *>(data.constData());
-        auto out      = static_cast<uint8_t *>(malloc(sizeof(uint8_t) * (outSize + 1)));
-        if (Q_LIKELY(out != nullptr)) {
-            BROTLI_BOOL status = BrotliEncoderCompress(brotliQualityLevel,
-                                                       BROTLI_DEFAULT_WINDOW,
-                                                       BROTLI_DEFAULT_MODE,
-                                                       data.size(),
-                                                       in,
-                                                       &outSize,
-                                                       out);
-            if (Q_LIKELY(status == BROTLI_TRUE)) {
-                QFile output(outputPath);
-                if (Q_LIKELY(output.open(QIODevice::WriteOnly))) {
-                    if (Q_LIKELY(output.write(reinterpret_cast<const char *>(out), outSize) > -1)) {
-                        ok = true;
-                    } else {
-                        qCWarning(C_STATICCOMPRESSED).nospace()
-                            << "Failed to write brotli compressed data to output file "
-                            << outputPath << ": " << output.errorString();
-                        if (output.exists()) {
-                            if (Q_UNLIKELY(!output.remove())) {
-                                qCWarning(C_STATICCOMPRESSED)
-                                    << "Can not remove invalid compressed brotli file:"
-                                    << outputPath;
-                            }
-                        }
-                    }
-                } else {
-                    qCWarning(C_STATICCOMPRESSED)
-                        << "Failed to open output file for brotli compression:" << outputPath;
-                }
-            } else {
-                qCWarning(C_STATICCOMPRESSED) << "Failed to compress" << inputPath << "with brotli";
-            }
-            free(out);
-        } else {
-            qCWarning(C_STATICCOMPRESSED)
-                << "Can not allocate needed output buffer of size"
-                << (sizeof(uint8_t) * (outSize + 1)) << "for brotli compression.";
-        }
-    } else {
+    if (Q_UNLIKELY(outSize == 0)) {
         qCWarning(C_STATICCOMPRESSED) << "Needed output buffer too large to compress input of size"
                                       << data.size() << "with brotli";
+        return false;
+    }
+    QByteArray outData{static_cast<qsizetype>(outSize), Qt::Uninitialized};
+
+    const auto in = reinterpret_cast<const uint8_t *>(data.constData());
+    auto out      = reinterpret_cast<uint8_t *>(outData.data());
+
+    const BROTLI_BOOL status = BrotliEncoderCompress(brotli.qualityLevel,
+                                                     BROTLI_DEFAULT_WINDOW,
+                                                     BROTLI_DEFAULT_MODE,
+                                                     data.size(),
+                                                     in,
+                                                     &outSize,
+                                                     out);
+    if (Q_UNLIKELY(status != BROTLI_TRUE)) {
+        qCWarning(C_STATICCOMPRESSED) << "Failed to compress" << inputPath << "with brotli";
+        return false;
     }
 
-    return ok;
+    outData.resize(static_cast<qsizetype>(outSize));
+
+    QFile output{outputPath};
+    if (Q_UNLIKELY(!output.open(QIODeviceBase::WriteOnly))) {
+        qCWarning(C_STATICCOMPRESSED) << "Failed to open output file" << outputPath
+                                      << "for brotli compression:" << output.errorString();
+        return false;
+    }
+
+    if (Q_UNLIKELY(output.write(outData) < 0)) {
+        if (output.exists()) {
+            if (Q_UNLIKELY(!output.remove())) {
+                qCWarning(C_STATICCOMPRESSED)
+                    << "Can not remove invalid compressed brotli file:" << outputPath;
+            }
+        }
+        qCWarning(C_STATICCOMPRESSED) << "Failed to write brotli compressed data to output file"
+                                      << outputPath << ":" << output.errorString();
+        return false;
+    }
+
+    return true;
 }
 #endif
 
