@@ -49,12 +49,10 @@ public:
         ~ZstdConfig() { ZSTD_freeCCtx(ctx); }
 
         ZSTD_CCtx *ctx{nullptr};
-        constexpr static int compressionLevelDefault{3};
+        constexpr static int compressionLevelDefault{9};
         constexpr static int compressionLevelMin{1};
         constexpr static int compressionLevelMax{19};
         int compressionLevel{compressionLevelDefault};
-        constexpr static int compressionThreadsDefault{1};
-        int compressionThreads{compressionThreadsDefault};
     } zstd;
 #endif
 
