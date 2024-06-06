@@ -250,7 +250,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 #endif
                         if (acceptEncoding.contains("gzip")) {
                         compressedPath =
-                            locateCacheFile(path, currentDateTime, zopfli.use ? Zopfli : Gzip);
+                            locateCacheFile(path, currentDateTime, zopfli.use ? ZopfliGzip : Gzip);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED)
                                 << "Serving" << (zopfli.use ? "zopfli" : "gzip")
@@ -258,7 +258,8 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                             contentEncoding = "gzip"_qba;
                         }
                     } else if (acceptEncoding.contains("deflate")) {
-                        compressedPath = locateCacheFile(path, currentDateTime, Deflate);
+                        compressedPath = locateCacheFile(
+                            path, currentDateTime, zopfli.use ? ZopfliDeflate : Deflate);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED)
                                 << "Serving deflate compressed data from" << compressedPath;
@@ -325,7 +326,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
     QString suffix;
 
     switch (compression) {
-    case Zopfli:
+    case ZopfliGzip:
     case Gzip:
         suffix = u".gz"_qs;
         break;
@@ -339,6 +340,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
         suffix = u".br"_qs;
         break;
 #endif
+    case ZopfliDeflate:
     case Deflate:
         suffix = u".deflate"_qs;
         break;
@@ -383,9 +385,9 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
                     }
                     break;
 #endif
-                case Zopfli:
+                case ZopfliGzip:
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
-                    if (compressZopfli(origPath, path)) {
+                    if (compressZopfli(origPath, path, ZopfliFormat::ZOPFLI_FORMAT_GZIP)) {
                         compressedPath = path;
                     }
                     break;
@@ -395,6 +397,13 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
                         compressedPath = path;
                     }
                     break;
+                case ZopfliDeflate:
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
+                    if (compressZopfli(origPath, path, ZopfliFormat::ZOPFLI_FORMAT_ZLIB)) {
+                        compressedPath = path;
+                    }
+                    break;
+#endif
                 case Deflate:
                     if (compressDeflate(origPath, path)) {
                         compressedPath = path;
@@ -431,7 +440,7 @@ void StaticCompressedPrivate::loadZlibConfig(const QVariantMap &conf)
 
 static constexpr std::array<quint32, 256> crc32Tab = []() {
     std::array<quint32, 256> tab{0};
-    for (int n = 0; n < 256; n++) {
+    for (std::size_t n = 0; n < 256; n++) {
         auto c = static_cast<quint32>(n);
         for (int k = 0; k < 8; k++) {
             if (c & 1) {
@@ -513,7 +522,7 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath,
     QDataStream headerStream(&header, QIODevice::WriteOnly);
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
     // prepend a generic 10-byte gzip header (see RFC 1952)
-    headerStream << quint8(0x1f) << quint8(0x8b) // ID1 and ID""
+    headerStream << quint8(0x1f) << quint8(0x8b) // ID1 and ID2
                  << quint8(8)                    // CM / Compression Mode (8 = deflate)
                  << quint8(0)                    // FLG / flags
                  << static_cast<quint32>(origLastModified.toSecsSinceEpoch())
@@ -627,7 +636,8 @@ void StaticCompressedPrivate::loadZopfliConfig(const QVariantMap &conf)
 }
 
 bool StaticCompressedPrivate::compressZopfli(const QString &inputPath,
-                                             const QString &outputPath) const
+                                             const QString &outputPath,
+                                             ZopfliFormat format) const
 {
     qCDebug(C_STATICCOMPRESSED) << "Compressing" << inputPath << "with zopfli to" << outputPath;
 
@@ -651,7 +661,7 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath,
     size_t outSize{0};
 
     ZopfliCompress(&zopfli.options,
-                   ZopfliFormat::ZOPFLI_FORMAT_GZIP,
+                   format,
                    reinterpret_cast<const unsigned char *>(data.constData()),
                    data.size(),
                    &out,
