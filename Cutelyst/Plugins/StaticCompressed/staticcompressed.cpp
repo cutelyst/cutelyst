@@ -31,10 +31,6 @@
 #    include <brotli/encode.h>
 #endif
 
-#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-#    include <zstd.h>
-#endif
-
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed", QtWarningMsg)
@@ -215,7 +211,9 @@ bool StaticCompressed::setup(Application *app)
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-    d->loadZstdConfig(config);
+    if (Q_UNLIKELY(!d->loadZstdConfig(config))) {
+        return false;
+    }
     supportedCompressions << u"zstd"_qs;
 #endif
 
@@ -826,8 +824,14 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath,
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-void StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
+bool StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
 {
+    zstd.ctx = ZSTD_createCCtx();
+    if (!zstd.ctx) {
+        qCCritical(C_STATICCOMPRESSED) << "Failed to create Zstandard compression context";
+        return false;
+    }
+
     bool ok = false;
 
     zstd.compressionLevel =
@@ -854,6 +858,8 @@ void StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
             << zstd.compressionThreadsDefault;
         zstd.compressionThreads = zstd.compressionThreadsDefault;
     }
+
+    return true;
 }
 
 bool StaticCompressedPrivate::compressZstd(const QString &inputPath,
@@ -888,8 +894,8 @@ bool StaticCompressedPrivate::compressZstd(const QString &inputPath,
     auto outDataP = static_cast<void *>(outData.data());
     auto inDataP  = static_cast<const void *>(inData.constData());
 
-    const size_t outSize =
-        ZSTD_compress(outDataP, outBufSize, inDataP, inData.size(), zstd.compressionLevel);
+    const size_t outSize = ZSTD_compressCCtx(
+        zstd.ctx, outDataP, outBufSize, inDataP, inData.size(), zstd.compressionLevel);
     if (Q_UNLIKELY(ZSTD_isError(outSize) == 1)) {
         qCWarning(C_STATICCOMPRESSED)
             << "Failed to compress" << inputPath << "with zstd:" << ZSTD_getErrorName(outSize);

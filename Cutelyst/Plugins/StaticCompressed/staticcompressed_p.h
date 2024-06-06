@@ -11,6 +11,10 @@
 #include <QRegularExpression>
 #include <QVector>
 
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+#    include <zstd.h>
+#endif
+
 namespace Cutelyst {
 
 class Context;
@@ -37,11 +41,14 @@ public:
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-    void loadZstdConfig(const QVariantMap &conf);
+    [[nodiscard]] bool loadZstdConfig(const QVariantMap &conf);
 
     [[nodiscard]] bool compressZstd(const QString &inputPath, const QString &outputPath) const;
 
     struct ZstdConfig {
+        ~ZstdConfig() { ZSTD_freeCCtx(ctx); }
+
+        ZSTD_CCtx *ctx{nullptr};
         constexpr static int compressionLevelDefault{3};
         constexpr static int compressionLevelMin{1};
         constexpr static int compressionLevelMax{19};
