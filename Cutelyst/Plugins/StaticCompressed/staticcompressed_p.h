@@ -36,8 +36,16 @@ public:
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     [[nodiscard]] bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
 #endif
+
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
+    void loadBrotliConfig(const QVariantMap &conf);
+
     [[nodiscard]] bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
+
+    struct BrotliConfig {
+        constexpr static int qualityLevelDefault{11};
+        int qualityLevel{qualityLevelDefault};
+    } brotli;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
@@ -68,8 +76,6 @@ public:
     constexpr static int zopfliIterationsDefault{15};
     constexpr static int zopfliIterationsMin{1};
     int zopfliIterations{zopfliIterationsDefault};
-    constexpr static int brotliQualityLevelDefault{11};
-    int brotliQualityLevel{brotliQualityLevelDefault};
     bool useZopfli{false};
     bool checkPreCompressed{true};
     bool onTheFlyCompression{true};
