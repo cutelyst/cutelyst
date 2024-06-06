@@ -22,13 +22,14 @@ class StaticCompressedPrivate;
  * It has built in support for <A HREF="https://en.wikipedia.org/wiki/Gzip">gzip</A> and
  * <A HREF="https://en.wikipedia.org/wiki/DEFLATE">DEFLATE</A> compression format and can be
  * extended by external libraries to support the <A
- * HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A> compression algorithm and to use <A
- * HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for @a gzip compression. Beside
- * compressing the raw data on the fly and store the result in a cache directory, it supports
- * pre-compressed files distinguished by file extension in the static source directories. The
- * plugin uses the @a Accept-Encoding HTTP request header to determine the compression methods
- * supported by the user agent. If you do not need this, use the StaticSimple plugin to serve
- * your static files.
+ * HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A> and <A
+ * HREF="https://en.wikipedia.org/wiki/Zstd">Zstandard</A> (since %Cutelyst 4.4.0) compression
+ * algorithms and to use <A HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for @a gzip
+ * compression. Beside compressing the raw data on the fly and store the result in a cache
+ * directory, it supports pre-compressed files distinguished by file extension in the static
+ * source directories. The plugin uses the @a Accept-Encoding HTTP request header to determine
+ * the compression methods supported by the user agent. If you do not need this, use the
+ * StaticSimple plugin to serve your static files.
  *
  * Beside serving the file content this will also set the respective HTTP header fields
  * @c Content-Type, @c Content-Length, @c Last-Modified, @c Content-Encoding,
@@ -37,10 +38,16 @@ class StaticCompressedPrivate;
  * <H3>Compression formats</H3>
  *
  * Support for @a gzip and @a DEFLATE compression format is built in by using the
- * @link QByteArray::qCompress() qCompress()@endlink function. To enable suport for
- * <A HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A>, build
+ * @link QByteArray::qCompress() qCompress()@endlink function.
+ *
+ * To enable suport for <A HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A>, build
  * with <TT>-DPLUGIN_STATICCOMPRESSED_BROTLI:BOOL=ON</TT> and have the
  * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files
+ * available.
+ *
+ * To enable support for <A HREF="https://en.wikipedia.org/wiki/Zstd">Zstandard</A>, build
+ * with <TT>-DPLUGIN_STATICCOMPRESSED_ZSTD:BOOL=ON</TT> and have the
+ * <A HREF="https://github.com/facebook/zstd">libzstd</A> development and header files
  * available.
  *
  * To use <A HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for the @a gzip compression,
@@ -57,11 +64,11 @@ class StaticCompressedPrivate;
  * agent. The compressed data is saved into files in the @c cache_diretory specified in the
  * configuration. The cache file name will be the MD5 hash sum of the original local file path
  * together with the file extension indicating the compression format (.br for Brotli, .gz for
- * gzip/Zopfli and .deflate for DEFLATE). If the modification time of the original file is newer
- * than the modification time of the cached compressed file, the file will be compressed again.
- * It is safe to clean the content of the cache directory - the files will then be recompressed
- * on the next request. On the fly compression can be disabled by setting @c on_the_fly_compression
- * to @c false in the configuration file.
+ * gzip/Zopfli, .deflate for DEFLATE and .zst for Zstandard). If the modification time of the
+ * original file is newer than the modification time of the cached compressed file, the file will
+ * be compressed again. It is safe to clean the content of the cache directory - the files will
+ * then be recompressed on the next request. On the fly compression can be disabled by setting
+ * @c on_the_fly_compression to @c false in the configuration file.
  *
  * <H3>Pre-compressed files</H3>
  *
@@ -78,6 +85,7 @@ class StaticCompressedPrivate;
  * @li .br - Brotli compressed files
  * @li .gz - gzip/Zopfli compressed files
  * @li .deflate - DEFLATE compressed files
+ * @li .zst - Zstandard compressed files (since %Cutelyst 4.4.0)
  *
  * <H3>Only serve for specific request paths</H3>
  *
@@ -131,6 +139,12 @@ class StaticCompressedPrivate;
  *
  * @configblock{zopfli_iterations,integer,15}
  * Number of iterations used for @a Zopfli compression, more gives better compression but is slower.
+ * @endconfigblock
+ *
+ * @configblock{zstd_compression_level,integer,9}
+ * Compression level used for @a Zstandardd compression. Normally between 1 and 19, but can also
+ * use negative levels for faster compression or higher levels up to 22 for better/stronger
+ * compression.
  * @endconfigblock
  *
  * <H3>Usage example</H3>

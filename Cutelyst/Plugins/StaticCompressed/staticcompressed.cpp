@@ -847,18 +847,6 @@ bool StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
         zstd.compressionLevel = zstd.compressionLevelDefault;
     }
 
-    zstd.compressionThreads = conf.value(u"zstd_compression_threads"_qs,
-                                         defaultConfig.value(u"zstd_compression_threads"_qs,
-                                                             zstd.compressionThreadsDefault))
-                                  .toInt(&ok);
-    if (!ok || zstd.compressionThreads < 0) {
-        qCWarning(C_STATICCOMPRESSED).nospace()
-            << "Invalid value for zstd_compression_threads. Has to be an integer value "
-               "greater than or equal to 0. Using default value "
-            << zstd.compressionThreadsDefault;
-        zstd.compressionThreads = zstd.compressionThreadsDefault;
-    }
-
     return true;
 }
 
