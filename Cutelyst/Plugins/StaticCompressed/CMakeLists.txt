@@ -3,7 +3,7 @@
 
 cmake_dependent_option(PLUGIN_STATICCOMPRESSED_ZOPFLI "Enables the use of zofpli instead of zlib for gzip compression" OFF "PLUGIN_STATICCOMPRESSED" OFF)
 cmake_dependent_option(PLUGIN_STATICCOMPRESSED_BROTLI "Enables the support of the brotli compression format" OFF "PLUGIN_STATICCOMPRESSED" OFF)
-cmake_dependent_option(PLUGIN_STATICCOMPRESSED_ZSTD "Enabled th support of the Zstandard compression format" OFF "PLUGIN_STATICCOMPRESSED" OFF)
+cmake_dependent_option(PLUGIN_STATICCOMPRESSED_ZSTD "Enables the support of the Zstandard compression format" OFF "PLUGIN_STATICCOMPRESSED" OFF)
 
 set(plugin_staticcompressed_SRC
     staticcompressed.cpp
@@ -74,7 +74,7 @@ endif (PLUGIN_STATICCOMPRESSED_BROTLI)
 
 if (PLUGIN_STATICCOMPRESSED_ZSTD)
     find_package(PkgConfig REQUIRED)
-    pkg_search_module(Zstd REQUIRED IMPORTED_TARGET libzstd)
+    pkg_search_module(Zstd REQUIRED IMPORTED_TARGET libzstd>=1.4.0)
     message(STATUS "PLUGIN: StaticCompressed, enable Zstandard")
     target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
         PRIVATE
