@@ -60,7 +60,6 @@ public:
         constexpr static int iterationsDefault{15};
         constexpr static int iterationsMin{1};
         ZopfliOptions options;
-        bool use{false};
     } zopfli;
 #endif
 
@@ -97,6 +96,7 @@ public:
     QVariantMap defaultConfig;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
     QDir cacheDir;
+    bool useZopfli{false};
     bool checkPreCompressed{true};
     bool onTheFlyCompression{true};
     bool serveDirsOnly{false};
