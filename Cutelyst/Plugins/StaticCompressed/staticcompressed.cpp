@@ -130,7 +130,7 @@ bool StaticCompressed::setup(Application *app)
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     d->loadZopfliConfig(config);
-    qCInfo(C_STATICCOMPRESSED) << "Use Zopfli:" << d->zopfli.use;
+    qCInfo(C_STATICCOMPRESSED) << "Use Zopfli:" << d->useZopfli;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
@@ -299,24 +299,25 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 #endif
                             if (format == QLatin1String("gzip")) {
                             compressedPath = locateCacheFile(
-                                path, currentDateTime, zopfli.use ? ZopfliGzip : Gzip);
+                                path, currentDateTime, useZopfli ? ZopfliGzip : Gzip);
                             if (compressedPath.isEmpty()) {
                                 continue;
                             } else {
                                 qCDebug(C_STATICCOMPRESSED)
-                                    << "Serving" << (zopfli.use ? "zopfli" : "gzip")
-                                    << "compressed data from" << compressedPath;
+                                    << "Serving" << (useZopfli ? "zopfli" : "default")
+                                    << "compressed gzip data from" << compressedPath;
                                 contentEncoding = "gzip"_qba;
                                 break;
                             }
                         } else if (format == QLatin1String("deflate")) {
                             compressedPath = locateCacheFile(
-                                path, currentDateTime, zopfli.use ? ZopfliDeflate : Deflate);
+                                path, currentDateTime, useZopfli ? ZopfliDeflate : Deflate);
                             if (compressedPath.isEmpty()) {
                                 continue;
                             } else {
                                 qCDebug(C_STATICCOMPRESSED)
-                                    << "Serving deflate compressed data from" << compressedPath;
+                                    << "Serving" << (useZopfli ? "zopfli" : "default")
+                                    << "compressed deflate data from" << compressedPath;
                                 contentEncoding = "deflate"_qba;
                                 break;
                             }
@@ -672,9 +673,8 @@ bool StaticCompressedPrivate::compressDeflate(const QString &inputPath,
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
 void StaticCompressedPrivate::loadZopfliConfig(const QVariantMap &conf)
 {
-    zopfli.use =
-        conf.value(u"use_zopfli"_qs, defaultConfig.value(u"use_zopfli"_qs, false)).toBool();
-    if (zopfli.use) {
+    useZopfli = conf.value(u"use_zopfli"_qs, defaultConfig.value(u"use_zopfli"_qs, false)).toBool();
+    if (useZopfli) {
         ZopfliInitOptions(&zopfli.options);
         bool ok = false;
         zopfli.options.numiterations =
