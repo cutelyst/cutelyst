@@ -33,10 +33,21 @@ public:
     [[nodiscard]] QString locateCacheFile(const QString &origPath,
                                           const QDateTime &origLastModified,
                                           Compression compression) const;
+
+    void loadZlibConfig(const QVariantMap &conf);
+
     [[nodiscard]] bool compressGzip(const QString &inputPath,
                                     const QString &outputPath,
                                     const QDateTime &origLastModified) const;
+
     [[nodiscard]] bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
+
+    struct ZlibConfig {
+        constexpr static int compressionLevelDefault{9};
+        constexpr static int compressionLevelMin{0};
+        constexpr static int compressionLevelMax{9};
+        int compressionLevel{compressionLevelDefault};
+    } zlib;
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     void loadZopfliConfig(const QVariantMap &conf);
@@ -83,10 +94,6 @@ public:
     QVector<QDir> includePaths;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
     QDir cacheDir;
-    constexpr static int zlibCompressionLevelDefault{9};
-    constexpr static int zlibCompressionLevelMin{0};
-    constexpr static int zlibCompressionLevelMax{9};
-    int zlibCompressionLevel{zlibCompressionLevelDefault};
     bool checkPreCompressed{true};
     bool onTheFlyCompression{true};
     bool serveDirsOnly{false};
