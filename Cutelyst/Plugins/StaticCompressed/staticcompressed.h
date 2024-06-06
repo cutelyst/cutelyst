@@ -142,7 +142,7 @@ class StaticCompressedPrivate;
  * @endconfigblock
  *
  * @configblock{zstd_compression_level,integer,9}
- * Compression level used for @a Zstandardd compression. Normally between 1 and 19, but can also
+ * Compression level used for @a Zstandard compression. Normally between 1 and 19, but can also
  * use negative levels for faster compression or higher levels up to 22 for better/stronger
  * compression.
  * @endconfigblock
@@ -176,10 +176,13 @@ class StaticCompressedPrivate;
  * @li @c -DPLUGIN_STATICCOMPRESSED_BROTLI@c:BOOL=ON - enables the @a Brotli support,
  * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files have to
  * be present (default: @c off)
+ * @li @c -DPLUGIN_STATICCOMPRESSED_ZSTD@c:BOOL=ON - enables the @a Zstandard support,
+ * <A HREF="https://github.com/facebook/zstd">libzstd</A development and header files have to be
+ * present (default: @c off) (since %Cutelyst 4.4.0)
  *
- * Since %Cutelyst 2.0.0 you can check if \c CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI and/or
- * \c CUTELYST_STATICCOMPRESSED_WITH_BROTLI are defined if you need to know that the plugin supports
- * that compressions.
+ * Since %Cutelyst 2.0.0 you can check if \c CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI,
+ * \c CUTELYST_STATICCOMPRESSED_WITH_BROTLI and/or \c CUTELYST_STATICCOMPRESSED_WITH_ZSTD are
+ * defined if you need to know that the plugin supports that compressions.
  *
  * @logcat{plugin.csrfprotection}
  *
