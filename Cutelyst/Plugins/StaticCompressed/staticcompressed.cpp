@@ -31,6 +31,10 @@
 #    include <brotli/encode.h>
 #endif
 
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+#    include <zstd.h>
+#endif
+
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed", QtWarningMsg)
@@ -297,8 +301,19 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 
                     const auto acceptEncoding = c->req()->header("Accept-Encoding");
 
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+                    if (acceptEncoding.contains("zstd")) {
+                        compressedPath = locateCacheFile(path, currentDateTime, Zstd);
+                        if (!compressedPath.isEmpty()) {
+                            qCDebug(C_STATICCOMPRESSED)
+                                << "Serving zstd compressed data from" << compressedPath;
+                            contentEncoding = "zstd"_qba;
+                        }
+                    } else
+#endif
+
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-                    if (acceptEncoding.contains("br")) {
+                        if (acceptEncoding.contains("br")) {
                         compressedPath = locateCacheFile(path, currentDateTime, Brotli);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED)
@@ -388,6 +403,11 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
     case Gzip:
         suffix = u".gz"_qs;
         break;
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+    case Zstd:
+        suffix = u".zst"_qs;
+        break;
+#endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     case Brotli:
         suffix = u".br"_qs;
@@ -423,6 +443,13 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
             QLockFile lock(path + QLatin1String(".lock"));
             if (lock.tryLock(std::chrono::milliseconds{10})) {
                 switch (compression) {
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+                case Zstd:
+                    if (compressZstd(origPath, path)) {
+                        compressedPath = path;
+                    }
+                    break;
+#endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
                 case Brotli:
                     if (compressBrotli(origPath, path)) {
@@ -827,6 +854,70 @@ void StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
             << zstd.compressionThreadsDefault;
         zstd.compressionThreads = zstd.compressionThreadsDefault;
     }
+}
+
+bool StaticCompressedPrivate::compressZstd(const QString &inputPath,
+                                           const QString &outputPath) const
+{
+    qCDebug(C_STATICCOMPRESSED) << "Compressing" << inputPath << "with zstd to" << outputPath;
+
+    QFile input{inputPath};
+    if (Q_UNLIKELY(!input.open(QIODeviceBase::ReadOnly))) {
+        qCWarning(C_STATICCOMPRESSED)
+            << "Can not open input file to compress with zstd:" << inputPath;
+        return false;
+    }
+
+    const QByteArray inData = input.readAll();
+    if (Q_UNLIKELY(inData.isEmpty())) {
+        qCWarning(C_STATICCOMPRESSED)
+            << "Can not read input file or input file is empty:" << inputPath;
+        return false;
+    }
+
+    input.close();
+
+    const size_t outBufSize = ZSTD_compressBound(static_cast<size_t>(inData.size()));
+    if (Q_UNLIKELY(ZSTD_isError(outBufSize) == 1)) {
+        qCWarning(C_STATICCOMPRESSED)
+            << "Failed to compress" << inputPath << "with zstd:" << ZSTD_getErrorName(outBufSize);
+        return false;
+    }
+    QByteArray outData{static_cast<qsizetype>(outBufSize), Qt::Uninitialized};
+
+    auto outDataP = static_cast<void *>(outData.data());
+    auto inDataP  = static_cast<const void *>(inData.constData());
+
+    const size_t outSize =
+        ZSTD_compress(outDataP, outBufSize, inDataP, inData.size(), zstd.compressionLevel);
+    if (Q_UNLIKELY(ZSTD_isError(outSize) == 1)) {
+        qCWarning(C_STATICCOMPRESSED)
+            << "Failed to compress" << inputPath << "with zstd:" << ZSTD_getErrorName(outSize);
+        return false;
+    }
+
+    outData.resize(static_cast<qsizetype>(outSize));
+
+    QFile output{outputPath};
+    if (Q_UNLIKELY(!output.open(QIODeviceBase::WriteOnly))) {
+        qCWarning(C_STATICCOMPRESSED) << "Failed to open output file" << outputPath
+                                      << "for zstd compression:" << output.errorString();
+        return false;
+    }
+
+    if (Q_UNLIKELY(output.write(outData) < 0)) {
+        if (output.exists()) {
+            if (Q_UNLIKELY(!output.remove())) {
+                qCWarning(C_STATICCOMPRESSED)
+                    << "Can not remove invalid compressed zstd file:" << outputPath;
+            }
+        }
+        qCWarning(C_STATICCOMPRESSED) << "Failed to write zstd compressed data to output file"
+                                      << outputPath << ":" << output.errorString();
+        return false;
+    }
+
+    return true;
 }
 #endif
 

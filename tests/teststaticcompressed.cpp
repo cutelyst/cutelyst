@@ -65,6 +65,9 @@ const QStringList TestStaticCompressed::types{u"js"_qs,
                                               u"min.css.map"_qs};
 
 const QByteArrayList TestStaticCompressed::encoding{
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
+    "zstd",
+#endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     "br",
 #endif
@@ -98,16 +101,18 @@ TestEngine *TestStaticCompressed::getEngine(bool serveDirsOnly)
 
 TestEngine::TestResponse TestStaticCompressed::getFile(const QString &path, const Headers &headers)
 {
-    const Headers hdrs =
-        headers.data().empty() ? Headers({{"Accept-Encoding", "gzip, defalte, br"}}) : headers;
+    const Headers hdrs = headers.data().empty()
+                             ? Headers({{"Accept-Encoding", "gzip, deflate, br, zstd"}})
+                             : headers;
     return m_engine->createRequest("GET", path, {}, headers, nullptr);
 }
 
 TestEngine::TestResponse TestStaticCompressed::getForcedFile(const QString &path,
                                                              const Headers &headers)
 {
-    const Headers hdrs =
-        headers.data().empty() ? Headers({{"Accept-Encoding", "gzip, defalte, br"}}) : headers;
+    const Headers hdrs = headers.data().empty()
+                             ? Headers({{"Accept-Encoding", "gzip, deflate, br, zstd"}})
+                             : headers;
     return m_engineDirsOnly->createRequest("GET", path, {}, headers, nullptr);
 }
 
@@ -201,7 +206,9 @@ void TestStaticCompressed::testPreCompressed()
 
     QVERIFY(writeTestFile(fileName));
     QString encodedFileName = fileName;
-    if (encoding == "br") {
+    if (encoding == "zstd") {
+        encodedFileName += u".zst"_qs;
+    } else if (encoding == "br") {
         encodedFileName += u".br"_qs;
     } else if (encoding == "gzip") {
         encodedFileName += u".gz"_qs;
