@@ -114,6 +114,11 @@ class StaticCompressedPrivate;
  * Comma separted list of file suffixes/extensions that should be compressed.
  * @endconfigblock
  *
+ * @configblock{compression_format_order,string,br\,zstd\,gzip\,deflate}
+ * Comma separated list of compression formats that will be used in order if supported
+ * by the user agent.
+ * @endconfigblock
+ *
  * @configblock{check_pre_compressed,bool,true}
  * Enables or disables the check for pre compressed files.
  * @endconfigblock
