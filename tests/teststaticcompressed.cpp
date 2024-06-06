@@ -88,7 +88,13 @@ TestEngine *TestStaticCompressed::getEngine(bool serveDirsOnly)
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, {});
 
-    auto plug = new StaticCompressed(app);
+    const QVariantMap defaultConfig{{u"zlib_compression_level"_qs, 1},
+                                    {u"brotli_quality_level"_qs, 0},
+                                    {u"use_zopfli"_qs, true},
+                                    {u"zopfli_iterations"_qs, 5},
+                                    {u"zstd_compression_level"_qs, 1}};
+
+    auto plug = new StaticCompressed(app, defaultConfig);
     plug->setIncludePaths({m_dataDir.path()});
     plug->setDirs({u"forced"_qs});
     plug->setServeDirsOnly(serveDirsOnly);

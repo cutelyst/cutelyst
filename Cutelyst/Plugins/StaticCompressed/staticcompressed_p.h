@@ -11,6 +11,10 @@
 #include <QRegularExpression>
 #include <QVector>
 
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
+#    include <zopfli.h>
+#endif
+
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
 #    include <zstd.h>
 #endif
@@ -33,8 +37,18 @@ public:
                                     const QString &outputPath,
                                     const QDateTime &origLastModified) const;
     [[nodiscard]] bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
+
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
+    void loadZopfliConfig(const QVariantMap &conf);
+
     [[nodiscard]] bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
+
+    struct ZopfliConfig {
+        constexpr static int iterationsDefault{15};
+        constexpr static int iterationsMin{1};
+        ZopfliOptions options;
+        bool use{false};
+    } zopfli;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
@@ -73,10 +87,6 @@ public:
     constexpr static int zlibCompressionLevelMin{0};
     constexpr static int zlibCompressionLevelMax{9};
     int zlibCompressionLevel{zlibCompressionLevelDefault};
-    constexpr static int zopfliIterationsDefault{15};
-    constexpr static int zopfliIterationsMin{1};
-    int zopfliIterations{zopfliIterationsDefault};
-    bool useZopfli{false};
     bool checkPreCompressed{true};
     bool onTheFlyCompression{true};
     bool serveDirsOnly{false};
