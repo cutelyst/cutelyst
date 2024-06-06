@@ -25,10 +25,10 @@ class StaticCompressedPrivate;
  * HREF="https://en.wikipedia.org/wiki/Brotli">Brotli</A> and <A
  * HREF="https://en.wikipedia.org/wiki/Zstd">Zstandard</A> (since %Cutelyst 4.4.0) compression
  * algorithms and to use <A HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for @a gzip
- * compression. Beside compressing the raw data on the fly and store the result in a cache
- * directory, it supports pre-compressed files distinguished by file extension in the static
- * source directories. The plugin uses the @a Accept-Encoding HTTP request header to determine
- * the compression methods supported by the user agent. If you do not need this, use the
+ * and @a deflate compression. Beside compressing the raw data on the fly and store the result in
+ * a cache directory, it supports pre-compressed files distinguished by file extension in the
+ * static source directories. The plugin uses the @a Accept-Encoding HTTP request header to
+ * determine the compression methods supported by the user agent. If you do not need this, use the
  * StaticSimple plugin to serve your static files.
  *
  * Beside serving the file content this will also set the respective HTTP header fields
@@ -50,12 +50,12 @@ class StaticCompressedPrivate;
  * <A HREF="https://github.com/facebook/zstd">libzstd</A> development and header files
  * available.
  *
- * To use <A HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for the @a gzip compression,
- * build with <TT>-DPLUGIN_STATICCOMPRESSED_ZOPFLI:BOOL=ON</TT> and have the <A
+ * To use <A HREF="https://en.wikipedia.org/wiki/Zopfli">Zopfli</A> for the @a gzip and @a deflate
+ * compression, build with <TT>-DPLUGIN_STATICCOMPRESSED_ZOPFLI:BOOL=ON</TT> and have the <A
  * HREF="https://github.com/google/zopfli">libzopfli</A> development and header files available.
  * Also set the configuration key @c use_zopfli to @c true. Be aware that @a Zopfli gives better
- * compression rate than default @a gzip but is also much slower. So @a Zopfli is disabled by
- * default even if it is enabled at compilation time.
+ * compression rate than default @a gzip and @a deflate but is also much slower. So @a Zopfli is
+ * disabled by default even if it is enabled at compilation time.
  *
  * <H3>On the fly compression</H3>
  *
@@ -64,10 +64,10 @@ class StaticCompressedPrivate;
  * agent. The compressed data is saved into files in the @c cache_diretory specified in the
  * configuration. The cache file name will be the MD5 hash sum of the original local file path
  * together with the file extension indicating the compression format (.br for Brotli, .gz for
- * gzip/Zopfli, .deflate for DEFLATE and .zst for Zstandard). If the modification time of the
- * original file is newer than the modification time of the cached compressed file, the file will
- * be compressed again. It is safe to clean the content of the cache directory - the files will
- * then be recompressed on the next request. On the fly compression can be disabled by setting
+ * gzip/Zopfli, .deflate for DEFLATE/Zopfli and .zst for Zstandard). If the modification time of
+ * the original file is newer than the modification time of the cached compressed file, the file
+ * will be compressed again. It is safe to clean the content of the cache directory - the files
+ * will then be recompressed on the next request. On the fly compression can be disabled by setting
  * @c on_the_fly_compression to @c false in the configuration file.
  *
  * <H3>Pre-compressed files</H3>
@@ -124,7 +124,8 @@ class StaticCompressedPrivate;
  *
  * @configblock{zlib_compression_level,integer,9}
  * Compression level for built in zlib based compression between 0 and 9, with 9 corresponding
- * to the best compression.
+ * to the best compression. Used for @a gzip and @a deflate compression format if @a use_zopfli
+ * is set to @c false.
  * @endconfigblock
  *
  * @configblock{brotli_quality_level,integer,11}
@@ -133,8 +134,8 @@ class StaticCompressedPrivate;
  * @endconfigblock
  *
  * @configblock{use_zopfli,bool,false}
- * Enables the optional use of @a Zopfli for the @a gzip compression. Note that @a Zopfli gives
- * much better compression results for the cost of a slower compression.
+ * Enables the optional use of @a Zopfli for the @a gzip and @ deflate compression format. Note
+ * that @a Zopfli gives much better compression results for the cost of a slower compression.
  * @endconfigblock
  *
  * @configblock{zopfli_iterations,integer,15}
@@ -244,7 +245,7 @@ public:
      *
      * If setServeDirsOnly() is set to @c false (the default), the plugin will still try to serve
      * files as static if they end with something that looks like a file extension, no matter if
-     * their request path starts with of of the @c dirs. Set setServeDirsOnly() to @c true to only
+     * their request path starts with one of the @c dirs. Set setServeDirsOnly() to @c true to only
      * serve files as static that start with paths defined here. If you would than request a file
      * like @c/some/where/else/script@c.js it would not be tried to be found in the included
      * directories and the dispatcher would try to find a fitting controller method for it.
