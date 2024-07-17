@@ -131,16 +131,15 @@ int UnixFork::internalExec()
 bool UnixFork::createProcess(bool respawn)
 {
     if (respawn) {
-        auto it = m_recreateWorker.begin();
-        while (it != m_recreateWorker.end()) {
-            Worker worker  = *it;
+        m_recreateWorker.removeIf([this, respawn](Worker worker) {
             worker.restart = 0;
             if (!createChild(worker, respawn)) {
                 std::cout << "CHEAPING worker: " << worker.id << std::endl;
                 --m_processes;
             }
-            it = m_recreateWorker.erase(it);
-        }
+
+            return true; // Clean recreate worker list
+        });
     } else {
         for (int i = 0; i < m_processes; ++i) {
             Worker worker;
@@ -497,8 +496,8 @@ void UnixFork::handleSigChld()
         int exitStatus = WEXITSTATUS(status);
 
         Worker worker;
-        auto it = m_childs.find(p);
-        if (it != m_childs.end()) {
+        auto it = m_childs.constFind(p);
+        if (it != m_childs.constEnd()) {
             worker = it.value();
             m_childs.erase(it);
         } else {

@@ -277,12 +277,10 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
 {
     bool result = false;
-    auto it     = m_timers.constBegin();
-    while (it != m_timers.constEnd()) {
-        TimerInfo *data = it.value();
 
+    result |= m_timers.removeIf([this, object](QHash<int, TimerInfo *>::iterator it) {
+        TimerInfo *data = it.value();
         if (object == data->object) {
-            result = true;
             int fd = data->fd;
 
             if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, fd, 0))) {
@@ -293,24 +291,20 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
 
             data->deref();
 
-            it = m_timers.erase(it); // Hash is not rehashed
             m_handles.remove(fd);
-        } else {
-            ++it;
+            return true;
         }
-    }
+        return false;
+    });
 
-    auto zit = m_zero_timers.begin();
-    while (zit != m_zero_timers.end()) {
+    result |= m_zero_timers.removeIf([object](QHash<int, ZeroTimer *>::iterator zit) {
         ZeroTimer *data = zit.value();
         if (object == data->object) {
-            result = true;
-            zit    = m_zero_timers.erase(zit);
             data->deref();
-        } else {
-            ++zit;
+            return true;
         }
-    }
+        return false;
+    });
 
     return result;
 }

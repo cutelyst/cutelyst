@@ -59,6 +59,7 @@ ServerEngine::ServerEngine(Application *localApp,
     const QStringList staticMap  = m_wsgi->staticMap();
     const QStringList staticMap2 = m_wsgi->staticMap2();
     if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
+        // NOLINTNEXTLINE
         auto staticMapPlugin = new StaticMap(app());
 
         for (const QString &part : staticMap) {

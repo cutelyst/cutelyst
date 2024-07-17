@@ -8,7 +8,6 @@ find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql Test REQUIR
 
 add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.h
-  ${_testresource_rcc_src}
 )
 target_link_libraries(coverage_test Qt::Test Cutelyst::Core Qt::Network)
 

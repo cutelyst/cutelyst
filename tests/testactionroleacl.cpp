@@ -112,7 +112,7 @@ public:
     }
 
 private Q_SLOTS:
-    void denied(Context *c)
+    void denied(Cutelyst::Context *c)
     {
         c->response()->setStatus(Response::Forbidden);
         // We append the body to test if an action was visited that shouldn't
