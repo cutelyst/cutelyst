@@ -24,6 +24,8 @@
 
 using namespace Cutelyst;
 
+QByteArray http11StatusMessage(quint16 status);
+
 Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http", QtWarningMsg)
 Q_DECLARE_LOGGING_CATEGORY(CWSGI_SOCK)
 
@@ -359,9 +361,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
         return false;
     }
 
-    int msgLen;
-    const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
-    QByteArray data(msg, msgLen);
+    QByteArray data = http11StatusMessage(status);
 
     const auto headersData                                = headers.data();
     ProtoRequestHttp::HeaderConnection fallbackConnection = headerConnection;
@@ -572,6 +572,144 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key,
     sock->proto       = httpProto->m_websocketProto;
 
     return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
+}
+
+QByteArray http11StatusMessage(quint16 status)
+{
+    QByteArray ret;
+    switch (status) {
+    case Response::OK:
+        ret = QByteArrayLiteral("HTTP/1.1 200 OK");
+        break;
+    case Response::Found:
+        ret = QByteArrayLiteral("HTTP/1.1 302 Found");
+        break;
+    case Response::NotFound:
+        ret = QByteArrayLiteral("HTTP/1.1 404 Not Found");
+        break;
+    case Response::InternalServerError:
+        ret = QByteArrayLiteral("HTTP/1.1 500 Internal Server Error");
+        break;
+    case Response::MovedPermanently:
+        ret = QByteArrayLiteral("HTTP/1.1 301 Moved Permanently");
+        break;
+    case Response::NotModified:
+        ret = QByteArrayLiteral("HTTP/1.1 304 Not Modified");
+        break;
+    case Response::SeeOther:
+        ret = QByteArrayLiteral("HTTP/1.1 303 See Other");
+        break;
+    case Response::Forbidden:
+        ret = QByteArrayLiteral("HTTP/1.1 403 Forbidden");
+        break;
+    case Response::TemporaryRedirect:
+        ret = QByteArrayLiteral("HTTP/1.1 307 Temporary Redirect");
+        break;
+    case Response::Unauthorized:
+        ret = QByteArrayLiteral("HTTP/1.1 401 Unauthorized");
+        break;
+    case Response::BadRequest:
+        ret = QByteArrayLiteral("HTTP/1.1 400 Bad Request");
+        break;
+    case Response::MethodNotAllowed:
+        ret = QByteArrayLiteral("HTTP/1.1 405 Method Not Allowed");
+        break;
+    case Response::RequestTimeout:
+        ret = QByteArrayLiteral("HTTP/1.1 408 Request Timeout");
+        break;
+    case Response::Continue:
+        ret = QByteArrayLiteral("HTTP/1.1 100 Continue");
+        break;
+    case Response::SwitchingProtocols:
+        ret = QByteArrayLiteral("HTTP/1.1 101 Switching Protocols");
+        break;
+    case Response::Created:
+        ret = QByteArrayLiteral("HTTP/1.1 201 Created");
+        break;
+    case Response::Accepted:
+        ret = QByteArrayLiteral("HTTP/1.1 202 Accepted");
+        break;
+    case Response::NonAuthoritativeInformation:
+        ret = QByteArrayLiteral("HTTP/1.1 203 Non-Authoritative Information");
+        break;
+    case Response::NoContent:
+        ret = QByteArrayLiteral("HTTP/1.1 204 No Content");
+        break;
+    case Response::ResetContent:
+        ret = QByteArrayLiteral("HTTP/1.1 205 Reset Content");
+        break;
+    case Response::PartialContent:
+        ret = QByteArrayLiteral("HTTP/1.1 206 Partial Content");
+        break;
+    case Response::MultipleChoices:
+        ret = QByteArrayLiteral("HTTP/1.1 300 Multiple Choices");
+        break;
+    case Response::UseProxy:
+        ret = QByteArrayLiteral("HTTP/1.1 305 Use Proxy");
+        break;
+    case Response::PaymentRequired:
+        ret = QByteArrayLiteral("HTTP/1.1 402 Payment Required");
+        break;
+    case Response::NotAcceptable:
+        ret = QByteArrayLiteral("HTTP/1.1 406 Not Acceptable");
+        break;
+    case Response::ProxyAuthenticationRequired:
+        ret = QByteArrayLiteral("HTTP/1.1 407 Proxy Authentication Required");
+        break;
+    case Response::Conflict:
+        ret = QByteArrayLiteral("HTTP/1.1 409 Conflict");
+        break;
+    case Response::Gone:
+        ret = QByteArrayLiteral("HTTP/1.1 410 Gone");
+        break;
+    case Response::LengthRequired:
+        ret = QByteArrayLiteral("HTTP/1.1 411 Length Required");
+        break;
+    case Response::PreconditionFailed:
+        ret = QByteArrayLiteral("HTTP/1.1 412 Precondition Failed");
+        break;
+    case Response::RequestEntityTooLarge:
+        ret = QByteArrayLiteral("HTTP/1.1 413 Request Entity Too Large");
+        break;
+    case Response::RequestURITooLong:
+        ret = QByteArrayLiteral("HTTP/1.1 414 Request-URI Too Long");
+        break;
+    case Response::UnsupportedMediaType:
+        ret = QByteArrayLiteral("HTTP/1.1 415 Unsupported Media Type");
+        break;
+    case Response::RequestedRangeNotSatisfiable:
+        ret = QByteArrayLiteral("HTTP/1.1 416 Requested Range Not Satisfiable");
+        break;
+    case Response::ExpectationFailed:
+        ret = QByteArrayLiteral("HTTP/1.1 417 Expectation Failed");
+        break;
+    case Response::NotImplemented:
+        ret = QByteArrayLiteral("HTTP/1.1 501 Not Implemented");
+        break;
+    case Response::BadGateway:
+        ret = QByteArrayLiteral("HTTP/1.1 502 Bad Gateway");
+        break;
+    case Response::ServiceUnavailable:
+        ret = QByteArrayLiteral("HTTP/1.1 503 Service Unavailable");
+        break;
+    case Response::MultiStatus:
+        ret = QByteArrayLiteral("HTTP/1.1 207 Multi-Status");
+        break;
+    case Response::GatewayTimeout:
+        ret = QByteArrayLiteral("HTTP/1.1 504 Gateway Timeout");
+        break;
+    case Response::HTTPVersionNotSupported:
+        ret = QByteArrayLiteral("HTTP/1.1 505 HTTP Version Not Supported");
+        break;
+    case Response::BandwidthLimitExceeded:
+        ret = QByteArrayLiteral("HTTP/1.1 509 Bandwidth Limit Exceeded");
+        break;
+    default:
+        ret = QByteArrayLiteral("HTTP/1.1 ").append(QByteArray::number(status));
+        break;
+    }
+
+    return ret;
 }
 
 #include "moc_protocolhttp.cpp"

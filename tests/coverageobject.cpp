@@ -23,7 +23,6 @@ protected:
 
 public:
     QByteArray m_responseData;
-    QByteArray m_status;
     Headers m_headers;
     quint16 m_statusCode;
 };
@@ -117,7 +116,6 @@ QVariantMap TestEngine::createRequest(const QString &method,
     processRequest(&req);
 
     ret = {{QStringLiteral("body"), req.m_responseData},
-           {QStringLiteral("status"), req.m_status},
            {QStringLiteral("statusCode"), req.m_statusCode},
            {QStringLiteral("headers"), QVariant::fromValue(req.m_headers)}};
 
@@ -169,11 +167,8 @@ qint64 TestEngineConnection::doWrite(const char *data, qint64 len)
 bool TestEngineConnection::writeHeaders(quint16 status, const Headers &headers)
 {
     qDebug() << "---------= " << status;
-    int len;
-    const auto *statusChar = TestEngine::httpStatusMessage(status, &len);
-    m_statusCode           = status;
-    m_status               = QByteArray(statusChar + 9, len - 9);
-    m_headers              = headers;
+    m_statusCode = status;
+    m_headers    = headers;
 
     return true;
 }

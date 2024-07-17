@@ -146,6 +146,7 @@ public:
     /**
      * Returns the HTTP status message for the given \p status.
      */
+    Q_DECL_DEPRECATED_X("Will be removed in new major release")
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
 Q_SIGNALS:

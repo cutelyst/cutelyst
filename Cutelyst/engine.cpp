@@ -259,7 +259,7 @@ const char *Engine::httpStatusMessage(quint16 status, int *len)
         ret = "HTTP/1.1 509 Bandwidth Limit Exceeded";
         break;
     default:
-        ret = QByteArrayLiteral("HTTP/1.1 ").append(QByteArray::number(status)).constData();
+        ret = "HTTP/1.1 000 Unknown Status";
         break;
     }
 

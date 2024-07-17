@@ -45,11 +45,6 @@ public:
                               QByteArray *body);
 
     virtual bool init() override;
-
-    inline static const char *httpStatusMessage(quint16 status, int *len = nullptr)
-    {
-        return Engine::httpStatusMessage(status, len);
-    }
 };
 
 class SequentialBuffer : public QIODevice
