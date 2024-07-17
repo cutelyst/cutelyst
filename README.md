@@ -48,13 +48,11 @@ http://www.techempower.com/benchmarks/
 
 ## DOCUMENTATION
 
-Get started with our [Tutorial](https://github.com/cutelyst/cutelyst/wiki/Tutorial_01_Intro) or check the [API](http://api.cutelyst.org).
+Get started with our [Tutorial](https://github.com/cutelyst/cutelyst/wiki/Tutorial_01_Intro) or check the [API](https://cutelyst.github.io/cutelyst).
 
 ## COMMUNITY
 
-The Cutelyst project IRC channel is [#cutelyst](http://webchat.freenode.net/?channels=%23cutelyst) on freenode.
-
-Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutelyst)
+[Mailing List](https://groups.google.com/forum/#!forum/cutelyst)
 
 ## REQUIREMENTS
 
