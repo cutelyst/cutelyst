@@ -77,13 +77,6 @@ bool TestEngine::init()
     return initApplication() && postForkApplication();
 }
 
-QByteArray TestEngine::httpStatus(quint16 status)
-{
-    int len;
-    const auto *statusChar = httpStatusMessage(status, &len);
-    return QByteArray(statusChar + 9, len - 9);
-}
-
 SequentialBuffer::SequentialBuffer(QByteArray *buffer)
     : buf(buffer)
 {

@@ -38,8 +38,6 @@ public:
                                QByteArray *body);
 
     bool init() override;
-
-    [[nodiscard]] static QByteArray httpStatus(quint16 status);
 };
 
 } // namespace Cutelyst
