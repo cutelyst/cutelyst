@@ -1,7 +1,3 @@
-include_directories(
-    ${Cutelee_INCLUDES}
-)
-
 # urifor and csrf_token
 if (PLUGIN_CSRFPROTECTION)
 add_definitions(-DPLUGIN_CSRFPROTECTION_ENABLED)

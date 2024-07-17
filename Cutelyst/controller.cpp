@@ -714,7 +714,8 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
 {
     QString instanceName = name;
     if (!instanceName.isEmpty()) {
-        instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
+        const static QRegularExpression nonWordsRE(u"\\W"_qs);
+        instanceName.remove(nonWordsRE);
 
         QMetaType id = QMetaType::fromName(instanceName.toLatin1().data());
         if (!id.isValid()) {

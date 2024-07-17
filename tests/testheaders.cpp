@@ -154,6 +154,29 @@ void TestHeaders::testCombining()
 
     headers.removeHeader("x-hbn-foo");
     QVERIFY(!headers.contains("x-hbn-foo"));
+
+    {
+        Headers h1;
+        h1.pushHeader("b", "1");
+        h1.pushHeader("b", "2");
+        h1.pushHeader("a", "1");
+        h1.pushHeader("b", "3");
+
+        Headers h2{
+            {"b", "1"},
+            {"b", "2"},
+            {"a", "1"},
+            {"b", "3"},
+        };
+        QCOMPARE(h1, h2);
+
+        h1.setHeader("b", "3");
+        Headers h3{
+            {"b", "3"},
+            {"a", "1"},
+        };
+        QCOMPARE(h1, h3);
+    }
 }
 
 QTEST_MAIN(TestHeaders)

@@ -435,7 +435,7 @@ QStringList Headers::headersAsStrings(QByteArrayView key) const
 
 void Headers::setHeader(const QByteArray &key, const QByteArray &value)
 {
-    auto matchKey = [key](Headers::HeaderKeyValue entry) {
+    const auto matchKey = [key](const Headers::HeaderKeyValue &entry) {
         return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
 
@@ -444,7 +444,9 @@ void Headers::setHeader(const QByteArray &key, const QByteArray &value)
         result->value = value;
         ++result;
 
-        m_data.erase(std::remove_if(result, m_data.end(), matchKey), m_data.end());
+        QVector<HeaderKeyValue>::ConstIterator begin =
+            std::remove_if(result, m_data.end(), matchKey);
+        m_data.erase(begin, m_data.cend());
     } else {
         m_data.emplace_back(HeaderKeyValue{key, value});
     }

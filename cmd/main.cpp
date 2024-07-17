@@ -32,8 +32,9 @@ bool buildControllerImplementation(const QString &filename,
 
 bool createController(const QString &controllerName)
 {
-    if (controllerName.contains(QRegularExpression(QStringLiteral("\\W"))) ||
-        controllerName.contains(QRegularExpression(QStringLiteral("^\\d")))) {
+    const static QRegularExpression nonWordRE(u"\\W"_qs);
+    const static QRegularExpression nonDigitRE(u"^\\d"_qs);
+    if (controllerName.contains(nonWordRE) || controllerName.contains(nonDigitRE)) {
         //% "Error: invalid Controller name."
         std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-inv-cont-name")) << std::endl;
         return false;
@@ -375,8 +376,11 @@ bool createApplication(const QString &name)
 {
     QString nameWithUnderscore = name;
     nameWithUnderscore.replace(u'-', u'_');
-    if (nameWithUnderscore.contains(QRegularExpression(QStringLiteral("\\W"))) ||
-        nameWithUnderscore.contains(QRegularExpression(QStringLiteral("^\\d")))) {
+
+    const static QRegularExpression nonWordRE(u"\\W"_qs);
+    const static QRegularExpression nonDigitRE(u"^\\d"_qs);
+
+    if (nameWithUnderscore.contains(nonWordRE) || nameWithUnderscore.contains(nonDigitRE)) {
         //% "Error: invalid application name."
         std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-invalid-app-name"));
         return false;
