@@ -15,9 +15,9 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-22.04
-          - windows-2022
-          - macos-13
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
         build_type:
           - Debug
           - Release
@@ -59,29 +59,39 @@ jobs:
         if: runner.os == 'Linux'
         run: >
           cmake -S . -B ./build -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_ALL=ON
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DBUILD_ALL=ON
           -DPLUGIN_VIEW_CUTELEE=OFF
-          -DPLUGIN_VIEW_EMAIL=OFF -DUSE_JEMALLOC=OFF
+          -DPLUGIN_VIEW_EMAIL=OFF
+          -DUSE_JEMALLOC=OFF
           -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
 
       - name: Configure project on macOS
         if: runner.os == 'macOS'
         run: >
           cmake -S . -B ./build -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_ALL=ON
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DBUILD_ALL=ON
           -DPLUGIN_VIEW_CUTELEE=OFF
-          -DPLUGIN_VIEW_EMAIL=OFF -DUSE_JEMALLOC=OFF -DBUILD_DOCS=OFF
-          -DPLUGIN_VALIDATOR_PWQUALITY=OFF -DPLUGIN_MEMCACHED=OFF
+          -DPLUGIN_VIEW_EMAIL=OFF
+          -DUSE_JEMALLOC=OFF
+          -DBUILD_DOCS=OFF
+          -DPLUGIN_VALIDATOR_PWQUALITY=OFF
+          -DPLUGIN_MEMCACHED=OFF
           -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
 
       - name: Configure project on Window
         if: runner.os == 'Windows'
         run: >
           cmake -S . -B ./build -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_ALL=ON
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DBUILD_ALL=ON
           -DPLUGIN_VIEW_CUTELEE=OFF
-          -DPLUGIN_VIEW_EMAIL=OFF -DUSE_JEMALLOC=OFF -DBUILD_DOCS=OFF
-          -DPLUGIN_VALIDATOR_PWQUALITY=OFF -DPLUGIN_MEMCACHED=OFF
+          -DPLUGIN_VIEW_EMAIL=OFF
+          -DUSE_JEMALLOC=OFF
+          -DBUILD_DOCS=OFF
+          -DPLUGIN_VALIDATOR_PWQUALITY=OFF
+          -DPLUGIN_MEMCACHED=OFF
           -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
 
       - name: Build project
