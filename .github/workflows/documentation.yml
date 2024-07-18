@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies on Linux
         run: |
           sudo apt update -qq
-          sudo apt install -y doxygen graphviz memcached libmemcached-dev libpwquality-dev
+          sudo apt install -y doxygen graphviz memcached libmemcached-dev libpwquality-dev qt6-base-doc-dev
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -51,12 +51,12 @@ jobs:
           -DUSE_JEMALLOC=OFF
 
       - name: Create docs
-        run: cmake --build ./build --target docs
+        run: cmake --build ./build --target webdocs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/htmldocs/
+          path: build/webdocs/
 
   # Deployment job, what was uploaded to artifact
   deploy:
