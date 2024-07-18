@@ -33,7 +33,7 @@ class CuteleeViewPrivate;
  * The view should be initialized in you reimplementation of Application::init(),
  * it can than be easily called from a RenderView action. You can specify a name
  * for your view that can be either set dynamically via Context::setCustomView()
- * or via the \c :View("name") argument of the RenderView action. A view with an
+ * or via the <tt>:%View("name")</tt> argument of the RenderView action. A view with an
  * empty name will be the default view.
  *
  * The view will try to find the template file name to render in the stash using the
@@ -143,7 +143,8 @@ public:
      * Constructs a %CuteleeView object with the given \a parent and \a name.
      *
      * The \a name can be used to specify different views that can be called either dynamically
-     * by Context::setCustomView() or with the \c :View("name") argument of the RenderView action.
+     * by Context::setCustomView() or with the <tt>:%View("name")</tt> argument of the RenderView
+     * action.
      */
     explicit CuteleeView(QObject *parent = nullptr, const QString &name = QString());
 
