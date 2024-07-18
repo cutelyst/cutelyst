@@ -37,6 +37,7 @@ jobs:
           version: 6.6.0
           cache: true
           documentation: true
+          doc-archives: 'qtcore qtsql qtnetwork'
 
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -50,6 +51,7 @@ jobs:
           -DPLUGIN_VIEW_CUTELEE=OFF
           -DPLUGIN_VIEW_EMAIL=OFF
           -DUSE_JEMALLOC=OFF
+          -DDOCS_QTDOCSDIR:PATH="${{ runner.workspace }}/Qt/Docs/Qt-6.6.0"
 
       - name: Create docs
         run: cmake --build ./build --target webdocs
