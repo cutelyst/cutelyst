@@ -27,7 +27,7 @@ using namespace Cutelyst;
  * \link Context c\endlink->\link Response res()\endlink->\link Response::body() body()\endlink
  * has already been set.
  *
- * If you have more than one view, you can specify which one to use with the :View(view_name)
+ * If you have more than one view, you can specify which one to use with the \c :View(name)
  * attribute or one set with \link Context::setCustomView() c->setCustomView()\endlink otherwise
  * this module simply calls \link Context::view() c->view()\endlink with no argument what will
  * return the default \ref plugins-view.

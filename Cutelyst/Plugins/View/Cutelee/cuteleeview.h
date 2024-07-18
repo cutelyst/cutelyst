@@ -33,8 +33,8 @@ class CuteleeViewPrivate;
  * The view should be initialized in you reimplementation of Application::init(),
  * it can than be easily called from a RenderView action. You can specify a name
  * for your view that can be either set dynamically via Context::setCustomView()
- * or via the :View() argument of the RenderView action. A view with an empty name
- * will be the default view.
+ * or via the \c :View("name") argument of the RenderView action. A view with an
+ * empty name will be the default view.
  *
  * The view will try to find the template file name to render in the stash using the
  * \c "template" key. If that key is not available, it will try to find a template
@@ -143,18 +143,20 @@ public:
      * Constructs a %CuteleeView object with the given \a parent and \a name.
      *
      * The \a name can be used to specify different views that can be called either dynamically
-     * by Context::setCustomView() or with the \c :View() argument of the RenderView action.
+     * by Context::setCustomView() or with the \c :View("name") argument of the RenderView action.
      */
     explicit CuteleeView(QObject *parent = nullptr, const QString &name = QString());
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths NOTIFY changed)
     /**
      * Returns the list of include paths.
+     * \sa setIncludePaths()
      */
     QStringList includePaths() const;
 
     /**
      * Sets the list of include paths which will be looked for when resolving templates files.
+     * \sa includePaths()
      */
     void setIncludePaths(const QStringList &paths);
 
@@ -162,11 +164,13 @@ public:
         QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
     /**
      * Returns the template extension, defaults to ".html".
+     * \sa setTemplateExtenion()
      */
     QString templateExtension() const;
 
     /**
      * Sets the template extension, defaults to ".html".
+     * \sa templateExtension()
      */
     void setTemplateExtension(const QString &extension);
 
@@ -174,24 +178,28 @@ public:
 
     /**
      * Returns the template wrapper.
+     * \sa setWrapper()
      */
     [[nodiscard]] QString wrapper() const;
 
     /**
      * Sets the template wrapper \a name, the template will be rendered into
      * content variable in which the wrapper template should render.
+     * \sa wrapper()
      */
     void setWrapper(const QString &name);
 
     Q_PROPERTY(bool cache READ isCaching WRITE setCache NOTIFY changed)
     /**
      * Returns \c true if caching is enabled.
+     * \sa setCache()
      */
     bool isCaching() const;
 
     /**
      * Sets if template caching should be done, this increases
      * performance at the cost of higher memory usage.
+     * \sa isCaching()
      */
     void setCache(bool enable);
 
