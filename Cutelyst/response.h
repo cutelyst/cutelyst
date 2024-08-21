@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/headers.h>
 
 #include <QtCore/QIODevice>
@@ -25,7 +25,7 @@ class ResponsePrivate;
  * A %Cutelyst response contains the data created by your application that should be
  * send back to the \link Request requesting\endlink client.
  */
-class CUTELYST_LIBRARY Response final : public QIODevice
+class CUTELYST_EXPORT Response final : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Response)

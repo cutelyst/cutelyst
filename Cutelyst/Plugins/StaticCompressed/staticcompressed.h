@@ -6,7 +6,7 @@
 #define STATICCOMPRESSED_H
 
 #include <Cutelyst/Plugin>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Plugins/StaticCompressed/cutelyst_plugin_staticcompressed_export.h>
 
 namespace Cutelyst {
 

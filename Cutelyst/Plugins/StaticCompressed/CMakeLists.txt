@@ -15,19 +15,26 @@ set(plugin_staticcompressed_HEADERS
     StaticCompressed
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed)
+add_library(${target_name}
     ${plugin_staticcompressed_SRC}
     ${plugin_staticcompressed_HEADERS}
 )
-add_library(Cutelyst::StaticCompressed ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed)
+add_library(Cutelyst::StaticCompressed ALIAS ${target_name})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed PROPERTIES
+generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_STATICCOMPRESSED)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_staticcompressed_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
+)
+
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME StaticCompressed
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+target_link_libraries(${target_name}
     PUBLIC
         Cutelyst::Core
 )
@@ -40,15 +47,15 @@ set(PLUGIN_STATICCOMPRESSED_PKGCONF_PRIV_LIB "")
 if (PLUGIN_STATICCOMPRESSED_ZOPFLI)
     find_package(Zopfli REQUIRED)
     message(STATUS "PLUGIN: StaticCompressed, enable zopfli")
-    target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_link_libraries(${target_name}
         PRIVATE
             ${ZOPFLI_LIBRARIES}
     )
-    target_compile_definitions(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_compile_definitions(${target_name}
         PUBLIC
             CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     )
-    target_include_directories(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_include_directories(${target_name}
         PRIVATE
             ${ZOPFLI_INCLUDE_DIRS}
     )
@@ -60,11 +67,11 @@ if (PLUGIN_STATICCOMPRESSED_BROTLI)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(Brotli REQUIRED IMPORTED_TARGET libbrotlienc)
     message(STATUS "PLUGIN: StaticCompressed, enable brotli")
-    target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_link_libraries(${target_name}
         PRIVATE
             PkgConfig::Brotli
     )
-    target_compile_definitions(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_compile_definitions(${target_name}
         PUBLIC
             CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     )
@@ -76,11 +83,11 @@ if (PLUGIN_STATICCOMPRESSED_ZSTD)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(Zstd REQUIRED IMPORTED_TARGET libzstd>=1.4.0)
     message(STATUS "PLUGIN: StaticCompressed, enable Zstandard")
-    target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_link_libraries(${target_name}
         PRIVATE
             PkgConfig::Zstd
     )
-    target_compile_definitions(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+    target_compile_definitions(${target_name}
         PUBLIC
             CUTELYST_STATICCOMPRESSED_WITH_ZSTD
     )
@@ -88,8 +95,8 @@ if (PLUGIN_STATICCOMPRESSED_ZSTD)
     set(PLUGIN_STATICCOMPRESSED_PKGCONF_PRIV_REQ "${PLUGIN_STATICCOMPRESSED_PKGCONF_PRIV_REQ} libzstd")
 endif (PLUGIN_STATICCOMPRESSED_ZSTD)
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed PROPERTY PUBLIC_HEADER ${plugin_staticcompressed_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_staticcompressed_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -97,7 +104,7 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompr
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtStaticCompressed.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}StaticCompressed.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

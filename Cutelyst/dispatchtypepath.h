@@ -6,7 +6,7 @@
 #define CUTELYST_DISPATCHTYPEPATH_H
 
 #include <Cutelyst/action.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
@@ -19,7 +19,7 @@ class DispatchTypePathPrivate;
  *
  * Describes a path dispatch type.
  */
-class CUTELYST_LIBRARY DispatchTypePath final : public DispatchType
+class CUTELYST_EXPORT DispatchTypePath final : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypePath)

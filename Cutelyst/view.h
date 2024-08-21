@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Cutelyst/component.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QObject>
 
@@ -21,7 +21,7 @@ class ViewPrivate;
  *
  * Create a subclass of %View if you want to create your own \ref plugins-view.
  */
-class CUTELYST_LIBRARY View : public Component
+class CUTELYST_EXPORT View : public Component
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(View)

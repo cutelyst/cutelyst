@@ -5,9 +5,9 @@
 #ifndef ACTIONREST_H
 #define ACTIONREST_H
 
+#include <Cutelyst/Actions/REST/cutelyst_plugin_action_rest_export.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/componentfactory.h>
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 

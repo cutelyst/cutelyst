@@ -5,7 +5,7 @@
 #ifndef AUTHENTICATIONUSER_H
 #define AUTHENTICATIONUSER_H
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Plugins/Authentication/cutelyst_plugin_authentication_export.h>
 #include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/plugin.h>
 

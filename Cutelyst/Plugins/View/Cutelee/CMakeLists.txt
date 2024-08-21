@@ -19,29 +19,35 @@ set(plugin_view_cutelee_HEADERS
     cuteleeview.h
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee ${cutelee_plugin_SRC})
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee)
+add_library(${target_name} ${cutelee_plugin_SRC})
 
-add_library(Cutelyst::View::Cutelee ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee)
+add_library(Cutelyst::View::Cutelee ALIAS ${target_name})
+generate_export_header(${target_name} BASE_NAME CUTELYST_VIEW_CUTELEE)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_view_cutelee_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View/Cutelee
+)
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee PROPERTIES
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME View::Cutelee
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+target_link_libraries(${target_name}
     PRIVATE
         Cutelee::Templates
         Cutelyst::Core
 )
 if (PLUGIN_CSRFPROTECTION)
-    target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+    target_link_libraries(${target_name}
         PRIVATE Cutelyst::CSRFProtection
     )
 endif (PLUGIN_CSRFPROTECTION)
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee PROPERTY PUBLIC_HEADER ${plugin_view_cutelee_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_view_cutelee_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -59,12 +65,12 @@ set(plugin_view_cutelee_TS_FILES
     i18n/plugin_view_cutelee.en.ts
 )
 
-qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+qt_add_lupdate(${target_name}
     TS_FILES ${plugin_view_cutelee_TS_FILES}
     OPTIONS -no-obsolete -locations none
 )
 
-qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+qt_add_lrelease(${target_name}
     TS_FILES ${plugin_view_cutelee_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_view_cutelee_QM_FILES
     OPTIONS -idbased

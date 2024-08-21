@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/headers.h>
 
 #include <QtCore/qiodevice.h>
@@ -22,7 +22,7 @@ class UploadPrivate;
  *
  * %Cutelyst %Upload handles file upload requests.
  */
-class CUTELYST_LIBRARY Upload final : public QIODevice
+class CUTELYST_EXPORT Upload final : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Upload)

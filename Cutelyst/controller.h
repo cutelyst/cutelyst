@@ -6,7 +6,7 @@
 
 #include <Cutelyst/action.h>
 #include <Cutelyst/context.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/request.h>
 #include <Cutelyst/response.h>
 
@@ -52,7 +52,7 @@
 namespace Cutelyst {
 
 class ControllerPrivate;
-class CUTELYST_LIBRARY Controller : public QObject
+class CUTELYST_EXPORT Controller : public QObject
 {
     Q_OBJECT
 public:

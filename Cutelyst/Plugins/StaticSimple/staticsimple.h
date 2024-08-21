@@ -5,8 +5,8 @@
 #ifndef CPSTATICSIMPLE_H
 #define CPSTATICSIMPLE_H
 
+#include <Cutelyst/Plugins/StaticSimple/cutelyst_plugin_staticsimple_export.h>
 #include <Cutelyst/context.h>
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
 
 namespace Cutelyst {

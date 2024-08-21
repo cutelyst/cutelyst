@@ -23,29 +23,36 @@ set(plugin_authentication_HEADERS
     credentialhttp.h
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication)
+add_library(${target_name}
     ${plugin_authentication_SRC}
     ${plugin_authentication_HEADERS}
 )
-add_library(Cutelyst::Authentication ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication)
+add_library(Cutelyst::Authentication ALIAS ${target_name})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication PROPERTIES
+generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_AUTHENTICATION)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_authentication_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
+)
+
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME Authentication
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
 if(ENABLE_LTO)
-    set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET ${target_name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication
+target_link_libraries(${target_name}
     PRIVATE Cutelyst::Core
     PRIVATE Cutelyst::Session
 )
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication PROPERTY PUBLIC_HEADER ${plugin_authentication_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_authentication_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -53,7 +60,7 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authenticat
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtAuthentication.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Authentication.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

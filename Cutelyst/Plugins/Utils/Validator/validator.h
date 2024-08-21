@@ -8,7 +8,7 @@
 #include "validatorresult.h"
 
 #include <Cutelyst/ParamsMultiMap>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Plugins/Utils/Validator/cutelyst_plugin_utils_validator_export.h>
 
 namespace Cutelyst {
 

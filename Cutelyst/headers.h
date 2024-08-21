@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/QDateTime>
 #include <QtCore/QMetaType>
@@ -20,7 +20,7 @@ namespace Cutelyst {
  * %Headers is a container for HTTP headers that also implements helper methods to set and
  * get specific headers.
  */
-class CUTELYST_LIBRARY Headers
+class CUTELYST_EXPORT Headers
 {
 public:
     struct HeaderKeyValue {
@@ -452,4 +452,4 @@ private:
 
 Q_DECLARE_METATYPE(Cutelyst::Headers)
 
-QDebug CUTELYST_LIBRARY operator<<(QDebug dbg, const Cutelyst::Headers &headers);
+QDebug CUTELYST_EXPORT operator<<(QDebug dbg, const Cutelyst::Headers &headers);

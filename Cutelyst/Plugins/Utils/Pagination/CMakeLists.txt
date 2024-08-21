@@ -8,24 +8,31 @@ set(plugin_pagination_HEADERS
     Pagination
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination)
+add_library(${target_name}
     ${plugin_pagination_SRC}
     ${plugin_pagination_HEADERS}
 )
-add_library(Cutelyst::Utils::Pagination ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination)
+add_library(Cutelyst::Utils::Pagination ALIAS ${target_name})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination PROPERTIES
+generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_UTILS_PAGINATION)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_utils_pagination_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Utils
+)
+
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME Utils::Pagination
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination
+target_link_libraries(${target_name}
     PRIVATE Cutelyst::Core
 )
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination PROPERTY PUBLIC_HEADER ${plugin_pagination_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_pagination_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -33,7 +40,7 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagina
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtUtilsPagination.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsPagination.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

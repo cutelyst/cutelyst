@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/engine.h>
 
 #include <QObject>
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY TestEngine : public Engine
+class CUTELYST_EXPORT TestEngine : public Engine
 {
     Q_OBJECT
 public:

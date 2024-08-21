@@ -1,13 +1,12 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2024 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYST_ACTION_H
-#define CUTELYST_ACTION_H
+#pragma once
 
 #include <Cutelyst/component.h>
 #include <Cutelyst/context.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/QMetaMethod>
 #include <QtCore/QStringList>
@@ -32,7 +31,7 @@ class ActionPrivate;
  * \link Context::action() c->action()\endlink. See the Dispatcher for more information on how
  * actions are dispatched.
  */
-class CUTELYST_LIBRARY Action : public Component
+class CUTELYST_EXPORT Action : public Component
 {
     Q_OBJECT
 public:
@@ -162,5 +161,3 @@ private:
 typedef QVector<Action *> ActionList;
 
 } // namespace Cutelyst
-
-#endif // CUTELYST_ACTION_H

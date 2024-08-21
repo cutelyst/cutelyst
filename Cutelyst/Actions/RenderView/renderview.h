@@ -5,14 +5,14 @@
 #ifndef RENDERVIEW_H
 #define RENDERVIEW_H
 
+#include <Cutelyst/Actions/RenderView/cutelyst_action_renderview_export.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/componentfactory.h>
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
 class RenderViewPrivate;
-class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView final : public Action
+class CUTELYST_ACTION_RENDERVIEW_EXPORT RenderView final : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)

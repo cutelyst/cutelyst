@@ -5,6 +5,7 @@
 #ifndef CUTELEE_VIEW_H
 #define CUTELEE_VIEW_H
 
+#include <Cutelyst/Plugins/View/Cutelee/cutelyst_view_cutelee_export.h>
 #include <Cutelyst/View>
 
 #include <QLocale>

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <Cutelyst/Plugins/Authentication/authentication.h>
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 

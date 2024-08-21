@@ -157,23 +157,30 @@ else ()
     message(STATUS "PLUGIN: Validator, enable PwQuality, disabled.")
 endif (PLUGIN_VALIDATOR_PWQUALITY)
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator)
+add_library(${target_name}
     ${plugin_validator_SRC}
     ${plugin_validator_HEADERS}
 )
-add_library(Cutelyst::Utils::Validator ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator)
+add_library(Cutelyst::Utils::Validator ALIAS ${target_name})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator PROPERTIES
+generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_UTILS_VALIDATOR)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_utils_validator_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Utils
+)
+
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME Utils::Validator
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
 if(ENABLE_LTO)
-    set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET ${target_name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+target_link_libraries(${target_name}
     PUBLIC
         Cutelyst::Core
     PRIVATE
@@ -185,11 +192,11 @@ set(PLUGIN_VALIDATOR_PKGCONF_PRIV_REQ "Qt${QT_VERSION_MAJOR}Network >= ${QT_MINI
 set(PLUGIN_VALIDATOR_PKGCONF_DEFINES "")
 
 if (PLUGIN_VALIDATOR_PWQUALITY)
-    target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+    target_link_libraries(${target_name}
         PRIVATE
             ${PWQUALITY_LIBRARIES}
     )
-    target_compile_definitions(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+    target_compile_definitions(${target_name}
         PUBLIC
             CUTELYST_VALIDATOR_WITH_PWQUALITY
     )
@@ -197,8 +204,8 @@ if (PLUGIN_VALIDATOR_PWQUALITY)
     set(PLUGIN_VALIDATOR_PKGCONF_PRIV_REQ "${PLUGIN_VALIDATOR_PKGCONF_PRIV_REQ} pwquality >= 1.2.2")
 endif (PLUGIN_VALIDATOR_PWQUALITY)
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -206,22 +213,22 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValida
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtUtilsValidator.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 set(plugin_utils_validator_TS_FILES
     i18n/plugin_utils_validator.de.ts
     i18n/plugin_utils_validator.en.ts
 )
 
-qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+qt_add_lupdate(${target_name}
     TS_FILES ${plugin_utils_validator_TS_FILES}
     OPTIONS -no-obsolete -locations none
 )
 
-qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+qt_add_lrelease(${target_name}
     TS_FILES ${plugin_utils_validator_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_utils_validator_QM_FILES
     OPTIONS -idbased

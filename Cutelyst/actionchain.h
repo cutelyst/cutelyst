@@ -6,7 +6,7 @@
 #define ACTIONCHAIN_H
 
 #include <Cutelyst/action.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/qobject.h>
 
@@ -22,7 +22,7 @@ class ActionChainPrivate;
  * It behaves exactly like the action at the *end* of the chain
  * except on dispatch it will execute all the actions in the chain in order.
  */
-class CUTELYST_LIBRARY ActionChain : public Action
+class CUTELYST_EXPORT ActionChain : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionChain)

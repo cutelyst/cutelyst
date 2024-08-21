@@ -4,12 +4,12 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/upload.h>
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY MultiPartFormDataParser
+class CUTELYST_EXPORT MultiPartFormDataParser
 {
 public:
     /**

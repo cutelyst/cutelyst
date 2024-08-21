@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <functional>
 #include <memory>
 
@@ -12,7 +12,7 @@ namespace Cutelyst {
 
 class Context;
 class ASyncPrivate;
-class CUTELYST_LIBRARY ASync
+class CUTELYST_EXPORT ASync
 {
 public:
     ASync() noexcept;

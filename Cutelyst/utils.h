@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Cutelyst/ParamsMultiMap>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <chrono>
 
 #include <QtCore/QStringList>
@@ -22,15 +22,15 @@ namespace Cutelyst {
  * #include <Cutelyst/utils.h>
  */
 namespace Utils {
-CUTELYST_LIBRARY QByteArray buildTable(const QVector<QStringList> &table,
-                                       const QStringList &headers = {},
-                                       const QString &title       = {});
+CUTELYST_EXPORT QByteArray buildTable(const QVector<QStringList> &table,
+                                      const QStringList &headers = {},
+                                      const QString &title       = {});
 
-CUTELYST_LIBRARY QString decodePercentEncoding(QString *s);
+CUTELYST_EXPORT QString decodePercentEncoding(QString *s);
 
-CUTELYST_LIBRARY ParamsMultiMap decodePercentEncoding(char *data, int len);
+CUTELYST_EXPORT ParamsMultiMap decodePercentEncoding(char *data, int len);
 
-CUTELYST_LIBRARY QString decodePercentEncoding(QByteArray *ba);
+CUTELYST_EXPORT QString decodePercentEncoding(QByteArray *ba);
 
 /**
  * Reads a time span from @a str and parses it into a duration value.
@@ -59,7 +59,7 @@ CUTELYST_LIBRARY QString decodePercentEncoding(QByteArray *ba);
  * If @a ok is not @c nullptr, failure is reported by setting @a *ok to @c false,
  * and success by setting @a *ok to @c true.
  */
-CUTELYST_LIBRARY std::chrono::microseconds durationFromString(QStringView str, bool *ok = nullptr);
+CUTELYST_EXPORT std::chrono::microseconds durationFromString(QStringView str, bool *ok = nullptr);
 } // namespace Utils
 
 } // namespace Cutelyst
