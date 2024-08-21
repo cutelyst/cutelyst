@@ -7,6 +7,7 @@ project(cutelyst
     LANGUAGES CXX)
 
 include(GNUInstallDirs)
+include(GenerateExportHeader)
 
 set(QT_VERSION_MAJOR 6)
 set(QT_MINIMUM_VERSION 6.2)

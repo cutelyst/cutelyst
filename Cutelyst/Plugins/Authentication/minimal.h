@@ -6,7 +6,6 @@
 #define AUTHENTICATION_STORE_MINIMAL_H
 
 #include <Cutelyst/Plugins/Authentication/authenticationstore.h>
-#include <Cutelyst/cutelyst_global.h>
 
 #include <QVector>
 

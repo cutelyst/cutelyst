@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Cutelyst/action.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
@@ -18,7 +18,7 @@ class DispatchTypeChainedPrivate;
  *
  * Describes a chained dispatch type.
  */
-class CUTELYST_LIBRARY DispatchTypeChained final : public DispatchType
+class CUTELYST_EXPORT DispatchTypeChained final : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypeChained)

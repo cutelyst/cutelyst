@@ -10,24 +10,31 @@ set(plugin_session_HEADERS
     Session
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session)
+add_library(${target_name}
     ${plugin_session_SRC}
     ${plugin_session_HEADERS}
 )
-add_library(Cutelyst::Session ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session)
+add_library(Cutelyst::Session ALIAS ${target_name})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session PROPERTIES
+generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_SESSION)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_session_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
+)
+
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME Session
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session
+target_link_libraries(${target_name}
     PRIVATE Cutelyst::Core
 )
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session PROPERTY PUBLIC_HEADER ${plugin_session_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_session_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -35,13 +42,13 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtSession.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtSession.5.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.5
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.5
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Session.5 DESTINATION ${CMAKE_INSTALL_MANDIR}/man5)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.5 DESTINATION ${CMAKE_INSTALL_MANDIR}/man5)

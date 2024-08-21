@@ -5,7 +5,7 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QObject>
 

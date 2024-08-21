@@ -5,7 +5,7 @@
 #ifndef CUTELYSTPLUGIN_H
 #define CUTELYSTPLUGIN_H
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/qhash.h>
 #include <QtCore/qobject.h>
@@ -21,7 +21,7 @@ class Application;
  *
  * Base class for %Cutelyst \ref plugins.
  */
-class CUTELYST_LIBRARY Plugin : public QObject
+class CUTELYST_EXPORT Plugin : public QObject
 {
     Q_OBJECT
 public:

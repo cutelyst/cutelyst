@@ -5,10 +5,10 @@
 #ifndef ROLEACL_H
 #define ROLEACL_H
 
+#include <Cutelyst/Actions/RoleACL/cutelyst_plugin_action_roleacl_export.h>
 #include <Cutelyst/component.h>
 #include <Cutelyst/componentfactory.h>
 #include <Cutelyst/context.h>
-#include <Cutelyst/cutelyst_global.h>
 
 #include <QtCore/QVariantHash>
 

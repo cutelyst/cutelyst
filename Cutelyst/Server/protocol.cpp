@@ -7,18 +7,14 @@
 #include "server.h"
 #include "socket.h"
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Server/cutelyst_server_export.h>
 
 #include <QBuffer>
 #include <QLoggingCategory>
 #include <QTemporaryFile>
 
-Q_LOGGING_CATEGORY(C_SERVER_PROTO, "cutelyst.server.proto", QtWarningMsg)
-#if defined(CUTELYST_SERVER_EXPORT_STATS)
-Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
-#else
-Q_DECLARE_LOGGING_CATEGORY(CUTELYST_STATS)
-#endif
+Q_LOGGING_CATEGORY(CUTELYST_SERVER_PROTO, "cutelyst.server.proto", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_SERVER_STATS, "cutelyst.server.stats", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -39,7 +35,7 @@ Cutelyst::Protocol::Protocol(Cutelyst::Server *server)
     , m_postBuffering{server->postBuffering()}
     , m_postBuffer{new char[server->postBufferingBufsize()]}
     , m_bufferSize{server->bufferSize()}
-    , useStats{CUTELYST_STATS().isDebugEnabled()}
+    , useStats{CUTELYST_SERVER_STATS().isDebugEnabled()}
 {
 }
 
@@ -59,7 +55,7 @@ QIODevice *Cutelyst::Protocol::createBody(qint64 contentLength) const
     if (m_postBuffering && contentLength > m_postBuffering) {
         auto temp = new QTemporaryFile;
         if (!temp->open()) {
-            qCWarning(C_SERVER_PROTO)
+            qCWarning(CUTELYST_SERVER_PROTO)
                 << "Failed to open temporary file to store post" << temp->errorString();
             // On error close connection immediately
             return nullptr;

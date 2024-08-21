@@ -1,5 +1,3 @@
-configure_file(cutelyst_global.h.in cutelyst_global.h @ONLY)
-
 set(cutelystqt_SRC
     action.cpp
     action_p.h
@@ -101,6 +99,12 @@ add_library(${target_name}
     ${cutelystqt_HEADERS_PRIVATE}
 )
 add_library(Cutelyst::Core ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
+generate_export_header(${target_name} BASE_NAME CUTELYST)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst
+)
+
 set_compiler_flags(${target_name})
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")

@@ -7,8 +7,6 @@
 
 #include "validatorrule.h"
 
-#include <Cutelyst/cutelyst_global.h>
-
 #include <QStringList>
 
 namespace Cutelyst {

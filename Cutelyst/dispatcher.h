@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Cutelyst/action.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/qhash.h>
 #include <QtCore/qobject.h>
@@ -25,7 +25,7 @@ class DispatcherPrivate;
  *
  * This class is resposible for finding an Action for new requests and invoking it.
  */
-class CUTELYST_LIBRARY Dispatcher : public QObject
+class CUTELYST_EXPORT Dispatcher : public QObject
 {
     Q_OBJECT
 public:

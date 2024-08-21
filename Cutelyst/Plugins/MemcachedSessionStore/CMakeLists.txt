@@ -11,25 +11,32 @@ set(plugin_memcachedsessionstore_HEADERS
     MemcachedSessionStore
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore)
+add_library(${target_name}
     ${plugin_memcachedsessionstore_SRC}
     ${plugin_memcachedsessionstore_HEADERS}
 )
-add_library(Cutelyst::MemcachedSessionStore ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore)
+add_library(Cutelyst::MemcachedSessionStore ALIAS ${target_name})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore PROPERTIES
+generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_memcachedsessionstore_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
+)
+
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME MemcachedSessionStore
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore
+target_link_libraries(${target_name}
     PUBLIC Cutelyst::Session
     PRIVATE Cutelyst::Memcached
 )
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore PROPERTY PUBLIC_HEADER ${plugin_memcachedsessionstore_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore
+set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_memcachedsessionstore_HEADERS})
+install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -37,15 +44,15 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSe
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtMemcachedSessionStore.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 if(UNIX)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtMemcachedSessionStore.5.in
-        ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore.5
+        ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.5
         @ONLY
     )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}MemcachedSessionStore.5 DESTINATION ${CMAKE_INSTALL_MANDIR}/man5)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.5 DESTINATION ${CMAKE_INSTALL_MANDIR}/man5)
 endif()

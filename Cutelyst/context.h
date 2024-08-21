@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Cutelyst/async.h>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/request.h>
 
 #include <QtCore/QObject>
@@ -38,7 +38,7 @@ class ContextPrivate;
  *
  * \logcat{core}
  */
-class CUTELYST_LIBRARY Context : public QObject
+class CUTELYST_EXPORT Context : public QObject
 {
     Q_OBJECT
     /**

@@ -5,7 +5,7 @@
 #ifndef CUTELYST_REQUEST_H
 #define CUTELYST_REQUEST_H
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 #include <Cutelyst/headers.h>
 #include <Cutelyst/paramsmultimap.h>
 
@@ -38,7 +38,7 @@ class RequestPrivate;
  * A request contains the data that should be handled by your application
  * for the client.
  */
-class CUTELYST_LIBRARY Request final : public QObject
+class CUTELYST_EXPORT Request final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString hostname READ hostname CONSTANT)

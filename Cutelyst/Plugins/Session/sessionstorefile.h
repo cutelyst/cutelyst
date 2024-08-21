@@ -6,7 +6,6 @@
 #define SESSIONSTOREFILE_H
 
 #include <Cutelyst/Plugins/Session/session.h>
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 

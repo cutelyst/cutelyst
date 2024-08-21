@@ -5,7 +5,7 @@
 #ifndef CUTELYST_COMPONENT_H
 #define CUTELYST_COMPONENT_H
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/qobject.h>
 
@@ -26,7 +26,7 @@ class ComponentPrivate;
  *
  * \logcat{component}
  */
-class CUTELYST_LIBRARY Component : public QObject
+class CUTELYST_EXPORT Component : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Component)

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Cutelyst/Headers>
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QHostAddress>
 #include <QObject>
@@ -16,7 +16,7 @@ class Application;
 class Context;
 class EngineRequest;
 class EnginePrivate;
-class CUTELYST_LIBRARY Engine : public QObject
+class CUTELYST_EXPORT Engine : public QObject
 {
     Q_OBJECT
 public:

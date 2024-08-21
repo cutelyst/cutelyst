@@ -5,8 +5,8 @@
 #ifndef CUTELYSTMEMCACHEDSESSIONSTORE_H
 #define CUTELYSTMEMCACHEDSESSIONSTORE_H
 
+#include <Cutelyst/Plugins/MemcachedSessionStore/cutelyst_plugin_memcachedsessionstore_export.h>
 #include <Cutelyst/Plugins/Session/session.h>
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 

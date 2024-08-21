@@ -24,7 +24,7 @@ using TimePointSteady = std::chrono::time_point<std::chrono::steady_clock>;
 
 class Engine;
 class Context;
-class CUTELYST_LIBRARY EngineRequest
+class CUTELYST_EXPORT EngineRequest
 {
     Q_GADGET
     friend class Engine;

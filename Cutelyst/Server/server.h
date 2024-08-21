@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Server/cutelyst_server_export.h>
 
 #include <QObject>
 

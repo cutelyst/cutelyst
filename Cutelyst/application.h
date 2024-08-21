@@ -5,7 +5,7 @@
 #ifndef CUTELYST_APPLICATION_H
 #define CUTELYST_APPLICATION_H
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/QLocale>
 #include <QtCore/QObject>
@@ -62,7 +62,7 @@ class ApplicationPrivate;
  *
  * \logcat{core}
  */
-class CUTELYST_LIBRARY Application : public QObject
+class CUTELYST_EXPORT Application : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Application)

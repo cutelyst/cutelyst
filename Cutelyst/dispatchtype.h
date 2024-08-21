@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/cutelyst_export.h>
 
 #include <QtCore/qobject.h>
 #include <QtCore/qstringlist.h>
@@ -21,7 +21,7 @@ class Request;
  *
  * This abstract class can be used to describe a dispatch type.
  */
-class CUTELYST_LIBRARY DispatchType : public QObject
+class CUTELYST_EXPORT DispatchType : public QObject
 {
     Q_OBJECT
 public:

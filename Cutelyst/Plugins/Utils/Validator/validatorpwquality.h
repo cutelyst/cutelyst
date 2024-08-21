@@ -7,8 +7,6 @@
 
 #include "validatorrule.h"
 
-#include <Cutelyst/cutelyst_global.h>
-
 namespace Cutelyst {
 
 class ValidatorPwQualityPrivate;

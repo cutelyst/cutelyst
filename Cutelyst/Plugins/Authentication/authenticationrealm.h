@@ -7,7 +7,6 @@
 
 #include <Cutelyst/Plugins/Authentication/authenticationuser.h>
 #include <Cutelyst/component.h>
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
