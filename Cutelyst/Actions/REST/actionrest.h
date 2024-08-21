@@ -5,14 +5,13 @@
 #ifndef ACTIONREST_H
 #define ACTIONREST_H
 
-#include <Cutelyst/Actions/REST/cutelyst_plugin_action_rest_export.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/componentfactory.h>
 
 namespace Cutelyst {
 
 class ActionRESTPrivate;
-class CUTELYST_PLUGIN_ACTION_REST_EXPORT ActionREST final : public Action
+class ActionREST final : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionREST)
@@ -26,7 +25,7 @@ protected:
     bool doExecute(Context *c) override;
 };
 
-class ActionRESTFactory final
+class CutelystActionREST final
     : public QObject
     , public ComponentFactory
 {
@@ -34,7 +33,7 @@ class ActionRESTFactory final
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    virtual Component *createComponent(QObject *parent) override { return new ActionREST(parent); }
+    Component *createComponent(QObject *parent) override { return new ActionREST(parent); }
 };
 
 } // namespace Cutelyst

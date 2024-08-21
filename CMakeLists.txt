@@ -45,6 +45,7 @@ endif ()
 include(CMakeDependentOption)
 option(ENABLE_LTO "Build with Link Time Optimization" OFF)
 option(BUILD_SHARED_LIBS "Build in shared lib mode" ON)
+option(CUTELYST_STATIC_PLUGINS "Build plugins in static mode (always static when on static mode)" OFF)
 option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
 option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
 option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
@@ -54,6 +55,12 @@ cmake_dependent_option(BUILD_DOCS_AWESOME "Use Doxygen Awesome theme to butify t
 
 if (BUILD_TESTS)
   enable_testing()
+endif()
+
+if (CUTELYST_STATIC_PLUGINS OR NOT BUILD_SHARED_LIBS)
+    set(CUTELYST_PLUGIN_LINK_TYPE STATIC)
+else()
+    set(CUTELYST_PLUGIN_LINK_TYPE SHARED)
 endif()
 
 #

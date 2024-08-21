@@ -5,14 +5,13 @@
 #ifndef RENDERVIEW_H
 #define RENDERVIEW_H
 
-#include <Cutelyst/Actions/RenderView/cutelyst_action_renderview_export.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/componentfactory.h>
 
 namespace Cutelyst {
 
 class RenderViewPrivate;
-class CUTELYST_ACTION_RENDERVIEW_EXPORT RenderView final : public Action
+class RenderView final : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)
@@ -45,7 +44,7 @@ protected:
     bool doExecute(Cutelyst::Context *c) override;
 };
 
-class RenderViewFactory final
+class CutelystActionRenderView final
     : public QObject
     , public ComponentFactory
 {
@@ -53,7 +52,7 @@ class RenderViewFactory final
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    virtual Component *createComponent(QObject *parent) override { return new RenderView(parent); }
+    Component *createComponent(QObject *parent) override { return new RenderView(parent); }
 };
 
 } // namespace Cutelyst

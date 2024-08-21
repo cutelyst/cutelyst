@@ -1,12 +1,15 @@
-set(target_name ActionRoleACL)
-add_library(ActionRoleACL MODULE
+set(target_name CutelystRoleACL)
+qt_add_plugin(${target_name}
+    ${CUTELYST_PLUGIN_LINK_TYPE}
+    OUTPUT_TARGETS roleacl_out
+)
+
+target_sources(${target_name} PRIVATE
     roleacl.cpp
     roleacl.h
     roleacl_p.h
     metadata.json
 )
-
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_ACTION_ROLEACL)
 
 target_link_libraries(${target_name}
     PRIVATE Cutelyst::Core
@@ -17,4 +20,4 @@ if(ENABLE_LTO)
     set_property(TARGET ${target_name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-install(TARGETS ${target_name} DESTINATION ${PLUGINSDIR})
+install(TARGETS ${roleacl_out} DESTINATION ${PLUGINSDIR})

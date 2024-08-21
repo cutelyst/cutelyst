@@ -137,6 +137,7 @@ bool Application::registerDispatcher(DispatchType *dispatcher)
 Component *Application::createComponentPlugin(const QString &name, QObject *parent)
 {
     Q_D(Application);
+
     auto it = d->factories.constFind(name);
     if (it != d->factories.constEnd()) {
         ComponentFactory *factory = it.value();
@@ -765,30 +766,56 @@ Component *ApplicationPrivate::createComponentPlugin(const QString &name,
                                                      QObject *parent,
                                                      const QString &directory)
 {
-    Component *component = nullptr;
+    Component *component      = nullptr;
+    ComponentFactory *factory = nullptr;
+
+    auto matchMetadata = [name](const QJsonObject &metadata) {
+        const QJsonObject json = metadata[u"MetaData"].toObject();
+        qCDebug(CUTELYST_CORE) << "Found plugin metadata" << json;
+        return json[u"name"].toString() == name;
+    };
+
+    auto createComponent = [name, parent, &factory](QObject *plugin) -> Component * {
+        factory = qobject_cast<ComponentFactory *>(plugin);
+        if (factory) {
+            return factory->createComponent(parent);
+        }
+        return nullptr;
+    };
+
+    // Load static plugins
+    const QList<QStaticPlugin> &staticPlugins = QPluginLoader::staticPlugins();
+    for (const QStaticPlugin &plugin : staticPlugins) {
+        if (matchMetadata(plugin.metaData())) {
+            component = createComponent(plugin.instance());
+            if (component) {
+                break;
+            }
+
+            qCCritical(CUTELYST_CORE)
+                << "Could not create a component for static plugin" << plugin.metaData();
+        }
+    }
+
+    if (factory && component) {
+        factories.insert(name, factory);
+        return component;
+    }
 
     QDir pluginsDir(directory);
     QPluginLoader loader;
-    ComponentFactory *factory = nullptr;
-    const auto plugins        = pluginsDir.entryList(QDir::Files);
+    const auto plugins = pluginsDir.entryList(QDir::Files);
     for (const QString &fileName : plugins) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
-        const QJsonObject json = loader.metaData()[QLatin1String("MetaData")].toObject();
-        if (json[QLatin1String("name")].toString() == name) {
-            QObject *plugin = loader.instance();
-            if (plugin) {
-                factory = qobject_cast<ComponentFactory *>(plugin);
-                if (!factory) {
-                    qCCritical(CUTELYST_CORE)
-                        << "Could not create a factory for" << loader.fileName();
-                } else {
-                    component = factory->createComponent(parent);
-                }
+
+        if (matchMetadata(loader.metaData())) {
+            component = createComponent(loader.instance());
+            if (component) {
                 break;
-            } else {
-                qCCritical(CUTELYST_CORE)
-                    << "Could not load plugin" << loader.fileName() << loader.errorString();
             }
+
+            qCCritical(CUTELYST_CORE)
+                << "Could not create a component for plugin" << fileName << loader.metaData();
         }
     }
 

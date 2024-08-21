@@ -5,7 +5,6 @@
 #ifndef ROLEACL_H
 #define ROLEACL_H
 
-#include <Cutelyst/Actions/RoleACL/cutelyst_plugin_action_roleacl_export.h>
 #include <Cutelyst/component.h>
 #include <Cutelyst/componentfactory.h>
 #include <Cutelyst/context.h>
@@ -15,7 +14,7 @@
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT RoleACL final : public Component
+class RoleACL final : public Component
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
@@ -40,10 +39,10 @@ public:
     [[nodiscard]] bool canVisit(Context *c) const;
 
 protected:
-    virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
+    bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 };
 
-class RoleACLFactory final
+class CutelystRoleACL final
     : public QObject
     , public ComponentFactory
 {
@@ -51,7 +50,7 @@ class RoleACLFactory final
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    virtual Component *createComponent(QObject *parent) override { return new RoleACL(parent); }
+    Component *createComponent(QObject *parent) override { return new RoleACL(parent); }
 };
 
 } // namespace Cutelyst
