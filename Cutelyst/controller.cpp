@@ -425,11 +425,12 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
 
     QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
     if (object) {
-        Action *action = qobject_cast<Action *>(object);
+        Action *action = qobject_cast<Cutelyst::Action *>(object);
         if (action) {
             return action;
         }
-        qCWarning(CUTELYST_CONTROLLER) << "ActionClass" << actionClass << "is not an ActionClass";
+        qCWarning(CUTELYST_CONTROLLER) << "ActionClass" << actionClass << "is not an ActionClass"
+                                       << object->metaObject()->superClass()->className();
         delete object;
     }
 

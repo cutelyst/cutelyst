@@ -31,15 +31,22 @@ cutelyst_templates_unit_tests(
     testresponse
     testdispatcherpath
     testdispatcherchained
-    testactionrest
-    testactionrenderview
     tst_dispatcher
 )
 
 cute_test(testvalidator Cutelyst::Utils::Validator "" "")
 
 cute_test(testauthentication Cutelyst::Authentication Cutelyst::Session "")
-cute_test(testactionroleacl Cutelyst::Authentication Cutelyst::Session "")
+
+if(CUTELYST_PLUGIN_LINK_TYPE STREQUAL "STATIC")
+    cute_test(testactionroleacl Cutelyst::Authentication Cutelyst::Session CutelystRoleACL)
+    cute_test(testactionrest CutelystActionREST "" "")
+    cute_test(testactionrenderview CutelystActionRenderView "" "")
+else()
+    cute_test(testactionroleacl Cutelyst::Authentication Cutelyst::Session "")
+    cute_test(testactionrest "" "" "")
+    cute_test(testactionrenderview "" "" "")
+endif()
 
 cute_test(testpbkdf2 Cutelyst::Authentication "" "")
 cute_test(testpagination Cutelyst::Utils::Pagination "" "")

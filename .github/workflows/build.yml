@@ -21,11 +21,9 @@ jobs:
         build_type:
           - Debug
           - Release
-        qt:
-          - version: "6.2.4"
-            requested: "6.2.4"
-          - version: "6.6.0"
-            requested: "6.6.0"
+        config:
+          - qt_version: "6.2.4"
+          - qt_version: "6.7.2"
 
     steps:
       - name: Install dependencies on Ubuntu
@@ -35,19 +33,17 @@ jobs:
           sudo apt install -y doxygen graphviz memcached libmemcached-dev libpwquality-dev libjemalloc-dev
 
       - name: Install Qt with options and default aqtversion
-        if: ${{ !matrix.aqtversion && matrix.qt.version }}
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           aqtversion: null  # use whatever the default is
-          modules: ${{ matrix.qt.modules }}
-          version: ${{ matrix.qt.requested }}
+          version: ${{ matrix.config.qt_version }}
           cache: true
 
       - name: Install ninja-build tool (must be after Qt due PATH changes)
         uses: turtlesec-no/get-ninja@main
 
       - name: Make sure MSVC is found when Ninja generator is in use
-        if: runner.os == 'Windows'
+        if: ${{ runner.os == 'Windows' }}
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Checkout sources
@@ -55,54 +51,30 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Configure project on Linux
-        if: runner.os == 'Linux'
+      - name: Configure project
         run: >
           cmake -S . -B ./build -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
+          -DBUILD_SHARED_LIBS=${{ matrix.build_type == 'Debug' }}
           -DBUILD_ALL=ON
+          -DBUILD_DOCS=${{ runner.os == 'Linux' }}
+          -DUSE_JEMALLOC=OFF
           -DPLUGIN_VIEW_CUTELEE=OFF
           -DPLUGIN_VIEW_EMAIL=OFF
-          -DUSE_JEMALLOC=OFF
-          -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
-
-      - name: Configure project on macOS
-        if: runner.os == 'macOS'
-        run: >
-          cmake -S . -B ./build -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DBUILD_ALL=ON
-          -DPLUGIN_VIEW_CUTELEE=OFF
-          -DPLUGIN_VIEW_EMAIL=OFF
-          -DUSE_JEMALLOC=OFF
-          -DBUILD_DOCS=OFF
-          -DPLUGIN_VALIDATOR_PWQUALITY=OFF
-          -DPLUGIN_MEMCACHED=OFF
-          -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
-
-      - name: Configure project on Window
-        if: runner.os == 'Windows'
-        run: >
-          cmake -S . -B ./build -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DBUILD_ALL=ON
-          -DPLUGIN_VIEW_CUTELEE=OFF
-          -DPLUGIN_VIEW_EMAIL=OFF
-          -DUSE_JEMALLOC=OFF
-          -DBUILD_DOCS=OFF
-          -DPLUGIN_VALIDATOR_PWQUALITY=OFF
-          -DPLUGIN_MEMCACHED=OFF
-          -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
+          -DPLUGIN_VALIDATOR_PWQUALITY=${{ runner.os == 'Linux' }}
+          -DPLUGIN_MEMCACHED=${{ runner.os == 'Linux' }}
 
       - name: Build project
         run: cmake --build ./build
 
       - name: Run tests
-        if: matrix.build_type == 'Debug'
+        id: ctest
+        if: ${{ matrix.build_type == 'Debug' }}
         run: ctest --test-dir ./build -C ${{ matrix.build_type }} --output-on-failure
 
       - name: Read tests log when it fails
         uses: andstor/file-reader-action@v1
-        if: ${{ failure() && matrix.build_type == 'Debug' }}
+        if: ${{ steps.ctest.conclusion == 'failure' }}
         with:
           path: "./build/Testing/Temporary/LastTest.log"
