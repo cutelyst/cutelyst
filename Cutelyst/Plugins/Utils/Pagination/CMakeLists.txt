@@ -15,9 +15,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::Utils::Pagination ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_UTILS_PAGINATION)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_UTILS_PAGINATION
+    EXPORT_FILE_NAME ../pagination_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_utils_pagination_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../pagination_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Utils
 )
 

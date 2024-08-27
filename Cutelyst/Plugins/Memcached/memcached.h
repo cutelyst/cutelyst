@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <Cutelyst/Plugins/Memcached/cutelyst_plugin_memcached_export.h>
+#include <Cutelyst/Plugins/memcached_export.h>
 #include <Cutelyst/plugin.h>
 #include <chrono>
 

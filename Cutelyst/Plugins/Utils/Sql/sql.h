@@ -5,7 +5,7 @@
 #ifndef CSQL_H
 #define CSQL_H
 
-#include <Cutelyst/Plugins/Utils/Sql/cutelyst_plugin_utils_sql_export.h>
+#include <Cutelyst/Plugins/Utils/sql_export.h>
 #include <Cutelyst/paramsmultimap.h>
 
 #include <QtCore/QVariant>

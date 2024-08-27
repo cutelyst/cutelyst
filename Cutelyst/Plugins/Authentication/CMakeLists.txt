@@ -30,9 +30,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::Authentication ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_AUTHENTICATION)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_AUTHENTICATION
+    EXPORT_FILE_NAME ../authentication_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_authentication_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../authentication_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
 )
 

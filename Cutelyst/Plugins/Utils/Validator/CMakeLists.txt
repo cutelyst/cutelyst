@@ -164,9 +164,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::Utils::Validator ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_UTILS_VALIDATOR)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_UTILS_VALIDATOR
+    EXPORT_FILE_NAME ../validator_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_utils_validator_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../validator_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Utils
 )
 

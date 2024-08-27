@@ -18,9 +18,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::CSRFProtection ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_CSRFPROTECTION)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_CSRFPROTECTION
+    EXPORT_FILE_NAME ../csrfprotection_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_csrfprotection_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../csrfprotection_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
 )
 
@@ -40,7 +43,7 @@ install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
-    PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/CSRFProtection COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtCSRFProtection.pc.in

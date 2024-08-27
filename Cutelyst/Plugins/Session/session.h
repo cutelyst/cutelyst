@@ -5,7 +5,7 @@
 #ifndef CSESSION_H
 #define CSESSION_H
 
-#include <Cutelyst/Plugins/Session/cutelyst_plugin_session_export.h>
+#include <Cutelyst/Plugins/session_export.h>
 #include <Cutelyst/plugin.h>
 
 #include <QVariant>

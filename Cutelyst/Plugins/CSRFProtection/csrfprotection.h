@@ -7,7 +7,7 @@
 #define CSRFPROTECTION_H
 
 #include <Cutelyst/Plugin>
-#include <Cutelyst/Plugins/CSRFProtection/cutelyst_plugin_csrfprotection_export.h>
+#include <Cutelyst/Plugins/csrfprotection_export.h>
 
 namespace Cutelyst {
 

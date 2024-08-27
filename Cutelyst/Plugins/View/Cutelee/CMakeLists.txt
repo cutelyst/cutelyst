@@ -23,10 +23,13 @@ set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
 add_library(${target_name} ${cutelee_plugin_SRC})
 
 add_library(Cutelyst::View::Cutelee ALIAS ${target_name})
-generate_export_header(${target_name} BASE_NAME CUTELYST_VIEW_CUTELEE)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_VIEW_CUTELEE
+    EXPORT_FILE_NAME ../cutelee_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_view_cutelee_export.h
-    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View/Cutelee
+    ${CMAKE_CURRENT_BINARY_DIR}/../cutelee_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View
 )
 
 set_target_properties(${target_name} PROPERTIES

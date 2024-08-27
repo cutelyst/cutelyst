@@ -15,9 +15,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::StatusMessage ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_STATUSMESSAGE)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_STATUSMESSAGE
+    EXPORT_FILE_NAME ../statusmessage_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_statusmessage_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../statusmessage_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
 )
 

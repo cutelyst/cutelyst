@@ -5,7 +5,7 @@
 #ifndef VIEWJSON_H
 #define VIEWJSON_H
 
-#include <Cutelyst/Plugins/View/JSON/cutelyst_view_json_export.h>
+#include <Cutelyst/Plugins/View/json_export.h>
 #include <Cutelyst/view.h>
 
 namespace Cutelyst {

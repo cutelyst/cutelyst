@@ -6,7 +6,7 @@
 #define AUTHENTICATION_H
 
 #include <Cutelyst/Plugins/Authentication/authenticationuser.h>
-#include <Cutelyst/Plugins/Authentication/cutelyst_plugin_authentication_export.h>
+#include <Cutelyst/Plugins/authentication_export.h>
 #include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/plugin.h>
 

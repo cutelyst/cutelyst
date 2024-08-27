@@ -5,7 +5,7 @@
 #ifndef CUTELYST_PLUGIN_STATUSMESSAGE
 #define CUTELYST_PLUGIN_STATUSMESSAGE
 
-#include <Cutelyst/Plugins/StatusMessage/cutelyst_plugin_statusmessage_export.h>
+#include <Cutelyst/Plugins/statusmessage_export.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/plugin.h>
 

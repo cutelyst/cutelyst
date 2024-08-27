@@ -16,9 +16,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::StaticSimple ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_STATICSIMPLE)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_STATICSIMPLE
+    EXPORT_FILE_NAME ../staticsimple_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_staticsimple_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../staticsimple_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
 )
 
@@ -37,7 +40,7 @@ install(TARGETS ${target_name}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
-    PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/StaticSimple COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtStaticSimple.pc.in

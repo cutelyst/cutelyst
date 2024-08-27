@@ -5,7 +5,7 @@
 #ifndef C_USERAGENT_H
 #define C_USERAGENT_H
 
-#include <Cutelyst/Plugins/UserAgent/cutelyst_plugin_useragent_export.h>
+#include <Cutelyst/Plugins/useragent_export.h>
 
 #include <QNetworkReply>
 

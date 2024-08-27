@@ -5,7 +5,7 @@
 #ifndef PAGINATION_H
 #define PAGINATION_H
 
-#include <Cutelyst/Plugins/Utils/Pagination/cutelyst_plugin_utils_pagination_export.h>
+#include <Cutelyst/Plugins/Utils/pagination_export.h>
 
 #include <QVariantMap>
 

@@ -5,7 +5,7 @@
 #ifndef CUTELYSTVALIDATORRESULT_H
 #define CUTELYSTVALIDATORRESULT_H
 
-#include <Cutelyst/Plugins/Utils/Validator/cutelyst_plugin_utils_validator_export.h>
+#include <Cutelyst/Plugins/Utils/validator_export.h>
 
 #include <QJsonObject>
 #include <QSharedDataPointer>

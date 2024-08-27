@@ -1,7 +1,6 @@
 set(target_name CutelystActionRenderView)
 qt_add_plugin(${target_name}
     ${CUTELYST_PLUGIN_LINK_TYPE}
-    OUTPUT_TARGETS rederview_out
 )
 
 target_sources(${target_name} PRIVATE
@@ -19,4 +18,4 @@ if(ENABLE_LTO)
     set_property(TARGET ${target_name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-install(TARGETS ${rederview_out} DESTINATION ${PLUGINSDIR})
+install(TARGETS ${target_name} DESTINATION ${PLUGINSDIR})

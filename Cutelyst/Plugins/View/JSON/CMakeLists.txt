@@ -14,10 +14,13 @@ add_library(${target_name}
 )
 add_library(Cutelyst::View::JSON ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_VIEW_JSON)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_VIEW_JSON
+    EXPORT_FILE_NAME ../json_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_view_json_export.h
-    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View/JSON
+    ${CMAKE_CURRENT_BINARY_DIR}/../json_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View
 )
 
 set_target_properties(${target_name} PROPERTIES

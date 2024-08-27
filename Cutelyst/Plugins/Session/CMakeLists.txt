@@ -17,9 +17,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::Session ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_SESSION)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_SESSION
+    EXPORT_FILE_NAME ../session_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_session_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../session_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
 )
 

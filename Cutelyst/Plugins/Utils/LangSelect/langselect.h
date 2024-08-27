@@ -6,7 +6,7 @@
 #ifndef C_UTILS_LANGSELECT_H
 #define C_UTILS_LANGSELECT_H
 
-#include <Cutelyst/Plugins/Utils/LangSelect/cutelyst_plugin_utils_langselect_export.h>
+#include <Cutelyst/Plugins/Utils/langselect_export.h>
 #include <Cutelyst/plugin.h>
 
 #include <QLocale>

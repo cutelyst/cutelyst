@@ -5,7 +5,7 @@
 #ifndef VIEWEMAIL_H
 #define VIEWEMAIL_H
 
-#include <Cutelyst/Plugins/View/Email/cutelyst_view_email_export.h>
+#include <Cutelyst/Plugins/View/email_export.h>
 #include <Cutelyst/view.h>
 
 namespace Cutelyst {

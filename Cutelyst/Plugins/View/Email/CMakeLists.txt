@@ -16,10 +16,13 @@ add_library(${target_name}
     ${plugin_view_email_HEADERS}
 )
 add_library(Cutelyst::View::Email ALIAS ${target_name})
-generate_export_header(${target_name} BASE_NAME CUTELYST_VIEW_EMAIL)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_VIEW_EMAIL
+    EXPORT_FILE_NAME ../email_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_view_email_export.h
-    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View/Email
+    ${CMAKE_CURRENT_BINARY_DIR}/../email_export.h
+    DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/View
 )
 
 set_target_properties(${target_name} PROPERTIES
