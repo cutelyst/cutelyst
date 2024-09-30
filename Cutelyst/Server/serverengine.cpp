@@ -54,7 +54,7 @@ ServerEngine::ServerEngine(Application *localApp,
         m_socketTimeout->setInterval(std::chrono::seconds{m_wsgi->socketTimeout()});
     }
 
-    connect(this, &ServerEngine::shutdown, app(), [this] { Q_EMIT app() -> shuttingDown(app()); });
+    connect(this, &ServerEngine::shutdown, app(), [this] { Q_EMIT app()->shuttingDown(app()); });
 
     const QStringList staticMap  = m_wsgi->staticMap();
     const QStringList staticMap2 = m_wsgi->staticMap2();
