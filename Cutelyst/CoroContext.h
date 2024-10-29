@@ -42,6 +42,8 @@ public:
             connections.clear();
         }
 
+        void return_void() noexcept {}
+
         CoroContext get_return_object()
         {
             handle = std::coroutine_handle<promise_type>::from_promise(*this);
