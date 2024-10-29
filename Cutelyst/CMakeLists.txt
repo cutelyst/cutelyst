@@ -52,6 +52,7 @@ set(cutelystqt_HEADERS
     ComponentFactory
     Context
     Controller
+    CoroContext.h
     DispatchType
     Dispatcher
     Engine

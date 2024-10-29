@@ -11,6 +11,7 @@
 #include <QUrl>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core-actions
@@ -149,9 +150,9 @@ QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller
         methods.append(QStringLiteral("HEAD"));
     }
 
-    methods.removeAll(QStringLiteral("not_implemented"));
-    methods.sort();
     methods.removeDuplicates();
+    methods.removeOne(u"not_implemented"_s);
+    methods.sort();
 
     return methods.join(u", ").toLatin1();
 }
