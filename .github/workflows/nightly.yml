@@ -18,11 +18,11 @@ jobs:
         config:
           - name: clang-tidy
             cmake_arg: '-DCMAKE_CXX_CLANG_TIDY=clang-tidy'
-            qt_version: "6.6"
+            qt_version: "6.8"
 
           - name: clazy
             cmake_arg: '-DCMAKE_CXX_COMPILER=clazy'
-            qt_version: "6.6"
+            qt_version: "6.8"
 
     steps:
       - name: Install dependencies on Ubuntu
@@ -32,7 +32,7 @@ jobs:
           sudo apt install -y clazy doxygen graphviz libmemcached-dev libpwquality-dev libjemalloc-dev
 
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{ matrix.config.qt_version }}
           cache: true

@@ -10,8 +10,7 @@ include(GNUInstallDirs)
 include(GenerateExportHeader)
 
 set(QT_VERSION_MAJOR 6)
-set(QT_MINIMUM_VERSION 6.2)
-# TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
+set(QT_MINIMUM_VERSION 6.4)
 find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
 set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})

@@ -456,13 +456,8 @@ void CSRFProtectionPrivate::setToken(Context *c)
         if (csrf->d_ptr->cookieExpiration.count() == 0) {
             cookie.setExpirationDate(QDateTime());
         } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
             cookie.setExpirationDate(
                 QDateTime::currentDateTime().addDuration(csrf->d_ptr->cookieExpiration));
-#else
-            cookie.setExpirationDate(
-                QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieExpiration.count()));
-#endif
         }
         cookie.setHttpOnly(csrf->d_ptr->cookieHttpOnly);
         cookie.setPath(csrf->d_ptr->cookiePath);

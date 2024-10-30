@@ -583,15 +583,10 @@ static Request::Cookie nextField(QByteArrayView text, int &position)
         return cookie; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
-    // TODO Qt 6.3
-    //    ret.first = text.sliced(position, equalsPosition - position).trimmed().toByteArray();
-    cookie.name      = text.sliced(position, equalsPosition - position).toByteArray().trimmed();
+    cookie.name      = text.sliced(position, equalsPosition - position).trimmed().toByteArray();
     int secondLength = semiColonPosition - equalsPosition - 1;
     if (secondLength > 0) {
-        // TODO Qt 6.3
-        //        ret.second = text.sliced(equalsPosition + 1,
-        //        secondLength).trimmed().toByteArray();
-        cookie.value = text.sliced(equalsPosition + 1, secondLength).toByteArray().trimmed();
+        cookie.value = text.sliced(equalsPosition + 1, secondLength).trimmed().toByteArray();
     }
 
     position = semiColonPosition;

@@ -770,11 +770,7 @@ void LangSelectPrivate::setToCookie(Context *c, const QByteArray &name) const
     if (cookieExpiration.count() == 0) {
         cookie.setExpirationDate(QDateTime());
     } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
         cookie.setExpirationDate(QDateTime::currentDateTime().addDuration(cookieExpiration));
-#else
-        cookie.setExpirationDate(QDateTime::currentDateTime().addSecs(cookieExpiration.count()));
-#endif
     }
     cookie.setDomain(cookieDomain);
     cookie.setSecure(cookieSecure);
