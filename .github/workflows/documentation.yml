@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies on Linux
         run: |
           sudo apt update -qq
-          sudo apt install -y doxygen graphviz memcached libmemcached-dev libpwquality-dev
+          sudo apt install -y doxygen graphviz libmemcached-dev libpwquality-dev
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3

@@ -30,7 +30,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update -qq
-          sudo apt install -y doxygen graphviz memcached libmemcached-dev libpwquality-dev libjemalloc-dev
+          sudo apt install -y doxygen graphviz memcached libmemcached-dev libpwquality-dev
 
       - name: Install Qt with options and default aqtversion
         uses: jurplel/install-qt-action@v4
