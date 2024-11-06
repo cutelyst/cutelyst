@@ -58,15 +58,28 @@ public:
 
         std::suspend_never yield_value(QObject *obj)
         {
+            auto conn = QObject::connect(obj, &QObject::destroyed, [this] {
+                clean();
+
+                if (handle) {
+                    handle.destroy();
+                }
+            });
+            connections.emplace_back(std::move(conn));
+            return {};
+        }
+
+        std::suspend_never yield_value(Cutelyst::Context *obj)
+        {
             // Automatically delay replies
             // async cannot be used in coroutine body
             // else we get a double free when the coroutine
             // body ends and Cutelyst::Engine deletes the Context*
             // resulting in destroyed signal being emitted and
             // and coroutine dtor already on the stack to be called
-            ASync a(qobject_cast<Cutelyst::Context *>(obj));
+            ASync a(obj);
 
-            auto conn = QObject::connect(obj, &QObject::destroyed, [this, a](QObject *obj) {
+            auto conn = QObject::connect(obj, &QObject::destroyed, [this, a] {
                 clean();
 
                 if (handle) {
