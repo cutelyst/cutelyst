@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(cutelyst
-    VERSION 4.5.1
+    VERSION 4.6.0
     DESCRIPTION "A C++ Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework."
     HOMEPAGE_URL "https://cutelyst.org/"
     LANGUAGES CXX)

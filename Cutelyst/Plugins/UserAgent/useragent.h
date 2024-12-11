@@ -34,6 +34,9 @@ class Request;
  * See also the documentation for QNetworkAccessManager to learn more about sending network
  * requests.
  *
+ * \note QNetworkAccessManager::autoDeleteReplies() is also always true so it does not leak replies
+ * if your reply->deleteLater() was inside a disconnected lambda.
+ *
  * \par Include file
  * #include <Cutelyst/Plugins/UserAgent>
  *
@@ -276,8 +279,6 @@ CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *forwardRequest(Request *request,
 /**
  * This will forward your \a request to \a destination, handlying both request and response
  * but it will not call detachAsync() and attachAsync().
- *
- * Do not call deleteLater on the returned object as it will be set as the response body.
  */
 CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *forwardRequestResponse(Context *c,
                                                                        const QUrl &destination);
