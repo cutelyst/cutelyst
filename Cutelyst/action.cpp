@@ -8,6 +8,7 @@
 #include "controller.h"
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Action::Action(QObject *parent)
     : Component(new ActionPrivate, parent)
@@ -49,17 +50,17 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     init(app, args);
 
-    d->ns = args.value(u"namespace"_qs).toString();
+    d->ns = args.value(u"namespace"_s).toString();
 
-    const auto attributes = args.value(u"attributes"_qs).value<ParamsMultiMap>();
+    const auto attributes = args.value(u"attributes"_s).value<ParamsMultiMap>();
     d->attributes         = attributes;
 
-    const QString argsAttr = attributes.value(u"Args"_qs);
+    const QString argsAttr = attributes.value(u"Args"_s);
     if (!argsAttr.isEmpty()) {
         d->numberOfArgs = qint8(argsAttr.toInt());
     }
 
-    const QString capturesAttr = attributes.value(u"CaptureArgs"_qs);
+    const QString capturesAttr = attributes.value(u"CaptureArgs"_s);
     if (!capturesAttr.isEmpty()) {
         d->numberOfCaptures = qint8(capturesAttr.toInt());
     }

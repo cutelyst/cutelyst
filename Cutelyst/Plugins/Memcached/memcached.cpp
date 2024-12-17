@@ -15,6 +15,7 @@
 Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static thread_local Memcached *mcd = nullptr;
@@ -46,51 +47,51 @@ bool Memcached::setup(Application *app)
 {
     Q_D(Memcached);
 
-    d->loadedConfig = app->engine()->config(u"Cutelyst_Memcached_Plugin"_qs);
+    d->loadedConfig = app->engine()->config(u"Cutelyst_Memcached_Plugin"_s);
     QStringList memcConfig;
 
-    const QStringList serverList = d->config(u"servers"_qs).toString().split(u';');
+    const QStringList serverList = d->config(u"servers"_s).toString().split(u';');
 
     if (serverList.empty()) {
-        memcConfig.push_back(u"--SERVER=localhost"_qs);
+        memcConfig.push_back(u"--SERVER=localhost"_s);
     }
 
-    for (const QString &flag : {u"verify_key"_qs,
-                                u"remove_failed_servers"_qs,
-                                u"binary_protocol"_qs,
-                                u"buffer_requests"_qs,
-                                u"hash_with_namespace"_qs,
-                                u"noreply"_qs,
-                                u"randomize_replica_read"_qs,
-                                u"sort_hosts"_qs,
-                                u"support_cas"_qs,
-                                u"use_udp"_qs,
-                                u"tcp_nodelay"_qs,
-                                u"tcp_keepalive"_qs}) {
+    for (const QString &flag : {u"verify_key"_s,
+                                u"remove_failed_servers"_s,
+                                u"binary_protocol"_s,
+                                u"buffer_requests"_s,
+                                u"hash_with_namespace"_s,
+                                u"noreply"_s,
+                                u"randomize_replica_read"_s,
+                                u"sort_hosts"_s,
+                                u"support_cas"_s,
+                                u"use_udp"_s,
+                                u"tcp_nodelay"_s,
+                                u"tcp_keepalive"_s}) {
         if (d->config(flag, false).toBool()) {
             const QString flagStr = u"--" + flag.toUpper().replace(u'_', u'-');
             memcConfig.push_back(flagStr);
         }
     }
 
-    const bool useUDP = d->config(u"use_udp"_qs, false).toBool();
+    const bool useUDP = d->config(u"use_udp"_s, false).toBool();
 
     for (const QString &opt : {
-             u"connect_timeout"_qs,
-             u"distribution"_qs,
-             u"hash"_qs,
-             u"number_of_replicas"_qs,
-             u"namespace"_qs,
-             u"retry_timeout"_qs,
-             u"server_failure_limit"_qs,
-             u"snd_timeout"_qs,
-             u"socket_recv_size"_qs,
-             u"socket_send_size"_qs,
-             u"poll_timeout"_qs,
-             u"io_bytes_watermark"_qs,
-             u"io_key_prefetch"_qs,
-             u"io_msg_watermark"_qs,
-             u"rcv_timeout"_qs,
+             u"connect_timeout"_s,
+             u"distribution"_s,
+             u"hash"_s,
+             u"number_of_replicas"_s,
+             u"namespace"_s,
+             u"retry_timeout"_s,
+             u"server_failure_limit"_s,
+             u"snd_timeout"_s,
+             u"socket_recv_size"_s,
+             u"socket_send_size"_s,
+             u"poll_timeout"_s,
+             u"io_bytes_watermark"_s,
+             u"io_key_prefetch"_s,
+             u"io_msg_watermark"_s,
+             u"rcv_timeout"_s,
          }) {
         const QString _val = d->config(opt).toString();
         if (!_val.isEmpty()) {
@@ -193,10 +194,10 @@ bool Memcached::setup(Application *app)
             }
         }
 
-        d->compression      = d->config(u"compression"_qs, false).toBool();
-        d->compressionLevel = d->config(u"compression_level"_qs, -1).toInt();
+        d->compression      = d->config(u"compression"_s, false).toBool();
+        d->compressionLevel = d->config(u"compression_level"_s, -1).toInt();
         d->compressionThreshold =
-            d->config(u"compression_threshold"_qs, MemcachedPrivate::defaultCompressionThreshold)
+            d->config(u"compression_threshold"_s, MemcachedPrivate::defaultCompressionThreshold)
                 .toInt();
         if (d->compression) {
             qCInfo(C_MEMCACHED).nospace()
@@ -206,7 +207,7 @@ bool Memcached::setup(Application *app)
             qCInfo(C_MEMCACHED) << "Compression: disabled";
         }
 
-        const QString encKey = d->config(u"encryption_key"_qs).toString();
+        const QString encKey = d->config(u"encryption_key"_s).toString();
         if (!encKey.isEmpty()) {
             const QByteArray encKeyBa = encKey.toUtf8();
             const memcached_return_t rt =
@@ -223,8 +224,8 @@ bool Memcached::setup(Application *app)
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
 #    if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
-        const QString saslUser = d->config(u"sasl_user"_qs).toString();
-        const QString saslPass = d->config(u"sasl_password"_qs).toString();
+        const QString saslUser = d->config(u"sasl_user"_s).toString();
+        const QString saslPass = d->config(u"sasl_password"_s).toString();
         if (!saslUser.isEmpty() && !saslPass.isEmpty()) {
             const memcached_return_t rt = memcached_set_sasl_auth_data(
                 new_memc, saslUser.toUtf8().constData(), saslPass.toUtf8().constData());
@@ -250,7 +251,7 @@ bool Memcached::setup(Application *app)
 
     if (ok) {
         connect(app, &Application::postForked, this, [this] { mcd = this; });
-        app->loadTranslations(u"plugin_memcached"_qs);
+        app->loadTranslations(u"plugin_memcached"_s);
     } else {
         qCCritical(C_MEMCACHED) << "Failed to configure the connection to the memcached server(s)";
     }

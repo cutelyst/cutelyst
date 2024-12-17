@@ -12,6 +12,7 @@
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_SERVER_H2, "cutelyst.server.http2", QtWarningMsg)
 
@@ -849,7 +850,7 @@ H2Stream::H2Stream(quint32 _streamId, qint32 _initialWindowSize, ProtoRequestHtt
     , streamId(_streamId)
     , windowSize(_initialWindowSize)
 {
-    protocol      = "HTTP/2"_qba;
+    protocol      = "HTTP/2"_ba;
     serverAddress = protoRequestH2->sock->serverAddress;
     remoteAddress = protoRequestH2->sock->remoteAddress;
     remotePort    = protoRequestH2->sock->remotePort;

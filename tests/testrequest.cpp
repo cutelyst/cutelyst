@@ -19,6 +19,7 @@
 #include <QUuid>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class TestRequest : public CoverageObject
 {
@@ -427,11 +428,11 @@ void TestRequest::testController_data()
     QTest::addColumn<QByteArray>("body");
     QTest::addColumn<QByteArray>("output");
 
-    const auto get  = "GET"_qba;
-    const auto GeT  = "GeT"_qba;
-    const auto post = "POST"_qba;
-    const auto head = "HEAD"_qba;
-    const auto PoSt = "PoSt"_qba;
+    const auto get  = "GET"_ba;
+    const auto GeT  = "GeT"_ba;
+    const auto post = "POST"_ba;
+    const auto head = "HEAD"_ba;
+    const auto PoSt = "PoSt"_ba;
 
     QUrlQuery query;
     Headers headers;
@@ -1093,7 +1094,7 @@ void TestRequest::testUploads_data()
     QTest::addColumn<QByteArray>("body");
     QTest::addColumn<QByteArray>("output");
 
-    const auto post = "POST"_qba;
+    const auto post = "POST"_ba;
 
     QUrlQuery query;
     Headers headers;

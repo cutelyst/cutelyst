@@ -15,6 +15,7 @@
 #include <QtCore/QJsonDocument>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Response::Response(const Headers &defaultHeaders, EngineRequest *engineRequest)
     : d_ptr(new ResponsePrivate(defaultHeaders, engineRequest))
@@ -39,12 +40,12 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!(d->engineRequest->status & EngineRequest::FinalizedHeaders)) {
-        if (d->headers.header("Transfer-Encoding"_qba).compare("chunked") == 0) {
+        if (d->headers.header("Transfer-Encoding"_ba).compare("chunked") == 0) {
             d->engineRequest->status |= EngineRequest::IOWrite | EngineRequest::Chunked;
         } else {
             // When chunked encoding is not set the client can only know
             // that data is finished if we close the connection
-            d->headers.setHeader("Connection"_qba, "Close"_qba);
+            d->headers.setHeader("Connection"_ba, "Close"_ba);
             d->engineRequest->status |= EngineRequest::IOWrite;
         }
         delete d->bodyIODevice;
@@ -126,7 +127,7 @@ void Response::setCborBody(const QByteArray &cbor)
 {
     Q_D(Response);
     d->setBodyData(cbor);
-    d->headers.setContentType("application/cbor"_qba);
+    d->headers.setContentType("application/cbor"_ba);
 }
 
 void Response::setCborValueBody(const QCborValue &value)
@@ -138,7 +139,7 @@ void Response::setJsonBody(const QByteArray &json)
 {
     Q_D(Response);
     d->setBodyData(json);
-    d->headers.setContentType("application/json"_qba);
+    d->headers.setContentType("application/json"_ba);
 }
 
 void Response::setJsonObjectBody(const QJsonObject &obj)
@@ -239,8 +240,8 @@ void Response::redirect(const QUrl &url, quint16 status)
         const auto location = url.toEncoded(QUrl::FullyEncoded);
         qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location << status;
 
-        d->headers.setHeader("Location"_qba, location);
-        d->headers.setContentType("text/html; charset=utf-8"_qba);
+        d->headers.setHeader("Location"_ba, location);
+        d->headers.setContentType("text/html; charset=utf-8"_ba);
 
         const QByteArray buf = R"V0G0N(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -255,7 +256,7 @@ void Response::redirect(const QUrl &url, quint16 status)
 )V0G0N";
         setBody(buf);
     } else {
-        d->headers.removeHeader("Location"_qba);
+        d->headers.removeHeader("Location"_ba);
         qCDebug(CUTELYST_RESPONSE) << "Invalid redirect removing header" << url << status;
     }
 }

@@ -12,6 +12,7 @@
 #include <QRegularExpression>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 DispatchTypePath::DispatchTypePath(QObject *parent)
     : DispatchType(parent)
@@ -28,7 +29,7 @@ QByteArray DispatchTypePath::list() const
 {
     Q_D(const DispatchTypePath);
 
-    const static QRegularExpression multipleSlashes(u"/{1,}"_qs);
+    const static QRegularExpression multipleSlashes(u"/{1,}"_s);
 
     QVector<QStringList> table;
 
@@ -41,14 +42,14 @@ QByteArray DispatchTypePath::list() const
         const auto paths = d->paths.value(path);
         for (Action *action : paths.actions) {
             QString _path = u'/' + path;
-            if (action->attribute(u"Args"_qs).isEmpty()) {
+            if (action->attribute(u"Args"_s).isEmpty()) {
                 _path.append(u"/...");
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
                     _path.append(u"/*");
                 }
             }
-            _path.replace(multipleSlashes, u"/"_qs);
+            _path.replace(multipleSlashes, u"/"_s);
 
             QString privateName = action->reverse();
             if (!privateName.startsWith(u'/')) {
@@ -59,7 +60,7 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table, {u"Path"_qs, u"Private"_qs}, u"Loaded Path actions:"_qs);
+    return Utils::buildTable(table, {u"Path"_s, u"Private"_s}, u"Loaded Path actions:"_s);
 }
 
 Cutelyst::DispatchType::MatchType
@@ -103,7 +104,7 @@ bool DispatchTypePath::registerAction(Action *action)
 
     bool ret              = false;
     const auto attributes = action->attributes();
-    const auto range      = attributes.equal_range(u"Path"_qs);
+    const auto range      = attributes.equal_range(u"Path"_s);
     for (auto i = range.first; i != range.second; ++i) {
         if (d->registerPath(*i, action)) {
             ret = true;
@@ -125,11 +126,11 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     QString ret;
     if (captures.isEmpty()) {
         const auto attributes = action->attributes();
-        auto it               = attributes.constFind(u"Path"_qs);
+        auto it               = attributes.constFind(u"Path"_s);
         if (it != attributes.constEnd()) {
             const QString &path = it.value();
             if (path.isEmpty()) {
-                ret = u"/"_qs;
+                ret = u"/"_s;
             } else if (!path.startsWith(u'/')) {
                 ret = u'/' + path;
             } else {
@@ -145,7 +146,7 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
     QString _path = path;
     // TODO see if we can make controllers fix this
     if (_path.isEmpty()) {
-        _path = u"/"_qs;
+        _path = u"/"_s;
     } else if (!_path.startsWith(u'/')) {
         _path.prepend(u'/');
     }

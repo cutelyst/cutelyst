@@ -15,6 +15,7 @@
 #include <QMimeDatabase>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple", QtWarningMsg)
 
@@ -75,7 +76,7 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
             if (!locateStaticFile(c, path)) {
                 Response *res = c->response();
                 res->setStatus(Response::NotFound);
-                res->setContentType("text/html"_qba);
+                res->setContentType("text/html"_ba);
                 res->setBody("File not found: " + path.toUtf8());
             }
 
@@ -128,7 +129,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
 
                 headers.setLastModified(currentDateTime);
                 // Tell Firefox & friends its OK to cache, even over SSL
-                headers.setHeader("Cache-Control"_qba, "public"_qba);
+                headers.setHeader("Cache-Control"_ba, "public"_ba);
 
                 return true;
             }

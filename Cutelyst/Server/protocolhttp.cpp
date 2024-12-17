@@ -23,6 +23,7 @@
 #include <QVariant>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 QByteArray http11StatusMessage(quint16 status);
 
@@ -522,16 +523,16 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QByteArray &key,
     Cutelyst::Headers &headers             = response->headers();
 
     response->setStatus(Cutelyst::Response::SwitchingProtocols);
-    headers.setHeader("Upgrade"_qba, "WebSocket"_qba);
-    headers.setHeader("Connection"_qba, "Upgrade"_qba);
+    headers.setHeader("Upgrade"_ba, "WebSocket"_ba);
+    headers.setHeader("Connection"_ba, "Upgrade"_ba);
     const auto localOrigin = origin.isEmpty() ? requestHeaders.header("Origin") : origin;
-    headers.setHeader("Sec-Websocket-Origin"_qba, localOrigin.isEmpty() ? "*"_qba : localOrigin);
+    headers.setHeader("Sec-Websocket-Origin"_ba, localOrigin.isEmpty() ? "*"_ba : localOrigin);
 
     if (!protocol.isEmpty()) {
-        headers.setHeader("Sec-Websocket-Protocol"_qba, protocol);
+        headers.setHeader("Sec-Websocket-Protocol"_ba, protocol);
     } else if (const auto wsProtocol = requestHeaders.header("Sec-Websocket-Protocol");
                !wsProtocol.isEmpty()) {
-        headers.setHeader("Sec-Websocket-Protocol"_qba, wsProtocol);
+        headers.setHeader("Sec-Websocket-Protocol"_ba, wsProtocol);
     }
 
     const QByteArray localKey = key.isEmpty() ? requestHeaders.header("Sec-Websocket-Key") : key;
@@ -543,7 +544,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QByteArray &key,
 
     const QByteArray wsAccept =
         QCryptographicHash::hash(wsKey, QCryptographicHash::Sha1).toBase64();
-    headers.setHeader("Sec-Websocket-Accept"_qba, wsAccept);
+    headers.setHeader("Sec-Websocket-Accept"_ba, wsAccept);
 
     headerConnection  = ProtoRequestHttp::HeaderConnection::Upgrade;
     websocketUpgraded = true;

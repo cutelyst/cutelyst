@@ -6,8 +6,9 @@
 #include "validatoralphadash_p.h"
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
-const QRegularExpression ValidatorAlphaDashPrivate::regex{u"^[\\pL\\pM\\pN_-]+$"_qs};
+const QRegularExpression ValidatorAlphaDashPrivate::regex{u"^[\\pL\\pM\\pN_-]+$"_s};
 
 ValidatorAlphaDash::ValidatorAlphaDash(const QString &field,
                                        bool asciiOnly,

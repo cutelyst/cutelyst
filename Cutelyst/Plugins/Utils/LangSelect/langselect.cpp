@@ -23,11 +23,12 @@
 Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static thread_local LangSelect *lsp = nullptr;
 
-const QString LangSelectPrivate::stashKeySelectionTried{u"_c_langselect_tried"_qs};
+const QString LangSelectPrivate::stashKeySelectionTried{u"_c_langselect_tried"_s};
 
 LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source)
     : Plugin(parent)
@@ -53,11 +54,11 @@ bool LangSelect::setup(Application *app)
 {
     Q_D(LangSelect);
 
-    const QVariantMap config = app->engine()->config(u"Cutelyst_LangSelect_Plugin"_qs);
+    const QVariantMap config = app->engine()->config(u"Cutelyst_LangSelect_Plugin"_s);
 
     bool cookieExpirationOk = false;
     const QString cookieExpireStr =
-        config.value(u"cookie_expiration"_qs, static_cast<qint64>(d->cookieExpiration.count()))
+        config.value(u"cookie_expiration"_s, static_cast<qint64>(d->cookieExpiration.count()))
             .toString();
     d->cookieExpiration = std::chrono::duration_cast<std::chrono::seconds>(
         Utils::durationFromString(cookieExpireStr, &cookieExpirationOk));
@@ -72,9 +73,9 @@ bool LangSelect::setup(Application *app)
         d->cookieExpiration = LangSelectPrivate::cookieDefaultExpiration;
     }
 
-    d->cookieDomain = config.value(u"cookie_domain"_qs).toString();
+    d->cookieDomain = config.value(u"cookie_domain"_s).toString();
 
-    const QString _sameSite = config.value(u"cookie_same_site"_qs, u"lax"_qs).toString();
+    const QString _sameSite = config.value(u"cookie_same_site"_s, u"lax"_s).toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -90,7 +91,7 @@ bool LangSelect::setup(Application *app)
         d->cookieSameSite = QNetworkCookie::SameSite::Lax;
     }
 
-    d->cookieSecure = config.value(u"cookie_secure"_qs).toBool();
+    d->cookieSecure = config.value(u"cookie_secure"_s).toBool();
 
     if ((d->cookieSameSite == QNetworkCookie::SameSite::None) && !d->cookieSecure) {
         qCWarning(C_LANGSELECT) << "cookie_same_site has been set to None but cookie_secure is "
@@ -201,8 +202,8 @@ void LangSelect::setLocalesFromDir(const QString &path,
     if (Q_LIKELY(!path.isEmpty() && !name.isEmpty())) {
         const QDir dir(path);
         if (Q_LIKELY(dir.exists())) {
-            const auto _pref     = prefix.isEmpty() ? u"."_qs : prefix;
-            const auto _suff     = suffix.isEmpty() ? u".qm"_qs : suffix;
+            const auto _pref     = prefix.isEmpty() ? u"."_s : prefix;
+            const auto _suff     = suffix.isEmpty() ? u".qm"_s : suffix;
             const QString filter = name + _pref + u'*' + _suff;
             const auto files     = dir.entryInfoList({name}, QDir::Files);
             if (Q_LIKELY(!files.empty())) {
@@ -793,11 +794,11 @@ void LangSelectPrivate::setFallback(Context *c) const
 void LangSelectPrivate::setContentLanguage(Context *c) const
 {
     if (addContentLanguageHeader) {
-        c->res()->setHeader("Content-Language"_qba, c->locale().bcp47Name().toLatin1());
+        c->res()->setHeader("Content-Language"_ba, c->locale().bcp47Name().toLatin1());
     }
     c->stash(
         {{langStashKey, c->locale().bcp47Name()},
-         {dirStashKey, (c->locale().textDirection() == Qt::LeftToRight ? u"ltr"_qs : u"rtl"_qs)}});
+         {dirStashKey, (c->locale().textDirection() == Qt::LeftToRight ? u"ltr"_s : u"rtl"_s)}});
 }
 
 void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod) const

@@ -179,8 +179,8 @@ TestEngine *TestAuthentication::getEngine()
     clearPassword->setPasswordType(CredentialPassword::Clear);
     auth->addRealm(std::make_shared<AuthenticationRealm>(clearStore, clearPassword));
 
-    const auto preSalt  = u"preSalt"_qs;
-    const auto postSalt = u"postSalt"_qs;
+    const auto preSalt  = QStringLiteral(u"preSalt");
+    const auto postSalt = QStringLiteral(u"postSalt");
 
     auto hashedStore = std::make_shared<StoreMinimal>(QStringLiteral("id"));
     {

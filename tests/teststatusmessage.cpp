@@ -186,7 +186,7 @@ void TestStatusMessage::doTest()
     auto result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
     Headers headers = result.headers;
-    headers.setHeader("Cookie"_qba, headers.header("Set-Cookie"));
+    headers.setHeader(QByteArrayLiteral("Cookie"), headers.header("Set-Cookie"));
 
     QUrl urlAux2(url + QLatin1String("Test/") + m_sm->statusMsgStashKey() + QLatin1Char('/') +
                  m_sm->errorMgStashKey());

@@ -19,6 +19,7 @@
 #include <QUrl>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Dispatcher::Dispatcher(QObject *parent)
     : QObject(parent)
@@ -285,13 +286,13 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
     QString ret;
     if (Q_UNLIKELY(action == nullptr)) {
         qCCritical(CUTELYST_DISPATCHER) << "Dispatcher::uriForAction called with null action";
-        ret = u"/"_qs;
+        ret = u"/"_s;
     } else {
         for (DispatchType *dispatch : d->dispatchers) {
             ret = dispatch->uriForAction(action, captures);
             if (!ret.isNull()) {
                 if (ret.isEmpty()) {
-                    ret = u"/"_qs;
+                    ret = u"/"_s;
                 }
                 break;
             }

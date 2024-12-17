@@ -8,8 +8,9 @@
 #include <QStringList>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
-const QStringList ValidatorAcceptedPrivate::trueVals{u"yes"_qs, u"on"_qs, u"1"_qs, u"true"_qs};
+const QStringList ValidatorAcceptedPrivate::trueVals{u"yes"_s, u"on"_s, u"1"_s, u"true"_s};
 
 ValidatorAccepted::ValidatorAccepted(const QString &field,
                                      const Cutelyst::ValidatorMessages &messages)

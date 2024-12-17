@@ -28,6 +28,7 @@
 #endif
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed", QtWarningMsg)
 
@@ -36,7 +37,7 @@ StaticCompressed::StaticCompressed(Application *parent)
     , d_ptr(new StaticCompressedPrivate)
 {
     Q_D(StaticCompressed);
-    d->includePaths.append(parent->config(u"root"_qs).toString());
+    d->includePaths.append(parent->config(u"root"_s).toString());
 }
 
 StaticCompressed::StaticCompressed(Application *parent, const QVariantMap &defaultConfig)
@@ -44,7 +45,7 @@ StaticCompressed::StaticCompressed(Application *parent, const QVariantMap &defau
     , d_ptr(new StaticCompressedPrivate)
 {
     Q_D(StaticCompressed);
-    d->includePaths.append(parent->config(u"root"_qs).toString());
+    d->includePaths.append(parent->config(u"root"_s).toString());
     d->defaultConfig = defaultConfig;
 }
 
@@ -75,13 +76,13 @@ bool StaticCompressed::setup(Application *app)
 {
     Q_D(StaticCompressed);
 
-    const QVariantMap config = app->engine()->config(u"Cutelyst_StaticCompressed_Plugin"_qs);
+    const QVariantMap config = app->engine()->config(u"Cutelyst_StaticCompressed_Plugin"_s);
     const QString _defaultCacheDir =
         QStandardPaths::writableLocation(QStandardPaths::CacheLocation) +
         QLatin1String("/compressed-static");
     d->cacheDir.setPath(config
-                            .value(u"cache_directory"_qs,
-                                   d->defaultConfig.value(u"cache_directory"_qs, _defaultCacheDir))
+                            .value(u"cache_directory"_s,
+                                   d->defaultConfig.value(u"cache_directory"_s, _defaultCacheDir))
                             .toString());
 
     if (Q_UNLIKELY(!d->cacheDir.exists())) {
@@ -97,9 +98,9 @@ bool StaticCompressed::setup(Application *app)
 
     const QString _mimeTypes =
         config
-            .value(u"mime_types"_qs,
-                   d->defaultConfig.value(u"mime_types"_qs,
-                                          u"text/css,application/javascript,text/javascript"_qs))
+            .value(u"mime_types"_s,
+                   d->defaultConfig.value(u"mime_types"_s,
+                                          u"text/css,application/javascript,text/javascript"_s))
             .toString();
     qCInfo(C_STATICCOMPRESSED) << "MIME Types:" << _mimeTypes;
     d->mimeTypes = _mimeTypes.split(u',', Qt::SkipEmptyParts);
@@ -107,25 +108,25 @@ bool StaticCompressed::setup(Application *app)
     const QString _suffixes =
         config
             .value(
-                u"suffixes"_qs,
-                d->defaultConfig.value(u"suffixes"_qs, u"js.map,css.map,min.js.map,min.css.map"_qs))
+                u"suffixes"_s,
+                d->defaultConfig.value(u"suffixes"_s, u"js.map,css.map,min.js.map,min.css.map"_s))
             .toString();
     qCInfo(C_STATICCOMPRESSED) << "Suffixes:" << _suffixes;
     d->suffixes = _suffixes.split(u',', Qt::SkipEmptyParts);
 
     d->checkPreCompressed = config
-                                .value(u"check_pre_compressed"_qs,
-                                       d->defaultConfig.value(u"check_pre_compressed"_qs, true))
+                                .value(u"check_pre_compressed"_s,
+                                       d->defaultConfig.value(u"check_pre_compressed"_s, true))
                                 .toBool();
     qCInfo(C_STATICCOMPRESSED) << "Check for pre-compressed files:" << d->checkPreCompressed;
 
     d->onTheFlyCompression = config
-                                 .value(u"on_the_fly_compression"_qs,
-                                        d->defaultConfig.value(u"on_the_fly_compression"_qs, true))
+                                 .value(u"on_the_fly_compression"_s,
+                                        d->defaultConfig.value(u"on_the_fly_compression"_s, true))
                                  .toBool();
     qCInfo(C_STATICCOMPRESSED) << "Compress static files on the fly:" << d->onTheFlyCompression;
 
-    QStringList supportedCompressions{u"deflate"_qs, u"gzip"_qs};
+    QStringList supportedCompressions{u"deflate"_s, u"gzip"_s};
     d->loadZlibConfig(config);
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
@@ -135,30 +136,30 @@ bool StaticCompressed::setup(Application *app)
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     d->loadBrotliConfig(config);
-    supportedCompressions << u"br"_qs;
+    supportedCompressions << u"br"_s;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
     if (Q_UNLIKELY(!d->loadZstdConfig(config))) {
         return false;
     }
-    supportedCompressions << u"zstd"_qs;
+    supportedCompressions << u"zstd"_s;
 #endif
 
     const QStringList defaultCompressionFormatOrder{
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-        u"br"_qs,
+        u"br"_s,
 #endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-        u"zstd"_qs,
+        u"zstd"_s,
 #endif
-        u"gzip"_qs,
-        u"deflate"_qs};
+        u"gzip"_s,
+        u"deflate"_s};
 
     QStringList _compressionFormatOrder =
         config
-            .value(u"compression_format_order"_qs,
-                   d->defaultConfig.value(u"compression_format_order"_qs,
+            .value(u"compression_format_order"_s,
+                   d->defaultConfig.value(u"compression_format_order"_s,
                                           defaultCompressionFormatOrder.join(u',')))
             .toString()
             .split(u',', Qt::SkipEmptyParts);
@@ -209,8 +210,8 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
             if (!locateCompressedFile(c, path)) {
                 Response *res = c->response();
                 res->setStatus(Response::NotFound);
-                res->setContentType("text/html"_qba);
-                res->setBody(u"File not found: "_qs + path);
+                res->setContentType("text/html"_ba);
+                res->setBody(u"File not found: "_s + path);
             }
 
             *skipMethod = true;
@@ -258,7 +259,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 if (mimeType.isDefault()) {
                     if (path.endsWith(u"css.map", Qt::CaseInsensitive) ||
                         path.endsWith(u"js.map", Qt::CaseInsensitive)) {
-                        _mimeTypeName = "application/json"_qba;
+                        _mimeTypeName = "application/json"_ba;
                     }
                 }
 
@@ -279,7 +280,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                             } else {
                                 qCDebug(C_STATICCOMPRESSED)
                                     << "Serving brotli compressed data from" << compressedPath;
-                                contentEncoding = "br"_qba;
+                                contentEncoding = "br"_ba;
                                 break;
                             }
                         } else
@@ -292,7 +293,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                             } else {
                                 qCDebug(C_STATICCOMPRESSED)
                                     << "Serving zstd compressed data from" << compressedPath;
-                                contentEncoding = "zstd"_qba;
+                                contentEncoding = "zstd"_ba;
                                 break;
                             }
                         } else
@@ -306,7 +307,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                                 qCDebug(C_STATICCOMPRESSED)
                                     << "Serving" << (useZopfli ? "zopfli" : "default")
                                     << "compressed gzip data from" << compressedPath;
-                                contentEncoding = "gzip"_qba;
+                                contentEncoding = "gzip"_ba;
                                 break;
                             }
                         } else if (format == QLatin1String("deflate")) {
@@ -318,7 +319,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                                 qCDebug(C_STATICCOMPRESSED)
                                     << "Serving" << (useZopfli ? "zopfli" : "default")
                                     << "compressed deflate data from" << compressedPath;
-                                contentEncoding = "deflate"_qba;
+                                contentEncoding = "deflate"_ba;
                                 break;
                             }
                         }
@@ -347,7 +348,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 
                 headers.setLastModified(currentDateTime);
                 // Tell Firefox & friends its OK to cache, even over SSL
-                headers.setCacheControl("public"_qba);
+                headers.setCacheControl("public"_ba);
 
                 if (!contentEncoding.isEmpty()) {
                     // serve correct encoding type
@@ -358,7 +359,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                         << "Original Size:" << fileInfo.size();
 
                     // force proxies to cache compressed and non-compressed files separately
-                    headers.pushHeader("Vary"_qba, "Accept-Encoding"_qba);
+                    headers.pushHeader("Vary"_ba, "Accept-Encoding"_ba);
                 }
 
                 return true;
@@ -385,21 +386,21 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
     switch (compression) {
     case ZopfliGzip:
     case Gzip:
-        suffix = u".gz"_qs;
+        suffix = u".gz"_s;
         break;
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
     case Zstd:
-        suffix = u".zst"_qs;
+        suffix = u".zst"_s;
         break;
 #endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     case Brotli:
-        suffix = u".br"_qs;
+        suffix = u".br"_s;
         break;
 #endif
     case ZopfliDeflate:
     case Deflate:
-        suffix = u".deflate"_qs;
+        suffix = u".deflate"_s;
         break;
     default:
         Q_ASSERT_X(false, "locate cache file", "invalid compression type");
@@ -481,8 +482,8 @@ void StaticCompressedPrivate::loadZlibConfig(const QVariantMap &conf)
 {
     bool ok = false;
     zlib.compressionLevel =
-        conf.value(u"zlib_compression_level"_qs,
-                   defaultConfig.value(u"zlib_compression_level"_qs, zlib.compressionLevelDefault))
+        conf.value(u"zlib_compression_level"_s,
+                   defaultConfig.value(u"zlib_compression_level"_s, zlib.compressionLevelDefault))
             .toInt(&ok);
 
     if (!ok || zlib.compressionLevel < zlib.compressionLevelMin ||
@@ -673,13 +674,13 @@ bool StaticCompressedPrivate::compressDeflate(const QString &inputPath,
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
 void StaticCompressedPrivate::loadZopfliConfig(const QVariantMap &conf)
 {
-    useZopfli = conf.value(u"use_zopfli"_qs, defaultConfig.value(u"use_zopfli"_qs, false)).toBool();
+    useZopfli = conf.value(u"use_zopfli"_s, defaultConfig.value(u"use_zopfli"_s, false)).toBool();
     if (useZopfli) {
         ZopfliInitOptions(&zopfli.options);
         bool ok = false;
         zopfli.options.numiterations =
-            conf.value(u"zopfli_iterations"_qs,
-                       defaultConfig.value(u"zopfli_iterations"_qs, zopfli.iterationsDefault))
+            conf.value(u"zopfli_iterations"_s,
+                       defaultConfig.value(u"zopfli_iterations"_s, zopfli.iterationsDefault))
                 .toInt(&ok);
         if (!ok || zopfli.options.numiterations < zopfli.iterationsMin) {
             qCWarning(C_STATICCOMPRESSED).nospace()
@@ -762,8 +763,8 @@ void StaticCompressedPrivate::loadBrotliConfig(const QVariantMap &conf)
 {
     bool ok = false;
     brotli.qualityLevel =
-        conf.value(u"brotli_quality_level"_qs,
-                   defaultConfig.value(u"brotli_quality_level"_qs, brotli.qualityLevelDefault))
+        conf.value(u"brotli_quality_level"_s,
+                   defaultConfig.value(u"brotli_quality_level"_s, brotli.qualityLevelDefault))
             .toInt(&ok);
 
     if (!ok || brotli.qualityLevel < BROTLI_MIN_QUALITY ||
@@ -858,8 +859,8 @@ bool StaticCompressedPrivate::loadZstdConfig(const QVariantMap &conf)
     bool ok = false;
 
     zstd.compressionLevel =
-        conf.value(u"zstd_compression_level"_qs,
-                   defaultConfig.value(u"zstd_compression_level"_qs, zstd.compressionLevelDefault))
+        conf.value(u"zstd_compression_level"_s,
+                   defaultConfig.value(u"zstd_compression_level"_s, zstd.compressionLevelDefault))
             .toInt(&ok);
     if (!ok || zstd.compressionLevel < ZSTD_minCLevel() ||
         zstd.compressionLevel > ZSTD_maxCLevel()) {

@@ -99,10 +99,10 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QByteArray &httpMet
         ret = returnOptions(c, q->name());
     } else if (httpMethod.compare("HEAD") == 0) {
         // redispatch to GET
-        ret = dispatchRestMethod(c, "GET"_qba);
+        ret = dispatchRestMethod(c, "GET"_ba);
     } else if (httpMethod.compare("not_implemented") != 0) {
         // try dispatching to foo_not_implemented
-        ret = dispatchRestMethod(c, "not_implemented"_qba);
+        ret = dispatchRestMethod(c, "not_implemented"_ba);
     } else {
         // not_implemented
         ret = returnNotImplemented(c, q->name());
@@ -114,9 +114,9 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QByteArray &httpMet
 bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) const
 {
     Response *response = c->response();
-    response->setContentType("text/plain"_qba);
+    response->setContentType("text/plain"_ba);
     response->setStatus(Response::OK); // 200
-    response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
+    response->setHeader("Allow"_ba, getAllowedMethods(c->controller(), methodName));
     response->body().clear();
     return true;
 }
@@ -125,7 +125,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 {
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
-    response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
+    response->setHeader("Allow"_ba, getAllowedMethods(c->controller(), methodName));
 
     const QByteArray body = "Method " + c->req()->method() + " not implemented for " +
                             c->request()->uri().toString(QUrl::FullyEncoded).toLatin1();

@@ -13,6 +13,7 @@
 Q_LOGGING_CATEGORY(CUTELYST_ENGINEREQUEST, "cutelyst.engine_request", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 EngineRequest::EngineRequest()
 {
@@ -60,7 +61,7 @@ void EngineRequest::finalizeError()
 {
     Response *res = context->response();
 
-    res->setContentType("text/html; charset=utf-8"_qba);
+    res->setContentType("text/html; charset=utf-8"_ba);
 
     QByteArray body;
 
@@ -96,7 +97,7 @@ void EngineRequest::finalizeCookies()
     Headers &headers   = res->headers();
     const auto cookies = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
-        headers.pushHeader("Set-Cookie"_qba, cookie.toRawForm());
+        headers.pushHeader("Set-Cookie"_ba, cookie.toRawForm());
     }
 }
 
@@ -201,7 +202,7 @@ bool EngineRequest::webSocketHandshakeDo(const QByteArray &key,
 void EngineRequest::setPath(char *rawPath, const int len)
 {
     if (len == 0) {
-        path = u"/"_qs;
+        path = u"/"_s;
         return;
     }
 

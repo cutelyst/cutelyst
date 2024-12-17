@@ -155,7 +155,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
         if (!request->headerHost && memcmp(key + 5, "HOST", 4) == 0) {
             request->serverAddress = value;
             request->headerHost    = true;
-            request->headers.pushHeader("Host"_qba, value);
+            request->headers.pushHeader(QByteArrayLiteral("Host"), value);
         } else {
             const auto keyStr = QByteArray(key + 5, keylen - 5).replace('_', '-');
             request->headers.pushHeader(keyStr, value);

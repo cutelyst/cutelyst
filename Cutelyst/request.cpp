@@ -15,6 +15,7 @@
 #include <QJsonObject>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Request::Request(Cutelyst::EngineRequest *engineRequest)
     : d_ptr(new RequestPrivate)
@@ -497,7 +498,7 @@ void RequestPrivate::parseBody() const
         const Uploads ups = MultiPartFormDataParser::parse(body, contentType);
         for (Upload *upload : ups) {
             if (upload->filename().isEmpty() &&
-                upload->headers().header("Content-Type"_qba).isEmpty()) {
+                upload->headers().header("Content-Type"_ba).isEmpty()) {
                 bodyParam.insert(upload->name(), QString::fromUtf8(upload->readAll()));
                 upload->seek(0);
             }
@@ -595,7 +596,7 @@ static Request::Cookie nextField(QByteArrayView text, int &position)
 
 void RequestPrivate::parseCookies() const
 {
-    const QByteArray cookieString = engineRequest->headers.header("Cookie"_qba);
+    const QByteArray cookieString = engineRequest->headers.header("Cookie"_ba);
     int position                  = 0;
     const int length              = cookieString.length();
     while (position < length) {
