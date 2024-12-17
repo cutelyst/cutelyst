@@ -22,9 +22,12 @@ add_library(${target_name}
 )
 add_library(Cutelyst::StaticCompressed ALIAS ${target_name})
 
-generate_export_header(${target_name} BASE_NAME CUTELYST_PLUGIN_STATICCOMPRESSED)
+generate_export_header(${target_name}
+    BASE_NAME CUTELYST_PLUGIN_STATICCOMPRESSED
+    EXPORT_FILE_NAME ../staticcompressed_export.h
+)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_plugin_staticcompressed_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/../staticcompressed_export.h
     DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins
 )
 
