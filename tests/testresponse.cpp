@@ -21,6 +21,7 @@
 #include <QUuid>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class TestResponse : public CoverageObject
 {
@@ -85,7 +86,7 @@ public:
     C_ATTR(contentLengthIODevice, :Local :AutoArgs)
     void contentLengthIODevice(Context *c)
     {
-        c->response()->setBody("something_to_test_for_updated_content_type"_qba);
+        c->response()->setBody("something_to_test_for_updated_content_type"_ba);
 
         auto buffer = new QBuffer;
         buffer->open(QBuffer::ReadWrite);
@@ -103,7 +104,7 @@ public:
     C_ATTR(contentTypeCharset, :Local :AutoArgs)
     void contentTypeCharset(Context *c)
     {
-        c->response()->setContentType(c->request()->queryParam(u"data"_qs).toLatin1());
+        c->response()->setContentType(c->request()->queryParam(u"data"_s).toLatin1());
         c->response()->setBody(c->response()->contentTypeCharset());
     }
 
@@ -218,9 +219,9 @@ public:
     C_ATTR(sendJson, :Local :AutoArgs)
     void sendJson(Context *c)
     {
-        c->response()->setJsonBody("{}"_qba);
+        c->response()->setJsonBody("{}"_ba);
 
-        c->response()->setJsonBody(u"{}"_qs);
+        c->response()->setJsonBody(u"{}"_s);
 
         QJsonObject obj;
         c->response()->setJsonObjectBody(obj);
@@ -287,8 +288,8 @@ void TestResponse::testController_data()
     QTest::addColumn<Headers>("responseHeaders");
     QTest::addColumn<QByteArray>("output");
 
-    const auto get  = "GET"_qba;
-    const auto post = "POST"_qba;
+    const auto get  = "GET"_ba;
+    const auto post = "POST"_ba;
 
     QUrlQuery query;
     Headers headers;

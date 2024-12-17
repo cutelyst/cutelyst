@@ -10,9 +10,10 @@
 #include <QHostAddress>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 const QRegularExpression ValidatorIpPrivate::regex{
-    u"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"_qs};
+    u"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"_s};
 
 ValidatorIp::ValidatorIp(const QString &field,
                          Constraints constraints,

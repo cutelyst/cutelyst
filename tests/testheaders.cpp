@@ -8,6 +8,7 @@
 #include <QtTest/QTest>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class TestHeaders : public CoverageObject
 {
@@ -21,13 +22,13 @@ void TestHeaders::testCombining()
     Headers headers;
 
     // insensitive
-    headers.setHeader("x-test"_qba, "test1"_qba);
-    QCOMPARE(headers.header("x-test"_qba), "test1"_qba);
+    headers.setHeader("x-test"_ba, "test1"_ba);
+    QCOMPARE(headers.header("x-test"_ba), "test1"_ba);
 
-    headers.setHeader("x-TEST"_qba, "test2"_qba);
+    headers.setHeader("x-TEST"_ba, "test2"_ba);
     QCOMPARE(headers.header("x-test"), "test2");
 
-    headers.setHeader("x-TEST"_qba, "test3");
+    headers.setHeader("x-TEST"_ba, "test3");
     QCOMPARE(headers.header("x-test"), "test3");
 
     // header helpers
@@ -100,19 +101,19 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.date(), dt);
     QCOMPARE(headers.date(), dt.toUTC());
 
-    headers.setAuthorizationBasic(u"user"_qs, u"pass"_qs);
+    headers.setAuthorizationBasic(u"user"_s, u"pass"_s);
     QCOMPARE(headers.authorization(), "Basic dXNlcjpwYXNz");
     QCOMPARE(headers.authorizationBasic(), "user:pass");
     QCOMPARE(headers.authorizationBasic(), "user:pass");
-    QCOMPARE(headers.authorizationBasicObject().user, u"user"_qs);
+    QCOMPARE(headers.authorizationBasicObject().user, u"user"_s);
 
-    const auto authorizationHeader = "Basic dXNlcjpwYXNz, Bearer xyz"_qba;
-    headers.setHeader("Authorization"_qba, authorizationHeader);
+    const auto authorizationHeader = "Basic dXNlcjpwYXNz, Bearer xyz"_ba;
+    headers.setHeader("Authorization"_ba, authorizationHeader);
     QCOMPARE(headers.authorization(), authorizationHeader);
-    QCOMPARE(headers.authorizationBearer(), "xyz"_qba);
+    QCOMPARE(headers.authorizationBearer(), "xyz"_ba);
     QCOMPARE(headers.authorizationBasic(), "user:pass");
     QCOMPARE(headers.authorizationBasic(), "user:pass");
-    QCOMPARE(headers.authorizationBasicObject().user, u"user"_qs);
+    QCOMPARE(headers.authorizationBasicObject().user, u"user"_s);
 
     Headers copy = headers;
     QCOMPARE(copy, headers);

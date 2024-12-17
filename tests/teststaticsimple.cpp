@@ -13,6 +13,7 @@
 #include <QTextStream>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 // NOLINTBEGIN(cppcoreguidelines-avoid-do-while)
 class TestStaticSimple : public CoverageObject
 {
@@ -66,7 +67,7 @@ TestEngine *TestStaticSimple::getEngine(bool serveDirsOnly)
 
     auto plug = new StaticSimple(app);
     plug->setIncludePaths({m_dataDir.path()});
-    plug->setDirs({u"forced"_qs});
+    plug->setDirs({u"forced"_s});
     plug->setServeDirsOnly(serveDirsOnly);
 
     if (!engine->init()) {
@@ -120,49 +121,49 @@ void TestStaticSimple::cleanupTestCase()
 
 void TestStaticSimple::testFileNotFound()
 {
-    const auto resp = getFile(u"/filenotavailable.js"_qs);
+    const auto resp = getFile(u"/filenotavailable.js"_s);
     QVERIFY(resp.statusCode >= Response::BadRequest);
 }
 
 void TestStaticSimple::testGetFileFromRoot()
 {
-    QVERIFY(writeTestFile(u"mytestfile.css"_qs));
-    const auto resp = getFile(u"/mytestfile.css"_qs);
+    QVERIFY(writeTestFile(u"mytestfile.css"_s));
+    const auto resp = getFile(u"/mytestfile.css"_s);
     QCOMPARE(resp.statusCode, Response::OK);
 }
 
 void TestStaticSimple::testGetFileFromSubdirs()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"static/css"_qs));
-    QVERIFY(writeTestFile(u"static/css/mytestfile.css"_qs));
-    const auto resp = getFile(u"/static/css/mytestfile.css"_qs);
+    QVERIFY(dataDir.mkpath(u"static/css"_s));
+    QVERIFY(writeTestFile(u"static/css/mytestfile.css"_s));
+    const auto resp = getFile(u"/static/css/mytestfile.css"_s);
     QCOMPARE(resp.statusCode, Response::OK);
 }
 
 void TestStaticSimple::testFileNotFoundFomForcedDirs()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
-    const auto resp = getFile(u"/forced/css/notavailable.css"_qs);
+    QVERIFY(dataDir.mkpath(u"forced/css"_s));
+    const auto resp = getFile(u"/forced/css/notavailable.css"_s);
     QCOMPARE(resp.statusCode, Response::NotFound);
 }
 
 void TestStaticSimple::testGetFileFromForcedDirs()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
-    QVERIFY(writeTestFile(u"forced/css/mytestfile.css"_qs));
-    const auto resp = getFile(u"/forced/css/mytestfile.css"_qs);
+    QVERIFY(dataDir.mkpath(u"forced/css"_s));
+    QVERIFY(writeTestFile(u"forced/css/mytestfile.css"_s));
+    const auto resp = getFile(u"/forced/css/mytestfile.css"_s);
     QCOMPARE(resp.statusCode, Response::OK);
 }
 
 void TestStaticSimple::testLastModifiedSince()
 {
-    QVERIFY(writeTestFile(u"lastmodified.js"_qs));
-    QFileInfo fi(m_dataDir.filePath(u"lastmodified.js"_qs));
+    QVERIFY(writeTestFile(u"lastmodified.js"_s));
+    QFileInfo fi(m_dataDir.filePath(u"lastmodified.js"_s));
     const auto resp = getFile(
-        u"/lastmodified.js"_qs,
+        u"/lastmodified.js"_s,
         {{"If-Modified-Since",
           fi.lastModified().toUTC().toString(u"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toLatin1()}});
     QCOMPARE(resp.statusCode, Response::NotModified);
@@ -176,9 +177,9 @@ void TestStaticSimple::testLastModifiedSince()
 void TestStaticSimple::testGetFileFromForcedDirsOnly()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
-    QVERIFY(writeTestFile(u"forced/css/myforcedtestfile.css"_qs));
-    const auto resp = getForcedFile(u"/forced/css/myforcedtestfile.css"_qs);
+    QVERIFY(dataDir.mkpath(u"forced/css"_s));
+    QVERIFY(writeTestFile(u"forced/css/myforcedtestfile.css"_s));
+    const auto resp = getForcedFile(u"/forced/css/myforcedtestfile.css"_s);
     QCOMPARE(resp.statusCode, Response::OK);
 }
 
@@ -190,8 +191,8 @@ void TestStaticSimple::testGetFileFromForcedDirsOnly()
 void TestStaticSimple::testFileNotFoundFromForcedDirsOnly()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced"_qs));
-    const auto resp = getForcedFile(u"/forced/notavailable.js"_qs);
+    QVERIFY(dataDir.mkpath(u"forced"_s));
+    const auto resp = getForcedFile(u"/forced/notavailable.js"_s);
     QCOMPARE(resp.statusCode, Response::NotFound);
 }
 
@@ -203,8 +204,8 @@ void TestStaticSimple::testFileNotFoundFromForcedDirsOnly()
 void TestStaticSimple::testFileNotInForcedDirsOnly()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced"_qs));
-    const auto resp = getForcedFile(u"/notinforced.js"_qs);
+    QVERIFY(dataDir.mkpath(u"forced"_s));
+    const auto resp = getForcedFile(u"/notinforced.js"_s);
     QVERIFY(resp.statusCode >= Response::BadRequest);
 }
 
@@ -214,7 +215,7 @@ void TestStaticSimple::testFileNotInForcedDirsOnly()
  */
 void TestStaticSimple::testControllerPath()
 {
-    const auto resp = getFile(u"/test/controller/hello"_qs);
+    const auto resp = getFile(u"/test/controller/hello"_s);
     QCOMPARE(resp.statusCode, Response::OK);
 }
 

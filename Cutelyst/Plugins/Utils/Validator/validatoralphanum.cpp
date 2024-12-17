@@ -6,8 +6,9 @@
 #include "validatoralphanum_p.h"
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
-const QRegularExpression ValidatorAlphaNumPrivate::regex{u"^[\\pL\\pM\\pN]+$"_qs};
+const QRegularExpression ValidatorAlphaNumPrivate::regex{u"^[\\pL\\pM\\pN]+$"_s};
 
 ValidatorAlphaNum::ValidatorAlphaNum(const QString &field,
                                      bool asciiOnly,

@@ -10,6 +10,7 @@
 #include <QStringList>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 inline QByteArray decodeBasicAuth(const QByteArray &auth);
 inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth);
@@ -37,12 +38,12 @@ QByteArray Headers::contentDisposition() const noexcept
 
 void Headers::setCacheControl(const QByteArray &value)
 {
-    setHeader("Cache-Control"_qba, value);
+    setHeader("Cache-Control"_ba, value);
 }
 
 void Headers::setContentDisposition(const QByteArray &contentDisposition)
 {
-    setHeader("Content-Disposition"_qba, contentDisposition);
+    setHeader("Content-Disposition"_ba, contentDisposition);
 }
 
 void Headers::setContentDispositionAttachment(const QByteArray &filename)
@@ -61,7 +62,7 @@ QByteArray Headers::contentEncoding() const noexcept
 
 void Headers::setContentEncoding(const QByteArray &encoding)
 {
-    setHeader("Content-Encoding"_qba, encoding);
+    setHeader("Content-Encoding"_ba, encoding);
 }
 
 QByteArray Headers::contentType() const
@@ -75,7 +76,7 @@ QByteArray Headers::contentType() const
 
 void Headers::setContentType(const QByteArray &contentType)
 {
-    setHeader("Content-Type"_qba, contentType);
+    setHeader("Content-Type"_ba, contentType);
 }
 
 QByteArray Headers::contentTypeCharset() const
@@ -171,7 +172,7 @@ qint64 Headers::contentLength() const
 
 void Headers::setContentLength(qint64 value)
 {
-    setHeader("Content-Length"_qba, QByteArray::number(value));
+    setHeader("Content-Length"_ba, QByteArray::number(value));
 }
 
 QByteArray Headers::setDateWithDateTime(const QDateTime &date)
@@ -180,7 +181,7 @@ QByteArray Headers::setDateWithDateTime(const QDateTime &date)
     // and follow RFC 822
     QByteArray dt =
         QLocale::c().toString(date.toUTC(), u"ddd, dd MMM yyyy hh:mm:ss 'GMT").toLatin1();
-    setHeader("Date"_qba, dt);
+    setHeader("Date"_ba, dt);
     return dt;
 }
 
@@ -260,7 +261,7 @@ bool Headers::ifNoneMatch(const QByteArray &etag) const
 
 void Headers::setETag(const QByteArray &etag)
 {
-    setHeader("ETag"_qba, '"' + etag + '"');
+    setHeader("ETag"_ba, '"' + etag + '"');
 }
 
 QByteArray Headers::lastModified() const noexcept
@@ -270,7 +271,7 @@ QByteArray Headers::lastModified() const noexcept
 
 void Headers::setLastModified(const QByteArray &value)
 {
-    setHeader("Last-Modified"_qba, value);
+    setHeader("Last-Modified"_ba, value);
 }
 
 QString Headers::setLastModified(const QDateTime &lastModified)
@@ -289,7 +290,7 @@ QByteArray Headers::server() const noexcept
 
 void Headers::setServer(const QByteArray &value)
 {
-    setHeader("Server"_qba, value);
+    setHeader("Server"_ba, value);
 }
 
 QByteArray Headers::connection() const noexcept
@@ -317,20 +318,20 @@ void Headers::setReferer(const QByteArray &uri)
     int fragmentPos = uri.indexOf('#');
     if (fragmentPos != -1) {
         // Strip fragment per RFC 2616, section 14.36.
-        setHeader("Referer"_qba, uri.mid(0, fragmentPos));
+        setHeader("Referer"_ba, uri.mid(0, fragmentPos));
     } else {
-        setHeader("Referer"_qba, uri);
+        setHeader("Referer"_ba, uri);
     }
 }
 
 void Headers::setWwwAuthenticate(const QByteArray &value)
 {
-    setHeader("Www-Authenticate"_qba, value);
+    setHeader("Www-Authenticate"_ba, value);
 }
 
 void Headers::setProxyAuthenticate(const QByteArray &value)
 {
-    setHeader("Proxy-Authenticate"_qba, value);
+    setHeader("Proxy-Authenticate"_ba, value);
 }
 
 QByteArray Headers::authorization() const noexcept
@@ -370,7 +371,7 @@ QByteArray Headers::setAuthorizationBasic(const QString &username, const QString
 
     const QString result = username + u':' + password;
     ret                  = "Basic " + result.toLatin1().toBase64();
-    setHeader("Authorization"_qba, ret);
+    setHeader("Authorization"_ba, ret);
     return ret;
 }
 

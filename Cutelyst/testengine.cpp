@@ -5,6 +5,7 @@
 #include <QBuffer>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 TestEngine::TestEngine(Application *app, const QVariantMap &opts)
     : Engine{app, 0, opts}
@@ -23,7 +24,7 @@ TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
                                                    QByteArray *body)
 {
     QIODevice *bodyDevice = nullptr;
-    if (headers.header("Sequential"_qba).isEmpty()) {
+    if (headers.header("Sequential"_ba).isEmpty()) {
         bodyDevice = new QBuffer(body);
     } else {
         bodyDevice = new SequentialBuffer(body);
@@ -40,10 +41,10 @@ TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
     QByteArray _path = path;
     req.setPath(_path);
     req.query          = query;
-    req.protocol       = "HTTP/1.1"_qba;
+    req.protocol       = "HTTP/1.1"_ba;
     req.isSecure       = false;
-    req.serverAddress  = "127.0.0.1"_qba;
-    req.remoteAddress  = QHostAddress(u"127.0.0.1"_qs);
+    req.serverAddress  = "127.0.0.1"_ba;
+    req.remoteAddress  = QHostAddress(u"127.0.0.1"_s);
     req.remotePort     = 3000;
     req.remoteUser     = QString{};
     req.headers        = headersCL;

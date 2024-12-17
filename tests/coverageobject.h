@@ -13,6 +13,7 @@
 #include <QObject>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class CoverageObject : public QObject
 {
@@ -63,7 +64,7 @@ public:
     void default404(Context *c)
     {
         c->response()->setStatus(Response::NotFound);
-        c->response()->setBody("404 - Not Found."_qba);
+        c->response()->setBody("404 - Not Found."_ba);
     }
 
 private:
@@ -73,9 +74,9 @@ private:
     C_ATTR(Auto,)
     bool Auto(Context *c)
     {
-        if (!c->req()->queryParam(u"autoFalse"_qs).isEmpty()) {
+        if (!c->req()->queryParam(u"autoFalse"_s).isEmpty()) {
             c->response()->setStatus(Response::InternalServerError);
-            c->response()->setBody("autoFalse"_qba);
+            c->response()->setBody("autoFalse"_ba);
             return false;
         }
         return true;
@@ -260,7 +261,7 @@ public:
     {
         defaultHeaders() = Headers();
         // load the core translations from the build directory
-        loadTranslations(u"cutelystcore"_qs, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_qs);
+        loadTranslations(u"cutelystcore"_s, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s);
     }
     virtual bool init()
     {

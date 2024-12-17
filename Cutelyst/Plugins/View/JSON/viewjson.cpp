@@ -11,6 +11,7 @@
 #include <QtCore/QJsonObject>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 ViewJson::ViewJson(QObject *parent, const QString &name)
     : View(new ViewJsonPrivate, parent, name)
@@ -136,10 +137,10 @@ QByteArray ViewJson::render(Context *c) const
 
     Response *res = c->response();
     if (d->xJsonHeader && c->request()->headers().contains("X-Prototype-Version")) {
-        res->setHeader("X-Json"_qba, "eval(\"(\"+this.transport.responseText+\")\")"_qba);
+        res->setHeader("X-Json"_ba, "eval(\"(\"+this.transport.responseText+\")\")"_ba);
     }
 
-    res->setContentType("application/json"_qba);
+    res->setContentType("application/json"_ba);
 
     return QJsonDocument(obj).toJson(d->format);
 }

@@ -121,7 +121,7 @@ QString Utils::decodePercentEncoding(QString *s)
     char *data           = ba.data();
     const char *inputPtr = data;
 
-    const int len = ba.count();
+    const int len = ba.length();
     bool skipUtf8 = true;
     int outlen    = 0;
     for (int i = 0; i < len; ++i, ++outlen) {
@@ -249,7 +249,7 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
     char *data           = ba->data();
     const char *inputPtr = data;
 
-    int len       = ba->count();
+    int len       = ba->length();
     bool skipUtf8 = true;
     int outlen    = 0;
     for (int i = 0; i < len; ++i, ++outlen) {

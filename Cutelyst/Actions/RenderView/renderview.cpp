@@ -14,6 +14,7 @@
 Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 /**
  * \ingroup core-actions
@@ -65,8 +66,8 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
 {
     Q_D(RenderView);
 
-    const auto attributes = args.value(u"attributes"_qs).value<ParamsMultiMap>();
-    d->view               = application->view(attributes.value(u"View"_qs));
+    const auto attributes = args.value(u"attributes"_s).value<ParamsMultiMap>();
+    d->view               = application->view(attributes.value(u"View"_s));
 
     return Action::init(application, args);
 }
@@ -81,7 +82,7 @@ bool RenderView::doExecute(Cutelyst::Context *c)
 
     Response *res = c->res();
     if (res->contentType().isEmpty()) {
-        res->setContentType("text/html; charset=utf-8"_qba);
+        res->setContentType("text/html; charset=utf-8"_ba);
     }
 
     if (c->req()->isHead()) {

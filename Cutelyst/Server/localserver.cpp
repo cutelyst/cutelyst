@@ -24,6 +24,7 @@ static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrl
 #endif
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 LocalServer::LocalServer(Server *wsgi, QObject *parent)
     : QLocalServer(parent)
@@ -103,7 +104,7 @@ void LocalServer::incomingConnection(quintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(qintptr(handle)))) {
         sock->proto = m_protocol;
 
-        sock->serverAddress = "localhost"_qba;
+        sock->serverAddress = "localhost"_ba;
         if (++m_processing) {
             m_engine->startSocketTimeout();
         }

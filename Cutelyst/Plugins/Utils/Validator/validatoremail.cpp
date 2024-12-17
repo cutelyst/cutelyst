@@ -14,12 +14,13 @@
 #include <QUrl>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 const QRegularExpression ValidatorEmailPrivate::ipv4Regex{
     u"\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25["
-    "0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"_qs};
-const QRegularExpression ValidatorEmailPrivate::ipv6PartRegex{u"^[0-9A-Fa-f]{0,4}$"_qs};
-const QString ValidatorEmailPrivate::stringSpecials{u"()<>[]:;@\\,.\""_qs};
+    "0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"_s};
+const QRegularExpression ValidatorEmailPrivate::ipv6PartRegex{u"^[0-9A-Fa-f]{0,4}$"_s};
+const QString ValidatorEmailPrivate::stringSpecials{u"()<>[]:;@\\,.\""_s};
 
 ValidatorEmail::ValidatorEmail(const QString &field,
                                Category threshold,

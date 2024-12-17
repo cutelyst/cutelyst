@@ -11,6 +11,7 @@
 #include <QtCore/QUrl>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 DispatchTypeChained::DispatchTypeChained(QObject *parent)
     : DispatchType(parent)
@@ -164,7 +165,7 @@ DispatchType::MatchType
     // TODO avoid toString()
     // TODO remove mid(1)
     const BestActionMatch ret =
-        d->recurseMatch(args.size(), u"/"_qs, path.mid(1).toString().split(QLatin1Char('/')));
+        d->recurseMatch(args.size(), u"/"_s, path.mid(1).toString().split(QLatin1Char('/')));
     const ActionList chain = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;

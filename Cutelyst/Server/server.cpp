@@ -40,6 +40,7 @@
 Q_LOGGING_CATEGORY(CUTELYST_SERVER, "cutelyst.server", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Server::Server(QObject *parent)
     : QObject(parent)
@@ -50,9 +51,9 @@ Server::Server(QObject *parent)
     if (!qEnvironmentVariableIsSet("QT_MESSAGE_PATTERN")) {
         if (qEnvironmentVariableIsSet("JOURNAL_STREAM")) {
             // systemd journal already logs PID, check if it logs threadid as well
-            qSetMessagePattern(u"%{category}[%{type}] %{message}"_qs);
+            qSetMessagePattern(u"%{category}[%{type}] %{message}"_s);
         } else {
-            qSetMessagePattern(u"%{pid}:%{threadid} %{category}[%{type}] %{message}"_qs);
+            qSetMessagePattern(u"%{pid}:%{threadid} %{category}[%{type}] %{message}"_s);
         }
     }
 
@@ -1933,7 +1934,7 @@ void ServerPrivate::loadConfig()
         ++loadedIt;
     }
 
-    QVariantMap sessionConfig = loadedConfig.value(u"server"_qs).toMap();
+    QVariantMap sessionConfig = loadedConfig.value(u"server"_s).toMap();
 
     applyConfig(sessionConfig);
 

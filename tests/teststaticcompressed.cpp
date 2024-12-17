@@ -13,6 +13,7 @@
 #include <QTextStream>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 // NOLINTBEGIN(cppcoreguidelines-avoid-do-while)
 class TestStaticCompressed : public CoverageObject
 {
@@ -55,14 +56,14 @@ private:
     bool writeTestFile(const QString &name);
 };
 
-const QStringList TestStaticCompressed::types{u"js"_qs,
-                                              u"css"_qs,
-                                              u"min.js"_qs,
-                                              u"min.css"_qs,
-                                              u"js.map"_qs,
-                                              u"css.map"_qs,
-                                              u"min.js.map"_qs,
-                                              u"min.css.map"_qs};
+const QStringList TestStaticCompressed::types{u"js"_s,
+                                              u"css"_s,
+                                              u"min.js"_s,
+                                              u"min.css"_s,
+                                              u"js.map"_s,
+                                              u"css.map"_s,
+                                              u"min.js.map"_s,
+                                              u"min.css.map"_s};
 
 const QByteArrayList TestStaticCompressed::encoding{
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
@@ -88,15 +89,15 @@ TestEngine *TestStaticCompressed::getEngine(bool serveDirsOnly)
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, {});
 
-    const QVariantMap defaultConfig{{u"zlib_compression_level"_qs, 1},
-                                    {u"brotli_quality_level"_qs, 0},
-                                    {u"use_zopfli"_qs, true},
-                                    {u"zopfli_iterations"_qs, 5},
-                                    {u"zstd_compression_level"_qs, 1}};
+    const QVariantMap defaultConfig{{u"zlib_compression_level"_s, 1},
+                                    {u"brotli_quality_level"_s, 0},
+                                    {u"use_zopfli"_s, true},
+                                    {u"zopfli_iterations"_s, 5},
+                                    {u"zstd_compression_level"_s, 1}};
 
     auto plug = new StaticCompressed(app, defaultConfig);
     plug->setIncludePaths({m_dataDir.path()});
-    plug->setDirs({u"forced"_qs});
+    plug->setDirs({u"forced"_s});
     plug->setServeDirsOnly(serveDirsOnly);
 
     if (!engine->init()) {
@@ -162,7 +163,7 @@ void TestStaticCompressed::cleanupTestCase()
  */
 void TestStaticCompressed::testFileNotFound()
 {
-    const auto resp = getFile(u"/filenotavailable.js"_qs);
+    const auto resp = getFile(u"/filenotavailable.js"_s);
     QVERIFY(resp.statusCode >= Response::BadRequest);
 }
 
@@ -195,7 +196,7 @@ void TestStaticCompressed::testOnTheFlyCompression_data()
     for (const QString &type : TestStaticCompressed::types) {
         for (const QByteArray &enc : TestStaticCompressed::encoding) {
             const QByteArray testName = type.toLatin1() + "-" + enc;
-            const QString fileName    = u"onTheFly-"_qs + QString::fromLatin1(enc) + u"."_qs + type;
+            const QString fileName    = u"onTheFly-"_s + QString::fromLatin1(enc) + u"."_s + type;
             QTest::newRow(testName.data()) << fileName << enc;
         }
     }
@@ -213,13 +214,13 @@ void TestStaticCompressed::testPreCompressed()
     QVERIFY(writeTestFile(fileName));
     QString encodedFileName = fileName;
     if (encoding == "zstd") {
-        encodedFileName += u".zst"_qs;
+        encodedFileName += u".zst"_s;
     } else if (encoding == "br") {
-        encodedFileName += u".br"_qs;
+        encodedFileName += u".br"_s;
     } else if (encoding == "gzip") {
-        encodedFileName += u".gz"_qs;
+        encodedFileName += u".gz"_s;
     } else if (encoding == "deflate") {
-        encodedFileName += u".deflate"_qs;
+        encodedFileName += u".deflate"_s;
     } else {
         QVERIFY2(false, "invalid encoding");
     }
@@ -243,8 +244,7 @@ void TestStaticCompressed::testPreCompressed_data()
     for (const QString &type : TestStaticCompressed::types) {
         for (const QByteArray &enc : TestStaticCompressed::encoding) {
             const QByteArray testName = type.toLatin1() + "-" + enc;
-            const QString fileName =
-                u"preCompressed-"_qs + QString::fromLatin1(enc) + u"."_qs + type;
+            const QString fileName = u"preCompressed-"_s + QString::fromLatin1(enc) + u"."_s + type;
             QTest::newRow(testName.data()) << fileName << enc;
         }
     }
@@ -256,13 +256,13 @@ void TestStaticCompressed::testPreCompressed_data()
  */
 void TestStaticCompressed::testLastModifiedSince()
 {
-    QVERIFY(writeTestFile(u"lastmodified.js"_qs));
-    QFileInfo fi(m_dataDir.filePath(u"lastmodified.js"_qs));
+    QVERIFY(writeTestFile(u"lastmodified.js"_s));
+    QFileInfo fi(m_dataDir.filePath(u"lastmodified.js"_s));
     Headers hdrs{
         {"Accept-Encoding", "br"},
         {"If-Modified-Since",
          fi.lastModified().toUTC().toString(u"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toLatin1()}};
-    const auto resp = getFile(u"/lastmodified.js"_qs, hdrs);
+    const auto resp = getFile(u"/lastmodified.js"_s, hdrs);
 
     QCOMPARE(resp.statusCode, Response::NotModified);
 }
@@ -274,11 +274,11 @@ void TestStaticCompressed::testLastModifiedSince()
 void TestStaticCompressed::testGetFileFromSubdirs()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"static/css"_qs));
-    QVERIFY(writeTestFile(u"static/css/mytestfile.css"_qs));
-    const auto resp = getFile(u"/static/css/mytestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
+    QVERIFY(dataDir.mkpath(u"static/css"_s));
+    QVERIFY(writeTestFile(u"static/css/mytestfile.css"_s));
+    const auto resp = getFile(u"/static/css/mytestfile.css"_s, {{"Accept-Encoding", "gzip"}});
     QCOMPARE(resp.statusCode, Response::OK);
-    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
+    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_ba);
 }
 
 /**
@@ -289,8 +289,8 @@ void TestStaticCompressed::testGetFileFromSubdirs()
 void TestStaticCompressed::testFileNotFoundFromForcedDirs()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
-    const auto resp = getFile(u"/forced/css/notavailable.css"_qs);
+    QVERIFY(dataDir.mkpath(u"forced/css"_s));
+    const auto resp = getFile(u"/forced/css/notavailable.css"_s);
     QCOMPARE(resp.statusCode, Response::NotFound);
 }
 
@@ -302,11 +302,11 @@ void TestStaticCompressed::testFileNotFoundFromForcedDirs()
 void TestStaticCompressed::testGetFileFromForcedDirs()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
-    QVERIFY(writeTestFile(u"forced/css/mytestfile.css"_qs));
-    const auto resp = getFile(u"/forced/css/mytestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
+    QVERIFY(dataDir.mkpath(u"forced/css"_s));
+    QVERIFY(writeTestFile(u"forced/css/mytestfile.css"_s));
+    const auto resp = getFile(u"/forced/css/mytestfile.css"_s, {{"Accept-Encoding", "gzip"}});
     QCOMPARE(resp.statusCode, Response::OK);
-    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
+    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_ba);
 }
 
 /**
@@ -317,12 +317,12 @@ void TestStaticCompressed::testGetFileFromForcedDirs()
 void TestStaticCompressed::testGetFileFromForcedDirsOnly()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced/css"_qs));
-    QVERIFY(writeTestFile(u"forced/css/myforcedtestfile.css"_qs));
+    QVERIFY(dataDir.mkpath(u"forced/css"_s));
+    QVERIFY(writeTestFile(u"forced/css/myforcedtestfile.css"_s));
     const auto resp =
-        getForcedFile(u"/forced/css/myforcedtestfile.css"_qs, {{"Accept-Encoding", "gzip"}});
+        getForcedFile(u"/forced/css/myforcedtestfile.css"_s, {{"Accept-Encoding", "gzip"}});
     QCOMPARE(resp.statusCode, Response::OK);
-    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_qba);
+    QCOMPARE(resp.headers.header("Content-Encoding"), "gzip"_ba);
 }
 
 /**
@@ -333,8 +333,8 @@ void TestStaticCompressed::testGetFileFromForcedDirsOnly()
 void TestStaticCompressed::testFileNotFoundFromForcedDirsOnly()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced"_qs));
-    const auto resp = getForcedFile(u"/forced/notavailable.js"_qs);
+    QVERIFY(dataDir.mkpath(u"forced"_s));
+    const auto resp = getForcedFile(u"/forced/notavailable.js"_s);
     QCOMPARE(resp.statusCode, Response::NotFound);
 }
 
@@ -346,8 +346,8 @@ void TestStaticCompressed::testFileNotFoundFromForcedDirsOnly()
 void TestStaticCompressed::testFileNotInForcedDirsOnly()
 {
     QDir dataDir(m_dataDir.path());
-    QVERIFY(dataDir.mkpath(u"forced"_qs));
-    const auto resp = getForcedFile(u"/notinforced.js"_qs);
+    QVERIFY(dataDir.mkpath(u"forced"_s));
+    const auto resp = getForcedFile(u"/notinforced.js"_s);
     QVERIFY(resp.statusCode >= Response::BadRequest);
 }
 
@@ -357,7 +357,7 @@ void TestStaticCompressed::testFileNotInForcedDirsOnly()
  */
 void TestStaticCompressed::testControllerPath()
 {
-    const auto resp = getFile(u"/test/controller/hello"_qs);
+    const auto resp = getFile(u"/test/controller/hello"_s);
     QCOMPARE(resp.statusCode, Response::OK);
 }
 

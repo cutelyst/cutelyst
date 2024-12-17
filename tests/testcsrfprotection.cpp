@@ -9,6 +9,7 @@
 #include <QTest>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class TestCsrfProtection : public CoverageObject
 {
@@ -130,7 +131,7 @@ void TestCsrfProtection::initTestCase()
     QVERIFY(m_engine);
     if (m_cookie.value().isEmpty()) {
         const auto result = m_engine->createRequest(
-            "GET", u"/csrfprotection/test/testCsrf"_qs, QByteArray(), Headers(), nullptr);
+            "GET", u"/csrfprotection/test/testCsrf"_s, QByteArray(), Headers(), nullptr);
         const QList<QNetworkCookie> cookies =
             QNetworkCookie::parseCookies(result.headers.header("Set-Cookie"));
         QVERIFY(!cookies.empty());
@@ -178,7 +179,7 @@ void TestCsrfProtection::initTest()
     m_fieldValue =
         m_engine
             ->createRequest(
-                "GET", u"/csrfprotection/test/testCsrf"_qs, QByteArray(), headers, nullptr)
+                "GET", u"/csrfprotection/test/testCsrf"_s, QByteArray(), headers, nullptr)
             .body;
 }
 
@@ -217,7 +218,7 @@ void TestCsrfProtection::doTest()
     QFETCH(QByteArray, output);
 
     const auto result = m_engine->createRequest(
-        method, u"/csrfprotection/test/testCsrf"_qs, QByteArray(), headers, &body);
+        method, u"/csrfprotection/test/testCsrf"_s, QByteArray(), headers, &body);
 
     QCOMPARE(result.statusCode, status);
     QCOMPARE(result.body, output);
@@ -334,7 +335,7 @@ void TestCsrfProtection::doTest_data()
 void TestCsrfProtection::detachToOnArgument()
 {
     const auto result = m_engine->createRequest(
-        "POST", u"/csrfprotection/test/testCsrfDetachTo"_qs, QByteArray(), Headers(), nullptr);
+        "POST", u"/csrfprotection/test/testCsrfDetachTo"_s, QByteArray(), Headers(), nullptr);
     QCOMPARE(result.statusCode, 403);
     QCOMPARE(result.body, QByteArrayLiteral("detachdenied"));
 }
@@ -342,7 +343,7 @@ void TestCsrfProtection::detachToOnArgument()
 void TestCsrfProtection::csrfIgnorArgument()
 {
     const auto result = m_engine->createRequest(
-        "POST", u"/csrfprotection/test/testCsrfIgnore"_qs, QByteArray(), Headers(), nullptr);
+        "POST", u"/csrfprotection/test/testCsrfIgnore"_s, QByteArray(), Headers(), nullptr);
     QCOMPARE(result.statusCode, 200);
     QCOMPARE(result.body, QByteArrayLiteral("allowed"));
 }
@@ -350,7 +351,7 @@ void TestCsrfProtection::csrfIgnorArgument()
 void TestCsrfProtection::ignoreNamespace()
 {
     const auto result =
-        m_engine->createRequest("POST", u"/testns/testCsrf"_qs, QByteArray(), Headers(), nullptr);
+        m_engine->createRequest("POST", u"/testns/testCsrf"_s, QByteArray(), Headers(), nullptr);
     QCOMPARE(result.statusCode, 200);
     QCOMPARE(result.body, QByteArrayLiteral("allowed"));
 }
@@ -358,7 +359,7 @@ void TestCsrfProtection::ignoreNamespace()
 void TestCsrfProtection::ignoreNamespaceRequired()
 {
     const auto result = m_engine->createRequest(
-        "POST", u"/testns/testCsrfRequired"_qs, QByteArray(), Headers(), nullptr);
+        "POST", u"/testns/testCsrfRequired"_s, QByteArray(), Headers(), nullptr);
     QCOMPARE(result.statusCode, 403);
     QCOMPARE(result.body, QByteArrayLiteral("denied"));
 }
@@ -366,7 +367,7 @@ void TestCsrfProtection::ignoreNamespaceRequired()
 void TestCsrfProtection::csrfRedirect()
 {
     const auto result = m_engine->createRequest(
-        "POST", u"/csrfprotection/test/testCsrfRedirect"_qs, QByteArray(), Headers(), nullptr);
+        "POST", u"/csrfprotection/test/testCsrfRedirect"_s, QByteArray(), Headers(), nullptr);
     QCOMPARE(result.statusCode, 403);
     QCOMPARE(result.body, QByteArrayLiteral("denied"));
 }

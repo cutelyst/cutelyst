@@ -17,6 +17,7 @@
 Q_LOGGING_CATEGORY(C_SERVER_SM, "cutelyst.server.staticmap", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 StaticMap::StaticMap(Cutelyst::Application *parent)
     : Plugin(parent)
@@ -108,7 +109,7 @@ bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
 
         headers.setLastModified(currentDateTime);
         // Tell Firefox & friends its OK to cache, even over SSL
-        headers.setHeader("Cache-Control"_qba, "public"_qba);
+        headers.setHeader("Cache-Control"_ba, "public"_ba);
 
         return true;
     }

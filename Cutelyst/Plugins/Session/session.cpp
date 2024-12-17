@@ -17,6 +17,7 @@
 #include <QUuid>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session", QtWarningMsg)
 
@@ -55,17 +56,17 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName().toLatin1() + "_session";
 
-    d->loadedConfig   = app->engine()->config(u"Cutelyst_Session_Plugin"_qs);
+    d->loadedConfig   = app->engine()->config(u"Cutelyst_Session_Plugin"_s);
     d->sessionExpires = std::chrono::duration_cast<std::chrono::seconds>(
-                            Utils::durationFromString(d->config(u"expires"_qs, 7200).toString()))
+                            Utils::durationFromString(d->config(u"expires"_s, 7200).toString()))
                             .count();
-    d->expiryThreshold = d->config(u"expiry_threshold"_qs, 0).toLongLong();
-    d->verifyAddress   = d->config(u"verify_address"_qs, false).toBool();
-    d->verifyUserAgent = d->config(u"verify_user_agent"_qs, false).toBool();
-    d->cookieHttpOnly  = d->config(u"cookie_http_only"_qs, true).toBool();
-    d->cookieSecure    = d->config(u"cookie_secure"_qs, false).toBool();
+    d->expiryThreshold = d->config(u"expiry_threshold"_s, 0).toLongLong();
+    d->verifyAddress   = d->config(u"verify_address"_s, false).toBool();
+    d->verifyUserAgent = d->config(u"verify_user_agent"_s, false).toBool();
+    d->cookieHttpOnly  = d->config(u"cookie_http_only"_s, true).toBool();
+    d->cookieSecure    = d->config(u"cookie_secure"_s, false).toBool();
 
-    const QString _sameSite = d->config(u"cookie_same_site"_qs, u"strict"_qs).toString();
+    const QString _sameSite = d->config(u"cookie_same_site"_s, u"strict"_s).toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -148,7 +149,7 @@ void Session::changeExpires(Context *c, quint64 expires)
         return;
     }
 
-    m_instance->d_ptr->store->storeSessionData(c, sid, u"expires"_qs, timeExp);
+    m_instance->d_ptr->store->storeSessionData(c, sid, u"expires"_s, timeExp);
 }
 
 void Session::deleteSession(Context *c, const QString &reason)
@@ -413,7 +414,7 @@ QVariant SessionPrivate::loadSession(Context *c)
             c->setStash(SESSION_VALUES, sessionData);
 
             if (m_instance->d_ptr->verifyAddress) {
-                auto it = sessionData.constFind(u"__address"_qs);
+                auto it = sessionData.constFind(u"__address"_s);
                 if (it != sessionData.constEnd() &&
                     it->toString() != c->request()->address().toString()) {
                     qCWarning(C_SESSION)
@@ -425,7 +426,7 @@ QVariant SessionPrivate::loadSession(Context *c)
             }
 
             if (m_instance->d_ptr->verifyUserAgent) {
-                auto it = sessionData.constFind(u"__user_agent"_qs);
+                auto it = sessionData.constFind(u"__user_agent"_s);
                 if (it != sessionData.constEnd() &&
                     it->toByteArray() != c->request()->userAgent()) {
                     qCWarning(C_SESSION)
@@ -600,7 +601,7 @@ QNetworkCookie SessionPrivate::makeSessionCookie(Session *session,
 {
     Q_UNUSED(c)
     QNetworkCookie cookie(session->d_ptr->sessionName, sid);
-    cookie.setPath(u"/"_qs);
+    cookie.setPath(u"/"_s);
     cookie.setExpirationDate(expires);
     cookie.setHttpOnly(session->d_ptr->cookieHttpOnly);
     cookie.setSecure(session->d_ptr->cookieSecure);

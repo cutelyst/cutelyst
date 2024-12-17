@@ -25,6 +25,8 @@
 #define OUT_EXISTS "  exists "
 #define OUT_CREATED " created "
 
+using namespace Qt::Literals::StringLiterals;
+
 bool buildControllerHeader(const QString &filename, const QString &controllerName, bool helpers);
 bool buildControllerImplementation(const QString &filename,
                                    const QString &controllerName,
@@ -32,8 +34,8 @@ bool buildControllerImplementation(const QString &filename,
 
 bool createController(const QString &controllerName)
 {
-    const static QRegularExpression nonWordRE(u"\\W"_qs);
-    const static QRegularExpression nonDigitRE(u"^\\d"_qs);
+    const static QRegularExpression nonWordRE(u"\\W"_s);
+    const static QRegularExpression nonDigitRE(u"^\\d"_s);
     if (controllerName.contains(nonWordRE) || controllerName.contains(nonDigitRE)) {
         //% "Error: invalid Controller name."
         std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-inv-cont-name")) << std::endl;
@@ -377,8 +379,8 @@ bool createApplication(const QString &name)
     QString nameWithUnderscore = name;
     nameWithUnderscore.replace(u'-', u'_');
 
-    const static QRegularExpression nonWordRE(u"\\W"_qs);
-    const static QRegularExpression nonDigitRE(u"^\\d"_qs);
+    const static QRegularExpression nonWordRE(u"\\W"_s);
+    const static QRegularExpression nonDigitRE(u"^\\d"_s);
 
     if (nameWithUnderscore.contains(nonWordRE) || nameWithUnderscore.contains(nonDigitRE)) {
         //% "Error: invalid application name."
@@ -520,7 +522,7 @@ int main(int argc, char *argv[])
                                   //: CLI option value name
                                   //% "port"
                                   qtTrId("cutelystcmd-opt-server-port-value"),
-                                  u"3000"_qs);
+                                  u"3000"_s);
     parser.addOption(serverPort);
 
     QCommandLineOption restartOpt(

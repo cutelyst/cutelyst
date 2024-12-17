@@ -12,6 +12,7 @@
 #include <QtTest/QTest>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class TestView : public View
 {
@@ -53,7 +54,7 @@ public:
     C_ATTR(test3, :Local :ActionClass(RenderView))
     void test3(Context *c)
     {
-        c->response()->setContentType("plain/text"_qba);
+        c->response()->setContentType("plain/text"_ba);
         c->setStash(QStringLiteral("data"), QByteArrayLiteral("test3"));
     }
 
@@ -189,8 +190,8 @@ void TestActionRenderView::testController_data()
     QTest::addColumn<QByteArray>("output");
     QTest::addColumn<QString>("contentType");
 
-    const auto get  = "GET"_qba;
-    const auto head = "HEAD"_qba;
+    const auto get  = "GET"_ba;
+    const auto head = "HEAD"_ba;
 
     QTest::newRow("renderview-test-00")
         << get << QStringLiteral("/action/render/view/test0") << 200 << QByteArrayLiteral("test0")

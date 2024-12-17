@@ -13,6 +13,7 @@
 #include <QRegularExpression>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 /**
  * \ingroup core
@@ -590,7 +591,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
         ++pos;
     }
 
-    const static auto digitRE = QRegularExpression(u"\\D"_qs);
+    const static auto digitRE = QRegularExpression(u"\\D"_s);
 
     // Add the attributes to the map in the reverse order so
     // that values() return them in the right order
@@ -715,7 +716,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
 {
     QString instanceName = name;
     if (!instanceName.isEmpty()) {
-        const static QRegularExpression nonWordsRE(u"\\W"_qs);
+        const static QRegularExpression nonWordsRE(u"\\W"_s);
         instanceName.remove(nonWordsRE);
 
         QMetaType id = QMetaType::fromName(instanceName.toLatin1().data());

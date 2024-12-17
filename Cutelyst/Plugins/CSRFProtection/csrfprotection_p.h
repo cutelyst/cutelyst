@@ -56,7 +56,7 @@ public:
     QString defaultDetachTo;
     QString errorMsgStashKey;
     QString genericErrorMessage;
-    QByteArray genericContentType{"text/plain; charset=utf8"_qba};
+    QByteArray genericContentType{QByteArrayLiteral("text/plain; charset=utf8")};
     std::chrono::seconds cookieExpiration{0};
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
     bool cookieHttpOnly{false};

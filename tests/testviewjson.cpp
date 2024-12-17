@@ -13,6 +13,7 @@
 #include <QtTest/QTest>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class TestViewJSON : public Controller
 {
@@ -26,7 +27,7 @@ public:
     C_ATTR(test0, :Local)
     void test0(Context *c)
     {
-        c->response()->setContentType("text/plain"_qba);
+        c->response()->setContentType("text/plain"_ba);
         c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
         c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
         c->forward(c->view());
@@ -149,7 +150,7 @@ void TestActionRenderView::doTest()
     QUrl urlAux(url);
     Headers sendHeaders;
     if (sendXJsonVersion) {
-        sendHeaders.pushHeader("X-Prototype-Version"_qba, "1.5.0");
+        sendHeaders.pushHeader("X-Prototype-Version"_ba, "1.5.0");
     }
     auto result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), sendHeaders, nullptr);
@@ -171,7 +172,7 @@ void TestActionRenderView::testController_data()
     QTest::addColumn<QString>("contentType");
     QTest::addColumn<bool>("hasXJson");
 
-    const auto get = "GET"_qba;
+    const auto get = "GET"_ba;
 
     QTest::newRow("viewjson-test-00")
         << get << QStringLiteral("/test/view/json/test0") << true << 200

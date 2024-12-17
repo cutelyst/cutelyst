@@ -12,6 +12,7 @@
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator", QtWarningMsg)
 
@@ -102,13 +103,13 @@ ValidatorResult
     }
 
     if (!result && flags.testFlag(FillStashOnError)) {
-        c->setStash(u"validationErrorStrings"_qs, result.errorStrings());
-        c->setStash(u"validationErrors"_qs, QVariant::fromValue(result.errors()));
+        c->setStash(u"validationErrorStrings"_s, result.errorStrings());
+        c->setStash(u"validationErrors"_s, QVariant::fromValue(result.errors()));
 
         if (!params.isEmpty()) {
             auto i = params.constBegin();
             while (i != params.constEnd()) {
-                if (!i.key().contains(u"password"_qs, Qt::CaseInsensitive)) {
+                if (!i.key().contains(u"password"_s, Qt::CaseInsensitive)) {
                     c->setStash(i.key(), i.value());
                 }
                 ++i;
@@ -128,5 +129,5 @@ void Validator::addValidator(ValidatorRule *v)
 
 void Validator::loadTranslations(Application *app)
 {
-    app->loadTranslations(u"plugin_utils_validator"_qs);
+    app->loadTranslations(u"plugin_utils_validator"_s);
 }

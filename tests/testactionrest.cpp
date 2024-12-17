@@ -11,6 +11,7 @@
 #include <QtTest/QTest>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 class ActionREST : public Controller
 {
@@ -150,11 +151,11 @@ void TestActionREST::testController_data()
     QTest::addColumn<QByteArray>("output");
     QTest::addColumn<QString>("allow");
 
-    const auto head         = "HEAD"_qba;
-    const auto get          = "GET"_qba;
-    const auto put          = "PUT"_qba;
-    const auto options      = "OPTIONS"_qba;
-    const auto methodDELETE = "DELETE"_qba;
+    const auto head         = "HEAD"_ba;
+    const auto get          = "GET"_ba;
+    const auto put          = "PUT"_ba;
+    const auto options      = "OPTIONS"_ba;
+    const auto methodDELETE = "DELETE"_ba;
 
     QTest::newRow("rest-test1-00") << get << QStringLiteral("/action/rest/test1/") << 200
                                    << QByteArrayLiteral("test1.test1 GET.") << QString();

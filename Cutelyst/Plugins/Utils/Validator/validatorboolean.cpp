@@ -8,9 +8,10 @@
 #include <QStringList>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
-const QStringList ValidatorBooleanPrivate::trueVals{u"1"_qs, u"true"_qs, u"on"_qs};
-const QStringList ValidatorBooleanPrivate::falseVals{u"0"_qs, u"false"_qs, u"off"_qs};
+const QStringList ValidatorBooleanPrivate::trueVals{u"1"_s, u"true"_s, u"on"_s};
+const QStringList ValidatorBooleanPrivate::falseVals{u"0"_s, u"false"_s, u"off"_s};
 
 ValidatorBoolean::ValidatorBoolean(const QString &field,
                                    const ValidatorMessages &messages,

@@ -20,6 +20,7 @@
 #include <QUrlQuery>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Context::Context(ContextPrivate *priv)
     : d_ptr(priv)
@@ -503,9 +504,9 @@ void Context::finalize()
         qCDebug(CUTELYST_STATS,
                 "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 d->response->status(),
-                d->response->headers().header("Content-Type"_qba, "unknown"_qba).constData(),
+                d->response->headers().header("Content-Type"_ba, "unknown"_ba).constData(),
                 d->response->headers()
-                    .header("Content-Length"_qba, QByteArray::number(d->response->size()))
+                    .header("Content-Length"_ba, QByteArray::number(d->response->size()))
                     .constData());
 
         const std::chrono::duration<double> duration =

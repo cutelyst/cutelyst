@@ -14,11 +14,12 @@
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.sessionmemcached", QtWarningMsg)
 
-const QString MemcachedSessionStorePrivate::stashKeyMemcdSave{u"_c_session_store_memcd_save"_qs};
-const QString MemcachedSessionStorePrivate::stashKeyMemcdData{u"_c_session_store_memcd_data"_qs};
+const QString MemcachedSessionStorePrivate::stashKeyMemcdSave{u"_c_session_store_memcd_save"_s};
+const QString MemcachedSessionStorePrivate::stashKeyMemcdData{u"_c_session_store_memcd_data"_s};
 
 static QVariantHash
     loadMemcSessionData(Context *c, const QByteArray &sid, const QByteArray &groupKey);
@@ -31,8 +32,8 @@ MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject
     Q_ASSERT_X(app,
                "construct MemachedSessionStore",
                "you have to specifiy a pointer to the Application object");
-    const QVariantMap map = app->engine()->config(u"Cutelyst_MemcachedSessionStore_Plugin"_qs);
-    d->groupKey           = map.value(u"group_key"_qs).toString().toLatin1();
+    const QVariantMap map = app->engine()->config(u"Cutelyst_MemcachedSessionStore_Plugin"_s);
+    d->groupKey           = map.value(u"group_key"_s).toString().toLatin1();
 }
 
 MemcachedSessionStore::~MemcachedSessionStore() = default;
@@ -122,7 +123,7 @@ QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteA
             }
         } else {
             bool ok            = false;
-            const auto expires = data.value(u"expires"_qs).value<time_t>();
+            const auto expires = data.value(u"expires"_s).value<time_t>();
             if (groupKey.isEmpty()) {
                 ok = Memcached::set(sessionKey, data, expires);
             } else {

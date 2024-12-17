@@ -13,6 +13,7 @@
 #include <QUrl>
 
 using namespace Cutelyst;
+using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALHTTP, "cutelyst.plugin.credentialhttp", QtWarningMsg)
 
@@ -182,10 +183,10 @@ AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c,
     Q_UNUSED(authinfo);
     Response *res = c->response();
     res->setStatus(Response::Unauthorized); // 401
-    res->setContentType("text/plain; charset=UTF-8"_qba);
+    res->setContentType("text/plain; charset=UTF-8"_ba);
 
     if (authorizationRequiredMessage.isEmpty()) {
-        res->setBody("Authorization required."_qba);
+        res->setBody("Authorization required."_ba);
     } else {
         res->setBody(authorizationRequiredMessage);
     }
@@ -206,7 +207,7 @@ bool CredentialHttpPrivate::isAuthTypeBasic() const
 void CredentialHttpPrivate::createBasicAuthResponse(Context *c, AuthenticationRealm *realm)
 {
     c->res()->headers().setWwwAuthenticate(
-        joinAuthHeaderParts("Basic"_qba, buildAuthHeaderCommon(realm)));
+        joinAuthHeaderParts("Basic"_ba, buildAuthHeaderCommon(realm)));
 }
 
 QByteArrayList CredentialHttpPrivate::buildAuthHeaderCommon(AuthenticationRealm *realm) const

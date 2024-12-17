@@ -49,7 +49,7 @@ bool View::doExecute(Context *c)
         }
     }
     const QByteArray acceptEncoding = c->req()->header("Accept-Encoding");
-    if (d->minimalSizeToDeflate >= 0 && output.count() > d->minimalSizeToDeflate &&
+    if (d->minimalSizeToDeflate >= 0 && output.length() > d->minimalSizeToDeflate &&
         acceptEncoding.toLower().contains("deflate")) {
         QByteArray compressedData = qCompress(output); // Use  zlib's default compression
         compressedData.remove(0, 6);                   // Remove qCompress and zlib headers
