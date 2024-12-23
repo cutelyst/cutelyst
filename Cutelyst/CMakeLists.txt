@@ -5,6 +5,7 @@ set(cutelystqt_SRC
     actionchain_p.h
     application.cpp
     application_p.h
+    appsettings.cpp
     async.cpp
     component.cpp
     component_p.h
@@ -47,6 +48,7 @@ set(cutelystqt_SRC
 set(cutelystqt_HEADERS
     Action
     ActionChain
+    AppSettings
     Application
     Component
     ComponentFactory
@@ -67,6 +69,7 @@ set(cutelystqt_HEADERS
     action.h
     actionchain.h
     application.h
+    appsettings.h
     async.h
     component.h
     componentfactory.h
