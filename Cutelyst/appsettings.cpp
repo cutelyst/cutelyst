@@ -17,9 +17,14 @@ QVariantHash AppSettings::values()
     return instance().m_data;
 }
 
-void AppSettings::setValues(const QVariantHash &data)
+void AppSettings::setValue(const QString &key, const QVariant &value)
 {
-    instance().storeData(data);
+    instance().storeData(key, value);
+}
+
+void AppSettings::setDefaultValue(const QString &key, const QVariant &value)
+{
+    instance().storeDefaultData(key, value);
 }
 
 QVariant AppSettings::value(const QString &key)
@@ -27,15 +32,27 @@ QVariant AppSettings::value(const QString &key)
     return instance().m_data.value(key);
 }
 
-QVariant AppSettings::value(const QString &key, const QVariant &defaultValue)
+void AppSettings::storeData(const QString &key, const QVariant &value)
 {
-    return instance().m_data.value(key, defaultValue);
+    auto it = m_data.find(key);
+    if (it != m_data.end()) {
+        if (it.value() == value) {
+            return;
+        }
+        *it = value;
+    } else {
+        m_data.insert(key, value);
+    }
+    Q_EMIT valueChanged(key, value);
 }
 
-void AppSettings::storeData(const QVariantHash &data)
+void AppSettings::storeDefaultData(const QString &key, const QVariant &value)
 {
-    m_data = data;
-    Q_EMIT valuesChanged(data);
+    auto it = m_data.find(key);
+    if (it == m_data.end()) {
+        m_data.insert(key, value);
+        Q_EMIT valueChanged(key, value);
+    }
 }
 
 #include "moc_appsettings.cpp"

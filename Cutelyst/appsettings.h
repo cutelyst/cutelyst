@@ -25,17 +25,35 @@ class CUTELYST_EXPORT AppSettings : public QObject
 public:
     static AppSettings &instance();
 
+    /**
+     * Returns all values for the current thread storage
+     */
     static QVariantHash values();
-    static void setValues(const QVariantHash &data);
 
+    /**
+     * Returns the value associated with the given key for the current thread storage
+     */
     static QVariant value(const QString &key);
-    static QVariant value(const QString &key, const QVariant &defaultValue);
+
+    /**
+     * Stores a value for the given key, if value is different
+     * than what is stored \sa valueChanged is emitted.
+     */
+    static void setValue(const QString &key, const QVariant &value);
+
+    /**
+     * Stores a default value for the given key, if there is already
+     * a value associated with the given \p key nothing is done
+     * else \sa valueChanged is emitted.
+     */
+    static void setDefaultValue(const QString &key, const QVariant &value);
 
 Q_SIGNALS:
-    void valuesChanged(const QVariantHash &values);
+    void valueChanged(const QString &key, const QVariant &value);
 
 private:
-    void storeData(const QVariantHash &data);
+    void storeData(const QString &key, const QVariant &value);
+    void storeDefaultData(const QString &key, const QVariant &value);
 
     QVariantHash m_data;
 };
