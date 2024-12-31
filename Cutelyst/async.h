@@ -26,7 +26,7 @@ public:
      *
      * Make sure it is captured by lambdas to avoid it leaving scope.
      */
-    ASync(Context *c, std::move_only_function<void(Context *c)> cb);
+    ASync(Context *c, std::function<void(Context *c)> cb);
     ASync(const ASync &other);
     ASync(ASync &&other) noexcept;
 

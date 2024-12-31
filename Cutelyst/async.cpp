@@ -24,7 +24,7 @@ public:
         //        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
         c->detachAsync();
     }
-    ASyncPrivate(Context *_c, std::move_only_function<void(Context *c)> _cb)
+    ASyncPrivate(Context *_c, std::function<void(Context *c)> _cb)
         : c(_c)
         , cb(std::move(_cb))
     {
@@ -43,7 +43,7 @@ public:
     }
 
     QPointer<Context> c;
-    std::move_only_function<void(Context *c)> cb;
+    std::function<void(Context *c)> cb;
 };
 
 } // namespace Cutelyst
@@ -77,7 +77,7 @@ ASync::ASync(Context *c)
 {
 }
 
-ASync::ASync(Context *c, std::move_only_function<void(Context *)> cb)
+ASync::ASync(Context *c, std::function<void(Context *)> cb)
     : d(std::make_shared<ASyncPrivate>(c, std::move(cb)))
 {
 }
