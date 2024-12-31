@@ -17,7 +17,7 @@ public:
 
     /**
      * When in MASTER mode this method is called,
-     * it should return true if WSGI::exec() should
+     * it should return true if Server::exec() should
      * continue setting up the listening socked or exit
      * with exit code
      */

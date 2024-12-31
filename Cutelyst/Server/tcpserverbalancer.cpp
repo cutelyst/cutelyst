@@ -34,9 +34,9 @@ int listenReuse(const QHostAddress &address,
                 bool startListening);
 #endif
 
-TcpServerBalancer::TcpServerBalancer(Server *wsgi)
-    : QTcpServer(wsgi)
-    , m_wsgi(wsgi)
+TcpServerBalancer::TcpServerBalancer(Server *server)
+    : QTcpServer(server)
+    , m_server(server)
 {
 }
 
@@ -134,7 +134,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         m_sslConfiguration->setPrivateKey(key);
         m_sslConfiguration->setPeerVerifyMode(
             QSslSocket::VerifyNone); // prevent asking for client certificate
-        if (m_wsgi->httpsH2()) {
+        if (m_server->httpsH2()) {
             m_sslConfiguration->setAllowedNextProtocols(
                 {QByteArrayLiteral("h2"), QSslConfiguration::NextProtocolHttp1_1});
         }
@@ -146,7 +146,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 
 #ifdef Q_OS_LINUX
     int socket = listenReuse(
-        address, m_wsgi->listenQueue(), port, m_wsgi->reusePort(), !m_wsgi->reusePort());
+        address, m_server->listenQueue(), port, m_server->reusePort(), !m_server->reusePort());
     if (socket > 0 && setSocketDescriptor(socket)) {
         pauseAccepting();
     } else {
@@ -155,6 +155,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         return false;
     }
 #else
+    setListenBacklogSize(m_server->listenQueue());
     bool ret = QTcpServer::listen(address, port);
     if (ret) {
         pauseAccepting();
@@ -449,12 +450,12 @@ TcpServer *TcpServerBalancer::createServer(ServerEngine *engine)
     TcpServer *server;
     if (m_sslConfiguration) {
 #ifndef QT_NO_SSL
-        auto sslServer = new TcpSslServer(m_serverName, m_protocol, m_wsgi, engine);
+        auto sslServer = new TcpSslServer(m_serverName, m_protocol, m_server, engine);
         sslServer->setSslConfiguration(*m_sslConfiguration);
         server = sslServer;
 #endif // QT_NO_SSL
     } else {
-        server = new TcpServer(m_serverName, m_protocol, m_wsgi, engine);
+        server = new TcpServer(m_serverName, m_protocol, m_server, engine);
     }
     connect(engine, &ServerEngine::shutdown, server, &TcpServer::shutdown);
 
@@ -471,10 +472,10 @@ TcpServer *TcpServerBalancer::createServer(ServerEngine *engine)
     } else {
 
 #ifdef Q_OS_LINUX
-        if (m_wsgi->reusePort()) {
+        if (m_server->reusePort()) {
             connect(engine, &ServerEngine::started, this, [this, server]() {
                 int socket = listenReuse(
-                    m_address, m_wsgi->listenQueue(), m_port, m_wsgi->reusePort(), true);
+                    m_address, m_server->listenQueue(), m_port, m_server->reusePort(), true);
                 if (!server->setSocketDescriptor(socket)) {
                     qFatal("Failed to set server socket descriptor, reuse-port");
                 }

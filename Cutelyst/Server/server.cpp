@@ -1021,6 +1021,7 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
             server->setSocketOptions(options);
         }
         server->removeServer(line);
+        server->setListenBacklogSize(listenQueue);
         ret = server->listen(line);
         server->pauseAccepting();
 

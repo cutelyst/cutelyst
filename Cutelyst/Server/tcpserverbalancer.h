@@ -37,7 +37,7 @@ private:
     quint16 m_port = 0;
     QByteArray m_serverName;
     std::vector<TcpServer *> m_servers;
-    Server *m_wsgi;
+    Server *m_server;
     Protocol *m_protocol                  = nullptr;
     QSslConfiguration *m_sslConfiguration = nullptr;
     int m_currentServer                   = 0;
