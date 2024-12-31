@@ -47,14 +47,16 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                     << debugString(c) << " Can not parse input \"" << v
                     << "\" into an integer number";
             } else {
-                const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
+                const qlonglong min =
+                    ValidatorBetweenPrivate::extractLongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                     qCWarning(C_VALIDATOR).noquote()
                         << "Invalid mininum comparison value:" << d->min;
                 } else {
-                    const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
+                    const qlonglong max =
+                        ValidatorBetweenPrivate::extractLongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(
                             c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -89,14 +91,16 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                     << debugString(c) << " Can not parse input \"" << v
                     << "\" into an unsigned integer number";
             } else {
-                const qulonglong min = d->extractULongLong(c, params, d->min, &ok);
+                const qulonglong min =
+                    ValidatorBetweenPrivate::extractULongLong(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid mininum comparison value:" << d->min;
                 } else {
-                    const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
+                    const qulonglong max =
+                        ValidatorBetweenPrivate::extractULongLong(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(
                             c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -128,14 +132,15 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                     << debugString(c) << " Can not parse input \"" << v
                     << "\" into a floating point number";
             } else {
-                const double min = d->extractDouble(c, params, d->min, &ok);
+                const double min = ValidatorBetweenPrivate::extractDouble(c, params, d->min, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                     qCWarning(C_VALIDATOR).noquote()
                         << debugString(c) << "Invalid mininum comparison value:" << d->min;
                 } else {
-                    const double max = d->extractDouble(c, params, d->max, &ok);
+                    const double max =
+                        ValidatorBetweenPrivate::extractDouble(c, params, d->max, &ok);
                     if (Q_UNLIKELY(!ok)) {
                         result.errorMessage = validationDataError(
                             c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -160,14 +165,15 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
         case QMetaType::QString:
         {
             const auto val      = static_cast<qlonglong>(v.length());
-            const qlonglong min = d->extractLongLong(c, params, d->min, &ok);
+            const qlonglong min = ValidatorBetweenPrivate::extractLongLong(c, params, d->min, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(
                     c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMin));
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid mininum comparison value:" << d->min;
             } else {
-                const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
+                const qlonglong max =
+                    ValidatorBetweenPrivate::extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -198,7 +204,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
 
         if (valid) {
             if (d->type != QMetaType::QString) {
-                const QVariant _v = d->valueToNumber(c, v, d->type);
+                const QVariant _v = ValidatorBetweenPrivate::valueToNumber(c, v, d->type);
                 if (_v.isValid()) {
                     result.value = _v;
                 } else {
@@ -223,7 +229,8 @@ QString ValidatorBetween::genericValidationError(Cutelyst::Context *c,
     Q_D(const ValidatorBetween);
 
     const QVariantMap map = errorData.toMap();
-    QString min, max;
+    QString min;
+    QString max;
     switch (d->type) {
     case QMetaType::Char:
     case QMetaType::Short:

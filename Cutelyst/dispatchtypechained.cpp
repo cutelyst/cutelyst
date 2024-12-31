@@ -162,7 +162,7 @@ DispatchType::MatchType
 
     Q_D(const DispatchTypeChained);
 
-    const BestActionMatch ret = d->recurseMatch(args.size(), u"/"_qs, path.mid(1).split(u'/'));
+    const BestActionMatch ret = d->recurseMatch(args.size(), u"/"_s, path.mid(1).split(u'/'));
     const ActionList chain    = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;
@@ -175,8 +175,8 @@ DispatchType::MatchType
         decodedArgs.append(Utils::decodePercentEncoding(&aux));
     }
 
-    ActionChain *action = new ActionChain(chain, c);
-    Request *request    = c->request();
+    auto action      = new ActionChain(chain, c);
+    Request *request = c->request();
     request->setArguments(decodedArgs);
     QStringList captures;
     for (const auto a : ret.captures) {
@@ -400,8 +400,8 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
         const Actions tryActions = children.value(tryPart);
         for (Action *action : tryActions) {
             const ParamsMultiMap attributes = action->attributes();
-            if (attributes.contains(u"CaptureArgs"_qs)) {
-                const int captureCount = action->numberOfCaptures();
+            if (attributes.contains(u"CaptureArgs"_s)) {
+                const auto captureCount = action->numberOfCaptures();
                 // Short-circuit if not enough remaining parts
                 if (parts.size() < captureCount) {
                     continue;
@@ -435,7 +435,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                       actionCaptures.size() < bestAction.captures.size() &&
                       ret.n_pathParts > bestAction.n_pathParts))) {
                     actions.prepend(action);
-                    int pathparts          = attributes.value(u"PathPart"_qs).count(u'/') + 1;
+                    int pathparts          = attributes.value(u"PathPart"_s).count(u'/') + 1;
                     bestAction.actions     = actions;
                     bestAction.captures    = captures + actionCaptures;
                     bestAction.parts       = actionParts;
@@ -447,8 +447,8 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                     continue;
                 }
 
-                const QString argsAttr = attributes.value(u"Args"_qs);
-                const int pathparts    = attributes.value(u"PathPart"_qs).count(u'/') + 1;
+                const QString argsAttr = attributes.value(u"Args"_s);
+                const int pathparts    = attributes.value(u"PathPart"_s).count(u'/') + 1;
                 //    No best action currently
                 // OR This one matches with fewer parts left than the current best action,
                 //    And therefore is a better match

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2024 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "common.h"
@@ -527,7 +527,8 @@ void RequestPrivate::parseBody() const
     parserStatus |= RequestPrivate::BodyParsed;
 }
 
-static inline bool isSlit(char c)
+namespace {
+inline bool isSlit(char c)
 {
     return c == ';' || c == ',';
 }
@@ -543,12 +544,12 @@ int findNextSplit(QByteArrayView text, int from, int length)
     return -1;
 }
 
-static inline bool isLWS(char c)
+inline bool isLWS(char c)
 {
     return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 }
 
-static int nextNonWhitespace(QByteArrayView text, int from, int length)
+int nextNonWhitespace(QByteArrayView text, int from, int length)
 {
     // RFC 2616 defines linear whitespace as:
     //  LWS = [CRLF] 1*( SP | HT )
@@ -565,7 +566,7 @@ static int nextNonWhitespace(QByteArrayView text, int from, int length)
     return text.length();
 }
 
-static Request::Cookie nextField(QByteArrayView text, int &position)
+Request::Cookie nextField(QByteArrayView text, int &position)
 {
     Request::Cookie cookie;
     // format is one of:
@@ -593,6 +594,7 @@ static Request::Cookie nextField(QByteArrayView text, int &position)
     position = semiColonPosition;
     return cookie;
 }
+} // namespace
 
 void RequestPrivate::parseCookies() const
 {

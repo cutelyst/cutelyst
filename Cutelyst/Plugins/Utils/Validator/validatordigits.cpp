@@ -25,7 +25,7 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
 
     const QString v         = value(params);
     bool ok                 = false;
-    const qlonglong _length = d->extractLongLong(c, params, d->length, &ok);
+    const qlonglong _length = ValidatorDigitsPrivate::extractLongLong(c, params, d->length, &ok);
     if (!ok) {
         qCDebug(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison length";
         result.errorMessage = validationDataError(c);

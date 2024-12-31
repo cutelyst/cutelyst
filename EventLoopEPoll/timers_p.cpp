@@ -4,19 +4,18 @@
  */
 #include "eventdispatcher_epoll_p.h"
 
-#include <errno.h>
+#include <cerrno>
+#include <ctime>
 #include <sys/epoll.h>
 #include <sys/time.h>
 #include <sys/timerfd.h>
-#include <time.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QEvent>
 
 namespace {
 
-static void
-    calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, struct timeval &when)
+void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, struct timeval &when)
 {
     Q_ASSERT(info->interval > 20);
     // The coarse timer works like this:
@@ -186,7 +185,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId,
     int fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     if (Q_LIKELY(fd != -1)) {
         struct timeval now;
-        gettimeofday(&now, 0);
+        gettimeofday(&now, nullptr);
 
         auto data  = new TimerInfo(fd, timerId, interval, object);
         data->when = now;
@@ -212,7 +211,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId,
             spec.it_value.tv_nsec = 500;
         }
 
-        if (Q_UNLIKELY(-1 == timerfd_settime(fd, 0, &spec, 0))) {
+        if (Q_UNLIKELY(-1 == timerfd_settime(fd, 0, &spec, nullptr))) {
             qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
             delete data;
             close(fd);
@@ -250,7 +249,7 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 
         int fd = data->fd;
 
-        if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, fd, 0))) {
+        if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, fd, nullptr))) {
             qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
         }
 
@@ -283,7 +282,7 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
         if (object == data->object) {
             int fd = data->fd;
 
-            if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, fd, 0))) {
+            if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, fd, nullptr))) {
                 qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
             }
 
@@ -376,7 +375,7 @@ bool EventDispatcherEPollPrivate::disableTimers(bool disable)
     struct itimerspec spec;
 
     if (!disable) {
-        gettimeofday(&now, 0);
+        gettimeofday(&now, nullptr);
     } else {
         spec.it_value.tv_sec  = 0;
         spec.it_value.tv_nsec = 0;
@@ -398,7 +397,7 @@ bool EventDispatcherEPollPrivate::disableTimers(bool disable)
             }
         }
 
-        if (Q_UNLIKELY(-1 == timerfd_settime(data->fd, 0, &spec, 0))) {
+        if (Q_UNLIKELY(-1 == timerfd_settime(data->fd, 0, &spec, nullptr))) {
             qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
         }
 

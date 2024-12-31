@@ -15,15 +15,17 @@
 Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
 char *AuthenticationRealm::defaultRealm =
     const_cast<char *>("cutelyst_authentication_default_realm");
+namespace {
+thread_local Authentication *auth = nullptr;
 
-static thread_local Authentication *auth = nullptr;
-
-#define AUTHENTICATION_USER QStringLiteral("_c_authentication_user")
-#define AUTHENTICATION_USER_REALM QStringLiteral("_c_authentication_user_realm")
+const auto AUTHENTICATION_USER       = u"_c_authentication_user"_s;
+const auto AUTHENTICATION_USER_REALM = u"_c_authentication_user_realm"_s;
+} // namespace
 
 Authentication::Authentication(Application *parent)
     : Plugin(parent)

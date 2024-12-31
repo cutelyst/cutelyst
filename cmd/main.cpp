@@ -38,14 +38,14 @@ bool createController(const QString &controllerName)
     const static QRegularExpression nonDigitRE(u"^\\d"_s);
     if (controllerName.contains(nonWordRE) || controllerName.contains(nonDigitRE)) {
         //% "Error: invalid Controller name."
-        std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-inv-cont-name")) << std::endl;
+        std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-inv-cont-name")) << '\n';
         return false;
     }
 
     QDir projectDir;
     if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
         //% "Error: failed to find project."
-        std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-fail-find-proj")) << std::endl;
+        std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-fail-find-proj")) << '\n';
         return false;
     }
 
@@ -69,7 +69,7 @@ bool createController(const QString &controllerName)
 #endif
 
     //% "Now, on your application class include and instantiate the controller."
-    std::cout << qUtf8Printable(qtTrId("cutelystcmd-info-instantiate-controller")) << std::endl;
+    std::cout << qUtf8Printable(qtTrId("cutelystcmd-info-instantiate-controller")) << '\n';
 
     return true;
 }
@@ -78,7 +78,7 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
 {
     QFile data(filename);
     if (data.exists()) {
-        std::cerr << OUT_EXISTS << qPrintable(filename) << std::endl;
+        std::cerr << OUT_EXISTS << qPrintable(filename) << '\n';
         return true;
     }
 
@@ -107,13 +107,13 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "}" << "\n";
         out << "\n";
 
-        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(filename) << '\n';
 
         return true;
     }
     //% "Error: failed to create file:"
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-file")) << qPrintable(filename)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -122,7 +122,7 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
 {
     QFile data(filename);
     if (data.exists()) {
-        std::cout << OUT_EXISTS << qPrintable(filename) << std::endl;
+        std::cout << OUT_EXISTS << qPrintable(filename) << '\n';
         return true;
     }
 
@@ -149,13 +149,13 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
         out << "#endif //" << appName.toUpper() << "_H" << "\n";
         out << "\n";
 
-        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(filename) << '\n';
 
         return true;
     }
 
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-file")) << qPrintable(filename)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -166,7 +166,7 @@ bool buildControllerImplementation(const QString &filename,
 {
     QFile data(filename);
     if (data.exists()) {
-        std::cout << OUT_EXISTS << qPrintable(filename) << std::endl;
+        std::cout << OUT_EXISTS << qPrintable(filename) << '\n';
         return true;
     }
 
@@ -205,13 +205,13 @@ bool buildControllerImplementation(const QString &filename,
             out << "\n";
         }
 
-        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(filename) << '\n';
 
         return true;
     }
 
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-file")) << qPrintable(filename)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -220,7 +220,7 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
 {
     QFile data(filename);
     if (data.exists()) {
-        std::cout << OUT_EXISTS << qPrintable(filename) << std::endl;
+        std::cout << OUT_EXISTS << qPrintable(filename) << '\n';
         return true;
     }
 
@@ -259,13 +259,13 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
         out << "#endif //" << controllerName.toUpper() << "_H" << "\n";
         out << "\n";
 
-        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(filename) << '\n';
 
         return true;
     }
 
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-file")) << qPrintable(filename)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -274,7 +274,7 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
 {
     QFile data(name);
     if (data.exists()) {
-        std::cout << OUT_EXISTS << qPrintable(name) << std::endl;
+        std::cout << OUT_EXISTS << qPrintable(name) << '\n';
         return true;
     }
 
@@ -298,13 +298,13 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
         out << ")" << "\n";
         out << "\n";
 
-        std::cout << OUT_CREATED << qPrintable(name) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(name) << '\n';
 
         return true;
     }
 
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-file")) << qPrintable(name)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -313,7 +313,7 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
 {
     QFile data(name);
     if (data.exists()) {
-        std::cout << OUT_EXISTS << qPrintable(name) << std::endl;
+        std::cout << OUT_EXISTS << qPrintable(name) << '\n';
         return true;
     }
 
@@ -345,13 +345,13 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "\n";
         out << "add_subdirectory(src)" << "\n";
 
-        std::cout << OUT_CREATED << qPrintable(name) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(name) << '\n';
 
         return true;
     }
 
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-file")) << qPrintable(name)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -360,16 +360,16 @@ bool createDir(const QDir &parentDir, const QString &name)
 {
     const QString newDir = parentDir.relativeFilePath(name);
     if (parentDir.exists(name)) {
-        std::cout << OUT_EXISTS << qPrintable(newDir) << std::endl;
+        std::cout << OUT_EXISTS << qPrintable(newDir) << '\n';
         return true;
     } else if (parentDir.mkdir(name)) {
-        std::cout << OUT_CREATED << qPrintable(newDir) << std::endl;
+        std::cout << OUT_CREATED << qPrintable(newDir) << '\n';
         return true;
     }
 
     //% "Error: failed to create directory:"
     std::cerr << qUtf8Printable(qtTrId("cutelytcmd-err-failed-create-dir")) << qPrintable(newDir)
-              << std::endl;
+              << '\n';
 
     return false;
 }
@@ -437,7 +437,7 @@ bool createApplication(const QString &name)
 
     //% "Change to the build directory inside your application directory and run \"cmake ..\" "
     //% "to make sure your install is complete."
-    std::cout << qUtf8Printable(qtTrId("cutelystcmd-info-build-steps")) << std::endl;
+    std::cout << qUtf8Printable(qtTrId("cutelystcmd-info-build-steps")) << '\n';
 
     return true;
 }
@@ -462,7 +462,7 @@ int main(int argc, char *argv[])
                           QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
         QCoreApplication::installTranslator(&qtTranslator);
     } else {
-        std::cerr << "Error: can not load Qt translations" << std::endl;
+        std::cerr << "Error: can not load Qt translations" << '\n';
     }
 
     QTranslator appTranslator;
@@ -472,7 +472,7 @@ int main(int argc, char *argv[])
                            QStringLiteral(CUTELYST_I18N_DIR))) {
         QCoreApplication::installTranslator(&appTranslator);
     } else {
-        std::cerr << "Error: can not load app translations" << std::endl;
+        std::cerr << "Error: can not load app translations" << '\n';
     }
 
     QCommandLineParser parser;
@@ -532,7 +532,7 @@ int main(int argc, char *argv[])
         qtTrId("cutelystcmd-opt-restart-desc"));
     parser.addOption(restartOpt);
 
-    const QStringList arguments = app.arguments();
+    const QStringList arguments = QCoreApplication::arguments();
     QStringList argsBeforeDashDash;
     QStringList argsAfterDashDash = arguments.mid(0, 1);
 
@@ -562,7 +562,7 @@ int main(int argc, char *argv[])
         int port    = parser.value(serverPort).toInt(&portOk);
         if (!portOk) {
             //% "Error: no valid port specified."
-            std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-invalid-port")) << std::endl;
+            std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-invalid-port")) << '\n';
             return 1;
         }
 
@@ -580,7 +580,7 @@ int main(int argc, char *argv[])
         QDir projectDir;
         bool hasProjectDir = Helper::findProjectDir(QDir::current(), &projectDir);
         if (!hasProjectDir) {
-            std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-fail-find-proj")) << std::endl;
+            std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-fail-find-proj")) << '\n';
             return 1;
         } else {
             server.setChdir2(projectDir.absolutePath());
@@ -591,7 +591,7 @@ int main(int argc, char *argv[])
             localFilename = Helper::findApplication(projectDir);
             if (!QFile::exists(localFilename)) {
                 //% "Error: application file not found."
-                std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-fail-find-app")) << std::endl;
+                std::cerr << qUtf8Printable(qtTrId("cutelystcmd-err-fail-find-app")) << '\n';
                 return 1;
             }
         }

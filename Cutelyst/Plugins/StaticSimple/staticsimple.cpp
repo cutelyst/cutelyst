@@ -112,7 +112,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
 
             // Response::setBody() will take the ownership
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-            QFile *file = new QFile(path);
+            auto file = new QFile(path);
             if (file->open(QFile::ReadOnly)) {
                 qCDebug(C_STATICSIMPLE) << "Serving" << path;
                 Headers &headers = res->headers();

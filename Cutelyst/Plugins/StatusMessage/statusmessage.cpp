@@ -15,7 +15,9 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATUSMESSAGE, "cutelyst.plugins.statusmessage", QtWarningMsg)
 
-static thread_local StatusMessage *m_instance = nullptr;
+namespace {
+thread_local StatusMessage *m_instance = nullptr;
+} // namespace
 
 namespace Cutelyst {
 

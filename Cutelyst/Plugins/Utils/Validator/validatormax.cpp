@@ -44,7 +44,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                 qCWarning(C_VALIDATOR).noquote().nospace()
                     << debugString(c) << " Failed to parse \"" << v << "\" into an integer number";
             } else {
-                const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
+                const qlonglong max = ValidatorMaxPrivate::extractLongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -74,7 +74,8 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                     << debugString(c) << " Failed to parse \"" << v
                     << "\" into an unsigned integer number";
             } else {
-                const qulonglong max = d->extractULongLong(c, params, d->max, &ok);
+                const qulonglong max =
+                    ValidatorMaxPrivate::extractULongLong(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -101,7 +102,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                     << debugString(c) << " Failed to parse \"" << v
                     << "\" into a floating point number";
             } else {
-                const double max = d->extractDouble(c, params, d->max, &ok);
+                const double max = ValidatorMaxPrivate::extractDouble(c, params, d->max, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(
                         c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -121,7 +122,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
         case QMetaType::QString:
         {
             const auto val      = static_cast<qlonglong>(v.length());
-            const qlonglong max = d->extractLongLong(c, params, d->max, &ok);
+            const qlonglong max = ValidatorMaxPrivate::extractLongLong(c, params, d->max, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(
                     c, static_cast<int>(ValidatorRulePrivate::ErrorType::InvalidMax));
@@ -147,7 +148,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
 
         if (valid) {
             if (d->type != QMetaType::QString) {
-                const QVariant _v = d->valueToNumber(c, v, d->type);
+                const QVariant _v = ValidatorMaxPrivate::valueToNumber(c, v, d->type);
                 if (_v.isValid()) {
                     result.value = _v;
                 } else {

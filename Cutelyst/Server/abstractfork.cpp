@@ -36,7 +36,7 @@ void AbstractFork::installTouchReload()
                 &AbstractFork::directoryChanged);
         const QStringList ret = m_touchReloadWatcher->addPaths(m_touchReloadPaths);
         if (!ret.empty()) {
-            std::cerr << "Failed setup file watcher" << std::endl;
+            std::cerr << "Failed setup file watcher\n";
             qCCritical(C_SERVER_FORK) << "unwatched files" << ret;
             exit(1);
         }
@@ -58,13 +58,13 @@ void AbstractFork::removeTouchReload()
 
 void AbstractFork::fileChanged(const QString &path)
 {
-    std::cout << "File changed restarting... " << qPrintable(path) << std::endl;
+    std::cout << "File changed restarting... " << qPrintable(path) << '\n';
     m_restartTimer->start();
 }
 
 void AbstractFork::directoryChanged(const QString &path)
 {
-    std::cout << "Directory changed restarting... " << qPrintable(path) << std::endl;
+    std::cout << "Directory changed restarting... " << qPrintable(path) << '\n';
     m_restartTimer->start();
 }
 

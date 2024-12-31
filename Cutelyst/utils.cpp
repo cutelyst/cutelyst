@@ -127,8 +127,8 @@ QString Utils::decodePercentEncoding(QString *s)
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
-            int a = inputPtr[++i];
-            int b = inputPtr[++i];
+            int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
+            int b = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
 
             if (a >= '0' && a <= '9')
                 a -= '0';
@@ -197,8 +197,8 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
-            int a = inputPtr[++i];
-            int b = inputPtr[++i];
+            int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
+            int b = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
 
             if (a >= '0' && a <= '9')
                 a -= '0';
@@ -255,8 +255,8 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
-            int a = inputPtr[++i];
-            int b = inputPtr[++i];
+            int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
+            int b = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
 
             if (a >= '0' && a <= '9')
                 a -= '0';

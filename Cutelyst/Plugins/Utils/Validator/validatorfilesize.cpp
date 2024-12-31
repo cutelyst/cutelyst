@@ -273,7 +273,7 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
         double max = -1;
         bool ok    = true;
         if (d->min.isValid()) {
-            min = d->extractDouble(c, params, d->min, &ok);
+            min = ValidatorFileSizePrivate::extractDouble(c, params, d->min, &ok);
             if (!ok) {
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid minimum size comparison data";
@@ -283,7 +283,7 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
         }
 
         if (ok && d->max.isValid()) {
-            max = d->extractDouble(c, params, d->max, &ok);
+            max = ValidatorFileSizePrivate::extractDouble(c, params, d->max, &ok);
             if (!ok) {
                 qCWarning(C_VALIDATOR).noquote()
                     << debugString(c) << "Invalid maximum size comparison data";
@@ -296,7 +296,7 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
             double size = 0;
             if (ValidatorFileSize::validate(v, min, max, d->option, c->locale(), &size)) {
                 if (size < static_cast<double>(std::numeric_limits<qulonglong>::max())) {
-                    result.value.setValue<qulonglong>(static_cast<qulonglong>(size + 0.5));
+                    result.value.setValue<qulonglong>(static_cast<qulonglong>(std::lround(size)));
                 } else {
                     result.value.setValue(size);
                 }

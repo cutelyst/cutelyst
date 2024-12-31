@@ -25,10 +25,12 @@ Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-static thread_local LangSelect *lsp = nullptr;
-
 const QString LangSelectPrivate::stashKeySelectionTried{u"_c_langselect_tried"_s};
+
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+namespace {
+thread_local LangSelect *lsp = nullptr;
+} // namespace
 
 LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source)
     : Plugin(parent)
@@ -697,7 +699,7 @@ bool LangSelectPrivate::getFromHeader(Context *c, const QByteArray &name) const
             std::map<float, QLocale> langMap;
             for (const auto &al : accpetedLangs) {
                 const auto idx = al.indexOf(u';');
-                float priority = 1.0f;
+                float priority = 1.0F;
                 QString langPart;
                 bool ok = true;
                 if (idx > -1) {

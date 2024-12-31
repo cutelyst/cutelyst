@@ -4,7 +4,7 @@
  */
 #include "eventdispatcher_epoll_p.h"
 
-#include <errno.h>
+#include <cerrno>
 #include <sys/epoll.h>
 
 #include <QtCore/QCoreApplication>
@@ -14,8 +14,8 @@
 
 void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifier)
 {
-    Q_ASSERT(notifier != 0);
-    Q_ASSUME(notifier != 0);
+    Q_ASSERT(notifier != nullptr);
+    Q_ASSUME(notifier != nullptr);
 
     int events = 0;
     int fd     = static_cast<int>(notifier->socket());
@@ -80,8 +80,8 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
                 Q_UNREACHABLE();
             }
 
-            Q_ASSERT(n != 0);
-            if (Q_UNLIKELY(*n != 0)) {
+            Q_ASSERT(n != nullptr);
+            if (Q_UNLIKELY(*n != nullptr)) {
                 qWarning(
                     "%s: cannot add two socket notifiers of the same type for the same descriptor",
                     Q_FUNC_INFO);
@@ -111,8 +111,8 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
 
 void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *notifier)
 {
-    Q_ASSERT(notifier != 0);
-    Q_ASSUME(notifier != 0);
+    Q_ASSERT(notifier != nullptr);
+    Q_ASSUME(notifier != nullptr);
 
     auto it = m_notifiers.constFind(notifier);
     if (Q_LIKELY(it != m_notifiers.constEnd())) {

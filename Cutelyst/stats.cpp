@@ -50,7 +50,7 @@ QByteArray Stats::report()
     Q_D(const Stats);
 
     QByteArray ret;
-    if (d->actions.size() == 0) {
+    if (d->actions.empty()) {
         return ret;
     }
 

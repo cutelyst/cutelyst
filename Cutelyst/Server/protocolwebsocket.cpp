@@ -95,7 +95,7 @@ void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
     {
         if (!bytesAvailable || !request->websocket_need ||
             (bytesAvailable < request->websocket_need &&
-             request->websocket_phase != ProtoRequestHttp::WebSocketPhasePayload)) {
+             request->websocket_phase != ProtoRequestHttp::WebSocketPhase::WebSocketPhasePayload)) {
             // Need more data
             return;
         }
@@ -110,23 +110,26 @@ void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
         bytesAvailable -= len;
 
         switch (request->websocket_phase) {
-        case ProtoRequestHttp::WebSocketPhaseHeaders:
+        case ProtoRequestHttp::WebSocketPhase::WebSocketPhaseHeaders:
             if (!websocket_parse_header(sock, m_postBuffer, io)) {
                 return;
             }
             break;
-        case ProtoRequestHttp::WebSocketPhaseSize:
+        case ProtoRequestHttp::WebSocketPhase::WebSocketPhaseSize:
             if (!websocket_parse_size(sock, m_postBuffer, m_websockets_max_size)) {
                 return;
             }
             break;
-        case ProtoRequestHttp::WebSocketPhaseMask:
+        case ProtoRequestHttp::WebSocketPhase::WebSocketPhaseMask:
             websocket_parse_mask(sock, m_postBuffer, io);
             break;
-        case ProtoRequestHttp::WebSocketPhasePayload:
+        case ProtoRequestHttp::WebSocketPhase::WebSocketPhasePayload:
             if (!websocket_parse_payload(sock, m_postBuffer, int(len), io)) {
                 return;
             }
+            break;
+        default:
+            Q_UNREACHABLE();
             break;
         }
     }
@@ -318,13 +321,13 @@ bool ProtocolWebSocket::websocket_parse_header(Socket *sock, const char *buf, QI
 
     if (protoRequest->websocket_payload_size == 126) {
         protoRequest->websocket_need  = 2;
-        protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhaseSize;
+        protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhaseSize;
     } else if (protoRequest->websocket_payload_size == 127) {
         protoRequest->websocket_need  = 8;
-        protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhaseSize;
+        protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhaseSize;
     } else {
         protoRequest->websocket_need  = 4;
-        protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhaseMask;
+        protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhaseMask;
     }
 
     return true;
@@ -356,7 +359,7 @@ bool ProtocolWebSocket::websocket_parse_size(Socket *sock,
     protoRequest->websocket_payload_size = size;
 
     protoRequest->websocket_need  = 4;
-    protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhaseMask;
+    protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhaseMask;
 
     return true;
 }
@@ -367,7 +370,7 @@ void ProtocolWebSocket::websocket_parse_mask(Socket *sock, char *buf, QIODevice 
     auto protoRequest            = static_cast<ProtoRequestHttp *>(sock->protoData);
     protoRequest->websocket_mask = *ptr;
 
-    protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhasePayload;
+    protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhasePayload;
     protoRequest->websocket_need  = quint32(protoRequest->websocket_payload_size);
 
     protoRequest->websocket_payload = QByteArray();
@@ -397,7 +400,7 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock,
     }
 
     protoRequest->websocket_need  = 2;
-    protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
+    protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhaseHeaders;
 
     Cutelyst::Request *request = protoRequest->context->request();
 

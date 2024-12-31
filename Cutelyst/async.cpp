@@ -18,7 +18,7 @@ namespace Cutelyst {
 class ASyncPrivate
 {
 public:
-    ASyncPrivate(Context *_c)
+    explicit ASyncPrivate(Context *_c)
         : c(_c)
     {
         //        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));

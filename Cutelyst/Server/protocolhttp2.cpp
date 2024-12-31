@@ -16,6 +16,7 @@ using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_SERVER_H2, "cutelyst.server.http2", QtWarningMsg)
 
+namespace {
 struct h2_frame {
     quint8 size2;
     quint8 size1;
@@ -89,7 +90,8 @@ enum Settings {
     SETTINGS_ENABLE_CONNECT_PROTOCOL = 0x8,
 };
 
-#define PREFACE_SIZE 24
+constexpr int PREFACE_SIZE = 24;
+} // namespace
 
 ProtocolHttp2::ProtocolHttp2(Server *wsgi)
     : Protocol(wsgi)

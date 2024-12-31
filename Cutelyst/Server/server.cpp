@@ -89,7 +89,7 @@ Server::Server(QObject *parent)
 Server::~Server()
 {
     delete d_ptr;
-    std::cout << "Cutelyst-Server terminated" << std::endl;
+    std::cout << "Cutelyst-Server terminated" << '\n';
 }
 
 void Server::parseCommandLine(const QStringList &arguments)
@@ -677,12 +677,12 @@ void Server::parseCommandLine(const QStringList &arguments)
 int Server::exec(Cutelyst::Application *app)
 {
     Q_D(Server);
-    std::cout << "Cutelyst-Server starting" << std::endl;
+    std::cout << "Cutelyst-Server starting" << '\n';
 
     if (!qEnvironmentVariableIsSet("CUTELYST_SERVER_IGNORE_MASTER") && !d->master) {
         std::cout
             << "*** WARNING: you are running Cutelyst-Server without its master process manager ***"
-            << std::endl;
+            << '\n';
     }
 
 #ifdef Q_OS_UNIX
@@ -791,7 +791,7 @@ int Server::exec(Cutelyst::Application *app)
     }
 
     if (d->servers.empty()) {
-        std::cout << "Please specify a socket to listen to" << std::endl;
+        std::cout << "Please specify a socket to listen to" << '\n';
         //% "No socket specified"
         Q_EMIT errorOccured(qtTrId("cutelystd-err-no-socket-specified"));
         return 1;
@@ -800,7 +800,7 @@ int Server::exec(Cutelyst::Application *app)
     d->writePidFile(d->pidfile2);
 
     if (!d->chdir.isEmpty()) {
-        std::cout << "Changing directory to: " << d->chdir.toLatin1().constData() << std::endl;
+        std::cout << "Changing directory to: " << d->chdir.toLatin1().constData() << '\n';
         if (!QDir::setCurrent(d->chdir)) {
             Q_EMIT errorOccured(QString::fromLatin1("Failed to chdir to: '%s'")
                                     .arg(QString::fromLatin1(d->chdir.toLatin1().constData())));
@@ -900,13 +900,11 @@ bool ServerPrivate::listenTcpSockets()
     }
 
     // FastCGI
-    for (const auto &socket : qAsConst(fastcgiSockets)) {
-        if (!listenTcp(socket, getFastCgiProto(), false)) {
-            return false;
-        }
-    }
+    bool allOk = std::ranges::all_of(fastcgiSockets, [this](const QString &socket) {
+        return listenTcp(socket, getFastCgiProto(), false);
+    });
 
-    return true;
+    return allOk;
 }
 
 bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure)
@@ -920,12 +918,12 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
         ret = server->listen(line, protocol, secure);
 
         if (ret && server->socketDescriptor()) {
-            auto qEnum = protocol->staticMetaObject.enumerator(0);
+            auto qEnum = Protocol::staticMetaObject.enumerator(0);
             std::cout << qEnum.valueToKey(static_cast<int>(protocol->type())) << " socket "
                       << QByteArray::number(static_cast<int>(servers.size())).constData()
                       << " bound to TCP address " << server->serverName().constData() << " fd "
-                      << QByteArray::number(server->socketDescriptor()).constData() << std::endl;
-            servers.push_back(server);
+                      << QByteArray::number(server->socketDescriptor()).constData() << '\n';
+            servers.emplace_back(server);
         }
     }
 
@@ -957,22 +955,22 @@ bool ServerPrivate::listenLocalSockets()
                 protocol = getFastCgiProto();
             } else {
                 std::cerr << "systemd activated socket does not match any configured socket"
-                          << std::endl;
+                          << '\n';
                 return false;
             }
             server->setProtocol(protocol);
             server->pauseAccepting();
 
-            auto qEnum = protocol->staticMetaObject.enumerator(0);
+            auto qEnum = Protocol::staticMetaObject.enumerator(0);
             std::cout << qEnum.valueToKey(static_cast<int>(protocol->type())) << " socket "
                       << QByteArray::number(static_cast<int>(servers.size())).constData()
                       << " bound to LOCAL address " << qPrintable(fullName) << " fd "
-                      << QByteArray::number(server->socket()).constData() << std::endl;
+                      << QByteArray::number(server->socket()).constData() << '\n';
             servers.push_back(server);
         } else {
             std::cerr << "Failed to listen on activated LOCAL FD: "
                       << QByteArray::number(fd).constData() << " : "
-                      << qPrintable(server->errorString()) << std::endl;
+                      << qPrintable(server->errorString()) << '\n';
             return false;
         }
     }
@@ -1020,14 +1018,15 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
             }
             server->setSocketOptions(options);
         }
-        server->removeServer(line);
+
+        QLocalServer::removeServer(line);
         server->setListenBacklogSize(listenQueue);
         ret = server->listen(line);
         server->pauseAccepting();
 
         if (!ret || !server->socket()) {
             std::cerr << "Failed to listen on LOCAL: " << qPrintable(line) << " : "
-                      << qPrintable(server->errorString()) << std::endl;
+                      << qPrintable(server->errorString()) << '\n';
             return false;
         }
 
@@ -1036,11 +1035,11 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
             UnixFork::chownSocket(line, chownSocket);
         }
 #endif
-        auto qEnum = protocol->staticMetaObject.enumerator(0);
+        auto qEnum = Protocol::staticMetaObject.enumerator(0);
         std::cout << qEnum.valueToKey(static_cast<int>(protocol->type())) << " socket "
                   << QByteArray::number(static_cast<int>(servers.size())).constData()
                   << " bound to LOCAL address " << qPrintable(line) << " fd "
-                  << QByteArray::number(server->socket()).constData() << std::endl;
+                  << QByteArray::number(server->socket()).constData() << '\n';
         servers.push_back(server);
     }
 
@@ -1671,7 +1670,7 @@ bool ServerPrivate::setupApplication()
     Q_Q(Server);
 
     if (!localApp) {
-        std::cout << "Loading application: " << application.toLatin1().constData() << std::endl;
+        std::cout << "Loading application: " << application.toLatin1().constData() << '\n';
         QPluginLoader loader(application);
         loader.setLoadHints(QLibrary::ResolveAllSymbolsHint | QLibrary::PreventUnloadHint);
         if (!loader.load()) {
@@ -1702,7 +1701,7 @@ bool ServerPrivate::setupApplication()
     }
 
     if (!chdir2.isEmpty()) {
-        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData() << std::endl;
+        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData() << '\n';
         if (!QDir::setCurrent(chdir2)) {
             Q_EMIT q->errorOccured(QString::fromLatin1("Failed to chdir2 to: '%s'")
                                        .arg(QString::fromLatin1(chdir2.toLatin1().constData())));
@@ -1723,7 +1722,7 @@ bool ServerPrivate::setupApplication()
     }
 
     if (!engine) {
-        std::cerr << "Application failed to init, cheaping..." << std::endl;
+        std::cerr << "Application failed to init, cheaping..." << '\n';
         return false;
     }
 
@@ -1788,6 +1787,7 @@ bool ServerPrivate::postFork(int workerId)
         if (thread != qApp->thread()) {
 #ifdef Q_OS_LINUX
             if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP")) {
+                // NOLINTNEXTLINE
                 thread->setEventDispatcher(new EventDispatcherEPoll);
             }
 #endif
@@ -1818,11 +1818,11 @@ bool ServerPrivate::writePidFile(const QString &filename)
 
     QFile file(filename);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        std::cerr << "Failed write pid file " << qPrintable(filename) << std::endl;
+        std::cerr << "Failed write pid file " << qPrintable(filename) << '\n';
         return false;
     }
 
-    std::cout << "Writing pidfile to " << qPrintable(filename) << std::endl;
+    std::cout << "Writing pidfile to " << qPrintable(filename) << '\n';
     file.write(QByteArray::number(QCoreApplication::applicationPid()) + '\n');
 
     return true;
@@ -1856,7 +1856,7 @@ ServerEngine *ServerPrivate::createEngine(Application *app, int workerCore)
     engine->setConfig(config);
     engine->setServers(servers);
     if (!engine->init()) {
-        std::cerr << "Application failed to init(), cheaping core: " << workerCore << std::endl;
+        std::cerr << "Application failed to init(), cheaping core: " << workerCore << '\n';
         delete engine;
         return nullptr;
     }

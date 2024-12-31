@@ -30,7 +30,7 @@ ValidatorReturnType ValidatorDateTime::validate(Context *c, const ParamsMultiMap
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
+        const QTimeZone tz = ValidatorDateTimePrivate::extractTimeZone(c, params, d->timeZone);
         const QDateTime dt = d->extractDateTime(c, v, d->inputFormat, tz);
 
         if (!dt.isValid()) {

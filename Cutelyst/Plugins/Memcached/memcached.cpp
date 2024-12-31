@@ -53,7 +53,7 @@ bool Memcached::setup(Application *app)
     const QStringList serverList = d->config(u"servers"_s).toString().split(u';');
 
     if (serverList.empty()) {
-        memcConfig.push_back(u"--SERVER=localhost"_s);
+        memcConfig.emplaceBack(u"--SERVER=localhost"_s);
     }
 
     for (const QString &flag : {u"verify_key"_s,
@@ -70,7 +70,7 @@ bool Memcached::setup(Application *app)
                                 u"tcp_keepalive"_s}) {
         if (d->config(flag, false).toBool()) {
             const QString flagStr = u"--" + flag.toUpper().replace(u'_', u'-');
-            memcConfig.push_back(flagStr);
+            memcConfig.emplaceBack(flagStr);
         }
     }
 
@@ -96,7 +96,7 @@ bool Memcached::setup(Application *app)
         const QString _val = d->config(opt).toString();
         if (!_val.isEmpty()) {
             const QString optStr = u"--" + opt.toUpper().replace(u'_', u'-') + u'=' + _val;
-            memcConfig.push_back(optStr); // clazy:exclude=reserve-candidates
+            memcConfig.emplaceBack(optStr); // clazy:exclude=reserve-candidates
         }
     }
 
@@ -475,8 +475,8 @@ QByteArray Memcached::get(QByteArrayView key, uint64_t *cas, ReturnType *returnT
 
     std::vector<const char *> keys;
     std::vector<size_t> sizes;
-    keys.push_back(key.constData());
-    sizes.push_back(key.size());
+    keys.emplace_back(key.constData());
+    sizes.emplace_back(key.size());
     rt = memcached_mget(mcd->d_ptr->memc, &keys[0], &sizes[0], keys.size());
 
     if (memcached_success(rt)) {
@@ -522,8 +522,8 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
 
     std::vector<const char *> keys;
     std::vector<size_t> sizes;
-    keys.push_back(key.constData());
-    sizes.push_back(key.size());
+    keys.emplace_back(key.constData());
+    sizes.emplace_back(key.size());
     memcached_return_t rt = memcached_mget_by_key(
         mcd->d_ptr->memc, groupKey.constData(), groupKey.size(), &keys[0], &sizes[0], keys.size());
 
@@ -1011,8 +1011,8 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
     _keysSizes.reserve(keys.size());
 
     for (const auto &key : keys) {
-        _keys.push_back(key.data());
-        _keysSizes.push_back(key.size());
+        _keys.emplace_back(key.data());
+        _keysSizes.emplace_back(key.size());
     }
 
     bool ok = false;
@@ -1085,8 +1085,8 @@ QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
     _keysSizes.reserve(keys.size());
 
     for (const auto &key : keys) {
-        _keys.push_back(key.data());
-        _keysSizes.push_back(key.size());
+        _keys.emplace_back(key.data());
+        _keysSizes.emplace_back(key.size());
     }
 
     bool ok = false;

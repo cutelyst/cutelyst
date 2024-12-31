@@ -21,7 +21,7 @@ class ProtoRequestHttp final
 {
     Q_GADGET
 public:
-    enum WebSocketPhase {
+    enum class WebSocketPhase {
         WebSocketPhaseHeaders,
         WebSocketPhaseSize,
         WebSocketPhaseMask,
@@ -105,7 +105,7 @@ public:
     int last                         = 0;
     int beginLine                    = 0;
     int websocket_start_of_frame     = 0;
-    int websocket_phase              = 0;
+    WebSocketPhase websocket_phase   = WebSocketPhase::WebSocketPhaseHeaders;
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode     = 0;
     bool websocketUpgraded           = false;

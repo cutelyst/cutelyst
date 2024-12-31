@@ -48,6 +48,7 @@ qint64 Response::writeData(const char *data, qint64 len)
             d->headers.setHeader("Connection"_ba, "Close"_ba);
             d->engineRequest->status |= EngineRequest::IOWrite;
         }
+
         delete d->bodyIODevice;
         d->bodyIODevice = nullptr;
         d->bodyData     = QByteArray();
@@ -86,10 +87,10 @@ bool Response::hasBody() const noexcept
 QByteArray &Response::body()
 {
     Q_D(Response);
-    if (d->bodyIODevice) {
-        delete d->bodyIODevice;
-        d->bodyIODevice = nullptr;
-    }
+
+    delete d->bodyIODevice;
+    d->bodyIODevice = nullptr;
+
     // Content-Length is set at finalizeHeaders() as we can't know it here
 
     return d->bodyData;
@@ -107,10 +108,9 @@ void Response::setBody(QIODevice *body)
     Q_ASSERT(body && body->isOpen() && body->isReadable());
 
     if (!(d->engineRequest->status & EngineRequest::IOWrite)) {
-        d->bodyData = QByteArray();
-        if (d->bodyIODevice) {
-            delete d->bodyIODevice;
-        }
+        d->bodyData = {};
+
+        delete d->bodyIODevice;
         d->bodyIODevice = body;
         // Content-Length is set at finalizeHeaders()
         // because & ::body() reference might change it
@@ -353,11 +353,9 @@ bool Response::webSocketClose(quint16 code, const QString &reason)
 void ResponsePrivate::setBodyData(const QByteArray &body)
 {
     if (!(engineRequest->status & EngineRequest::IOWrite)) {
-        if (bodyIODevice) {
-            delete bodyIODevice;
-            bodyIODevice = nullptr;
-        }
-        bodyData = body;
+        delete bodyIODevice;
+        bodyIODevice = nullptr;
+        bodyData     = body;
         // Content-Length is set at finalizeHeaders()
         // because & ::body() reference might change it
     }

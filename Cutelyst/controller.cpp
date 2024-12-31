@@ -426,8 +426,7 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
 
     QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
     if (object) {
-        Action *action = qobject_cast<Cutelyst::Action *>(object);
-        if (action) {
+        if (auto action = qobject_cast<Cutelyst::Action *>(object); action) {
             return action;
         }
         qCWarning(CUTELYST_CONTROLLER) << "ActionClass" << actionClass << "is not an ActionClass"
@@ -544,7 +543,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
                         if (str.at(pos) == ')') {
                             // found the possible end of the value
                             int valueEnd = pos;
-                            if (++pos < size && str.at(pos) == ':') {
+                            ++pos;
+                            if (pos < size && str.at(pos) == ':') {
                                 // found the start of a key so this is
                                 // really the end of a value
                                 value =
@@ -585,7 +585,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
             }
 
             // store the key/value pair found
-            attributes.emplace_back(std::make_pair(key, value));
+            attributes.emplace_back(key, value);
             continue;
         }
         ++pos;
@@ -655,8 +655,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
     }
 
     // If the method is private add a Private attribute
-    if (!ret.contains(u"Private"_qs) && method.access() == QMetaMethod::Private) {
-        ret.insert(u"Private"_qs, {});
+    if (!ret.contains(u"Private"_s) && method.access() == QMetaMethod::Private) {
+        ret.insert(u"Private"_s, {});
     }
 
     return ret;

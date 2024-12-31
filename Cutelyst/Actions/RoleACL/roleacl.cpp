@@ -200,12 +200,8 @@ bool RoleACL::canVisit(Context *c) const
             }
         }
     } else if (!required.isEmpty()) {
-        for (const QString &role : required) {
-            if (!user_has.contains(role)) {
-                return false;
-            }
-        }
-        return true;
+        return std::ranges::all_of(
+            required, [user_has](const QString &role) { return user_has.contains(role); });
     } else if (!allowed.isEmpty()) {
         for (const QString &role : allowed) {
             if (user_has.contains(role)) {

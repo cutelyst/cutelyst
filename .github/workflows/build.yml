@@ -77,6 +77,6 @@ jobs:
 
       - name: Read tests log when it fails
         uses: andstor/file-reader-action@v1
-        if: ${{ steps.ctest.conclusion == 'failure' }}
+        if: ${{ failure() && steps.ctest.conclusion == 'failure' }}
         with:
           path: "./build/Testing/Temporary/LastTest.log"

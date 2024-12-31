@@ -27,11 +27,13 @@ Q_LOGGING_CATEGORY(C_SERVER_BALANCER, "cutelyst.server.tcpbalancer", QtWarningMs
 using namespace Cutelyst;
 
 #ifdef Q_OS_LINUX
+namespace {
 int listenReuse(const QHostAddress &address,
                 int listenQueue,
                 quint16 port,
                 bool reusePort,
                 bool startListening);
+}
 #endif
 
 TcpServerBalancer::TcpServerBalancer(Server *server)
@@ -58,7 +60,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     int closeBracketPos = addressPortString.indexOf(QLatin1Char(']'));
     if (closeBracketPos != -1) {
         if (!line.startsWith(QLatin1Char('['))) {
-            std::cerr << "Failed to parse address: " << qPrintable(addressPortString) << std::endl;
+            std::cerr << "Failed to parse address: " << qPrintable(addressPortString) << '\n';
             return false;
         }
         addressString = addressPortString.mid(1, closeBracketPos - 1);
@@ -83,7 +85,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 #ifndef QT_NO_SSL
     if (secure) {
         if (commaPos == -1) {
-            std::cerr << "No SSL certificate specified" << std::endl;
+            std::cerr << "No SSL certificate specified" << '\n';
             return false;
         }
 
@@ -92,12 +94,12 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         QFile certFile(certPath);
         if (!certFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL certificate" << qPrintable(certPath)
-                      << qPrintable(certFile.errorString()) << std::endl;
+                      << qPrintable(certFile.errorString()) << '\n';
             return false;
         }
         QSslCertificate cert(&certFile);
         if (cert.isNull()) {
-            std::cerr << "Failed to parse SSL certificate" << std::endl;
+            std::cerr << "Failed to parse SSL certificate" << '\n';
             return false;
         }
 
@@ -105,7 +107,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         QFile keyFile(keyPath);
         if (!keyFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL private key" << qPrintable(keyPath)
-                      << qPrintable(keyFile.errorString()) << std::endl;
+                      << qPrintable(keyFile.errorString()) << '\n';
             return false;
         }
 
@@ -118,14 +120,14 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
                 algorithm = QSsl::Ec;
             } else {
                 std::cerr << "Failed to select SSL Key Algorithm" << qPrintable(keyAlgorithm)
-                          << std::endl;
+                          << '\n';
                 return false;
             }
         }
 
         QSslKey key(&keyFile, algorithm);
         if (key.isNull()) {
-            std::cerr << "Failed to parse SSL private key" << std::endl;
+            std::cerr << "Failed to parse SSL private key" << '\n';
             return false;
         }
 
@@ -151,7 +153,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         pauseAccepting();
     } else {
         std::cerr << "Failed to listen on TCP: " << qPrintable(line) << " : "
-                  << qPrintable(errorString()) << std::endl;
+                  << qPrintable(errorString()) << '\n';
         return false;
     }
 #else
@@ -161,7 +163,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         pauseAccepting();
     } else {
         std::cerr << "Failed to listen on TCP: " << qPrintable(line) << " : "
-                  << qPrintable(errorString()) << std::endl;
+                  << qPrintable(errorString()) << '\n';
         return false;
     }
 #endif
@@ -170,9 +172,10 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     return true;
 }
 
+namespace {
 #ifdef Q_OS_LINUX
 // UnixWare 7 redefines socket -> _socket
-static inline int qt_safe_socket(int domain, int type, int protocol, int flags = 0)
+inline int qt_safe_socket(int domain, int type, int protocol, int flags = 0)
 {
     Q_ASSERT((flags & ~O_NONBLOCK) == 0);
 
@@ -270,7 +273,6 @@ union qt_sockaddr {
 #    define QT_SOCKLEN_T int
 #    define QT_SOCKET_BIND ::bind
 
-namespace {
 namespace SetSALen {
 template <typename T>
 void set(T *sa, typename std::enable_if<(&T::sa_len, true), QT_SOCKLEN_T>::type len)
@@ -287,7 +289,6 @@ void set(T *, ...)
 {
 }
 } // namespace SetSALen
-} // namespace
 
 void setPortAndAddress(quint16 port,
                        const QHostAddress &address,
@@ -432,6 +433,7 @@ int listenReuse(const QHostAddress &address,
     return socket;
 }
 #endif // Q_OS_LINUX
+} // namespace
 
 void TcpServerBalancer::setBalancer(bool enable)
 {

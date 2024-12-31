@@ -33,7 +33,7 @@ ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &p
 
     if (!v.isEmpty()) {
 
-        const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
+        const QTimeZone tz = ValidatorAfterPrivate::extractTimeZone(c, params, d->timeZone);
 
         const QVariant _comp =
             (d->comparison.userType() == QMetaType::QString)

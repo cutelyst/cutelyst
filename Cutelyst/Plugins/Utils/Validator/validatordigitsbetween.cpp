@@ -28,14 +28,14 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
 
     bool ok        = false;
     qsizetype _max = 0;
-    qsizetype _min = d->extractSizeType(c, params, d->min, &ok);
+    qsizetype _min = ValidatorDigitsBetweenPrivate::extractSizeType(c, params, d->min, &ok);
     if (!ok) {
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote()
             << debugString(c) << "Invalid minimum length comparison data";
         return result;
     } else {
-        _max = d->extractSizeType(c, params, d->max, &ok);
+        _max = ValidatorDigitsBetweenPrivate::extractSizeType(c, params, d->max, &ok);
         if (!ok) {
             result.errorMessage = validationDataError(c);
             qCWarning(C_VALIDATOR).noquote()
