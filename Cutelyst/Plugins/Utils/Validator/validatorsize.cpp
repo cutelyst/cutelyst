@@ -42,7 +42,8 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                 qCWarning(C_VALIDATOR).noquote().nospace()
                     << debugString(c) << "Failed to parse \"" << v << "\" into an integer number";
             } else {
-                const qlonglong size = d->extractLongLong(c, params, d->size, &ok);
+                const qlonglong size =
+                    ValidatorSizePrivate::extractLongLong(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
@@ -68,7 +69,8 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                     << debugString(c) << "Failed to parse \"" << v
                     << "\" into an unsigned integer number";
             } else {
-                const qulonglong size = d->extractULongLong(c, params, d->size, &ok);
+                const qulonglong size =
+                    ValidatorSizePrivate::extractULongLong(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
@@ -92,7 +94,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                     << debugString(c) << "Failed to parse \"" << v
                     << "\" into a floating point number";
             } else {
-                const double size = d->extractDouble(c, params, d->size, &ok);
+                const double size = ValidatorSizePrivate::extractDouble(c, params, d->size, &ok);
                 if (Q_UNLIKELY(!ok)) {
                     result.errorMessage = validationDataError(c, 1);
                     qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
@@ -109,7 +111,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
         case QMetaType::QString:
         {
             const auto val       = static_cast<qlonglong>(v.length());
-            const qlonglong size = d->extractLongLong(c, params, d->size, &ok);
+            const qlonglong size = ValidatorSizePrivate::extractLongLong(c, params, d->size, &ok);
             if (Q_UNLIKELY(!ok)) {
                 result.errorMessage = validationDataError(c, 1);
                 qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid comparison size";
@@ -132,7 +134,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
 
         if (valid) {
             if (d->type != QMetaType::QString) {
-                const QVariant _v = d->valueToNumber(c, v, d->type);
+                const QVariant _v = ValidatorSizePrivate::valueToNumber(c, v, d->type);
                 if (_v.isValid()) {
                     result.value = _v;
                 } else {

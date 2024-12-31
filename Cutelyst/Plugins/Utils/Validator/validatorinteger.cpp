@@ -39,7 +39,7 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
         case QMetaType::UInt:
         case QMetaType::ULong:
         case QMetaType::ULongLong:
-            converted = d->valueToNumber(c, v, d->type);
+            converted = ValidatorIntegerPrivate::valueToNumber(c, v, d->type);
             break;
         default:
             result.errorMessage = validationDataError(c);

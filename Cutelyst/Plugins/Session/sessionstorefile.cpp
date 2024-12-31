@@ -21,7 +21,16 @@ Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile", QtWarningMsg)
 #define SESSION_STORE_FILE_SAVE QStringLiteral("_c_session_store_file_save")
 #define SESSION_STORE_FILE_DATA QStringLiteral("_c_session_store_file_data")
 
-static QVariantHash loadSessionData(Context *c, const QByteArray &sid);
+namespace {
+QVariantHash loadSessionData(Context *c, const QByteArray &sid);
+
+inline QString rootPath()
+{
+    static QString rootPath =
+        QDir::tempPath() + u'/' + QCoreApplication::applicationName() + u"/session/data";
+    return rootPath;
+}
+} // namespace
 
 SessionStoreFile::SessionStoreFile(QObject *parent)
     : SessionStore(parent)
@@ -67,13 +76,6 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QByteArray &sid, cons
     return true;
 }
 
-static QString rootPath()
-{
-    static QString rootPath =
-        QDir::tempPath() + u'/' + QCoreApplication::applicationName() + u"/session/data";
-    return rootPath;
-}
-
 bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
 {
     Q_UNUSED(c)
@@ -84,6 +86,7 @@ bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
     return true;
 }
 
+namespace {
 QVariantHash loadSessionData(Context *c, const QByteArray &sid)
 {
     QVariantHash data;
@@ -150,5 +153,6 @@ QVariantHash loadSessionData(Context *c, const QByteArray &sid)
 
     return data;
 }
+} // namespace
 
 #include "moc_sessionstorefile.cpp"

@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         QCoreApplication::installTranslator(&appTranslator);
     }
 
-    server.parseCommandLine(app.arguments());
+    server.parseCommandLine(QCoreApplication::arguments());
 
     //    QTranslator qtTranslator;
     //    qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),

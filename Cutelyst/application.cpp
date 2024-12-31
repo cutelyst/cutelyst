@@ -461,7 +461,8 @@ void Application::addTranslators(const QLocale &locale, const QVector<QTranslato
     }
 }
 
-static void replacePercentN(QString *result, int n)
+namespace {
+void replacePercentN(QString *result, int n)
 {
     if (n >= 0) {
         auto percentPos = 0;
@@ -484,6 +485,7 @@ static void replacePercentN(QString *result, int n)
         }
     }
 }
+} // namespace
 
 QString Application::translate(const QLocale &locale,
                                const char *context,

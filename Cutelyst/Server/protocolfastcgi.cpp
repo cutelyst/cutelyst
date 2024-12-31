@@ -16,79 +16,32 @@
 
 Q_LOGGING_CATEGORY(C_SERVER_FCGI, "cutelyst.server.fcgi", QtWarningMsg)
 
-/*
- * Listening socket file number
- */
-#define FCGI_LISTENSOCK_FILENO 0
-
-/*
- * Number of bytes in a FCGI_Header.  Future versions of the protocol
- * will not reduce this number.
- */
-#define FCGI_HEADER_LEN 8
-
+namespace {
 /*
  * Value for version component of FCGI_Header
  */
-#define FCGI_VERSION_1 1
+constexpr auto FCGI_VERSION_1 = 1;
 
 /*
  * Values for type component of FCGI_Header
  */
-#define FCGI_BEGIN_REQUEST 1
-#define FCGI_ABORT_REQUEST 2
-#define FCGI_END_REQUEST 3
-#define FCGI_PARAMS 4
-#define FCGI_STDIN 5
-#define FCGI_STDOUT 6
-#define FCGI_STDERR 7
-#define FCGI_DATA 8
-#define FCGI_GET_VALUES 9
-#define FCGI_GET_VALUES_RESULT 10
-#define FCGI_UNKNOWN_TYPE 11
-#define FCGI_MAXTYPE (FCGI_UNKNOWN_TYPE)
-
-/*
- * Value for requestId component of FCGI_Header
- */
-#define FCGI_NULL_REQUEST_ID 0
+constexpr auto FCGI_BEGIN_REQUEST = 1;
+constexpr auto FCGI_PARAMS        = 4;
+constexpr auto FCGI_STDIN         = 5;
+constexpr auto FCGI_STDOUT        = 6;
 
 /*
  * Mask for flags component of FCGI_BeginRequestBody
  */
-#define FCGI_KEEP_CONN 1
+constexpr auto FCGI_KEEP_CONN = 1;
 
-/*
- * Values for role component of FCGI_BeginRequestBody
- */
-#define FCGI_RESPONDER 1
-#define FCGI_AUTHORIZER 2
-#define FCGI_FILTER 3
-
-/*
- * Values for protocolStatus component of FCGI_EndRequestBody
- */
-#define FCGI_REQUEST_COMPLETE 0
-#define FCGI_CANT_MPX_CONN 1
-#define FCGI_OVERLOADED 2
-#define FCGI_UNKNOWN_ROLE 3
-
-/*
- * Variable names for FCGI_GET_VALUES / FCGI_GET_VALUES_RESULT records
- */
-#define FCGI_MAX_CONNS "FCGI_MAX_CONNS"
-#define FCGI_MAX_REQS "FCGI_MAX_REQS"
-#define FCGI_MPXS_CONNS "FCGI_MPXS_CONNS"
-
-#define WSGI_OK 0
-#define WSGI_AGAIN 1
-#define WSGI_BODY 2
-#define WSGI_ERROR -1
+constexpr auto WSGI_OK    = 0;
+constexpr auto WSGI_AGAIN = 1;
+constexpr auto WSGI_BODY  = 2;
+constexpr auto WSGI_ERROR = -1;
 
 #define FCGI_ALIGNMENT 8
 #define FCGI_ALIGN(n) (((n) + (FCGI_ALIGNMENT - 1)) & ~(FCGI_ALIGNMENT - 1))
-
-using namespace Cutelyst;
 
 struct fcgi_record {
     quint8 version;
@@ -116,6 +69,9 @@ struct fcgi_begin_request_body {
 #else
 __attribute__((__packed__));
 #endif
+} // namespace
+
+using namespace Cutelyst;
 
 ProtocolFastCGI::ProtocolFastCGI(Server *wsgi)
     : Protocol(wsgi)
@@ -199,8 +155,8 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
 {
     quint32 j = 0;
     while (j < len) {
-        quint32 keylen, vallen;
-        quint8 octet = static_cast<quint8>(buf[j]);
+        quint32 keylen;
+        auto octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
             if (j + 4 >= len)
                 return -1;
@@ -214,6 +170,7 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
             keylen = octet;
         }
 
+        quint32 vallen;
         octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
             if (j + 4 >= len)
@@ -252,7 +209,7 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
             auto fr = reinterpret_cast<struct fcgi_record *>(request->buffer);
 
             quint8 fcgi_type    = fr->type;
-            quint16 fcgi_len    = quint16(fr->cl0 | (fr->cl1 << 8));
+            auto fcgi_len       = quint16(fr->cl0 | (fr->cl1 << 8));
             qint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
             request->stream_id  = quint16(fr->req0 | (fr->req1 << 8));
 

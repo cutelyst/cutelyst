@@ -12,18 +12,64 @@
 
 #include <QDebug>
 
-#define INT_MASK(bits) (1 << bits) - 1
+#define INT_MASK(bits) ((1 << (bits)) - 1)
 
 using namespace Cutelyst;
 
+namespace {
 unsigned char *
-    hpackDecodeString(unsigned char *src, unsigned char *src_end, QByteArray &value, int len);
+    hpackDecodeString(unsigned char *src, unsigned char *src_end, QByteArray &value, int len)
+{
+    quint8 state                          = 0;
+    const HPackPrivate::HuffDecode *entry = nullptr;
+    value.reserve(len * 2); // max compression ratio is >= 0.5
+
+    do {
+        if (entry) {
+            state = entry->state;
+        }
+        entry = HPackPrivate::huff_decode_table[state] + (*src >> 4);
+
+        if (entry->flags & HPackPrivate::HUFF_FAIL) {
+            // A decoder decoded an invalid Huffman sequence
+            return nullptr;
+        }
+
+        if (entry->flags & HPackPrivate::HUFF_SYM) {
+            value.append(char(entry->sym));
+        }
+
+        entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
+
+        if (entry->flags & HPackPrivate::HUFF_FAIL) {
+            // A decoder decoded an invalid Huffman sequence
+            return nullptr;
+        }
+
+        if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
+            value.append(char(entry->sym));
+        }
+
+    } while (++src < src_end);
+
+    //      qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) <<
+    //      "entry->state =" << entry->state;
+
+    if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0) {
+        // entry->state == 28 // A invalid header name or value character was coded
+        // entry->state != 28 // A decoder decoded an invalid Huffman sequence
+        return nullptr;
+    }
+
+    return src_end;
+}
 
 // This decodes an UInt
 // it returns nullptr if it tries to read past end
 // The value can overflow it's capacity, which should be harmless as it would
 // give parsing errors on other parts
-unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 &dst, quint8 mask)
+unsigned char *
+    decodeUInt16(unsigned char *src, const unsigned char *src_end, quint16 &dst, quint8 mask)
 {
     //    qDebug() << Q_FUNC_INFO << "value 0" << QByteArray((char*)src, 10).toHex();
 
@@ -60,7 +106,7 @@ void encodeUInt16(QByteArray &buf, int I, quint8 mask)
     buf.append(char(I));
 }
 
-static inline void encodeH2caseHeader(QByteArray &buf, const QString &key)
+inline void encodeH2caseHeader(QByteArray &buf, const QString &key)
 {
 
     encodeUInt16(buf, key.length(), INT_MASK(7));
@@ -134,6 +180,7 @@ unsigned char *parse_string_key(QByteArray &dst, quint8 *buf, quint8 *itEnd)
     }
     return buf;
 }
+} // namespace
 
 HPack::HPack(int maxTableSize)
     : m_currentMaxDynamicTableSize(maxTableSize)
@@ -429,51 +476,4 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
     }
 
     return 0;
-}
-
-unsigned char *
-    hpackDecodeString(unsigned char *src, unsigned char *src_end, QByteArray &value, int len)
-{
-    quint8 state                          = 0;
-    const HPackPrivate::HuffDecode *entry = nullptr;
-    value.reserve(len * 2); // max compression ratio is >= 0.5
-
-    do {
-        if (entry) {
-            state = entry->state;
-        }
-        entry = HPackPrivate::huff_decode_table[state] + (*src >> 4);
-
-        if (entry->flags & HPackPrivate::HUFF_FAIL) {
-            // A decoder decoded an invalid Huffman sequence
-            return nullptr;
-        }
-
-        if (entry->flags & HPackPrivate::HUFF_SYM) {
-            value.append(char(entry->sym));
-        }
-
-        entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
-
-        if (entry->flags & HPackPrivate::HUFF_FAIL) {
-            // A decoder decoded an invalid Huffman sequence
-            return nullptr;
-        }
-
-        if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
-            value.append(char(entry->sym));
-        }
-
-    } while (++src < src_end);
-
-    //      qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) <<
-    //      "entry->state =" << entry->state;
-
-    if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0) {
-        // entry->state == 28 // A invalid header name or value character was coded
-        // entry->state != 28 // A decoder decoded an invalid Huffman sequence
-        return nullptr;
-    }
-
-    return src_end;
 }

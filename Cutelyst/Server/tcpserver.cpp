@@ -30,18 +30,18 @@ TcpServer::TcpServer(const QByteArray &serverAddress,
     m_engine = qobject_cast<ServerEngine *>(parent);
 
     if (m_wsgi->tcpNodelay()) {
-        m_socketOptions.push_back({QAbstractSocket::LowDelayOption, 1});
+        m_socketOptions.emplace_back(QAbstractSocket::LowDelayOption, 1);
     }
     if (m_wsgi->soKeepalive()) {
-        m_socketOptions.push_back({QAbstractSocket::KeepAliveOption, 1});
+        m_socketOptions.emplace_back(QAbstractSocket::KeepAliveOption, 1);
     }
     if (m_wsgi->socketSndbuf() != -1) {
-        m_socketOptions.push_back(
-            {QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf()});
+        m_socketOptions.emplace_back(QAbstractSocket::SendBufferSizeSocketOption,
+                                     m_wsgi->socketSndbuf());
     }
     if (m_wsgi->socketRcvbuf() != -1) {
-        m_socketOptions.push_back(
-            {QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf()});
+        m_socketOptions.emplace_back(QAbstractSocket::ReceiveBufferSizeSocketOption,
+                                     m_wsgi->socketRcvbuf());
     }
 }
 

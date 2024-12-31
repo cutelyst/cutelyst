@@ -6,8 +6,8 @@
 
 #include "eventdispatcher_epoll.h"
 
-#include <errno.h>
-#include <stdlib.h>
+#include <cerrno>
+#include <cstdlib>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 #include <sys/timerfd.h>
@@ -90,7 +90,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
             while (it != m_zero_timers.constEnd()) {
                 ZeroTimer *data = it.value();
                 data->ref();
-                timers.push_back(data);
+                timers.emplace_back(data);
                 ++it;
             }
 
@@ -211,14 +211,14 @@ void TimerInfo::process(quint32 events)
         spec.it_interval.tv_sec  = 0;
         spec.it_interval.tv_nsec = 0;
 
-        gettimeofday(&now, 0);
+        gettimeofday(&now, nullptr);
         EventDispatcherEPollPrivate::calculateNextTimeout(this, now, delta);
         TIMEVAL_TO_TIMESPEC(&delta, &spec.it_value);
         if (0 == spec.it_value.tv_sec && 0 == spec.it_value.tv_nsec) {
             spec.it_value.tv_nsec = 500;
         }
 
-        if (-1 == timerfd_settime(fd, 0, &spec, 0)) {
+        if (-1 == timerfd_settime(fd, 0, &spec, nullptr)) {
             qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
         }
     }

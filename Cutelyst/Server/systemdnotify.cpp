@@ -6,8 +6,8 @@
 
 #include "server.h"
 
+#include <cstring>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -17,8 +17,10 @@
 #include <QScopeGuard>
 #include <QTimer>
 
+namespace {
 /* The first passed file descriptor is fd 3 */
-#define SD_LISTEN_FDS_START 3
+constexpr auto SD_LISTEN_FDS_START = 3;
+} // namespace
 
 Q_LOGGING_CATEGORY(C_SERVER_SYSTEMD, "cutelyst.server.systemd", QtWarningMsg)
 
@@ -229,14 +231,13 @@ bool systemdNotify::is_systemd_notify_available()
 
 int fd_cloexec(int fd, bool cloexec)
 {
-    int flags, nflags;
-
     Q_ASSERT(fd >= 0);
 
-    flags = fcntl(fd, F_GETFD, 0);
+    const int flags = fcntl(fd, F_GETFD, 0);
     if (flags < 0)
         return -errno;
 
+    int nflags;
     if (cloexec)
         nflags = flags | FD_CLOEXEC;
     else
@@ -294,8 +295,7 @@ int sd_listen_fds()
 std::vector<int> systemdNotify::listenFds(bool unsetEnvironment)
 {
     std::vector<int> ret;
-    int maxFD;
-    if ((maxFD = sd_listen_fds()) > 0) {
+    if (const int maxFD = sd_listen_fds(); maxFD > 0) {
         for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + maxFD; ++fd) {
             ret.push_back(fd);
         }

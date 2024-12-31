@@ -10,23 +10,21 @@
 #    include "EventLoopEPoll/eventdispatcher_epoll.h"
 #endif
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #if defined(__FreeBSD__) || defined(__GNU_kFreeBSD__)
 #    include <sys/cpuset.h>
 #    include <sys/param.h>
 #endif
 
-#include <errno.h>
+#include <cerrno>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <grp.h>
 #include <iostream>
 #include <pwd.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -44,7 +42,9 @@ Q_LOGGING_CATEGORY(C_SERVER_UNIX, "cutelyst.server.unix", QtWarningMsg)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
 
-static int signalsFd[2];
+namespace {
+int signalsFd[2];
+} // namespace
 
 UnixFork::UnixFork(int process, int threads, bool setupSignals, QObject *parent)
     : AbstractFork(parent)
@@ -73,7 +73,7 @@ int UnixFork::exec(bool lazy, bool master)
 {
     if (master) {
         std::cout << "spawned WSGI master process (pid: " << QCoreApplication::applicationPid()
-                  << ")" << std::endl;
+                  << ")" << '\n';
     }
 
     int ret;
@@ -81,7 +81,7 @@ int UnixFork::exec(bool lazy, bool master)
         if (master) {
             ret = internalExec();
         } else {
-            std::cerr << "*** Master mode must be set on lazy mode" << std::endl;
+            std::cerr << "*** Master mode must be set on lazy mode" << '\n';
             ret = -1;
         }
     } else {
@@ -134,7 +134,7 @@ bool UnixFork::createProcess(bool respawn)
         m_recreateWorker.removeIf([this, respawn](Worker worker) {
             worker.restart = 0;
             if (!createChild(worker, respawn)) {
-                std::cout << "CHEAPING worker: " << worker.id << std::endl;
+                std::cout << "CHEAPING worker: " << worker.id << '\n';
                 --m_processes;
             }
 
@@ -201,14 +201,14 @@ void UnixFork::stopWSGI(const QString &pidfile)
 {
     QFile file(pidfile);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        std::cerr << "Failed open pid file " << qPrintable(pidfile) << std::endl;
+        std::cerr << "Failed open pid file " << qPrintable(pidfile) << '\n';
         exit(1);
     }
 
     QByteArray piddata = file.readLine().simplified();
     qint64 pid         = piddata.toLongLong();
     if (pid < 2) {
-        std::cerr << "Failed read pid file " << qPrintable(pidfile) << std::endl;
+        std::cerr << "Failed read pid file " << qPrintable(pidfile) << '\n';
         exit(1);
     }
 
@@ -219,7 +219,7 @@ void UnixFork::stopWSGI(const QString &pidfile)
 bool UnixFork::setUmask(const QByteArray &valueStr)
 {
     if (valueStr.size() < 3) {
-        std::cerr << "umask too small" << std::endl;
+        std::cerr << "umask too small" << '\n';
         return false;
     }
 
@@ -234,7 +234,7 @@ bool UnixFork::setUmask(const QByteArray &valueStr)
         mode = (mode << 3) + (value[2] - '0');
         mode = (mode << 3) + (value[3] - '0');
     }
-    std::cout << "umask() " << value << std::endl;
+    std::cout << "umask() " << value << '\n';
 
     umask(mode);
 
@@ -276,20 +276,20 @@ bool UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
             if (ugroup) {
                 gidInt = ugroup->gr_gid;
             } else {
-                std::cerr << "setgid group %s not found." << qUtf8Printable(gid) << std::endl;
+                std::cerr << "setgid group %s not found." << qUtf8Printable(gid) << '\n';
                 return false;
             }
         }
 
         if (setgid(gidInt)) {
-            std::cerr << "Failed to set gid '%s'" << strerror(errno) << std::endl;
+            std::cerr << "Failed to set gid '%s'" << strerror(errno) << '\n';
             return false;
         }
-        std::cout << "setgid() to " << gidInt << std::endl;
+        std::cout << "setgid() to " << gidInt << '\n';
 
         if (noInitgroups || uid.isEmpty()) {
             if (setgroups(0, nullptr)) {
-                std::cerr << "Failed to setgroups()" << std::endl;
+                std::cerr << "Failed to setgroups()" << '\n';
                 return false;
             }
         } else {
@@ -305,7 +305,7 @@ bool UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
             }
 
             if (initgroups(uidname.constData(), gidInt)) {
-                std::cerr << "Failed to setgroups()" << std::endl;
+                std::cerr << "Failed to setgroups()" << '\n';
                 return false;
             }
         }
@@ -318,16 +318,16 @@ bool UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
             if (upasswd) {
                 uidInt = upasswd->pw_uid;
             } else {
-                std::cerr << "setuid user" << qUtf8Printable(uid) << "not found." << std::endl;
+                std::cerr << "setuid user" << qUtf8Printable(uid) << "not found." << '\n';
                 return false;
             }
         }
 
         if (setuid(uidInt)) {
-            std::cerr << "Failed to set uid:" << strerror(errno) << std::endl;
+            std::cerr << "Failed to set uid:" << strerror(errno) << '\n';
             return false;
         }
-        std::cout << "setuid() to " << uidInt << std::endl;
+        std::cout << "setuid() to " << uidInt << '\n';
     }
     return true;
 }
@@ -350,7 +350,7 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
         new_uid = new_user->pw_uid;
     }
 
-    gid_t new_gid       = -1u;
+    gid_t new_gid       = -1U;
     const QString group = uidGid.section(QLatin1Char(':'), 1, 1);
     if (!group.isEmpty()) {
         new_gid = group.toUInt(&ok);
@@ -407,7 +407,7 @@ int parseProcCpuinfo()
     //        cpuCores = QThread::idealThreadCount();
     //    }
 
-    if (physicalIds.size()) {
+    if (!physicalIds.isEmpty()) {
         cpuSockets = physicalIds.size();
     } else {
         cpuSockets = 1;
@@ -462,19 +462,19 @@ void UnixFork::handleSigInt()
         qDebug(C_SERVER_UNIX) << "SIGINT/SIGQUIT received, worker shutting down...";
         Q_EMIT shutdown();
     } else {
-        std::cout << "SIGINT/SIGQUIT received, terminating workers..." << std::endl;
+        std::cout << "SIGINT/SIGQUIT received, terminating workers..." << '\n';
         setupCheckChildTimer();
 
         static int count = 0;
         if (count++ > 2) {
-            std::cout << "KILL workers..." << std::endl;
+            std::cout << "KILL workers..." << '\n';
             killChild();
             QTimer::singleShot(std::chrono::seconds{3}, qApp, &QCoreApplication::quit);
         } else if (count > 1) {
             terminateChild();
         } else {
             QTimer::singleShot(std::chrono::seconds{30}, this, [this]() {
-                std::cout << "workers terminating timeout, KILL ..." << std::endl;
+                std::cout << "workers terminating timeout, KILL ..." << '\n';
                 killChild();
                 QTimer::singleShot(std::chrono::seconds{30}, qApp, &QCoreApplication::quit);
             });
@@ -502,7 +502,7 @@ void UnixFork::handleSigChld()
             m_childs.erase(it);
         } else {
             std::cout << "DAMN ! *UNKNOWN* worker (pid: " << p << ") died, killed by signal "
-                      << exitStatus << " :( ignoring .." << std::endl;
+                      << exitStatus << " :( ignoring .." << '\n';
             continue;
         }
 
@@ -515,7 +515,7 @@ void UnixFork::handleSigChld()
             if (worker.restart == 0) {
                 std::cout << "DAMN ! worker " << worker.id << " (pid: " << p
                           << ") died, killed by signal " << exitStatus << " :( trying respawn .."
-                          << std::endl;
+                          << '\n';
             }
             worker.restart = 0;
             ++worker.respawn;
@@ -608,7 +608,7 @@ void UnixFork::setSched(Cutelyst::Server *wsgi, int workerId, int workerCore)
             qFatal("cpuset_setaffinity");
         }
 #endif
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
     }
 }
 
@@ -710,7 +710,7 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
         if (childPID == 0) {
             if (worker.respawn >= 5) {
                 std::cout << "WSGI worker " << worker.id << " respawned too much, sleeping a bit"
-                          << std::endl;
+                          << '\n';
                 sleep(2);
             }
 
@@ -733,14 +733,14 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
 
             if (respawn) {
                 std::cout << "Respawned WSGI worker " << worker.id << " (new pid: " << childPID
-                          << ", cores: " << m_threads << ")" << std::endl;
+                          << ", cores: " << m_threads << ")" << '\n';
             } else {
                 if (m_processes == 1) {
                     std::cout << "spawned WSGI worker (and the only) (pid: " << childPID
-                              << ", cores: " << m_threads << ")" << std::endl;
+                              << ", cores: " << m_threads << ")" << '\n';
                 } else {
                     std::cout << "spawned WSGI worker " << worker.id << " (pid: " << childPID
-                              << ", cores: " << m_threads << ")" << std::endl;
+                              << ", cores: " << m_threads << ")" << '\n';
                 }
             }
             m_childs.insert(childPID, worker);

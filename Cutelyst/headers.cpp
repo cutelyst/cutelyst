@@ -463,12 +463,12 @@ void Headers::setHeader(const QByteArray &field, const QByteArrayList &values)
 
 void Headers::pushHeader(const QByteArray &key, const QByteArray &value)
 {
-    m_data.push_back({key, value});
+    m_data.emplace_back(HeaderKeyValue{key, value});
 }
 
 void Headers::pushHeader(const QByteArray &key, const QByteArrayList &values)
 {
-    m_data.push_back({key, values.join(", ")});
+    m_data.emplace_back(HeaderKeyValue{key, values.join(", ")});
 }
 
 void Headers::removeHeader(QAnyStringView key)
@@ -517,13 +517,8 @@ bool Headers::operator==(const Headers &other) const noexcept
         return false;
     }
 
-    for (const auto &myValue : m_data) {
-        if (!other.data().contains(myValue)) {
-            return false;
-        }
-    }
-
-    return true;
+    return std::ranges::all_of(
+        m_data, [otherData](const auto &myValue) { return otherData.contains(myValue); });
 }
 
 QByteArray decodeBasicAuth(const QByteArray &auth)

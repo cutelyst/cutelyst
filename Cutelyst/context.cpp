@@ -263,7 +263,7 @@ QUrl Context::uriFor(const QString &path,
     QUrlQuery query;
     if (!queryValues.isEmpty()) {
         // Avoid a trailing '?'
-        if (queryValues.size()) {
+        if (!queryValues.isEmpty()) {
             auto it = queryValues.constEnd();
             while (it != queryValues.constBegin()) {
                 --it;
@@ -293,7 +293,7 @@ QUrl Context::uriFor(Action *action,
 
     Action *expandedAction = d->dispatcher->expandAction(this, action);
     if (expandedAction->numberOfCaptures() > 0) {
-        while (localCaptures.size() < expandedAction->numberOfCaptures() && localArgs.size()) {
+        while (localCaptures.size() < expandedAction->numberOfCaptures() && !localArgs.isEmpty()) {
             localCaptures.append(localArgs.takeFirst());
         }
     } else {
@@ -504,7 +504,7 @@ void Context::finalize()
         qCDebug(CUTELYST_STATS,
                 "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 d->response->status(),
-                d->response->headers().header("Content-Type", "unknown"_qba).constData(),
+                d->response->headers().header("Content-Type", "unknown"_ba).constData(),
                 d->response->headers()
                     .header("Content-Length", QByteArray::number(d->response->size()))
                     .constData());

@@ -14,13 +14,43 @@
 #include <QSocketNotifier>
 
 #ifdef Q_OS_UNIX
-// #include <sys/types.h>
+#    include <fcntl.h>
 #    include <sys/socket.h>
 #    include <sys/un.h>
-// #include <netinet/in.h>
-#    include <fcntl.h>
 
-static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int flags = 0);
+namespace {
+// Tru64 redefines accept -> _accept with _XOPEN_SOURCE_EXTENDED
+inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int flags = 0)
+{
+    Q_ASSERT((flags & ~O_NONBLOCK) == 0);
+
+    int fd;
+#    ifdef QT_THREADSAFE_CLOEXEC
+    // use accept4
+    int sockflags = SOCK_CLOEXEC;
+    if (flags & O_NONBLOCK)
+        sockflags |= SOCK_NONBLOCK;
+#        if defined(Q_OS_NETBSD)
+    fd = ::paccept(s, addr, static_cast<socklen_t *>(addrlen), NULL, sockflags);
+#        else
+    fd = ::accept4(s, addr, static_cast<socklen_t *>(addrlen), sockflags);
+#        endif
+    return fd;
+#    else
+    fd = ::accept(s, addr, static_cast<socklen_t *>(addrlen));
+    if (fd == -1)
+        return -1;
+
+    ::fcntl(fd, F_SETFD, FD_CLOEXEC);
+
+    // set non-block too?
+    if (flags & O_NONBLOCK)
+        ::fcntl(fd, F_SETFL, ::fcntl(fd, F_GETFL) | O_NONBLOCK);
+
+    return fd;
+#    endif
+}
+} // namespace
 #endif
 
 using namespace Cutelyst;
@@ -199,38 +229,6 @@ void LocalServer::socketNotifierActivated()
     if (-1 != connectedSocket) {
         incomingConnection(quintptr(connectedSocket));
     }
-}
-
-// Tru64 redefines accept -> _accept with _XOPEN_SOURCE_EXTENDED
-static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int flags)
-{
-    Q_ASSERT((flags & ~O_NONBLOCK) == 0);
-
-    int fd;
-#    ifdef QT_THREADSAFE_CLOEXEC
-    // use accept4
-    int sockflags = SOCK_CLOEXEC;
-    if (flags & O_NONBLOCK)
-        sockflags |= SOCK_NONBLOCK;
-#        if defined(Q_OS_NETBSD)
-    fd = ::paccept(s, addr, static_cast<socklen_t *>(addrlen), NULL, sockflags);
-#        else
-    fd = ::accept4(s, addr, static_cast<socklen_t *>(addrlen), sockflags);
-#        endif
-    return fd;
-#    else
-    fd = ::accept(s, addr, static_cast<socklen_t *>(addrlen));
-    if (fd == -1)
-        return -1;
-
-    ::fcntl(fd, F_SETFD, FD_CLOEXEC);
-
-    // set non-block too?
-    if (flags & O_NONBLOCK)
-        ::fcntl(fd, F_SETFL, ::fcntl(fd, F_GETFL) | O_NONBLOCK);
-
-    return fd;
-#    endif
 }
 #endif // Q_OS_UNIX
 

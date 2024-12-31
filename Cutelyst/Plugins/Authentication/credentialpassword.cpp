@@ -103,11 +103,14 @@ bool slowEquals(const QByteArray &a, const QByteArray &b)
     return diff == 0;
 }
 
+namespace {
 #define HASH_SECTIONS 4
 #define HASH_ALGORITHM_INDEX 0
 #define HASH_ITERATION_INDEX 1
 #define HASH_SALT_INDEX 2
 #define HASH_PBKDF2_INDEX 3
+} // namespace
+
 bool CredentialPassword::validatePassword(const QByteArray &password, const QByteArray &correctHash)
 {
     QByteArrayList params = correctHash.split(':');
@@ -183,7 +186,8 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method,
     QByteArray asalt = salt;
     asalt.resize(saltSize + 4);
 
-    QByteArray d1, obuf;
+    QByteArray d1;
+    QByteArray obuf;
 
     QMessageAuthenticationCode code(method, password);
 

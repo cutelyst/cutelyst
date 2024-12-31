@@ -30,7 +30,9 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, QByteArrayView contentTy
     for (int i = start, quotes = 0; i < len; ++i) {
         const char ch = contentType.at(i);
         if (ch == '\"') {
-            if ((quotes == 0 && i > start) || ++quotes == 2) {
+            if (quotes == 0 && i > start) {
+                break;
+            } else if (++quotes == 2) {
                 break;
             }
         } else if (ch == ';') {
@@ -111,7 +113,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer,
                     state = EndHeaders;
                 } else {
                     char *pch = static_cast<char *>(memchr(buffer + i, '\r', len - i));
-                    if (pch == NULL) {
+                    if (pch == nullptr) {
                         headerLine.append(buffer + i, len - i);
                         i = len;
                     } else {

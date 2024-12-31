@@ -405,7 +405,7 @@ void ProtoRequestHttp::processingFinished()
     if (websocketUpgraded) {
         // need 2 byte header
         websocket_need  = 2;
-        websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
+        websocket_phase = ProtoRequestHttp::WebSocketPhase::WebSocketPhaseHeaders;
         buf_size        = 0;
         return;
     }

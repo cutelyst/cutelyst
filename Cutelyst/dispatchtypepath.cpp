@@ -153,8 +153,8 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 
     auto it = paths.find(_path);
     if (it != paths.end()) {
-        int actionNumberOfArgs = action->numberOfArgs();
-        auto &actions          = it->actions;
+        qint8 actionNumberOfArgs = action->numberOfArgs();
+        auto &actions            = it->actions;
         for (const Action *regAction : actions) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
                 qCCritical(CUTELYST_DISPATCHER_PATH)

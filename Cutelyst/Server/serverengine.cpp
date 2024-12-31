@@ -154,7 +154,7 @@ void ServerEngine::postFork(int workerId)
         Q_EMIT started();
     } else {
         std::cerr << "Application failed to post fork, cheaping worker: " << workerId
-                  << ", core: " << workerCore() << std::endl;
+                  << ", core: " << workerCore() << '\n';
         Q_EMIT shutdown();
     }
 }
