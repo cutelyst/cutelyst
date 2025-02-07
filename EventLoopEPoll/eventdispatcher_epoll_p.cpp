@@ -29,11 +29,8 @@ EventDispatcherEPollPrivate::~EventDispatcherEPollPrivate()
     close(m_event_fd);
     close(m_epoll_fd);
 
-    auto it = m_handles.constBegin();
-    while (it != m_handles.constEnd()) {
-        delete it.value();
-        ++it;
-    }
+    qDeleteAll(m_handles);
+
     delete m_event_fd_info;
 }
 
@@ -86,12 +83,9 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
 
         if (!exclude_timers && !m_zero_timers.isEmpty()) {
             QVector<ZeroTimer *> timers;
-            auto it = m_zero_timers.constBegin();
-            while (it != m_zero_timers.constEnd()) {
-                ZeroTimer *data = it.value();
+            for (auto data : std::as_const(m_zero_timers)) {
                 data->ref();
                 timers.emplace_back(data);
-                ++it;
             }
 
             for (ZeroTimer *data : timers) {

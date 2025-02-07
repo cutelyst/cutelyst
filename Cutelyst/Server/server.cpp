@@ -1918,21 +1918,17 @@ void ServerPrivate::loadConfig()
         break;
     }
 
-    auto loadedIt = loadedConfig.cbegin();
-    while (loadedIt != loadedConfig.cend()) {
-        if (config.contains(loadedIt.key())) {
-            QVariantMap currentMap      = config.value(loadedIt.key()).toMap();
-            const QVariantMap loadedMap = loadedIt.value().toMap();
-            auto loadedMapIt            = loadedMap.cbegin();
-            while (loadedMapIt != loadedMap.cend()) {
-                currentMap.insert(loadedMapIt.key(), loadedMapIt.value());
-                ++loadedMapIt;
+    for (const auto &[key, value] : std::as_const(loadedConfig).asKeyValueRange()) {
+        if (config.contains(key)) {
+            QVariantMap currentMap      = config.value(key).toMap();
+            const QVariantMap loadedMap = value.toMap();
+            for (const auto &[key, value] : loadedMap.asKeyValueRange()) {
+                currentMap.insert(key, value);
             }
-            config.insert(loadedIt.key(), currentMap);
+            config.insert(key, currentMap);
         } else {
-            config.insert(loadedIt.key(), loadedIt.value());
+            config.insert(key, value);
         }
-        ++loadedIt;
     }
 
     QVariantMap sessionConfig = loadedConfig.value(u"server"_s).toMap();
@@ -1952,18 +1948,15 @@ void ServerPrivate::applyConfig(const QVariantMap &config)
 {
     Q_Q(Server);
 
-    auto it = config.constBegin();
-    while (it != config.constEnd()) {
-        QString normKey = it.key();
+    for (const auto &[key, value] : config.asKeyValueRange()) {
+        QString normKey = key;
         normKey.replace(u'-', u'_');
 
         int ix = q->metaObject()->indexOfProperty(normKey.toLatin1().constData());
         if (ix == -1) {
-            ++it;
             continue;
         }
 
-        const QVariant value     = it.value();
         const QMetaProperty prop = q->metaObject()->property(ix);
         if (prop.userType() == value.userType()) {
             if (prop.userType() == QMetaType::QStringList) {
@@ -1978,8 +1971,6 @@ void ServerPrivate::applyConfig(const QVariantMap &config)
         } else {
             prop.write(q, value);
         }
-
-        ++it;
     }
 }
 

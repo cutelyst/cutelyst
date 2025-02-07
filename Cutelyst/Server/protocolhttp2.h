@@ -76,15 +76,14 @@ public:
         delete hpack;
         hpack = nullptr;
 
-        auto it = streams.constBegin();
-        while (it != streams.constEnd()) {
+        for (const auto &stream : std::as_const(streams)) {
             // If we deleteLater the context, there might
             // be an event that tries to finalize the request
             // and it will encounter a null context pointer
-            delete it.value()->context;
-            delete it.value();
-            ++it;
+            delete stream->context;
+            delete stream;
         }
+
         streams.clear();
 
         headersBuffer.clear();

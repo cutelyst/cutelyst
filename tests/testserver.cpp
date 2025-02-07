@@ -46,11 +46,10 @@ void TestServer::writeIniFile(const QString &fileName, const QMap<QString, QVari
     QCOMPARE(ini.status(), QSettings::NoError);
     QVERIFY(ini.isWritable());
 
-    for (auto i = data.cbegin(), iend = data.cend(); i != iend; ++i) {
-        ini.beginGroup(i.key());
-        const QVariantMap map = i.value();
-        for (auto j = map.cbegin(), jend = map.cend(); j != jend; ++j) {
-            ini.setValue(j.key(), j.value());
+    for (const auto &[key, map] : data.asKeyValueRange()) {
+        ini.beginGroup(key);
+        for (const auto &[key, value] : map.asKeyValueRange()) {
+            ini.setValue(key, value);
         }
         ini.endGroup();
     }

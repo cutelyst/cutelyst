@@ -44,19 +44,14 @@ int ValidatorPwQuality::validate(const QString &value,
             if (options.isValid()) {
                 if (options.typeId() == QMetaType::QVariantMap) {
                     const QVariantMap map = options.toMap();
-                    if (!map.empty()) {
-                        auto i = map.constBegin();
-                        while (i != map.constEnd()) {
-                            const QString opt = i.key() + QLatin1Char('=') + i.value().toString();
-                            const int orv     = pwquality_set_option(pwq, opt.toUtf8().constData());
-                            if (orv != 0) {
-                                QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
-                                qCWarning(C_VALIDATOR).noquote().nospace()
-                                    << "ValidatorPwQuality: Failed to set pwquality option " << opt
-                                    << ": "
-                                    << pwquality_strerror(buf.data(), buf.size(), orv, nullptr);
-                            }
-                            ++i;
+                    for (const auto &[key, value] : map.asKeyValueRange()) {
+                        const QString opt = key + QLatin1Char('=') + value.toString();
+                        const int orv     = pwquality_set_option(pwq, opt.toUtf8().constData());
+                        if (orv != 0) {
+                            QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
+                            qCWarning(C_VALIDATOR).noquote().nospace()
+                                << "ValidatorPwQuality: Failed to set pwquality option " << opt
+                                << ": " << pwquality_strerror(buf.data(), buf.size(), orv, nullptr);
                         }
                         optionsSet = true;
                     }

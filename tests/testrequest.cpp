@@ -188,10 +188,8 @@ public:
                 {QStringLiteral("foo"), QStringLiteral("baz")},
             },
             QVariant(append).toBool());
-        auto it = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            ret.addQueryItem(key, value);
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -208,11 +206,9 @@ public:
     void queryParameters(Context *c)
     {
         QUrlQuery ret;
-        auto params = c->request()->queryParameters();
-        auto it     = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
+        const auto params = c->request()->queryParameters();
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            ret.addQueryItem(key, value);
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -221,11 +217,9 @@ public:
     void queryParams(Context *c)
     {
         QUrlQuery ret;
-        auto params = c->request()->queryParams();
-        auto it     = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
+        const auto params = c->request()->queryParameters();
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            ret.addQueryItem(key, value);
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -234,11 +228,9 @@ public:
     void queryParametersVariant(Context *c)
     {
         QUrlQuery ret;
-        auto params = c->request()->queryParametersVariant();
-        auto it     = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value().toString());
-            ++it;
+        const auto params = c->request()->queryParametersVariant();
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            ret.addQueryItem(key, value.toString());
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -266,11 +258,9 @@ public:
     void bodyParameters(Context *c)
     {
         QUrlQuery ret;
-        auto params = c->request()->bodyParameters();
-        auto it     = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
+        const auto params = c->request()->bodyParameters();
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            ret.addQueryItem(key, value);
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -279,11 +269,9 @@ public:
     void bodyParams(Context *c)
     {
         QUrlQuery ret;
-        auto params = c->request()->bodyParams();
-        auto it     = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
+        const auto params = c->request()->bodyParams();
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            ret.addQueryItem(key, value);
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -330,16 +318,12 @@ public:
     {
         QUrlQuery ret;
         const auto uploads = c->request()->uploadsMap();
-        auto it            = uploads.constBegin();
-        while (it != uploads.constEnd()) {
-            Upload *upload = it.value();
-            ret.addQueryItem(it.key().toString(), upload->name());
-            ret.addQueryItem(it.key().toString(), upload->filename());
-            ret.addQueryItem(it.key().toString(), QString::fromLatin1(upload->contentType()));
-            ret.addQueryItem(it.key().toString(), QString::number(upload->size()));
-            ret.addQueryItem(it.key().toString(),
-                             QString::fromLatin1(upload->readAll().toBase64()));
-            ++it;
+        for (const auto &[key, upload] : uploads.asKeyValueRange()) {
+            ret.addQueryItem(key.toString(), upload->name());
+            ret.addQueryItem(key.toString(), upload->filename());
+            ret.addQueryItem(key.toString(), QString::fromLatin1(upload->contentType()));
+            ret.addQueryItem(key.toString(), QString::number(upload->size()));
+            ret.addQueryItem(key.toString(), QString::fromLatin1(upload->readAll().toBase64()));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -348,15 +332,12 @@ public:
     void uploadsName(Context *c, const QString &name)
     {
         QUrlQuery ret;
-        Uploads uploads = c->request()->uploads(name);
-        auto it         = uploads.constBegin();
-        while (it != uploads.constEnd()) {
-            Upload *upload = *it;
+        const Uploads uploads = c->request()->uploads(name);
+        for (const auto &upload : uploads) {
             ret.addQueryItem(upload->name(), upload->filename());
             ret.addQueryItem(upload->name(), QString::fromLatin1(upload->contentType()));
             ret.addQueryItem(upload->name(), QString::number(upload->size()));
             ret.addQueryItem(upload->name(), QString::fromLatin1(upload->readAll().toBase64()));
-            ++it;
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -1071,15 +1052,12 @@ QByteArray createBody(QByteArray &result, int count)
     body.append("------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n");
 
     QUrlQuery ret;
-    auto it = uploads.constBegin();
-    while (it != uploads.constEnd()) {
-        const QByteArray upload = it.value();
-        ret.addQueryItem(it.key(), it.key());
-        ret.addQueryItem(it.key(), QStringLiteral("file.bin"));
-        ret.addQueryItem(it.key(), QStringLiteral("application/octet-stream"));
-        ret.addQueryItem(it.key(), QString::number(upload.size()));
-        ret.addQueryItem(it.key(), QString::fromLatin1(upload.toBase64()));
-        ++it;
+    for (const auto &[key, upload] : uploads.asKeyValueRange()) {
+        ret.addQueryItem(key, key);
+        ret.addQueryItem(key, QStringLiteral("file.bin"));
+        ret.addQueryItem(key, QStringLiteral("application/octet-stream"));
+        ret.addQueryItem(key, QString::number(upload.size()));
+        ret.addQueryItem(key, QString::fromLatin1(upload.toBase64()));
     }
     result = ret.toString(QUrl::FullyEncoded).toUtf8();
 

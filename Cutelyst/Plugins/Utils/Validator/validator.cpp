@@ -106,13 +106,9 @@ ValidatorResult
         c->setStash(u"validationErrorStrings"_s, result.errorStrings());
         c->setStash(u"validationErrors"_s, QVariant::fromValue(result.errors()));
 
-        if (!params.isEmpty()) {
-            auto i = params.constBegin();
-            while (i != params.constEnd()) {
-                if (!i.key().contains(u"password"_s, Qt::CaseInsensitive)) {
-                    c->setStash(i.key(), i.value());
-                }
-                ++i;
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            if (!key.contains(u"password"_s, Qt::CaseInsensitive)) {
+                c->setStash(key, value);
             }
         }
     }

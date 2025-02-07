@@ -216,24 +216,21 @@ void Sql::bindParamsToQuery(QSqlQuery &query,
                             const Cutelyst::ParamsMultiMap &params,
                             bool htmlEscaped)
 {
-    auto it = params.constBegin();
     if (htmlEscaped) {
-        while (it != params.constEnd()) {
-            if (it.value().isNull()) {
-                query.bindValue(u':' + it.key(), QVariant());
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            if (value.isNull()) {
+                query.bindValue(u':' + key, {});
             } else {
-                query.bindValue(u':' + it.key(), it.value().toHtmlEscaped());
+                query.bindValue(u':' + key, value.toHtmlEscaped());
             }
-            ++it;
         }
     } else {
-        while (it != params.constEnd()) {
-            if (it.value().isNull()) {
-                query.bindValue(u':' + it.key(), QVariant());
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            if (value.isNull()) {
+                query.bindValue(u':' + key, {});
             } else {
-                query.bindValue(u':' + it.key(), it.value());
+                query.bindValue(u':' + key, value);
             }
-            ++it;
         }
     }
 }

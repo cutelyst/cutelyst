@@ -313,16 +313,14 @@ void LangSelect::setSubDomainMap(const QMap<QString, QLocale> &map)
     d->subDomainMap.clear();
     d->locales.clear();
     d->locales.reserve(map.size());
-    auto i = map.constBegin();
-    while (i != map.constEnd()) {
-        if (i.value().language() != QLocale::C) {
-            d->subDomainMap.insert(i.key(), i.value());
-            d->locales.append(i.value());
+    for (const auto &[key, value] : map.asKeyValueRange()) {
+        if (value.language() != QLocale::C) {
+            d->subDomainMap.insert(key, value);
+            d->locales.append(value);
         } else {
-            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << i.value() << "for subdomain"
-                                    << i.key() << "to the subdomain map.";
+            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << value << "for subdomain"
+                                    << key << "to the subdomain map.";
         }
-        ++i;
     }
     d->locales.squeeze();
 }
@@ -333,16 +331,14 @@ void LangSelect::setDomainMap(const QMap<QString, QLocale> &map)
     d->domainMap.clear();
     d->locales.clear();
     d->locales.reserve(map.size());
-    auto i = map.constBegin();
-    while (i != map.constEnd()) {
-        if (Q_LIKELY(i.value().language() != QLocale::C)) {
-            d->domainMap.insert(i.key(), i.value());
-            d->locales.append(i.value());
+    for (const auto &[key, value] : map.asKeyValueRange()) {
+        if (Q_LIKELY(value.language() != QLocale::C)) {
+            d->domainMap.insert(key, value);
+            d->locales.append(value);
         } else {
-            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << i.value() << "for domain"
-                                    << i.key() << "to the domain map.";
+            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << value << "for domain" << key
+                                    << "to the domain map.";
         }
-        ++i;
     }
     d->locales.squeeze();
 }
@@ -638,15 +634,13 @@ bool LangSelectPrivate::getFromSession(Context *c, const QString &key) const
 bool LangSelectPrivate::getFromSubdomain(Context *c, const QMap<QString, QLocale> &map) const
 {
     const auto domain = c->req()->uri().host();
-    auto i            = map.constBegin();
-    while (i != map.constEnd()) {
-        if (domain.startsWith(i.key())) {
-            qCDebug(C_LANGSELECT) << "Found valid locale" << i.value()
-                                  << "in subdomain map for domain" << domain;
-            c->setLocale(i.value());
+    for (const auto &[key, value] : map.asKeyValueRange()) {
+        if (domain.startsWith(key)) {
+            qCDebug(C_LANGSELECT) << "Found valid locale" << value << "in subdomain map for domain"
+                                  << domain;
+            c->setLocale(value);
             return true;
         }
-        ++i;
     }
 
     const auto domainParts = domain.split(u'.', Qt::SkipEmptyParts);
@@ -666,15 +660,13 @@ bool LangSelectPrivate::getFromSubdomain(Context *c, const QMap<QString, QLocale
 bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &map) const
 {
     const auto domain = c->req()->uri().host();
-    auto i            = map.constBegin();
-    while (i != map.constEnd()) {
-        if (domain.endsWith(i.key())) {
-            qCDebug(C_LANGSELECT) << "Found valid locale" << i.value() << "in domain map for domain"
+    for (const auto &[key, value] : map.asKeyValueRange()) {
+        if (domain.endsWith(key)) {
+            qCDebug(C_LANGSELECT) << "Found valid locale" << value << "in domain map for domain"
                                   << domain;
-            c->setLocale(i.value());
+            c->setLocale(value);
             return true;
         }
-        ++i;
     }
 
     const auto domainParts = domain.split(u'.', Qt::SkipEmptyParts);

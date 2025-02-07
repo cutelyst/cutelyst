@@ -352,27 +352,24 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     headerConnection = ProtoRequestHttp::HeaderConnection::NotSet;
 
     bool hasDate = false;
-    auto it      = headersData.begin();
-    while (it != headersData.end()) {
+    for (const auto &[key, value] : headersData) {
         if (headerConnection == ProtoRequestHttp::HeaderConnection::NotSet &&
-            it->key.compare("Connection", Qt::CaseInsensitive) == 0) {
-            if (it->value.compare("close") == 0) {
+            key.compare("Connection", Qt::CaseInsensitive) == 0) {
+            if (value.compare("close") == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnection::Close;
-            } else if (it->value.compare("Upgrade") == 0) {
+            } else if (value.compare("Upgrade") == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnection::Upgrade;
             } else {
                 headerConnection = ProtoRequestHttp::HeaderConnection::Keep;
             }
-        } else if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
+        } else if (!hasDate && key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }
 
         data.append("\r\n");
-        data.append(it->key);
+        data.append(key);
         data.append(": ");
-        data.append(it->value);
-
-        ++it;
+        data.append(value);
     }
 
     if (headerConnection == ProtoRequestHttp::HeaderConnection::NotSet) {
