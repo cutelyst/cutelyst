@@ -311,13 +311,11 @@ int ProtocolHttp2::parseSettings(ProtoRequestHttp2 *request, QIODevice *io, cons
                 const qint32 difference = qint32(value) - request->settingsInitialWindowSize;
                 request->settingsInitialWindowSize = qint32(value);
 
-                auto it = request->streams.begin();
-                while (it != request->streams.end()) {
-                    (*it)->windowSize += difference;
-                    (*it)->windowUpdated();
+                for (const auto &stream : std::as_const(request->streams)) {
+                    stream->windowSize += difference;
+                    stream->windowUpdated();
                     //                    qCDebug(C_SERVER_H2) << "updating stream" << it.key() <<
-                    //                    "to window" << (*it)->windowSize;
-                    ++it;
+                    //                    "to window" << stream->windowSize;
                 }
             } else if (identifier == SETTINGS_MAX_FRAME_SIZE) {
                 if (value < 16384 || value > 16777215) {
@@ -637,10 +635,8 @@ int ProtocolHttp2::parseWindowUpdate(ProtoRequestHttp2 *request,
         request->windowSize = qint32(result);
 
         if (result > 0) {
-            auto streamIt = request->streams.constBegin();
-            if (streamIt != request->streams.constEnd()) {
-                (*streamIt)->windowUpdated();
-                ++streamIt;
+            for (const auto &stream : std::as_const(request->streams)) {
+                stream->windowUpdated();
             }
         }
     }

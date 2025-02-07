@@ -450,12 +450,8 @@ QVariant SessionPrivate::loadSession(Context *c)
 
 bool SessionPrivate::validateSessionId(QByteArrayView id)
 {
-    auto it  = id.begin();
-    auto end = id.end();
-    while (it != end) {
-        char c = *it;
+    for (auto c : id) {
         if ((c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')) {
-            ++it;
             continue;
         }
         return false;

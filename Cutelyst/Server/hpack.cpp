@@ -216,29 +216,26 @@ void HPack::encodeHeaders(int status, const Headers &headers, QByteArray &buf, S
         buf.append(statusStr);
     }
 
-    bool hasDate     = false;
-    auto headersData = headers.data();
-    auto it          = headersData.begin();
-    while (it != headersData.end()) {
-        if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
+    bool hasDate           = false;
+    const auto headersData = headers.data();
+    for (const auto &[key, value] : headersData) {
+        if (!hasDate && key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }
 
-        auto staticIt = HPackPrivate::hpackStaticHeadersCode.constFind(it->key);
+        auto staticIt = HPackPrivate::hpackStaticHeadersCode.constFind(key);
         if (staticIt != HPackPrivate::hpackStaticHeadersCode.constEnd()) {
             buf.append(staticIt.value(), 2);
 
-            encodeUInt16(buf, it->value.length(), INT_MASK(7));
-            buf.append(it->value);
+            encodeUInt16(buf, value.length(), INT_MASK(7));
+            buf.append(value);
         } else {
             buf.append('\x00');
-            encodeH2caseHeader(buf, QString::fromLatin1(it->key));
+            encodeH2caseHeader(buf, QString::fromLatin1(key));
 
-            encodeUInt16(buf, it->value.length(), INT_MASK(7));
-            buf.append(it->value);
+            encodeUInt16(buf, value.length(), INT_MASK(7));
+            buf.append(value);
         }
-
-        ++it;
     }
 
     if (!hasDate) {

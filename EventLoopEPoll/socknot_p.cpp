@@ -164,18 +164,13 @@ bool EventDispatcherEPollPrivate::disableSocketNotifiers(bool disable)
 {
     epoll_event e;
 
-    auto it = m_notifiers.constBegin();
-    while (it != m_notifiers.constEnd()) {
-        SocketNotifierInfo *info = it.value();
-
+    for (auto info : std::as_const(m_notifiers)) {
         e.events   = disable ? 0 : info->events;
         e.data.ptr = info;
         int res    = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, info->fd, &e);
         if (Q_UNLIKELY(res != 0)) {
             qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
         }
-
-        ++it;
     }
 
     return true;

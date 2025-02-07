@@ -15,7 +15,7 @@ class ActionPrivate : public ComponentPrivate
 public:
     QString ns;
     QMetaMethod method;
-    QMultiMap<QString, QString> attributes;
+    ParamsMultiMap attributes;
     Controller *controller = nullptr;
 #if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
     QStringList emptyArgs = {

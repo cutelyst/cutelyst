@@ -20,6 +20,7 @@
 #include <QUrlQuery>
 
 using namespace Cutelyst;
+using namespace std::chrono_literals;
 
 class TestMemcached : public CoverageObject
 {
@@ -67,7 +68,7 @@ public:
     {
         auto in = getKeyVal(c);
         Memcached::ReturnType rt;
-        if (Memcached::set(in.first, in.second.toUtf8(), std::chrono::minutes{1}, &rt)) {
+        if (Memcached::set(in.first, in.second.toUtf8(), 1min, &rt)) {
             setValid(c);
         } else {
             setRt(c, rt);
@@ -766,11 +767,10 @@ public:
     void casValid(Context *c)
     {
         uint64_t cas = 0;
-        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1});
-        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::minutes{1});
+        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum"), 1min);
+        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum 2"), 1min);
         Memcached::get("cas1", &cas);
-        if (Memcached::cas(
-                "cas1", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1}, cas)) {
+        if (Memcached::cas("cas1", QByteArrayLiteral("Lorem ipsum"), 1min, cas)) {
             setValidity(c, Memcached::get("cas1") == QByteArrayLiteral("Lorem ipsum"));
         } else {
             setInvalid(c);
@@ -782,12 +782,11 @@ public:
     void casInvalid(Context *c)
     {
         uint64_t cas = 0;
-        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1});
-        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::minutes{1});
+        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum"), 1min);
+        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 2"), 1min);
         Memcached::get("cas2", &cas);
-        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 3"), std::chrono::minutes{1});
-        if (Memcached::cas(
-                "cas2", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1}, cas)) {
+        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 3"), 1min);
+        if (Memcached::cas("cas2", QByteArrayLiteral("Lorem ipsum"), 1min, cas)) {
             setValidity(c, Memcached::get("cas2") == QByteArrayLiteral("Lorem ipsum"));
         } else {
             setInvalid(c);
@@ -801,10 +800,10 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::set("cas3", list1, std::chrono::minutes{1});
-        Memcached::set("cas3", list2, std::chrono::minutes{1});
+        Memcached::set("cas3", list1, 1min);
+        Memcached::set("cas3", list2, 1min);
         Memcached::get("cas3", &cas);
-        if (Memcached::cas("cas3", list1, std::chrono::minutes{1}, cas)) {
+        if (Memcached::cas("cas3", list1, 1min, cas)) {
             setValidity(c, Memcached::get<QVariantList>("cas3") == list1);
         } else {
             setInvalid(c);
@@ -818,11 +817,11 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::set("cas4", list1, std::chrono::minutes{1});
-        Memcached::set("cas4", list2, std::chrono::minutes{1});
+        Memcached::set("cas4", list1, 1min);
+        Memcached::set("cas4", list2, 1min);
         Memcached::get("cas4", &cas);
-        Memcached::set("cas4", list1, std::chrono::minutes{1});
-        if (Memcached::cas("cas4", list2, std::chrono::minutes{1}, cas)) {
+        Memcached::set("cas4", list1, 1min);
+        if (Memcached::cas("cas4", list2, 1min, cas)) {
             setValidity(c, Memcached::get<QVariantList>("cas4") == list2);
         } else {
             setInvalid(c);
@@ -834,16 +833,10 @@ public:
     void casByKeyValid(Context *c)
     {
         uint64_t cas = 0;
-        Memcached::setByKey(
-            "casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1});
-        Memcached::setByKey(
-            "casGroup", "cas5", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::minutes{1});
+        Memcached::setByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), 1min);
+        Memcached::setByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum 2"), 1min);
         Memcached::getByKey("casGroup", "cas5", &cas);
-        if (Memcached::casByKey("casGroup",
-                                "cas5",
-                                QByteArrayLiteral("Lorem ipsum"),
-                                std::chrono::minutes{1},
-                                cas)) {
+        if (Memcached::casByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), 1min, cas)) {
             setValidity(
                 c, Memcached::getByKey("casGroup", "cas5") == QByteArrayLiteral("Lorem ipsum"));
         } else {
@@ -875,10 +868,10 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::setByKey("casGroup", "cas7", list1, std::chrono::minutes{1});
-        Memcached::setByKey("casGroup", "cas7", list2, std::chrono::minutes{1});
+        Memcached::setByKey("casGroup", "cas7", list1, 1min);
+        Memcached::setByKey("casGroup", "cas7", list2, 1min);
         Memcached::getByKey("casGroup", "cas7", &cas);
-        if (Memcached::casByKey("casGroup", "cas7", list1, std::chrono::minutes{1}, cas)) {
+        if (Memcached::casByKey("casGroup", "cas7", list1, 1min, cas)) {
             setValidity(c, Memcached::getByKey<QVariantList>("casGroup", "cas7") == list1);
         } else {
             setInvalid(c);
@@ -892,11 +885,11 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::setByKey("casGroup", "cas8", list1, std::chrono::minutes{1});
-        Memcached::setByKey("casGroup", "cas8", list2, std::chrono::minutes{1});
+        Memcached::setByKey("casGroup", "cas8", list1, 1min);
+        Memcached::setByKey("casGroup", "cas8", list2, 1min);
         Memcached::getByKey("casGroup", "cas8", &cas);
-        Memcached::setByKey("casGroup", "cas8", list1, std::chrono::minutes{1});
-        if (Memcached::casByKey("casGroup", "cas8", list2, std::chrono::minutes{1}, cas)) {
+        Memcached::setByKey("casGroup", "cas8", list1, 1min);
+        if (Memcached::casByKey("casGroup", "cas8", list2, 1min, cas)) {
             setValidity(c, Memcached::getByKey<QVariantList>("casGroup", "cas8") == list2);
         } else {
             setInvalid(c);
@@ -908,10 +901,8 @@ public:
     void mgetValid(Context *c)
     {
         const auto h1 = getTestHash("vala");
-        auto i        = h1.constBegin();
-        while (i != h1.constEnd()) {
-            Memcached::set(i.key(), i.value(), std::chrono::minutes{1});
-            ++i;
+        for (const auto &[key, value] : h1.asKeyValueRange()) {
+            Memcached::set(key, value, 1min);
         }
         const auto h2 = Memcached::mget(h1.keys());
         setValidity(c, h1 == h2);
@@ -922,10 +913,8 @@ public:
     void mgetByKeyValid(Context *c)
     {
         const auto h1 = getTestHash("valb");
-        auto i        = h1.constBegin();
-        while (i != h1.constEnd()) {
-            Memcached::setByKey("mgetGroup", i.key(), i.value(), std::chrono::minutes{1});
-            ++i;
+        for (const auto &[key, value] : h1.asKeyValueRange()) {
+            Memcached::setByKey("mgetGroup", key, value, 1min);
         }
         const auto h2 = Memcached::mgetByKey("mgetGroup", h1.keys());
         setValidity(c, h1 == h2);
@@ -936,10 +925,8 @@ public:
     void mgetVariantValid(Context *c)
     {
         const auto h1 = getTestHashList("valc");
-        auto i        = h1.constBegin();
-        while (i != h1.constEnd()) {
-            Memcached::set(i.key(), i.value(), std::chrono::minutes{1});
-            ++i;
+        for (const auto &[key, value] : h1.asKeyValueRange()) {
+            Memcached::set(key, value, 1min);
         }
         const auto h2 = Memcached::mget<QVariantList>(h1.keys());
         setValidity(c, h1 == h2);
@@ -950,10 +937,8 @@ public:
     void mgetByKeyVariantValid(Context *c)
     {
         const auto h1 = getTestHashList("vald");
-        auto i        = h1.constBegin();
-        while (i != h1.constEnd()) {
-            Memcached::setByKey("mgetGroup", i.key(), i.value(), std::chrono::minutes{1});
-            ++i;
+        for (const auto &[key, value] : h1.asKeyValueRange()) {
+            Memcached::setByKey("mgetGroup", key, value, 1min);
         }
         const auto h2 = Memcached::mgetByKey<QVariantList>("mgetGroup", h1.keys());
         setValidity(c, h1 == h2);
@@ -964,7 +949,7 @@ public:
     void flush(Context *c)
     {
         const QByteArray key = "flushKey";
-        Memcached::set(key, QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{5});
+        Memcached::set(key, "Lorem ipsum"_ba, 5min);
         if (Memcached::flush(0)) {
             setValidity(c, Memcached::get(key).isNull());
         } else {
@@ -1182,14 +1167,12 @@ void TestMemcached::testController_data()
     // tests static bool Memcached::set(const QString &key, const QByteArray &value, time_t
     // expiration, MemcachedReturnType *returnType = nullptr)
     int count = 0;
-    auto sii  = simpleInput.constBegin();
-    while (sii != simpleInput.constEnd()) {
+    for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
         q.clear();
-        q = makeKeyValQuery(sii.key(), sii.value());
+        q = makeKeyValQuery(key, value);
         QTest::newRow(QStringLiteral("setByteArray-%1").arg(count).toUtf8().constData())
             << QStringLiteral("/memcached/test/setByteArray?") + q.toString(QUrl::FullyEncoded)
             << headers << QByteArray() << QByteArrayLiteral("valid");
-        ++sii;
         count++;
     }
 
@@ -1197,13 +1180,11 @@ void TestMemcached::testController_data()
     // tests static QByteArray Memcached::get(const QString &key, quint64 *cas = nullptr,
     // MemcachedReturnType *returnType = nullptr)
     count = 0;
-    sii   = simpleInput.constBegin();
-    while (sii != simpleInput.constEnd()) {
-        q = makeKeyValQuery(sii.key(), sii.value());
+    for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
+        q = makeKeyValQuery(key, value);
         QTest::newRow(QStringLiteral("getByteArray-%1").arg(count).toUtf8().constData())
             << QStringLiteral("/memcached/test/getByteArray?") + q.toString(QUrl::FullyDecoded)
             << headers << QByteArray() << QByteArrayLiteral("valid");
-        ++sii;
         count++;
     }
 
@@ -1223,14 +1204,12 @@ void TestMemcached::testController_data()
     // tests static bool Memcached::setByKey(const QString &groupKey, const QString &key, const
     // QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr)
     count = 0;
-    sii   = simpleInput.constBegin();
-    while (sii != simpleInput.constEnd()) {
+    for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
         q.clear();
-        q = makeKeyValQuery(sii.key(), sii.value());
+        q = makeKeyValQuery(key, value);
         QTest::newRow(QStringLiteral("setByteArrayByKey-%1").arg(count).toUtf8().constData())
             << QStringLiteral("/memcached/test/setByteArrayByKey?") + q.toString(QUrl::FullyEncoded)
             << headers << QByteArray() << QByteArrayLiteral("valid");
-        ++sii;
         count++;
     }
 
@@ -1238,13 +1217,11 @@ void TestMemcached::testController_data()
     // tests static QByteArray Memcached::getByKey(const QString &groupKey, const QString &key,
     // quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
     count = 0;
-    sii   = simpleInput.constBegin();
-    while (sii != simpleInput.constEnd()) {
-        q = makeKeyValQuery(sii.key(), sii.value());
+    for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
+        q = makeKeyValQuery(key, value);
         QTest::newRow(QStringLiteral("getByteArrayByKey-%1").arg(count).toUtf8().constData())
             << QStringLiteral("/memcached/test/getByteArrayByKey?") + q.toString(QUrl::FullyDecoded)
             << headers << QByteArray() << QByteArrayLiteral("valid");
-        ++sii;
         count++;
     }
 

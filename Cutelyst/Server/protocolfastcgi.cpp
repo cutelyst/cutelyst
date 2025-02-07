@@ -418,18 +418,15 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
     const auto headersData = headers.data();
 
     bool hasDate = false;
-    auto it      = headersData.begin();
-    while (it != headersData.end()) {
-        if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
+    for (const auto &[key, value] : headersData) {
+        if (!hasDate && key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }
 
         headerBuffer.append("\r\n");
-        headerBuffer.append(it->key);
+        headerBuffer.append(key);
         headerBuffer.append(": ");
-        headerBuffer.append(it->value);
-
-        ++it;
+        headerBuffer.append(value);
     }
 
     if (!hasDate) {

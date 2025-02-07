@@ -2778,15 +2778,13 @@ void TestValidator::testValidatorFileSize_data()
                                             {u"2ZB"_s, u"2000000000000000000000.00"_s},
                                             {u"2ZiB"_s, u"2361183241434822606848.00"_s}});
 
-    count            = 0;
-    auto fileSizesIt = fileSizes.constBegin();
-    while (fileSizesIt != fileSizes.constEnd()) {
+    count = 0;
+    for (const auto &[key, value] : fileSizes.asKeyValueRange()) {
         query.clear();
-        query.addQueryItem(u"field"_s, fileSizesIt.key());
+        query.addQueryItem(u"field"_s, key);
         QTest::newRow(u"return-value-%1"_s.arg(count).toUtf8().constData())
             << u"/fileSizeValue"_s << query.toString(QUrl::FullyEncoded).toLatin1()
-            << fileSizesIt.value().toUtf8();
-        ++fileSizesIt;
+            << value.toUtf8();
         count++;
     }
 }

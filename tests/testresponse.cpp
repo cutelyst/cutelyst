@@ -112,11 +112,9 @@ public:
     void setJsonBody(Context *c)
     {
         QJsonObject obj;
-        auto params = c->request()->queryParameters();
-        auto it     = params.constBegin();
-        while (it != params.constEnd()) {
-            obj.insert(it.key(), it.value());
-            ++it;
+        const auto params = c->request()->queryParameters();
+        for (const auto &[key, value] : params.asKeyValueRange()) {
+            obj.insert(key, value);
         }
         c->response()->setJsonObjectBody(obj);
     }

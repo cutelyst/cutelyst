@@ -314,27 +314,18 @@ QList<QAbstractEventDispatcher::TimerInfo>
     QList<QAbstractEventDispatcher::TimerInfo> res;
     res.reserve(m_timers.size() + m_zero_timers.size());
 
-    auto it = m_timers.constBegin();
-    while (it != m_timers.constEnd()) {
-        TimerInfo *data = it.value();
-
+    for (const auto &[key, data] : m_timers.asKeyValueRange()) {
         if (object == data->object) {
-            QAbstractEventDispatcher::TimerInfo ti(it.key(), data->interval, data->type);
+            QAbstractEventDispatcher::TimerInfo ti(key, data->interval, data->type);
             res.append(ti);
         }
-
-        ++it;
     }
 
-    auto zit = m_zero_timers.constBegin();
-    while (zit != m_zero_timers.constEnd()) {
-        const ZeroTimer *data = zit.value();
+    for (const auto &[key, data] : m_zero_timers.asKeyValueRange()) {
         if (object == data->object) {
-            QAbstractEventDispatcher::TimerInfo ti(it.key(), 0, Qt::PreciseTimer);
+            QAbstractEventDispatcher::TimerInfo ti(key, 0, Qt::PreciseTimer);
             res.append(ti);
         }
-
-        ++zit;
     }
 
     return res;
@@ -384,10 +375,7 @@ bool EventDispatcherEPollPrivate::disableTimers(bool disable)
     spec.it_interval.tv_sec  = 0;
     spec.it_interval.tv_nsec = 0;
 
-    auto it = m_timers.constBegin();
-    while (it != m_timers.constEnd()) {
-        TimerInfo *data = it.value();
-
+    for (const auto &data : std::as_const(m_timers)) {
         if (!disable) {
             struct timeval delta;
             calculateNextTimeout(data, now, delta);
@@ -400,8 +388,6 @@ bool EventDispatcherEPollPrivate::disableTimers(bool disable)
         if (Q_UNLIKELY(-1 == timerfd_settime(data->fd, 0, &spec, nullptr))) {
             qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
         }
-
-        ++it;
     }
 
     return true;

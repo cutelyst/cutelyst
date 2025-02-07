@@ -731,10 +731,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
                                                         const QString &title)
 {
     QVector<QStringList> table;
-    auto it = params.constBegin();
-    while (it != params.constEnd()) {
-        table.append({it.key(), it.value()});
-        ++it;
+    for (const auto &[key, value] : params.asKeyValueRange()) {
+        table.append({key, value});
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table,
                                                    {

@@ -1756,15 +1756,13 @@ QHash<QByteArray, T> Memcached::mget(const QByteArrayList &keys,
                                      ReturnType *returnType)
 {
     QHash<QByteArray, T> hash;
-    QHash<QByteArray, QByteArray> _data = Memcached::mget(keys, casValues, returnType);
+    const QHash<QByteArray, QByteArray> _data = Memcached::mget(keys, casValues, returnType);
     if (!_data.empty()) {
-        auto i = _data.constBegin();
-        while (i != _data.constEnd()) {
+        for (const auto &[key, value] : _data.asKeyValueRange()) {
             T retVal;
-            QDataStream in(i.value());
+            QDataStream in(value);
             in >> retVal;
-            hash.insert(i.key(), retVal);
-            ++i;
+            hash.insert(key, retVal);
         }
     }
     return hash;
@@ -1777,16 +1775,14 @@ QHash<QByteArray, T> Memcached::mgetByKey(QByteArrayView groupKey,
                                           ReturnType *returnType)
 {
     QHash<QByteArray, T> hash;
-    QHash<QByteArray, QByteArray> _data =
+    const QHash<QByteArray, QByteArray> _data =
         Memcached::mgetByKey(groupKey, keys, casValues, returnType);
     if (!_data.empty()) {
-        auto i = _data.constBegin();
-        while (i != _data.constEnd()) {
+        for (const auto &[key, value] : _data.asKeyValueRange()) {
             T retVal;
-            QDataStream in(i.value());
+            QDataStream in(value);
             in >> retVal;
-            hash.insert(i.key(), retVal);
-            ++i;
+            hash.insert(key, retVal);
         }
     }
     return hash;

@@ -105,31 +105,26 @@ QByteArray ViewJson::render(Context *c) const
     case StringList:
     {
         QVariantHash exposedStash;
-
-        auto it = stash.constBegin();
-        while (it != stash.constEnd()) {
-            const QString &key = it.key();
+        for (const auto &[key, value] : stash.asKeyValueRange()) {
             if (d->exposeKeys.contains(key)) {
-                exposedStash.insert(key, it.value());
+                exposedStash.insert(key, value);
             }
-            ++it;
         }
+
         obj = QJsonObject::fromVariantHash(exposedStash);
         break;
     }
     case RegularExpression:
     {
-        QVariantHash exposedStash;
         QRegularExpression re = d->exposeRE; // thread safety
 
-        auto it = stash.constBegin();
-        while (it != stash.constEnd()) {
-            const QString &key = it.key();
+        QVariantHash exposedStash;
+        for (const auto &[key, value] : stash.asKeyValueRange()) {
             if (re.match(key).hasMatch()) {
-                exposedStash.insert(key, it.value());
+                exposedStash.insert(key, value);
             }
-            ++it;
         }
+
         obj = QJsonObject::fromVariantHash(exposedStash);
         break;
     }

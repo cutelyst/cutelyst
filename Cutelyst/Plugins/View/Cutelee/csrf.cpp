@@ -33,16 +33,14 @@ void CSRF::render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const
     auto c = gc->lookup(m_cutelystContext).value<Cutelyst::Context *>();
     if (!c) {
         const QVariantHash hash = gc->stackHash(0);
-        auto it                 = hash.constBegin();
-        while (it != hash.constEnd()) {
-            if (it.value().userType() == qMetaTypeId<Cutelyst::Context *>()) {
-                c = it.value().value<Cutelyst::Context *>();
+        for (const auto &[key, value] : hash.asKeyValueRange()) {
+            if (value.userType() == qMetaTypeId<Cutelyst::Context *>()) {
+                c = value.value<Cutelyst::Context *>();
                 if (c) {
-                    m_cutelystContext = it.key();
+                    m_cutelystContext = key;
                     break;
                 }
             }
-            ++it;
         }
 
         if (!c) {
@@ -76,16 +74,14 @@ void CSRFToken::render(Cutelee::OutputStream *stream, Cutelee::Context *gc) cons
     auto c = gc->lookup(m_cutelystContext).value<Cutelyst::Context *>();
     if (!c) {
         const QVariantHash hash = gc->stackHash(0);
-        auto it                 = hash.constBegin();
-        while (it != hash.constEnd()) {
-            if (it.value().userType() == qMetaTypeId<Cutelyst::Context *>()) {
-                c = it.value().value<Cutelyst::Context *>();
+        for (const auto &[key, value] : hash.asKeyValueRange()) {
+            if (value.userType() == qMetaTypeId<Cutelyst::Context *>()) {
+                c = value.value<Cutelyst::Context *>();
                 if (c) {
-                    m_cutelystContext = it.key();
+                    m_cutelystContext = key;
                     break;
                 }
             }
-            ++it;
         }
 
         if (!c) {

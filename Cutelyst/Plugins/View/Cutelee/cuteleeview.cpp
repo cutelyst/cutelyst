@@ -198,13 +198,11 @@ QByteArray CuteleeView::render(Context *c) const
 
     auto transIt = d->translators.constFind(c->locale());
     if (transIt != d->translators.constEnd()) {
-        localizer.get()->installTranslator(transIt.value(), transIt.key().name());
+        localizer->installTranslator(transIt.value(), transIt.key().name());
     }
 
-    auto catalogIt = d->translationCatalogs.constBegin();
-    while (catalogIt != d->translationCatalogs.constEnd()) {
-        localizer.get()->loadCatalog(catalogIt.value(), catalogIt.key());
-        ++it;
+    for (const auto &[key, value] : std::as_const(d->translationCatalogs).asKeyValueRange()) {
+        localizer->loadCatalog(value, key);
     }
 
     gc.setLocalizer(localizer);

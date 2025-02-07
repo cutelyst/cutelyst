@@ -563,11 +563,8 @@ void ContextPrivate::statsFinishExecute(const QString &statsInfo)
 void Context::stash(const QVariantHash &unite)
 {
     Q_D(Context);
-    auto it = unite.constBegin();
-    while (it != unite.constEnd()) {
-        d->stash.insert(it.key(), it.value());
-        ++it;
-    }
+
+    d->stash.insert(unite);
 }
 
 #include "moc_context.cpp"

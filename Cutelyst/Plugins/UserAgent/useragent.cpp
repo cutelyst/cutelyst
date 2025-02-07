@@ -185,12 +185,9 @@ QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
 
     QNetworkRequest proxyReq(dest);
 
-    const Headers reqHeaders = request->headers();
-    const auto headersData   = reqHeaders.data();
-    auto it                  = headersData.begin();
-    while (it != headersData.end()) {
-        proxyReq.setRawHeader(it->key, it->value);
-        ++it;
+    const auto headersData = request->headers().data();
+    for (const auto &[key, value] : headersData) {
+        proxyReq.setRawHeader(key, value);
     }
 
     return networkAccessManager()->sendCustomRequest(proxyReq, request->method(), request->body());

@@ -98,11 +98,9 @@ int UnixFork::exec(bool lazy, bool master)
 
 void UnixFork::restart()
 {
-    auto it = m_childs.begin();
-    while (it != m_childs.end()) {
-        it.value().restart = 1; // Mark as requiring restart
-        terminateChild(it.key());
-        ++it;
+    for (const auto &[key, value] : m_childs.asKeyValueRange()) {
+        value.restart = 1; // Mark as requiring restart
+        terminateChild(key);
     }
 
     setupCheckChildTimer();
@@ -155,13 +153,11 @@ bool UnixFork::createProcess(bool respawn)
 void UnixFork::decreaseWorkerRespawn()
 {
     int missingRespawn = 0;
-    auto it            = m_childs.begin();
-    while (it != m_childs.end()) {
-        if (it.value().respawn > 0) {
-            --it.value().respawn;
-            missingRespawn += it.value().respawn;
+    for (const auto &[key, value] : m_childs.asKeyValueRange()) {
+        if (value.respawn > 0) {
+            --value.respawn;
+            missingRespawn += value.respawn;
         }
-        ++it;
     }
 
     if (missingRespawn) {
@@ -529,15 +525,13 @@ void UnixFork::handleSigChld()
 
     if (m_checkChildRestart) {
         bool allRestarted = true;
-        auto it           = m_childs.begin();
-        while (it != m_childs.end()) {
-            if (it.value().restart) {
-                if (++it.value().restart > 10) {
-                    killChild(it.key());
+        for (const auto &[key, value] : m_childs.asKeyValueRange()) {
+            if (value.restart) {
+                if (++value.restart > 10) {
+                    killChild(key);
                 }
                 allRestarted = false;
             }
-            ++it;
         }
 
         if (allRestarted) {
