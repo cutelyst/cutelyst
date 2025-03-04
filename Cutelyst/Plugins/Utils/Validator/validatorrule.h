@@ -155,10 +155,10 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorMessages {
      * \param customValidationDataError Custom error message if validation data is missing or
      *                                  invalid.
      */
-    ValidatorMessages(const char *customLabel,
-                      const char *customValidationError     = nullptr,
-                      const char *customParsingError        = nullptr,
-                      const char *customValidationDataError = nullptr)
+    explicit ValidatorMessages(const char *customLabel,
+                               const char *customValidationError     = nullptr,
+                               const char *customParsingError        = nullptr,
+                               const char *customValidationDataError = nullptr)
         : label(customLabel)
         , validationError(customValidationError)
         , parsingError(customParsingError)
@@ -312,10 +312,10 @@ public:
      *                      input field is empty. This value will \b NOT be validated.
      * \param vaidatorName  Name of the validator used for debug output.
      */
-    ValidatorRule(const QString &field,
-                  const ValidatorMessages &messages = {},
-                  const QString &defValKey          = {},
-                  QByteArrayView validatorName      = nullptr);
+    explicit ValidatorRule(const QString &field,
+                           const ValidatorMessages &messages = {},
+                           const QString &defValKey          = {},
+                           QByteArrayView validatorName      = nullptr);
 
     /**
      * \brief Deconstructs the ValidatorRule.
@@ -330,7 +330,7 @@ protected:
      * \internal
      * Constructs a new ValidatorRule object with the given private class.
      */
-    ValidatorRule(ValidatorRulePrivate &dd);
+    explicit ValidatorRule(ValidatorRulePrivate &dd);
 
     /**
      * Starts the validation and returns the result.

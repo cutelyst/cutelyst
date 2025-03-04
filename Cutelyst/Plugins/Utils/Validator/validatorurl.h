@@ -56,11 +56,11 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
      *                      if input field is empty. This value will \b NOT be validated.
      */
-    ValidatorUrl(const QString &field,
-                 Constraints constraints           = NoConstraint,
-                 const QStringList &schemes        = QStringList(),
-                 const ValidatorMessages &messages = ValidatorMessages(),
-                 const QString &defValKey          = QString());
+    explicit ValidatorUrl(const QString &field,
+                          Constraints constraints           = NoConstraint,
+                          const QStringList &schemes        = QStringList(),
+                          const ValidatorMessages &messages = ValidatorMessages(),
+                          const QString &defValKey          = QString());
 
     /**
      * Destroys the %ValidatorUrl object.

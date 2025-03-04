@@ -51,10 +51,10 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
      *                      if input field is empty. This value will \b NOT be validated.
      */
-    ValidatorDigits(const QString &field,
-                    const QVariant &length            = -1,
-                    const ValidatorMessages &messages = ValidatorMessages(),
-                    const QString &defValKey          = QString());
+    explicit ValidatorDigits(const QString &field,
+                             const QVariant &length            = -1,
+                             const ValidatorMessages &messages = ValidatorMessages(),
+                             const QString &defValKey          = QString());
 
     /**
      * Destroys the %ValidatorDigits object.

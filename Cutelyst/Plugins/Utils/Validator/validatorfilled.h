@@ -40,9 +40,9 @@ public:
      * \param field     Name of the input field to validate.
      * \param messages  Custom error message if validation fails.
      */
-    ValidatorFilled(const QString &field,
-                    const ValidatorMessages &messages = ValidatorMessages(),
-                    const QString &defValKey          = QString());
+    explicit ValidatorFilled(const QString &field,
+                             const ValidatorMessages &messages = ValidatorMessages(),
+                             const QString &defValKey          = QString());
 
     /**
      * Destroys the %ValidatorFilled object.

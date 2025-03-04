@@ -36,7 +36,8 @@ public:
      * \param field         Name of the input field to validate.
      * \param messages      Custom error message if validation fails.
      */
-    ValidatorPresent(const QString &field, const ValidatorMessages &messages = ValidatorMessages());
+    explicit ValidatorPresent(const QString &field,
+                              const ValidatorMessages &messages = ValidatorMessages());
 
     /**
      * Destroys the %ValidatorPresent object.

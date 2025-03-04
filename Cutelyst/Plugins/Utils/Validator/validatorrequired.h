@@ -40,8 +40,8 @@ public:
      * \param field     Name of the input field that is required.
      * \param messages  Custom error message if validation fails.
      */
-    ValidatorRequired(const QString &field,
-                      const ValidatorMessages &messages = ValidatorMessages());
+    explicit ValidatorRequired(const QString &field,
+                               const ValidatorMessages &messages = ValidatorMessages());
 
     /**
      * Destroys the %ValidatorRequired object.
