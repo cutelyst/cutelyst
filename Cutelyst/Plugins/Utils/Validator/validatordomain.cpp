@@ -28,22 +28,16 @@ bool ValidatorDomain::validate(const QString &value,
                                Cutelyst::ValidatorDomain::Diagnose *diagnose,
                                QString *extractedValue)
 {
-    bool valid = true;
-
     Diagnose diag = Valid;
 
-    QString _v      = value;
-    bool hasRootDot = false;
-    if (_v.endsWith(u'.')) {
-        hasRootDot = true;
-        _v.chop(1);
-    }
+    const bool hasRootDot        = value.endsWith(u'.');
+    const QString withoutRootDot = hasRootDot ? value.chopped(1) : value;
 
     // convert to lower case puny code
-    const QString v = QString::fromLatin1(QUrl::toAce(_v)).toLower();
+    const QString ace = QString::fromLatin1(QUrl::toAce(withoutRootDot)).toLower();
 
     // split up the utf8 string into parts to get the non puny code TLD
-    const QStringList nonAceParts = _v.split(QLatin1Char('.'));
+    const QStringList nonAceParts = withoutRootDot.split(QLatin1Char('.'));
     if (!nonAceParts.empty()) {
         const QString tld = nonAceParts.last();
         if (!tld.isEmpty()) {
@@ -52,123 +46,112 @@ bool ValidatorDomain::validate(const QString &value,
             // to check at first if the IDN TLD contains digits before
             // checking the ACE puny code
             for (const QChar &ch : tld) {
-                const ushort &uc = ch.unicode();
+                const char16_t uc = ch.unicode();
                 if (((uc >= ValidatorRulePrivate::ascii_0) &&
                      (uc <= ValidatorRulePrivate::ascii_9)) ||
                     (uc == ValidatorRulePrivate::ascii_dash)) {
-                    diag  = InvalidTLD;
-                    valid = false;
+                    diag = InvalidTLD;
                     break;
                 }
             }
 
-            if (valid) {
-                if (!v.isEmpty()) {
+            if (diag == Valid) {
+                if (!ace.isEmpty()) {
                     // maximum length of the name in the DNS is 253 without the last dot
-                    if (v.length() <= ValidatorDomainPrivate::maxDnsNameWithLastDot) {
-                        const QStringList parts = v.split(QLatin1Char('.'), Qt::KeepEmptyParts);
+                    if (ace.length() <= ValidatorDomainPrivate::maxDnsNameWithLastDot) {
+                        const QStringList parts = ace.split(QLatin1Char('.'), Qt::KeepEmptyParts);
                         // there has to be more than only the TLD
                         if (parts.size() > 1) {
                             // the TLD can not have only 1 char
                             if (parts.last().length() > 1) {
                                 for (int i = 0; i < parts.size(); ++i) {
-                                    if (valid) {
-                                        const QString &part = parts.at(i);
-                                        if (!part.isEmpty()) {
-                                            // labels/parts can have a maximum length of 63 chars
-                                            if (part.length() <=
-                                                ValidatorDomainPrivate::maxDnsLabelLength) {
-                                                bool isTld      = (i == (parts.size() - 1));
-                                                bool isPunyCode = part.startsWith(u"xn--");
-                                                for (int j = 0; j < part.size(); ++j) {
-                                                    const ushort &uc = part.at(j).unicode();
-                                                    const bool isDigit =
-                                                        ((uc >= ValidatorRulePrivate::ascii_0) &&
-                                                         (uc <= ValidatorRulePrivate::ascii_9));
-                                                    const bool isDash =
-                                                        (uc == ValidatorRulePrivate::ascii_dash);
-                                                    // no part/label can start with a digit or a
-                                                    // dash
-                                                    if ((j == 0) && (isDash || isDigit)) {
-                                                        valid = false;
-                                                        diag  = isDash ? DashStart : DigitStart;
-                                                        break;
-                                                    }
-                                                    // no part/label can end with a dash
-                                                    if ((j == (part.size() - 1)) && isDash) {
-                                                        valid = false;
-                                                        diag  = DashEnd;
-                                                        break;
-                                                    }
-                                                    const bool isChar =
-                                                        ((uc >= ValidatorRulePrivate::ascii_a) &&
-                                                         (uc <= ValidatorRulePrivate::ascii_z));
-                                                    if (!isTld) {
-                                                        // if it is not the tld, it can have a-z 0-9
-                                                        // and -
-                                                        if (!(isDigit || isDash || isChar)) {
-                                                            valid = false;
-                                                            diag  = InvalidChars;
-                                                            break;
-                                                        }
-                                                    } else {
-                                                        if (isPunyCode) {
-                                                            if (!(isDigit || isDash || isChar)) {
-                                                                valid = false;
-                                                                diag  = InvalidTLD;
-                                                                break;
-                                                            }
-                                                        } else {
-                                                            if (!isChar) {
-                                                                valid = false;
-                                                                diag  = InvalidTLD;
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                valid = false;
-                                                diag  = LabelTooLong;
+
+                                    if (diag != Valid) {
+                                        break;
+                                    }
+
+                                    const QString &part = parts.at(i);
+
+                                    if (part.isEmpty()) {
+                                        diag = EmptyLabel;
+                                        break;
+                                    }
+
+                                    // labels/parts can have a maximum length of 63 chars
+                                    if (part.length() > ValidatorDomainPrivate::maxDnsLabelLength) {
+                                        diag = LabelTooLong;
+                                        break;
+                                    }
+
+                                    const bool isTld        = (i == (parts.size() - 1));
+                                    const bool isPunyCode   = part.startsWith(u"xn--");
+                                    const qsizetype partEnd = part.size() - 1;
+
+                                    for (int j = 0; j < part.size(); ++j) {
+                                        const char16_t uc = part.at(j).unicode();
+                                        const bool isDigit =
+                                            ((uc >= ValidatorRulePrivate::ascii_0) &&
+                                             (uc <= ValidatorRulePrivate::ascii_9));
+                                        const bool isDash =
+                                            (uc == ValidatorRulePrivate::ascii_dash);
+                                        // no part/label can start with a digit or a
+                                        // dash
+                                        if (j == 0 && (isDash || isDigit)) {
+                                            diag = isDash ? DashStart : DigitStart;
+                                            break;
+                                        }
+                                        // no part/label can end with a dash
+                                        if (j == partEnd && isDash) {
+                                            diag = DashEnd;
+                                            break;
+                                        }
+                                        const bool isChar =
+                                            ((uc >= ValidatorRulePrivate::ascii_a) &&
+                                             (uc <= ValidatorRulePrivate::ascii_z));
+                                        if (!isTld) {
+                                            // if it is not the tld, it can have a-z 0-9
+                                            // and -
+                                            if (!(isDigit || isDash || isChar)) {
+                                                diag = InvalidChars;
                                                 break;
                                             }
                                         } else {
-                                            valid = false;
-                                            diag  = EmptyLabel;
-                                            break;
+                                            if (isPunyCode) {
+                                                if (!(isDigit || isDash || isChar)) {
+                                                    diag = InvalidTLD;
+                                                    break;
+                                                }
+                                            } else {
+                                                if (!isChar) {
+                                                    diag = InvalidTLD;
+                                                    break;
+                                                }
+                                            }
                                         }
-                                    } else {
-                                        break;
                                     }
                                 }
                             } else {
-                                valid = false;
-                                diag  = InvalidTLD;
+                                diag = InvalidTLD;
                             }
                         } else {
-                            valid = false;
-                            diag  = InvalidLabelCount;
+                            diag = InvalidLabelCount;
                         }
                     } else {
-                        valid = false;
-                        diag  = TooLong;
+                        diag = TooLong;
                     }
                 } else {
-                    valid = false;
-                    diag  = EmptyLabel;
+                    diag = EmptyLabel;
                 }
             }
         } else {
-            valid = false;
-            diag  = EmptyLabel;
+            diag = EmptyLabel;
         }
     } else {
-        valid = false;
-        diag  = EmptyLabel;
+        diag = EmptyLabel;
     }
 
-    if (valid && checkDNS) {
-        QDnsLookup alookup(QDnsLookup::A, v);
+    if (diag == Valid && checkDNS) {
+        QDnsLookup alookup(QDnsLookup::A, ace);
         QEventLoop aloop;
         QObject::connect(&alookup, &QDnsLookup::finished, &aloop, &QEventLoop::quit);
         QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, &alookup, &QDnsLookup::abort);
@@ -178,7 +161,7 @@ bool ValidatorDomain::validate(const QString &value,
         if (((alookup.error() != QDnsLookup::NoError) &&
              (alookup.error() != QDnsLookup::OperationCancelledError)) ||
             alookup.hostAddressRecords().empty()) {
-            QDnsLookup aaaaLookup(QDnsLookup::AAAA, v);
+            QDnsLookup aaaaLookup(QDnsLookup::AAAA, ace);
             QEventLoop aaaaLoop;
             QObject::connect(&aaaaLookup, &QDnsLookup::finished, &aaaaLoop, &QEventLoop::quit);
             QTimer::singleShot(
@@ -189,15 +172,12 @@ bool ValidatorDomain::validate(const QString &value,
             if (((aaaaLookup.error() != QDnsLookup::NoError) &&
                  (aaaaLookup.error() != QDnsLookup::OperationCancelledError)) ||
                 aaaaLookup.hostAddressRecords().empty()) {
-                valid = false;
-                diag  = MissingDNS;
+                diag = MissingDNS;
             } else if (aaaaLookup.error() == QDnsLookup::OperationCancelledError) {
-                valid = false;
-                diag  = DNSTimeout;
+                diag = DNSTimeout;
             }
         } else if (alookup.error() == QDnsLookup::OperationCancelledError) {
-            valid = false;
-            diag  = DNSTimeout;
+            diag = DNSTimeout;
         }
     }
 
@@ -205,15 +185,15 @@ bool ValidatorDomain::validate(const QString &value,
         *diagnose = diag;
     }
 
-    if (valid && extractedValue) {
+    if (diag == Valid && extractedValue) {
         if (hasRootDot) {
-            *extractedValue = v + QLatin1Char('.');
+            *extractedValue = ace + QLatin1Char('.');
         } else {
-            *extractedValue = v;
+            *extractedValue = ace;
         }
     }
 
-    return valid;
+    return diag == Valid;
 }
 
 QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QString &label)
