@@ -309,8 +309,8 @@ public:
      * For id based translations of custom messages \a translationContext has to be \c nullptr.
      * See ValidatorMessages for more information about setting custom translatable messages.
      */
-    explicit Validator(std::initializer_list<ValidatorRule *> validators,
-                       const char *translationContext = nullptr);
+    Validator(std::initializer_list<ValidatorRule *> validators,
+              const char *translationContext = nullptr);
 
     /**
      * Destroys the %Validator object and all added ValidatorRule objects.

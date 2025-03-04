@@ -87,12 +87,12 @@ public:
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if
      *                  input field is empty. This value will \b NOT be validated.
      */
-    ValidatorFileSize(const QString &field,
-                      Option option                     = NoOption,
-                      const QVariant &min               = QVariant(),
-                      const QVariant &max               = QVariant(),
-                      const ValidatorMessages &messages = ValidatorMessages(),
-                      const QString &defValKey          = QString());
+    explicit ValidatorFileSize(const QString &field,
+                               Option option                     = NoOption,
+                               const QVariant &min               = QVariant(),
+                               const QVariant &max               = QVariant(),
+                               const ValidatorMessages &messages = ValidatorMessages(),
+                               const QString &defValKey          = QString());
 
     /**
      * \brief Deconstructs the file size validator.

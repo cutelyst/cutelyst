@@ -16,7 +16,7 @@ class ValidatorPrivate
 {
     Q_DISABLE_COPY(ValidatorPrivate)
 public:
-    ValidatorPrivate(const char *trContext)
+    explicit ValidatorPrivate(const char *trContext)
         : translationContext(trContext)
     {
     }

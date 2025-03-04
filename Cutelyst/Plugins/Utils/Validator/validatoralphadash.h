@@ -54,10 +54,10 @@ public:
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if
      *                  input field is empty. This value will \b NOT be validated.
      */
-    ValidatorAlphaDash(const QString &field,
-                       bool asciiOnly                    = false,
-                       const ValidatorMessages &messages = ValidatorMessages(),
-                       const QString &defValKey          = QString());
+    explicit ValidatorAlphaDash(const QString &field,
+                                bool asciiOnly                    = false,
+                                const ValidatorMessages &messages = ValidatorMessages(),
+                                const QString &defValKey          = QString());
 
     /**
      * Destroys the %ValidatorAlpha object.

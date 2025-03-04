@@ -1033,9 +1033,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     break;
                 }
 
-                if (crlf_count > 0) {
-                    crlf_count = 0;
-                }
+                crlf_count = std::min(crlf_count, 0);
 
                 contextPrior = context;
                 context      = contextStack.takeLast(); // End of FWS
