@@ -52,8 +52,9 @@ bool Upload::save(const QString &newName)
         char block[4096];
         while (!atEnd()) {
             qint64 in = read(block, sizeof(block));
-            if (in <= 0)
+            if (in <= 0) {
                 break;
+            }
             if (in != out.write(block, in)) {
                 setErrorString(QLatin1String("Failure to write block"));
                 qCWarning(CUTELYST_UPLOAD) << errorString();
@@ -100,8 +101,9 @@ std::unique_ptr<QTemporaryFile> Upload::createTemporaryFile(const QString &templ
         char block[4096];
         while (!atEnd()) {
             qint64 in = read(block, sizeof(block));
-            if (in <= 0)
+            if (in <= 0) {
                 break;
+            }
 
             if (in != ret->write(block, in)) {
                 setErrorString(QLatin1String("Failure to write block"));

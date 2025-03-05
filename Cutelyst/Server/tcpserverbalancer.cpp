@@ -182,20 +182,23 @@ inline int qt_safe_socket(int domain, int type, int protocol, int flags = 0)
     int fd;
 #    ifdef QT_THREADSAFE_CLOEXEC
     int newtype = type | SOCK_CLOEXEC;
-    if (flags & O_NONBLOCK)
+    if (flags & O_NONBLOCK) {
         newtype |= SOCK_NONBLOCK;
+    }
     fd = ::socket(domain, newtype, protocol);
     return fd;
 #    else
     fd = ::socket(domain, type, protocol);
-    if (fd == -1)
+    if (fd == -1) {
         return -1;
+    }
 
     ::fcntl(fd, F_SETFD, FD_CLOEXEC);
 
     // set non-block too?
-    if (flags & O_NONBLOCK)
+    if (flags & O_NONBLOCK) {
         ::fcntl(fd, F_SETFL, ::fcntl(fd, F_GETFL) | O_NONBLOCK);
+    }
 
     return fd;
 #    endif
@@ -329,8 +332,9 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
 #    ifdef IPV6_V6ONLY
     if (aa.a.sa_family == AF_INET6) {
         int ipv6only = 0;
-        if (address.protocol() == QAbstractSocket::IPv6Protocol)
+        if (address.protocol() == QAbstractSocket::IPv6Protocol) {
             ipv6only = 1;
+        }
         // default value of this socket option varies depending on unix variant (or system
         // configuration on BSD), so always set it explicitly
         ::setsockopt(

@@ -61,8 +61,9 @@ systemdNotify::systemdNotify(QObject *parent)
         memset(sd_sun, 0, sizeof(struct sockaddr_un));
         sd_sun->sun_family = AF_UNIX;
         strncpy(sd_sun->sun_path, systemd_socket, qMin(len, sizeof(sd_sun->sun_path)));
-        if (sd_sun->sun_path[0] == '@')
+        if (sd_sun->sun_path[0] == '@') {
             sd_sun->sun_path[0] = 0;
+        }
 
         msghdr = new struct msghdr;
         memset(msghdr, 0, sizeof(struct msghdr));
@@ -234,20 +235,24 @@ int fd_cloexec(int fd, bool cloexec)
     Q_ASSERT(fd >= 0);
 
     const int flags = fcntl(fd, F_GETFD, 0);
-    if (flags < 0)
+    if (flags < 0) {
         return -errno;
+    }
 
     int nflags;
-    if (cloexec)
+    if (cloexec) {
         nflags = flags | FD_CLOEXEC;
-    else
+    } else {
         nflags = flags & ~FD_CLOEXEC;
+    }
 
-    if (nflags == flags)
+    if (nflags == flags) {
         return 0;
+    }
 
-    if (fcntl(fd, F_SETFD, nflags) < 0)
+    if (fcntl(fd, F_SETFD, nflags) < 0) {
         return -errno;
+    }
 
     return 0;
 }

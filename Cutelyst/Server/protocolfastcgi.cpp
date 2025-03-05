@@ -158,30 +158,34 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
         quint32 keylen;
         auto octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
-            if (j + 4 >= len)
+            if (j + 4 >= len) {
                 return -1;
+            }
 
             // Ignore first bit
             keylen = net_be32(&buf[j]) ^ 0x80000000;
             j += 4;
         } else {
-            if (++j >= len)
+            if (++j >= len) {
                 return -1;
+            }
             keylen = octet;
         }
 
         quint32 vallen;
         octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
-            if (j + 4 >= len)
+            if (j + 4 >= len) {
                 return -1;
+            }
 
             // Ignore first bit
             vallen = net_be32(&buf[j]) ^ 0x80000000;
             j += 4;
         } else {
-            if (++j >= len)
+            if (++j >= len) {
                 return -1;
+            }
             vallen = octet;
         }
 
@@ -191,8 +195,9 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
 
         quint16 pktsize =
             addHeader(request, buf + j, quint16(keylen), buf + j + keylen, quint16(vallen));
-        if (pktsize == 0)
+        if (pktsize == 0) {
             return -1;
+        }
         request->pktsize += pktsize;
 
         j += keylen + vallen;

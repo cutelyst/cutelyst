@@ -25,8 +25,9 @@ public:
     inline void ref() { ++refs; }
     inline void deref()
     {
-        if (--refs == 0)
+        if (--refs == 0) {
             delete this;
+        }
     }
 
     int fd;
