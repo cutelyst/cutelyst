@@ -60,6 +60,8 @@ IndentCaseLabels: false
 IndentPPDirectives: AfterHash
 IndentWidth: '4'
 IndentWrappedFunctionNames: true
+InsertBraces: true
+InsertNewlineAtEOF: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 LambdaBodyIndentation: OuterScope
 NamespaceIndentation: None

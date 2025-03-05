@@ -130,19 +130,21 @@ QString Utils::decodePercentEncoding(QString *s)
             int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
             int b = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
 
-            if (a >= '0' && a <= '9')
+            if (a >= '0' && a <= '9') {
                 a -= '0';
-            else if (a >= 'a' && a <= 'f')
+            } else if (a >= 'a' && a <= 'f') {
                 a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F')
+            } else if (a >= 'A' && a <= 'F') {
                 a = a - 'A' + 10;
+            }
 
-            if (b >= '0' && b <= '9')
+            if (b >= '0' && b <= '9') {
                 b -= '0';
-            else if (b >= 'a' && b <= 'f')
+            } else if (b >= 'a' && b <= 'f') {
                 b = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F')
+            } else if (b >= 'A' && b <= 'F') {
                 b = b - 'A' + 10;
+            }
 
             *data++  = (char) ((a << 4) | b);
             skipUtf8 = false;
@@ -200,19 +202,21 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
             int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
             int b = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
 
-            if (a >= '0' && a <= '9')
+            if (a >= '0' && a <= '9') {
                 a -= '0';
-            else if (a >= 'a' && a <= 'f')
+            } else if (a >= 'a' && a <= 'f') {
                 a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F')
+            } else if (a >= 'A' && a <= 'F') {
                 a = a - 'A' + 10;
+            }
 
-            if (b >= '0' && b <= '9')
+            if (b >= '0' && b <= '9') {
                 b -= '0';
-            else if (b >= 'a' && b <= 'f')
+            } else if (b >= 'a' && b <= 'f') {
                 b = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F')
+            } else if (b >= 'A' && b <= 'F') {
                 b = b - 'A' + 10;
+            }
 
             *data++  = (char) ((a << 4) | b);
             skipUtf8 = false;
@@ -258,19 +262,21 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
             int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
             int b = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
 
-            if (a >= '0' && a <= '9')
+            if (a >= '0' && a <= '9') {
                 a -= '0';
-            else if (a >= 'a' && a <= 'f')
+            } else if (a >= 'a' && a <= 'f') {
                 a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F')
+            } else if (a >= 'A' && a <= 'F') {
                 a = a - 'A' + 10;
+            }
 
-            if (b >= '0' && b <= '9')
+            if (b >= '0' && b <= '9') {
                 b -= '0';
-            else if (b >= 'a' && b <= 'f')
+            } else if (b >= 'a' && b <= 'f') {
                 b = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F')
+            } else if (b >= 'A' && b <= 'F') {
                 b = b - 'A' + 10;
+            }
 
             *data++  = (char) ((a << 4) | b);
             skipUtf8 = false;

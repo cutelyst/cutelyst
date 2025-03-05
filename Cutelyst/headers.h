@@ -51,8 +51,9 @@ public:
         for (std::initializer_list<std::pair<QByteArray, QByteArray>>::const_iterator it =
                  list.begin();
              it != list.end();
-             ++it)
+             ++it) {
             m_data.emplace_back(HeaderKeyValue{it->first, it->second});
+        }
     }
 
     /**

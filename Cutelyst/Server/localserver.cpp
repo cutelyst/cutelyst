@@ -28,8 +28,9 @@ inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int
 #    ifdef QT_THREADSAFE_CLOEXEC
     // use accept4
     int sockflags = SOCK_CLOEXEC;
-    if (flags & O_NONBLOCK)
+    if (flags & O_NONBLOCK) {
         sockflags |= SOCK_NONBLOCK;
+    }
 #        if defined(Q_OS_NETBSD)
     fd = ::paccept(s, addr, static_cast<socklen_t *>(addrlen), NULL, sockflags);
 #        else
@@ -38,14 +39,16 @@ inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int
     return fd;
 #    else
     fd = ::accept(s, addr, static_cast<socklen_t *>(addrlen));
-    if (fd == -1)
+    if (fd == -1) {
         return -1;
+    }
 
     ::fcntl(fd, F_SETFD, FD_CLOEXEC);
 
     // set non-block too?
-    if (flags & O_NONBLOCK)
+    if (flags & O_NONBLOCK) {
         ::fcntl(fd, F_SETFL, ::fcntl(fd, F_GETFL) | O_NONBLOCK);
+    }
 
     return fd;
 #    endif
@@ -219,8 +222,9 @@ QSocketNotifier *LocalServer::socketDescriptorNotifier() const
 #ifdef Q_OS_UNIX
 void LocalServer::socketNotifierActivated()
 {
-    if (-1 == m_socket)
+    if (-1 == m_socket) {
         return;
+    }
 
     ::sockaddr_un addr;
     uint length = sizeof(sockaddr_un);

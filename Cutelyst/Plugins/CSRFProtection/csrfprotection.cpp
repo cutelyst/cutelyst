@@ -736,11 +736,12 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         if (upload && upload->size() < 1024 /*FIXME*/) {
                             requestCsrfToken = upload->readAll();
                         }
-                    } else
+                    } else {
                         requestCsrfToken =
                             c->req()
                                 ->bodyParam(QString::fromLatin1(csrf->d_ptr->formInputName))
                                 .toLatin1();
+                    }
                 }
 
                 if (requestCsrfToken.isEmpty()) {

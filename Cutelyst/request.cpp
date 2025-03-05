@@ -556,10 +556,11 @@ int nextNonWhitespace(QByteArrayView text, int from, int length)
     // We ignore the fact that CRLF must come as a pair at this point
     // It's an invalid HTTP header if that happens.
     while (from < length) {
-        if (isLWS(text.at(from)))
+        if (isLWS(text.at(from))) {
             ++from;
-        else
+        } else {
             return from; // non-whitespace
+        }
     }
 
     // reached the end
@@ -577,8 +578,9 @@ Request::Cookie nextField(QByteArrayView text, int &position)
     position         = nextNonWhitespace(text, position, length);
 
     int semiColonPosition = findNextSplit(text, position, length);
-    if (semiColonPosition < 0)
+    if (semiColonPosition < 0) {
         semiColonPosition = length; // no ';' means take everything to end of string
+    }
 
     int equalsPosition = text.indexOf('=', position);
     if (equalsPosition < 0 || equalsPosition > semiColonPosition) {

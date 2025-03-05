@@ -581,8 +581,9 @@ void UnixFork::setSched(Cutelyst::Server *wsgi, int workerId, int workerCore)
 
         CPU_ZERO(&cpuset);
         for (int i = 0; i < cpu_affinity; i++) {
-            if (base_cpu >= coreCount)
+            if (base_cpu >= coreCount) {
                 base_cpu = 0;
+            }
             CPU_SET(base_cpu, &cpuset);
             int ret = snprintf(buf + pos, 4096 - pos, " %d", base_cpu + 1);
             if (ret < 2 || ret >= 4096) {
@@ -635,23 +636,26 @@ int UnixFork::setupUnixSignalHandlers()
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
-    if (sigaction(SIGINT, &action, nullptr) > 0)
+    if (sigaction(SIGINT, &action, nullptr) > 0) {
         return SIGINT;
+    }
 
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
-    if (sigaction(SIGQUIT, &action, nullptr) > 0)
+    if (sigaction(SIGQUIT, &action, nullptr) > 0) {
         return SIGQUIT;
+    }
 
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
 
-    if (sigaction(SIGCHLD, &action, nullptr) > 0)
+    if (sigaction(SIGCHLD, &action, nullptr) > 0) {
         return SIGCHLD;
+    }
 
     return 0;
 }
