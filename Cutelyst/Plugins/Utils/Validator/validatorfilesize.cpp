@@ -296,7 +296,11 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
             double size = 0;
             if (ValidatorFileSize::validate(v, min, max, d->option, c->locale(), &size)) {
                 if (size < static_cast<double>(std::numeric_limits<qulonglong>::max())) {
-                    result.value.setValue<qulonglong>(static_cast<qulonglong>(std::lround(size)));
+                    // best solution would be something like std::ullround, but there is only
+                    // std:llround that returns a signed long long instead of unsigend, so still
+                    // using this approach works best
+                    // NOLINTNEXTLINE(bugprone-incorrect-roundings)
+                    result.value.setValue<qulonglong>(static_cast<qulonglong>(size + 0.5));
                 } else {
                     result.value.setValue(size);
                 }
