@@ -499,11 +499,11 @@ int main(int argc, char *argv[])
                                   qtTrId("cutelystcmd-opt-value-name"));
     parser.addOption(controller);
 
-    QCommandLineOption server(QStringLiteral("server"),
-                              //: CLI option description
-                              //% "Start a HTTP server."
-                              qtTrId("cutelystcmd-opt-server-desc"));
-    parser.addOption(server);
+    QCommandLineOption serverOption(QStringLiteral("server"),
+                                    //: CLI option description
+                                    //% "Start a HTTP server."
+                                    qtTrId("cutelystcmd-opt-server-desc"));
+    parser.addOption(serverOption);
 
     QCommandLineOption appFile(QStringLiteral("app-file"),
                                //: CLI option description
@@ -557,7 +557,7 @@ int main(int argc, char *argv[])
         if (!createController(name)) {
             parser.showHelp(3);
         }
-    } else if (parser.isSet(server)) {
+    } else if (parser.isSet(serverOption)) {
         bool portOk = false;
         int port    = parser.value(serverPort).toInt(&portOk);
         if (!portOk) {

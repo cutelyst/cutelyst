@@ -85,7 +85,7 @@ public:
     /**
      * Constructs a new %Authentication object with the given \a parent.
      */
-    Authentication(Application *parent);
+    explicit Authentication(Application *parent);
 
     /**
      * Destroys the %Authentication object.

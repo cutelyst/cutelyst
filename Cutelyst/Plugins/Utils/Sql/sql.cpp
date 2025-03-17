@@ -282,7 +282,7 @@ Sql::Transaction::Transaction(const QSqlDatabase &database)
 Sql::Transaction::~Transaction()
 {
     if (m_transactionRunning) {
-        m_db.rollback();
+        std::ignore = m_db.rollback();
     }
 }
 

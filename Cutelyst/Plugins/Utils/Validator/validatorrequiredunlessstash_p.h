@@ -18,7 +18,7 @@ public:
                                         QString sk,
                                         QVariant sv,
                                         const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredUnlessStash")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorRequiredUnlessStash")
         , stashKey(std::move(sk))
         , stashValues(std::move(sv))
     {

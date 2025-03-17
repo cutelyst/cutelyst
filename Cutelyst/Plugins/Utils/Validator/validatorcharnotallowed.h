@@ -50,7 +50,7 @@ public:
     ValidatorCharNotAllowed(const QString &field,
                             const QString &forbiddenChars,
                             const ValidatorMessages &messages = ValidatorMessages(),
-                            const QString &defValKey          = QString());
+                            const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorCharNotAllowed object.
@@ -62,12 +62,10 @@ public:
      * \brief Returns \c true if \a value does not contain any of the forbideden characters
      * \param value             The value to validate.
      * \param forbiddenChars    The list of forbidden characters.
-     * \param foundChar         If set, it will contain the first found chararacter that is
-     *                          forbidden.
-     * \return \c true if the \a value does not contain any of the \a forbiddenChars
+     *
+     * \return the first found chararacter that is forbidden, or has_value == false if not found
      */
-    static bool
-        validate(const QString &value, const QString &forbiddenChars, QChar *foundChar = nullptr);
+    static std::optional<QChar> validate(const QString &value, const QString &forbiddenChars);
 
 protected:
     /**

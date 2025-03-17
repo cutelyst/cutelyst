@@ -109,7 +109,7 @@ Cutelyst::AuthenticationUser Authentication::user(Cutelyst::Context *c)
     AuthenticationUser ret;
     const QVariant user = c->stash(AUTHENTICATION_USER);
     if (user.isNull()) {
-        ret = AuthenticationPrivate::restoreUser(c, QVariant(), QString());
+        ret = AuthenticationPrivate::restoreUser(c, {}, {});
     } else {
         ret = user.value<AuthenticationUser>();
     }

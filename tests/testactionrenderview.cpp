@@ -18,7 +18,7 @@ class TestView : public View
 {
     Q_OBJECT
 public:
-    TestView(QObject *parent, const QString &name = QString())
+    TestView(QObject *parent, const QString &name = {})
         : View(parent, name)
     {
     }

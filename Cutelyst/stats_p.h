@@ -5,9 +5,10 @@
 #ifndef STATS_P_H
 #define STATS_P_H
 
-#include "stats.h"
-
+#include <chrono>
 #include <vector>
+
+#include <QString>
 
 namespace Cutelyst {
 

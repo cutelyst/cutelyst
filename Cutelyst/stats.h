@@ -15,7 +15,9 @@ class EngineRequest;
 class StatsPrivate;
 class Stats
 {
+    Q_GADGET
     Q_DECLARE_PRIVATE(Stats)
+    Q_DISABLE_COPY(Stats)
 public:
     /**
      * Constructs a new stats object with the given parent.

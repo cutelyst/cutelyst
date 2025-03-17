@@ -59,7 +59,7 @@ class ValidatorAfterPrivate;
  *                  new ValidatorAfter(QStringLiteral("datefield2"),
  *                                     QDateTime::fromString(QStringLiteral("2018-01-01T18:18:18"),
  *                                                           Qt::ISODate),
- *                                     QString(),
+ *                                     = {},
  *                                     QT_TRANSLATE_NOOP("MyController", "MM/dd/yyyy, HH:mm")),
  *
  *                  // compare against a datetime in the stash
@@ -107,10 +107,10 @@ public:
      */
     ValidatorAfter(const QString &field,
                    const QVariant &comparison,
-                   const QString &timeZone           = QString(),
+                   const QString &timeZone           = {},
                    const char *inputFormat           = nullptr,
                    const ValidatorMessages &messages = ValidatorMessages(),
-                   const QString &defValKey          = QString());
+                   const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorAfter object.

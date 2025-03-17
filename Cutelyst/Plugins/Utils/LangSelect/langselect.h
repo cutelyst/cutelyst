@@ -569,7 +569,7 @@ public:
      * @return @c true if the URL query contained a supported locale, @c false if the locale will be
      * set by a redirect.
      */
-    static bool fromUrlQuery(Context *c, const QString &key = QString());
+    static bool fromUrlQuery(Context *c, const QString &key = {});
 
     /**
      * Tries to get the locale from a session value specified by @a key. If that key is not present
@@ -588,7 +588,7 @@ public:
      * setSessionKey() will be used.
      * @return @c true if the session contained a supported locale, otherwise @c false.
      */
-    static bool fromSession(Context *c, const QString &key = QString());
+    static bool fromSession(Context *c, const QString &key = {});
 
     /**
      * Tries to get the locale from a cookie specified by @a name. If that cookie is not present or

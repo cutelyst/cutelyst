@@ -93,7 +93,7 @@ void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, str
 
             if (!done) {
                 int base   = (msec / boundary) * boundary;
-                int middle = base + boundary / 2;
+                int middle = base + (boundary / 2);
                 msec       = (msec < middle) ? qMax(base, min) : qMin(base + boundary, max);
             }
         }

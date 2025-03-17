@@ -53,8 +53,8 @@ public:
      */
     explicit ValidatorDigits(const QString &field,
                              const QVariant &length            = -1,
-                             const ValidatorMessages &messages = ValidatorMessages(),
-                             const QString &defValKey          = QString());
+                             const ValidatorMessages &messages = {},
+                             const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorDigits object.

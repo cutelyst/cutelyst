@@ -68,7 +68,7 @@ public:
      * The \a name can be used to specify different views that can be called either dynamically
      * by Context::setCustomView() or with the \c :View() argument of the RenderView action.
      */
-    explicit ViewEmail(QObject *parent, const QString &name = QString());
+    explicit ViewEmail(QObject *parent, const QString &name = {});
 
     /**
      * Returns the stash key that will contain the email data.
@@ -210,7 +210,7 @@ protected:
     /**
      * Constructs a new %ViewEmail object using the private class \a d, \a parent and \a name.
      */
-    ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = QString());
+    ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = {});
 
 Q_SIGNALS:
     void changed();

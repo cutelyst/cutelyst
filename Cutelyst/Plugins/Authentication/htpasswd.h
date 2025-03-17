@@ -23,7 +23,7 @@ public:
     /**
      * Constructs a new %StoreHtpasswd object with the given file \a name.
      */
-    StoreHtpasswd(const QString &name);
+    explicit StoreHtpasswd(const QString &name);
 
     /**
      * Destroys the %StoreHtpasswd object.

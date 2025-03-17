@@ -4,10 +4,14 @@
  */
 #include "utils.h"
 
+#include <algorithm>
+
 #include <QTextStream>
 #include <QVector>
 
 using namespace Cutelyst;
+
+namespace {
 
 QByteArray buildTableDivision(const QVector<int> &columnsSize)
 {
@@ -26,6 +30,8 @@ QByteArray buildTableDivision(const QVector<int> &columnsSize)
     return buffer;
 }
 
+} // namespace
+
 QByteArray Utils::buildTable(const QVector<QStringList> &table,
                              const QStringList &headers,
                              const QString &title)
@@ -34,15 +40,15 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table,
     QVector<int> columnsSize;
 
     if (!headers.isEmpty()) {
-        for (const QString &header : headers) {
-            columnsSize.push_back(header.size());
-        }
+        std::ranges::transform(headers, std::back_inserter(columnsSize), [](const QString &header) {
+            return header.size();
+        });
     } else {
         for (const QStringList &rows : table) {
             if (columnsSize.empty()) {
-                for (const QString &row : rows) {
-                    columnsSize.push_back(row.size());
-                }
+                std::ranges::transform(rows,
+                                       std::back_inserter(columnsSize),
+                                       [](const QString &row) { return row.size(); });
             } else if (rows.size() != columnsSize.size()) {
                 qFatal("Incomplete table");
             }
@@ -52,7 +58,6 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table,
     for (const QStringList &row : table) {
         if (row.size() > columnsSize.size()) {
             qFatal("Incomplete table");
-            break;
         }
 
         for (int i = 0; i < row.size(); ++i) {

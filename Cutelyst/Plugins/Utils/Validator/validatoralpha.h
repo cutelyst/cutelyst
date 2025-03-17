@@ -56,8 +56,8 @@ public:
      */
     explicit ValidatorAlpha(const QString &field,
                             bool asciiOnly                    = false,
-                            const ValidatorMessages &messages = ValidatorMessages(),
-                            const QString &defValKey          = QString());
+                            const ValidatorMessages &messages = {},
+                            const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorAlpha object.

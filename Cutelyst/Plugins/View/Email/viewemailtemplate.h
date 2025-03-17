@@ -44,7 +44,7 @@ public:
      * The \a name can be used to specify different views that can be called either dynamically
      * by Context::setCustomView() or with the \c :View() argument of the RenderView action.
      */
-    explicit ViewEmailTemplate(QObject *parent, const QString &name = QString());
+    explicit ViewEmailTemplate(QObject *parent, const QString &name = {});
 
     /**
      * Returns the optional prefix to look somewhere under the existing configured template paths

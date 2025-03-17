@@ -14,7 +14,7 @@ class ValidatorAcceptedPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorAcceptedPrivate(const QString &f, const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorAccepted")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorAccepted")
     {
     }
 

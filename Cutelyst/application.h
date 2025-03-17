@@ -137,8 +137,8 @@ public:
     T plugin()
     {
         const auto pluginsConst = plugins();
-        for (Plugin *plugin : pluginsConst) {
-            auto p = qobject_cast<T>(plugin);
+        for (Plugin *pluginPtr : pluginsConst) {
+            auto p = qobject_cast<T>(pluginPtr);
             if (p) {
                 return p;
             }
@@ -351,7 +351,7 @@ public:
      * @since %Cuteylst 2.1.0
      */
     QVector<QLocale> loadTranslationsFromDir(const QString &filename,
-                                             const QString &directory = QString(),
+                                             const QString &directory = {},
                                              const QString &prefix    = QStringLiteral("."),
                                              const QString &suffix    = QStringLiteral(".qm"));
 

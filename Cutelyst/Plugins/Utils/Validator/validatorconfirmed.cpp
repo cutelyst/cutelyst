@@ -43,7 +43,6 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
 
 QString ValidatorConfirmed::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
@@ -54,5 +53,5 @@ QString ValidatorConfirmed::genericValidationError(Context *c, const QVariant &e
         //% "The value in the “%1“ field has not been confirmed."
         return c->qtTrId("cutelyst-valconfirmed-genvalerr-label").arg(_label);
     }
-    return error;
+    return {};
 }

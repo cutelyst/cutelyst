@@ -43,8 +43,7 @@ public:
      * \param field         Name of the input field to validate.
      * \param messages      Custom error message if validation fails.
      */
-    explicit ValidatorConfirmed(const QString &field,
-                                const ValidatorMessages &messages = ValidatorMessages());
+    explicit ValidatorConfirmed(const QString &field, const ValidatorMessages &messages = {});
 
     /**
      * Destroys the %ValidatorConfirmed object.

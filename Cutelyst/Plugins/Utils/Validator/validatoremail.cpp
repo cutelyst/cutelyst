@@ -214,7 +214,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 elementLen = 0;
                 elementCount++;
                 parseLocalPart += token;
-                atomListLocalPart[elementCount] = QString();
+                atomListLocalPart[elementCount].clear();
             } else if (token == QLatin1Char('"')) {
                 if (elementLen == 0) {
                     // The entire local-part can be a quoted string for RFC 5321
@@ -436,7 +436,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                                   // (although it may be obsolete CFWS)
                 elementLen = 0;
                 elementCount++;
-                atomListDomain[elementCount] = QString();
+                atomListDomain[elementCount].clear();
                 parseDomain += token;
 
             } else if (token == QLatin1Char('[')) { // Domain literal
@@ -447,7 +447,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     context = ComponentLiteral;
                     parseDomain += token;
                     atomListDomain[elementCount] += token;
-                    parseLiteral = QString();
+                    parseLiteral.clear();
                 } else {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // Fatal error
                 }

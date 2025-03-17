@@ -52,8 +52,8 @@ public:
      */
     explicit ValidatorTime(const QString &field,
                            const char *format                = nullptr,
-                           const ValidatorMessages &messages = ValidatorMessages(),
-                           const QString &defValKey          = QString());
+                           const ValidatorMessages &messages = {},
+                           const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorTime object.

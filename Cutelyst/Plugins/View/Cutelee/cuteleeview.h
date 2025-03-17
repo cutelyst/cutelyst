@@ -147,7 +147,7 @@ public:
      * by Context::setCustomView() or with the <tt>:%View("name")</tt> argument of the RenderView
      * action.
      */
-    explicit CuteleeView(QObject *parent = nullptr, const QString &name = QString());
+    explicit CuteleeView(QObject *parent = nullptr, const QString &name = {});
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths NOTIFY changed)
     /**

@@ -35,13 +35,13 @@ public:
      * Creates a %Transaction using the \a databaseName that you would pass to
      * Sql::databaseNameThread().
      */
-    explicit Transaction(const QString &databaseName = QString());
+    explicit Transaction(const QString &databaseName = {});
 
     /**
      * Creates a %Transaction using the \a database that you would get for example from
      * Sql::databaseThread().
      */
-    Transaction(const QSqlDatabase &database);
+    explicit Transaction(const QSqlDatabase &database);
 
     /**
      * Destroys the %Transaction object and rolls back the transaction is still open and
@@ -182,13 +182,13 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQuery(const QString &query,
  * @ingroup plugins-utils-sql
  * Returns a string with as "dbName-threadNumber" to be used for connecting
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT QString databaseNameThread(const QString &dbName = QString());
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT QString databaseNameThread(const QString &dbName = {});
 
 /**
  * @ingroup plugins-utils-sql
  * Returns a QSqlDatabase named as "dbName-threadNumber" to be used for QSqlQuery
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlDatabase databaseThread(const QString &dbName = QString());
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlDatabase databaseThread(const QString &dbName = {});
 
 /**
  * @ingroup plugins-utils-sql
@@ -209,7 +209,7 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlDatabase databaseThread(const QString &dbNa
  * thread-safe.
  */
 CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &query,
-                                                               const QString &dbName = QString(),
+                                                               const QString &dbName = {},
                                                                bool forwardOnly      = false);
 } // namespace Sql
 
@@ -292,7 +292,7 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &qu
 #define CPreparedSqlQueryThreadFO(str) \
     ([]() -> QSqlQuery { \
         static thread_local QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQueryThread(str, QString(), true); \
+            Cutelyst::Sql::preparedQueryThread(str, = {}, true); \
         return query_temp; \
     }()) /**/
 

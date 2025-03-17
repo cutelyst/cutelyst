@@ -234,7 +234,7 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
     Q_EMIT c->request()->webSocketClosed(closeCode, reason);
 
     if (failed) {
-        reason    = QString();
+        reason.clear();
         closeCode = Cutelyst::Response::CloseCodeProtocolError;
     } else if (closeCode < 3000 || closeCode > 4999) {
         switch (closeCode) {
@@ -260,7 +260,7 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
             //    case Cutelyst::Response::CloseCodeTlsHandshakeFailed:
             break;
         default:
-            reason    = QString();
+            reason.clear();
             closeCode = Cutelyst::Response::CloseCodeProtocolError;
             break;
         }
@@ -305,7 +305,7 @@ bool ProtocolWebSocket::websocket_parse_header(Socket *sock, const char *buf, QI
         // Only Text/Bynary/Coninue opcodes can be fragmented
         // Continue opcode was set but was NOT followed by CONTINUE
 
-        io->write(ProtocolWebSocket::createWebsocketCloseReply(QString(), 1002)); // Protocol error
+        io->write(ProtocolWebSocket::createWebsocketCloseReply({}, 1002)); // Protocol error
         sock->connectionClose();
         return false;
     }

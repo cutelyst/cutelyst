@@ -19,7 +19,7 @@ public:
                               QString un,
                               QString opw,
                               const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorPwQuality")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorPwQuality")
         , options(std::move(opts))
         , userName(std::move(un))
         , oldPassword(std::move(opw))

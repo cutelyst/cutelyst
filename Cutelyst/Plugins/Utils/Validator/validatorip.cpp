@@ -182,24 +182,18 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
                     if (valid && (constraints.testFlag(NoPrivateRange) ||
                                   constraints.testFlag(PublicOnly))) {
-
-                        for (const std::pair<QHostAddress, int> &subnet : ipv4Private) {
-                            if (a.isInSubnet(subnet.first, subnet.second)) {
-                                valid = false;
-                                break;
-                            }
-                        }
+                        valid = !std::ranges::any_of(
+                            ipv4Private, [&a](const std::pair<QHostAddress, int> &subnet) {
+                            return a.isInSubnet(subnet.first, subnet.second);
+                        });
                     }
 
                     if (valid && (constraints.testFlag(NoReservedRange) ||
                                   constraints.testFlag(PublicOnly))) {
-
-                        for (const std::pair<QHostAddress, int> &subnet : ipv4Reserved) {
-                            if (a.isInSubnet(subnet.first, subnet.second)) {
-                                valid = false;
-                                break;
-                            }
-                        }
+                        valid = !std::ranges::any_of(
+                            ipv4Reserved, [&a](const std::pair<QHostAddress, int> &subnet) {
+                            return a.isInSubnet(subnet.first, subnet.second);
+                        });
                     }
 
                     if (valid &&
@@ -217,24 +211,18 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
                     if (valid && (constraints.testFlag(NoPrivateRange) ||
                                   constraints.testFlag(PublicOnly))) {
-
-                        for (const std::pair<QHostAddress, int> &subnet : ipv6Private) {
-                            if (a.isInSubnet(subnet.first, subnet.second)) {
-                                valid = false;
-                                break;
-                            }
-                        }
+                        valid = !std::ranges::any_of(
+                            ipv6Private, [&a](const std::pair<QHostAddress, int> &subnet) {
+                            return a.isInSubnet(subnet.first, subnet.second);
+                        });
                     }
 
                     if (valid && (constraints.testFlag(NoReservedRange) ||
                                   constraints.testFlag(PublicOnly))) {
-
-                        for (const std::pair<QHostAddress, int> &subnet : ipv6Reserved) {
-                            if (a.isInSubnet(subnet.first, subnet.second)) {
-                                valid = false;
-                                break;
-                            }
-                        }
+                        valid = !std::ranges::any_of(
+                            ipv6Reserved, [&a](const std::pair<QHostAddress, int> &subnet) {
+                            return a.isInSubnet(subnet.first, subnet.second);
+                        });
                     }
 
                     if (valid &&

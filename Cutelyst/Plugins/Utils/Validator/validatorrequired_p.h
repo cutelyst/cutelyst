@@ -14,7 +14,7 @@ class ValidatorRequiredPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRequiredPrivate(const QString &f, const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequired")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorRequired")
     {
     }
 };

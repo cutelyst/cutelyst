@@ -52,8 +52,8 @@ public:
      */
     explicit ValidatorDate(const QString &field,
                            const char *inputFormat           = nullptr,
-                           const ValidatorMessages &messages = ValidatorMessages(),
-                           const QString &defValKey          = QString());
+                           const ValidatorMessages &messages = {},
+                           const QString &defValKey          = {});
 
     /**
      * Destroys the %VaidatorDate object.

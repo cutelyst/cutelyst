@@ -33,7 +33,7 @@ public:
      * The \a name can be used to specify different views that can be called either dynamically
      * by Context::setCustomView() or with the \c :View() argument of the RenderView action.
      */
-    explicit ViewJson(QObject *parent, const QString &name = QString());
+    explicit ViewJson(QObject *parent, const QString &name = {});
 
     /**  This value defines the format of the JSON byte array produced when rendering the view. */
     enum JsonFormat {

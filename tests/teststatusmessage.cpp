@@ -219,32 +219,32 @@ void TestStatusMessage::testController_data()
     QTest::addColumn<QByteArray>("output");
 
     QTest::newRow("statusmessage-error-00")
-        << QStringLiteral("/status/message/test/error") << QString() << QString() << QString()
-        << QString() << QByteArrayLiteral("SM:error");
+        << QStringLiteral("/status/message/test/error") << QString{} << QString{} << QString{}
+        << QString{} << QByteArrayLiteral("SM:error");
     QTest::newRow("statusmessage-error-01")
         << QStringLiteral("/status/message/test/error") << QStringLiteral("some_token")
         << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
         << QByteArrayLiteral("SM:error");
 
     QTest::newRow("statusmessage-status-00")
-        << QStringLiteral("/status/message/test/status") << QString() << QString() << QString()
-        << QString() << QByteArrayLiteral("SM:status");
+        << QStringLiteral("/status/message/test/status") << QString{} << QString{} << QString{}
+        << QString{} << QByteArrayLiteral("SM:status");
     QTest::newRow("statusmessage-status-01")
         << QStringLiteral("/status/message/test/status") << QStringLiteral("some_token")
         << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
         << QByteArrayLiteral("SM:status");
 
     QTest::newRow("statusmessage-errorquery-00")
-        << QStringLiteral("/status/message/test/errorQuery") << QString() << QString() << QString()
-        << QString() << QByteArrayLiteral("SM:errorQuery");
+        << QStringLiteral("/status/message/test/errorQuery") << QString{} << QString{} << QString{}
+        << QString{} << QByteArrayLiteral("SM:errorQuery");
     QTest::newRow("statusmessage-errorquery-01")
         << QStringLiteral("/status/message/test/errorQuery") << QStringLiteral("some_token")
         << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
         << QByteArrayLiteral("SM:errorQuery");
 
     QTest::newRow("statusmessage-statusquery-00")
-        << QStringLiteral("/status/message/test/statusQuery") << QString() << QString() << QString()
-        << QString() << QByteArrayLiteral("SM:statusQuery");
+        << QStringLiteral("/status/message/test/statusQuery") << QString{} << QString{} << QString{}
+        << QString{} << QByteArrayLiteral("SM:statusQuery");
     QTest::newRow("statusmessage-statusquery-01")
         << QStringLiteral("/status/message/test/statusQuery") << QStringLiteral("some_token")
         << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")

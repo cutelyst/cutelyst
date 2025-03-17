@@ -4,6 +4,8 @@
  */
 #include "minimal.h"
 
+#include <algorithm>
+
 #include <QVariant>
 
 using namespace Cutelyst;
@@ -25,18 +27,16 @@ void StoreMinimal::addUser(const AuthenticationUser &user)
 AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
     Q_UNUSED(c)
-    AuthenticationUser ret;
     const QString id = userInfo.value(m_idField);
 
-    const auto users = m_users;
-    for (const AuthenticationUser &user : users) {
-        if (user.id() == id) {
-            ret = user;
-            break;
-        }
+    auto it = std::ranges::find_if(
+        m_users, [id](const AuthenticationUser &user) { return user.id() == id; });
+
+    if (it != m_users.end()) {
+        return *it;
     }
 
-    return ret;
+    return {};
 }
 
 QVariant StoreMinimal::forSession(Context *c, const AuthenticationUser &user)

@@ -232,7 +232,7 @@ public:
     void afterDate(Context *c)
     {
         Validator v({new ValidatorAfter(
-            u"after_field"_s, QDate::currentDate(), QString(), nullptr, m_validatorMessages)});
+            u"after_field"_s, QDate::currentDate(), QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -241,7 +241,7 @@ public:
     void afterTime(Context *c)
     {
         Validator v({new ValidatorAfter(
-            u"after_field"_s, QTime(12, 0), QString(), nullptr, m_validatorMessages)});
+            u"after_field"_s, QTime(12, 0), QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -251,7 +251,7 @@ public:
     {
         Validator v({new ValidatorAfter(u"after_field"_s,
                                         QDateTime::currentDateTime(),
-                                        QString(),
+                                        QString{},
                                         nullptr,
                                         m_validatorMessages)});
         checkResponse(c, v.validate(c));
@@ -263,7 +263,7 @@ public:
     {
         Validator v({new ValidatorAfter(u"after_field"_s,
                                         QDateTime::currentDateTime(),
-                                        QString(),
+                                        QString{},
                                         "yyyy d MM HH:mm",
                                         m_validatorMessages)});
         checkResponse(c, v.validate(c));
@@ -274,7 +274,7 @@ public:
     void afterInvalidValidationData(Context *c)
     {
         Validator v({new ValidatorAfter(
-            u"after_field"_s, QDate(), QString(), nullptr, m_validatorMessages)});
+            u"after_field"_s, QDate(), QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -283,7 +283,7 @@ public:
     void afterInvalidValidationData2(Context *c)
     {
         Validator v({new ValidatorAfter(
-            u"after_field"_s, u"schiet"_s, QString(), nullptr, m_validatorMessages)});
+            u"after_field"_s, u"schiet"_s, QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -368,7 +368,7 @@ public:
     void beforeDate(Context *c)
     {
         Validator v({new ValidatorBefore(
-            u"before_field"_s, QDate::currentDate(), QString(), nullptr, m_validatorMessages)});
+            u"before_field"_s, QDate::currentDate(), QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -377,7 +377,7 @@ public:
     void beforeTime(Context *c)
     {
         Validator v({new ValidatorBefore(
-            u"before_field"_s, QTime(12, 0), QString(), nullptr, m_validatorMessages)});
+            u"before_field"_s, QTime(12, 0), QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -387,7 +387,7 @@ public:
     {
         Validator v({new ValidatorBefore(u"before_field"_s,
                                          QDateTime::currentDateTime(),
-                                         QString(),
+                                         QString{},
                                          nullptr,
                                          m_validatorMessages)});
         checkResponse(c, v.validate(c));
@@ -399,7 +399,7 @@ public:
     {
         Validator v({new ValidatorBefore(u"before_field"_s,
                                          QDateTime::currentDateTime(),
-                                         QString(),
+                                         QString{},
                                          "yyyy d MM HH:mm",
                                          m_validatorMessages)});
         checkResponse(c, v.validate(c));
@@ -410,7 +410,7 @@ public:
     void beforeInvalidValidationData(Context *c)
     {
         Validator v({new ValidatorBefore(
-            u"before_field"_s, QDate(), QString(), nullptr, m_validatorMessages)});
+            u"before_field"_s, QDate(), QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -419,7 +419,7 @@ public:
     void beforeInvalidValidationData2(Context *c)
     {
         Validator v({new ValidatorBefore(
-            u"before_field"_s, u"schiet"_s, QString(), nullptr, m_validatorMessages)});
+            u"before_field"_s, u"schiet"_s, QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -532,7 +532,7 @@ public:
     C_ATTR(dateTime, :Local :AutoArgs)
     void dateTime(Context *c)
     {
-        Validator v({new ValidatorDateTime(u"field"_s, QString(), nullptr, m_validatorMessages)});
+        Validator v({new ValidatorDateTime(u"field"_s, QString{}, nullptr, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -541,7 +541,7 @@ public:
     void dateTimeFormat(Context *c)
     {
         Validator v(
-            {new ValidatorDateTime(u"field"_s, QString(), "yyyy d MM mm:HH", m_validatorMessages)});
+            {new ValidatorDateTime(u"field"_s, QString{}, "yyyy d MM mm:HH", m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
@@ -942,7 +942,7 @@ public:
                                           {u"dictcheck"_s, 1},
                                           {u"usercheck"_s, 0}});
         static Validator v({new ValidatorPwQuality(
-            u"field"_s, 50, options, QString(), QString(), m_validatorMessages)});
+            u"field"_s, 50, options, QString{}, QString{}, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 #endif

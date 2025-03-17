@@ -224,7 +224,7 @@ public:
      *
      * @note This method will also delete your flash data.
      */
-    static void deleteSession(Context *c, const QString &reason = QString());
+    static void deleteSession(Context *c, const QString &reason = {});
 
     /**
      * This method contains a string with the reason a session was deleted. Possible values include:

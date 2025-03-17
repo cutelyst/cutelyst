@@ -843,8 +843,8 @@ bool Server::start(Application *app)
     d->lazy          = false;
     d->userEventLoop = true;
 #ifdef Q_OS_UNIX
-    d->uid = QString();
-    d->gid = QString();
+    d->uid.clear();
+    d->gid.clear();
 #endif
     qputenv("CUTELYST_SERVER_IGNORE_MASTER", QByteArrayLiteral("1"));
 

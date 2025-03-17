@@ -50,8 +50,8 @@ public:
      */
     explicit ValidatorInteger(const QString &field,
                               QMetaType::Type type              = QMetaType::ULongLong,
-                              const ValidatorMessages &messages = ValidatorMessages(),
-                              const QString &defValKey          = QString());
+                              const ValidatorMessages &messages = {},
+                              const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorInteger object.

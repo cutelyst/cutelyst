@@ -17,7 +17,7 @@ public:
                                    QString of,
                                    QStringList ov,
                                    const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredUnless")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorRequiredUnless")
         , otherField(std::move(of))
         , otherValues(std::move(ov))
     {

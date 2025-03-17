@@ -17,23 +17,18 @@ ValidatorCharNotAllowed::ValidatorCharNotAllowed(const QString &field,
 
 ValidatorCharNotAllowed::~ValidatorCharNotAllowed() = default;
 
-bool ValidatorCharNotAllowed::validate(const QString &value,
-                                       const QString &forbiddenChars,
-                                       QChar *foundChar)
+std::optional<QChar> ValidatorCharNotAllowed::validate(const QString &value,
+                                                       const QString &forbiddenChars)
 {
-    bool valid = true;
+    auto it = std::ranges::find_if(forbiddenChars, [&value](const QChar &forbiddenChar) {
+        return value.contains(forbiddenChar);
+    });
 
-    for (const QChar &forbiddenChar : forbiddenChars) {
-        if (value.contains(forbiddenChar)) {
-            valid = false;
-            if (foundChar) {
-                *foundChar = forbiddenChar;
-            }
-            break;
-        }
+    if (it != forbiddenChars.end()) {
+        return *it;
     }
 
-    return valid;
+    return {};
 }
 
 ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c,
@@ -46,11 +41,11 @@ ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c,
     const QString v = value(params);
     if (!v.isEmpty()) {
         if (Q_LIKELY(!d->forbiddenChars.isEmpty())) {
-            QChar foundChar;
-            if (Q_LIKELY(ValidatorCharNotAllowed::validate(v, d->forbiddenChars, &foundChar))) {
+            auto foundChar = ValidatorCharNotAllowed::validate(v, d->forbiddenChars);
+            if (Q_LIKELY(!foundChar.has_value())) {
                 result.value.setValue(v);
             } else {
-                result.errorMessage = validationError(c, foundChar);
+                result.errorMessage = validationError(c, foundChar.value());
             }
         } else {
             qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Empty validation data";
