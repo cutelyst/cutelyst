@@ -125,7 +125,7 @@ void Root::ws(Context *c)
     Response *response = c->response();
 
     if (response->webSocketHandshake()) {
-        Request *req = c->req();
+        const Request *req = c->req();
         connect(req, &Request::webSocketTextFrame, c, [=](const QString &msg, bool isLastFrame) {
             //            qDebug() << "Got text frame" << isLastFrame << msg.size() << msg.left(25)
             //            << c->actionName(); response->webSocketTextMessage(msg);

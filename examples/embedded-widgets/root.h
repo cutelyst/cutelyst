@@ -14,11 +14,10 @@ class Root : public Controller
     Q_OBJECT
     C_NAMESPACE("")
 public:
-    Root(QObject *app);
+    explicit Root(QObject *app);
     ~Root();
 
-    C_ATTR(index,
-           : Path)
+    C_ATTR(index, :Path)
     void index(Context *c);
 
 Q_SIGNALS:

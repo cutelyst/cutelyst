@@ -16,7 +16,7 @@ class StatsPrivate;
 class Stats
 {
     Q_GADGET
-    Q_DECLARE_PRIVATE(Stats)
+    Q_DECLARE_PRIVATE(Stats) // cppcheck-suppress unusedPrivateFunction
     Q_DISABLE_COPY(Stats)
 public:
     /**

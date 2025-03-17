@@ -121,7 +121,7 @@ class ProtocolWebSocket;
 class ProtocolHttp final : public Protocol
 {
 public:
-    ProtocolHttp(Server *wsgi, ProtocolHttp2 *upgradeH2c = nullptr);
+    explicit ProtocolHttp(Server *wsgi, ProtocolHttp2 *upgradeH2c = nullptr);
     ~ProtocolHttp() override;
 
     Type type() const override;
