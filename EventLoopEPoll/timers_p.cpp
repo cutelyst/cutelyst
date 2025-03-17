@@ -106,6 +106,7 @@ void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, str
         when.tv_usec = msec * 1000;
     }
 
+    // cppcheck-suppress syntaxError
     if (timercmp(&when, &now, <)) {
         when.tv_sec += interval / 1000;
         when.tv_usec += (interval % 1000) * 1000;

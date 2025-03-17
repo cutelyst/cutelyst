@@ -273,7 +273,7 @@ CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *
  * This will forward your \a request to \a destination, the entire response processing should
  * be done by your code.
  */
-CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *forwardRequest(Request *request,
+CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *forwardRequest(const Request *request,
                                                                const QUrl &destination);
 
 /**

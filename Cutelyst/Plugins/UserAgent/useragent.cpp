@@ -176,7 +176,7 @@ QNetworkReply *UA::sendCustomRequestJsonArray(const QNetworkRequest &request,
         jsonRequest, verb, QJsonDocument(array).toJson(QJsonDocument::Compact));
 }
 
-QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
+QNetworkReply *UA::forwardRequest(const Request *request, const QUrl &destination)
 {
     QUrl dest(request->uri());
     dest.setHost(destination.host());

@@ -14,43 +14,43 @@ class Root : public Controller
     Q_OBJECT
     C_NAMESPACE("")
 public:
-    Root(QObject *app);
+    explicit Root(QObject *app);
     ~Root();
 
 public:
     C_ATTR(hello,
-           : Path
-           : AutoArgs)
+           :Path
+           :AutoArgs)
     void hello(Context *c);
 
     C_ATTR(json,
-           : Local
-           : AutoArgs)
+           :Local
+           :AutoArgs)
     void json(Context *c);
 
     C_ATTR(echo,
-           : Local
-           : AutoArgs)
+           :Local
+           :AutoArgs)
     void echo(Context *c);
 
     C_ATTR(ws,
-           : Local
-           : AutoArgs)
+           :Local
+           :AutoArgs)
     void ws(Context *c);
 
     C_ATTR(session,
-           : Local
-           : AutoArgs)
+           :Local
+           :AutoArgs)
     void session(Context *c);
 
     C_ATTR(read_session,
-           : Local
-           : AutoArgs)
+           :Local
+           :AutoArgs)
     void read_session(Context *c);
 
     C_ATTR(async,
-           : Local
-           : AutoArgs)
+           :Local
+           :AutoArgs)
     void async(Context *c, const QString &timeout);
 };
 

@@ -100,13 +100,6 @@ public:
      */
     void processRequest(EngineRequest *request);
 
-    /**
-     * Returns the HTTP status message for the given \a status. If \a len is not a \c nullptr,
-     * the length of the returned string will be stored to \a *len.
-     */
-    Q_DECL_DEPRECATED_X("Will be removed in new major release")
-    static const char *httpStatusMessage(quint16 status, int *len = nullptr);
-
 Q_SIGNALS:
     /**
      * Process the \a requst asynchronous. The caller

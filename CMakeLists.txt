@@ -436,4 +436,23 @@ if (BUILD_DOCS)
     endif()
 endif()
 
+add_custom_target(cppcheck
+    USES_TERMINAL
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E env
+    cppcheck
+        --project=${PROJECT_BINARY_DIR}/compile_commands.json
+        --enable=all
+        --error-exitcode=1
+        --language=c++
+        --inline-suppr
+        --quiet
+        --disable=missingInclude,unusedFunction
+        --check-level=exhaustive
+        --library=qt.cfg
+        -i3rdParty/
+        --suppress=*:*.moc
+        --suppress=*:*moc_*.cpp
+)
+
 include(CPackConfig)
