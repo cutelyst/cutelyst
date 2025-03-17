@@ -24,12 +24,12 @@ class H2Stream;
 class HPack
 {
 public:
-    HPack(int maxTableSize);
+    explicit HPack(int maxTableSize);
     ~HPack();
 
     void encodeHeaders(int status, const Headers &headers, QByteArray &buf, ServerEngine *engine);
 
-    int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
+    int decode(unsigned char *it, const unsigned char *itEnd, H2Stream *stream);
 
 private:
     QVector<DynamicTableEntry> m_dynamicTable;
