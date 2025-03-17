@@ -44,8 +44,8 @@ int ValidatorPwQuality::validate(const QString &value,
             if (options.isValid()) {
                 if (options.typeId() == QMetaType::QVariantMap) {
                     const QVariantMap map = options.toMap();
-                    for (const auto &[key, value] : map.asKeyValueRange()) {
-                        const QString opt = key + QLatin1Char('=') + value.toString();
+                    for (const auto &[key, mapValue] : map.asKeyValueRange()) {
+                        const QString opt = key + QLatin1Char('=') + mapValue.toString();
                         const int orv     = pwquality_set_option(pwq, opt.toUtf8().constData());
                         if (orv != 0) {
                             QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);
@@ -113,7 +113,7 @@ int ValidatorPwQuality::validate(const QString &value,
     return rv;
 }
 
-QString ValidatorPwQuality::errorString(Context *c,
+QString ValidatorPwQuality::errorString(const Context *c,
                                         int returnValue,
                                         const QString &label,
                                         int threshold)

@@ -36,8 +36,7 @@ public:
      * Constructs a new %ValidatorAccepted object for the given \a field using optional
      * custom error \a messages.
      */
-    explicit ValidatorAccepted(const QString &field,
-                               const ValidatorMessages &messages = ValidatorMessages());
+    explicit ValidatorAccepted(const QString &field, const ValidatorMessages &messages = {});
 
     /**
      * Destroys the %ValidatorAccepted object.

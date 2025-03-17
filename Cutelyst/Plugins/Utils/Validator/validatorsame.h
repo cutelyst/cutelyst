@@ -60,7 +60,7 @@ public:
                   const QString &otherField,
                   const char *otherLabel            = nullptr,
                   const ValidatorMessages &messages = ValidatorMessages(),
-                  const QString &defValKey          = QString());
+                  const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorSame object.

@@ -58,9 +58,9 @@ public:
      */
     explicit ValidatorUrl(const QString &field,
                           Constraints constraints           = NoConstraint,
-                          const QStringList &schemes        = QStringList(),
-                          const ValidatorMessages &messages = ValidatorMessages(),
-                          const QString &defValKey          = QString());
+                          const QStringList &schemes        = {},
+                          const ValidatorMessages &messages = {},
+                          const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorUrl object.

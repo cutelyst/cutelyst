@@ -14,7 +14,7 @@ class ValidatorPresentPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorPresentPrivate(const QString &f, const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorPresent")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorPresent")
     {
     }
 };

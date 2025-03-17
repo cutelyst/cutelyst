@@ -2,6 +2,8 @@
  * SPDX-FileCopyrightText: (C) 2015-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "stats.h"
+
 #include "application.h"
 #include "common.h"
 #include "dispatchtype.h"
@@ -37,11 +39,11 @@ void Stats::profileStart(const QString &action)
 void Stats::profileEnd(const QString &action)
 {
     Q_D(Stats);
-    for (auto &stat : d->actions) {
-        if (stat.action == action) {
-            stat.end = std::chrono::steady_clock::now();
-            break;
-        }
+    auto it = std::ranges::find_if(d->actions,
+                                   [action](const auto &stat) { return stat.action == action; });
+
+    if (it != d->actions.end()) {
+        it->end = std::chrono::steady_clock::now();
     }
 }
 

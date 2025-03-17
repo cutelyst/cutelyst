@@ -16,7 +16,7 @@ class CUTELYST_EXPORT ASync
 {
 public:
     ASync() noexcept;
-    ASync(Context *c);
+    explicit ASync(Context *c);
     /**
      * ASync class should be used in a scoped manner.
      *

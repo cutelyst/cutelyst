@@ -41,8 +41,8 @@ public:
      * \param messages  Custom error message if validation fails.
      */
     explicit ValidatorFilled(const QString &field,
-                             const ValidatorMessages &messages = ValidatorMessages(),
-                             const QString &defValKey          = QString());
+                             const ValidatorMessages &messages = {},
+                             const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorFilled object.

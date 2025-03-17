@@ -48,8 +48,8 @@ public:
      *                      if input field is empty. This value will \b NOT be validated.
      */
     explicit ValidatorNumeric(const QString &field,
-                              const ValidatorMessages &messages = ValidatorMessages(),
-                              const QString &defValKey          = QString());
+                              const ValidatorMessages &messages = {},
+                              const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorNumeric object.

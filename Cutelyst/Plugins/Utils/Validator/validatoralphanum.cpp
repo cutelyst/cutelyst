@@ -67,7 +67,6 @@ bool ValidatorAlphaNum::validate(const QString &value, bool asciiOnly)
 
 QString ValidatorAlphaNum::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
     Q_UNUSED(errorData)
     Q_D(const ValidatorAlphaNum);
     const QString _label = label(c);
@@ -92,5 +91,5 @@ QString ValidatorAlphaNum::genericValidationError(Context *c, const QVariant &er
             return c->qtTrId("cutelyst-valalphanum-genvalerr-label").arg(_label);
         }
     }
-    return error;
+    return {};
 }

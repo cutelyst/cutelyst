@@ -89,10 +89,10 @@ public:
      */
     explicit ValidatorFileSize(const QString &field,
                                Option option                     = NoOption,
-                               const QVariant &min               = QVariant(),
-                               const QVariant &max               = QVariant(),
-                               const ValidatorMessages &messages = ValidatorMessages(),
-                               const QString &defValKey          = QString());
+                               const QVariant &min               = {},
+                               const QVariant &max               = {},
+                               const ValidatorMessages &messages = {},
+                               const QString &defValKey          = {});
 
     /**
      * \brief Deconstructs the file size validator.

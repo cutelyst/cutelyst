@@ -74,8 +74,8 @@ public:
      */
     explicit ValidatorDomain(const QString &field,
                              bool checkDNS                     = false,
-                             const ValidatorMessages &messages = ValidatorMessages(),
-                             const QString &defValKey          = QString());
+                             const ValidatorMessages &messages = {},
+                             const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorDomain object.
@@ -107,7 +107,7 @@ public:
      * \param label     Optinonal label that will be part of the diagnose string if not empty.
      * \return a human readable diagnose description.
      */
-    static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = QString());
+    static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = {});
 
 protected:
     /**

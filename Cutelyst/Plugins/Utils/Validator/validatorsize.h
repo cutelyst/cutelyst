@@ -64,7 +64,7 @@ public:
                   QMetaType::Type type,
                   const QVariant &size,
                   const ValidatorMessages &messages = ValidatorMessages(),
-                  const QString &defValKey          = QString());
+                  const QString &defValKey          = {});
 
     /**
      * Destroys the %VaidatorSize object.

@@ -78,8 +78,8 @@ public:
     explicit ValidatorPwQuality(const QString &field,
                                 int threshold              = ValidatorPwQuality::defaultThreshold,
                                 const QVariant &options    = QVariant(),
-                                const QString &userName    = QString(),
-                                const QString &oldPassword = QString(),
+                                const QString &userName    = {},
+                                const QString &oldPassword = {},
                                 const ValidatorMessages &messages = ValidatorMessages());
 
     /**
@@ -100,9 +100,9 @@ public:
      * value.
      */
     static int validate(const QString &value,
-                        const QVariant &options    = QVariant(),
-                        const QString &oldPassword = QString(),
-                        const QString &user        = QString());
+                        const QVariant &options    = {},
+                        const QString &oldPassword = {},
+                        const QString &user        = {});
 
     /**
      * Returns a human readable string for the return value of ValidatorPwQuality::validate().
@@ -115,9 +115,9 @@ public:
      * string explaining the threshold will be returned. If \a returnValue is >= \a threshold, an
      * empty string will be returned.
      */
-    static QString errorString(Context *c,
+    static QString errorString(const Context *c,
                                int returnValue,
-                               const QString &label = QString(),
+                               const QString &label = {},
                                int threshold        = 0);
 
 protected:

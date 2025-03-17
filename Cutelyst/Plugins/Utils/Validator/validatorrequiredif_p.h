@@ -17,7 +17,7 @@ public:
                                QString of,
                                QStringList ov,
                                const Cutelyst::ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredIf")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorRequiredIf")
         , otherField(std::move(of))
         , otherValues(std::move(ov))
     {

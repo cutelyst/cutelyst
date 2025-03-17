@@ -95,7 +95,7 @@ public:
      * \warning This currently is experimental to allow non network events (such as database
      * notification) to be able to use our infrastructure.
      */
-    Context(Application *app);
+    explicit Context(Application *app);
 
     /**
      * Destroys the %Context object.
@@ -490,8 +490,8 @@ public:
     T plugin()
     {
         const auto pluginsConst = plugins();
-        for (Plugin *plugin : pluginsConst) {
-            auto p = qobject_cast<T>(plugin);
+        for (Plugin *pluginPtr : pluginsConst) {
+            auto p = qobject_cast<T>(pluginPtr);
             if (p) {
                 return p;
             }
@@ -622,7 +622,7 @@ protected:
     /**
      * Constructs a new %Context object using private implementation.
      */
-    Context(ContextPrivate *priv);
+    explicit Context(ContextPrivate *priv);
 
     friend class Application;
     friend class Action;

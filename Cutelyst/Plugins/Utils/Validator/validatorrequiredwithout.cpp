@@ -27,22 +27,12 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c,
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote() << "Invalid validation data";
     } else {
-
-        bool otherMissing = false;
-
-        const QStringList ofc = d->otherFields;
-
-        QString otherField;
-        for (const QString &other : ofc) {
-            if (!params.contains(other)) {
-                otherField   = other;
-                otherMissing = true;
-                break;
-            }
-        }
-
         const QString v = value(params);
 
+        auto it = std::ranges::find_if(
+            d->otherFields, [params](const QString &other) { return !params.contains(other); });
+
+        bool otherMissing = (it != d->otherFields.end());
         if (otherMissing) {
             if (!v.isEmpty()) {
                 result.value.setValue(v);
@@ -50,7 +40,7 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c,
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote().nospace()
                     << debugString(c) << " The field is not present or empty but the field \""
-                    << otherField << "\" is not present";
+                    << *it << "\" is not present";
             }
         } else {
             if (!v.isEmpty()) {

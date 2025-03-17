@@ -46,7 +46,7 @@ QString ValidatorRule::value(const Cutelyst::ParamsMultiMap &params) const
     return {};
 }
 
-QString ValidatorRule::label(Context *c) const
+QString ValidatorRule::label(const Context *c) const
 {
     Q_D(const ValidatorRule);
 
@@ -154,7 +154,7 @@ void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result) const
     }
 }
 
-QString ValidatorRule::debugString(Context *c) const
+QString ValidatorRule::debugString(const Context *c) const
 {
     Q_D(const ValidatorRule);
     return QString::fromLatin1(d->validatorName) +

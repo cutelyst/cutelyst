@@ -49,7 +49,7 @@ public:
     ValidatorRegularExpression(const QString &field,
                                const QRegularExpression &regex,
                                const ValidatorMessages &messages = ValidatorMessages(),
-                               const QString &defValKey          = QString());
+                               const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorRegularExpresseion object.

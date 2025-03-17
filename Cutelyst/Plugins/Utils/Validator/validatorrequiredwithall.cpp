@@ -27,17 +27,8 @@ ValidatorReturnType ValidatorRequiredWithAll::validate(Context *c,
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote() << debugString(c) << "Invalid validation data";
     } else {
-
-        bool containsAll = true;
-
-        const QStringList ofc = d->otherFields;
-
-        for (const QString &other : ofc) {
-            if (!params.contains(other)) {
-                containsAll = false;
-                break;
-            }
-        }
+        const bool containsAll = std::ranges::all_of(
+            d->otherFields, [params](const QString &other) { return params.contains(other); });
 
         const QString v = value(params);
 

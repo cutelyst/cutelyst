@@ -55,8 +55,8 @@ public:
      */
     explicit ValidatorAlphaNum(const QString &field,
                                bool asciiOnly                    = false,
-                               const ValidatorMessages &messages = ValidatorMessages(),
-                               const QString &defValKey          = QString());
+                               const ValidatorMessages &messages = {},
+                               const QString &defValKey          = {});
 
     /**
      * Destryos the %ValidatorAlphaNum object.

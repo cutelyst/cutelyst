@@ -58,18 +58,9 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
 
 bool ValidatorDigits::validate(const QString &value, qsizetype length)
 {
-    for (const QChar &ch : value) {
-        const ushort &uc = ch.unicode();
-        if (!((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9))) {
-            return false;
-        }
-    }
+    bool allDigits = std::ranges::all_of(value, [](const QChar &ch) { return ch.isDigit(); });
 
-    if ((length > 0) && (length != value.length())) {
-        return false;
-    }
-
-    return true;
+    return allDigits && ((length <= 0) || (length == value.length()));
 }
 
 QString ValidatorDigits::genericValidationError(Context *c, const QVariant &errorData) const

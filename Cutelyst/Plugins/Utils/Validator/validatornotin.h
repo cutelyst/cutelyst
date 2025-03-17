@@ -53,7 +53,7 @@ public:
                    const QVariant &values,
                    Qt::CaseSensitivity cs            = Qt::CaseSensitive,
                    const ValidatorMessages &messages = ValidatorMessages(),
-                   const QString &defValKey          = QString());
+                   const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorNotIn object.

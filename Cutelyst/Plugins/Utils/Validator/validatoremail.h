@@ -180,8 +180,8 @@ public:
     explicit ValidatorEmail(const QString &field,
                             Category threshold                = RFC5321,
                             Options options                   = NoOption,
-                            const ValidatorMessages &messages = ValidatorMessages(),
-                            const QString &defValKey          = QString());
+                            const ValidatorMessages &messages = {},
+                            const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorEmail object.

@@ -60,11 +60,11 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value
      *                      if input field is empty. This value will \b NOT be validated.
      */
-    ValidatorDateTime(const QString &field,
-                      const QString &timeZone,
-                      const char *inputFormat           = nullptr,
-                      const ValidatorMessages &messages = ValidatorMessages(),
-                      const QString &defValKey          = QString());
+    explicit ValidatorDateTime(const QString &field,
+                               const QString &timeZone,
+                               const char *inputFormat           = nullptr,
+                               const ValidatorMessages &messages = {},
+                               const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorDateTime object.

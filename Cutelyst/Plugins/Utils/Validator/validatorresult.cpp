@@ -41,8 +41,8 @@ QStringList ValidatorResult::errorStrings() const
 {
     QStringList strings;
 
-    for (const auto &value : d->errors) {
-        strings.append(value);
+    for (const auto &error : d->errors) {
+        strings.append(error);
     }
 
     return strings;
@@ -67,8 +67,8 @@ QJsonObject ValidatorResult::errorsJsonObject() const
 {
     QJsonObject json;
 
-    for (const auto &[key, value] : d->errors.asKeyValueRange()) {
-        json.insert(key, QJsonArray::fromStringList(value));
+    for (const auto &[key, error] : d->errors.asKeyValueRange()) {
+        json.insert(key, QJsonArray::fromStringList(error));
     }
 
     return json;

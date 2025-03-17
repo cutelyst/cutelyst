@@ -500,7 +500,7 @@ public:
     /**
      * Constructs a new %Request object.
      */
-    Request(EngineRequest *engineRequest);
+    explicit Request(EngineRequest *engineRequest);
 
 Q_SIGNALS:
     /*!

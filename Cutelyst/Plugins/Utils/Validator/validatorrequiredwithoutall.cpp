@@ -28,17 +28,8 @@ ValidatorReturnType ValidatorRequiredWithoutAll::validate(Context *c,
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR).noquote() << "Invalid validation data";
     } else {
-
-        const QStringList ofc = d->otherFields;
-
-        bool withoutAll = true;
-
-        for (const QString &other : ofc) {
-            if (params.contains(other)) {
-                withoutAll = false;
-                break;
-            }
-        }
+        const bool withoutAll = std::ranges::none_of(
+            d->otherFields, [params](const QString &other) { return params.contains(other); });
 
         const QString v = value(params);
 

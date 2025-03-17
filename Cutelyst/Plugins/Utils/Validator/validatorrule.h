@@ -388,7 +388,7 @@ protected:
      * Returns the human readable field label used for generic error messages.
      * The label can be set in the ValidatorMessages on the constructor.
      */
-    [[nodiscard]] QString label(Context *c) const;
+    [[nodiscard]] QString label(const Context *c) const;
 
     /**
      * Returns the value of the field from the input \a params.
@@ -558,7 +558,7 @@ protected:
      * This returns something like <tt>MyValidator: Validation failed for field "my_field" at
      * MyController::myAction:</tt>
      */
-    [[nodiscard]] QString debugString(Context *c) const;
+    [[nodiscard]] QString debugString(const Context *c) const;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRule) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)

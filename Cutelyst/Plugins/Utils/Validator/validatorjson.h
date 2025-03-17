@@ -58,8 +58,8 @@ public:
      */
     explicit ValidatorJson(const QString &field,
                            ExpectedType expectedType         = ExpectedType::All,
-                           const ValidatorMessages &messages = ValidatorMessages(),
-                           const QString &defValKey          = QString());
+                           const ValidatorMessages &messages = {},
+                           const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorJson object.

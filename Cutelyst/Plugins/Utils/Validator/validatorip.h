@@ -61,8 +61,8 @@ public:
      */
     explicit ValidatorIp(const QString &field,
                          Constraints constraints           = NoConstraint,
-                         const ValidatorMessages &messages = ValidatorMessages(),
-                         const QString &defValKey          = QString());
+                         const ValidatorMessages &messages = {},
+                         const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorIp object.

@@ -4,7 +4,9 @@ project(cutelyst_tests
 )
 
 find_package(QT NAMES Qt6 COMPONENTS Core Network Sql Test REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 6.4.0 COMPONENTS Core Network Sql Test REQUIRED)
+
+set(CMAKE_AUTOMOC ON)
 
 add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.h

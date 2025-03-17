@@ -21,9 +21,9 @@ public:
 
     virtual void process(quint32 events) = 0;
 
-    inline bool canProcess() { return refs > 1; }
-    inline void ref() { ++refs; }
-    inline void deref()
+    bool canProcess() { return refs > 1; }
+    void ref() { ++refs; }
+    void deref()
     {
         if (--refs == 0) {
             delete this;
@@ -52,7 +52,7 @@ public:
 class SocketNotifierInfo final : public EpollAbastractEvent
 {
 public:
-    SocketNotifierInfo(int _fd)
+    explicit SocketNotifierInfo(int _fd)
         : EpollAbastractEvent(_fd)
     {
     }
@@ -106,7 +106,7 @@ class EventDispatcherEPoll;
 class Q_DECL_HIDDEN EventDispatcherEPollPrivate
 {
 public:
-    EventDispatcherEPollPrivate(EventDispatcherEPoll *const q);
+    explicit EventDispatcherEPollPrivate(EventDispatcherEPoll *q);
     ~EventDispatcherEPollPrivate();
     void createEpoll();
     bool processEvents(QEventLoop::ProcessEventsFlags flags);

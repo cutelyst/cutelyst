@@ -38,7 +38,7 @@ public:
     /**
      * Constructs a new %AuthenticationUser object with the given \a id.
      */
-    AuthenticationUser(const QVariant &id);
+    explicit AuthenticationUser(const QVariant &id);
 
     /**
      * Destroys the %AuthenticationUser object.
@@ -97,7 +97,7 @@ public:
     [[nodiscard]] inline QVariant value(const QString &key,
                                         const QVariant &defaultValue = QVariant()) const;
 
-    inline operator QVariant() const { return QVariant::fromValue(m_data); }
+    operator QVariant() const { return QVariant::fromValue(m_data); }
 
 protected:
     QVariantMap m_data;

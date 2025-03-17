@@ -14,7 +14,7 @@ class ValidatorRequiredWithAllPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorRequiredWithAllPrivate(const QString &f, QStringList of, const ValidatorMessages &m)
-        : ValidatorRulePrivate(f, m, QString(), "ValidatorRequiredWithAll")
+        : ValidatorRulePrivate(f, m, {}, "ValidatorRequiredWithAll")
         , otherFields(std::move(of))
     {
     }

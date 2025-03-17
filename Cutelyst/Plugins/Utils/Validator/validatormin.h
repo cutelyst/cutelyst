@@ -61,7 +61,7 @@ public:
                  QMetaType::Type type,
                  const QVariant &min,
                  const ValidatorMessages &messages = ValidatorMessages(),
-                 const QString &defValKey          = QString());
+                 const QString &defValKey          = {});
 
     /**
      * Destroys the %ValidatorMin object.

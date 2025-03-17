@@ -28,7 +28,7 @@ public:
     /**
      * Constructs a new %Plugin object with the given Application \a parent.
      */
-    Plugin(Application *parent);
+    explicit Plugin(Application *parent);
 
     /**
      * Reimplement this if you need to connect to

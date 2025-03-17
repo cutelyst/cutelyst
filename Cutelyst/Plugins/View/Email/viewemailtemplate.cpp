@@ -70,7 +70,7 @@ std::shared_ptr<MimePart>
     } else {
         // else fallback to Cutelysts default view
         qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Using Cutelysts default view for rendering.";
-        view = c->view(QString());
+        view = c->view({});
     }
 
     // validate the per template view
