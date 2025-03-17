@@ -85,10 +85,10 @@ void MainWindow::clientSend()
                                       statusReason);
 
         m_clientReceivedHeaders->clear();
-        for (auto &header : reply->rawHeaderPairs()) {
-            qDebug() << "client " << header.first << header.second;
-            auto keyItem   = new QStandardItem(QString::fromLatin1(header.first));
-            auto valueItem = new QStandardItem(QString::fromLatin1(header.second));
+        for (const auto &[key, value] : reply->rawHeaderPairs()) {
+            qDebug() << "client " << key << value;
+            auto keyItem   = new QStandardItem(QString::fromLatin1(key));
+            auto valueItem = new QStandardItem(QString::fromLatin1(value));
             m_clientReceivedHeaders->appendRow({
                 keyItem,
                 valueItem,

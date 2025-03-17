@@ -121,7 +121,7 @@ inline void encodeH2caseHeader(QByteArray &buf, const QString &key)
     }
 }
 
-unsigned char *parse_string(QByteArray &dst, unsigned char *buf, quint8 *itEnd)
+unsigned char *parse_string(QByteArray &dst, unsigned char *buf, const quint8 *itEnd)
 {
     quint16 str_len = 0;
 
@@ -148,7 +148,7 @@ unsigned char *parse_string(QByteArray &dst, unsigned char *buf, quint8 *itEnd)
     return buf;
 }
 
-unsigned char *parse_string_key(QByteArray &dst, quint8 *buf, quint8 *itEnd)
+unsigned char *parse_string_key(QByteArray &dst, quint8 *buf, const quint8 *itEnd)
 {
     quint16 str_len    = 0;
     bool huffmanDecode = *buf & 0x80;
@@ -180,6 +180,60 @@ unsigned char *parse_string_key(QByteArray &dst, quint8 *buf, quint8 *itEnd)
     }
     return buf;
 }
+
+bool validPseudoHeader(const QByteArray &k, const QByteArray &v, H2Stream *stream)
+{
+    //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method <<
+    //    stream->scheme;
+    if (k.compare(":path") == 0) {
+        if (!stream->gotPath && !v.isEmpty()) {
+            int leadingSlash = 0;
+            while (leadingSlash < v.size() && v.at(leadingSlash) == u'/') {
+                ++leadingSlash;
+            }
+
+            int pos = v.indexOf('?');
+            if (pos == -1) {
+                QByteArray path = v.mid(leadingSlash);
+                stream->setPath(path);
+            } else {
+                QByteArray path = v.mid(leadingSlash, pos - leadingSlash);
+                stream->setPath(path);
+                stream->query = v.mid(++pos);
+            }
+            stream->gotPath = true;
+            return true;
+        }
+    } else if (k.compare(":method") == 0) {
+        if (stream->method.isEmpty()) {
+            stream->method = v;
+            return true;
+        }
+    } else if (k.compare(":authority") == 0) {
+        stream->serverAddress = v;
+        return true;
+    } else if (k.compare(":scheme") == 0) {
+        if (stream->scheme.isEmpty()) {
+            stream->scheme   = v;
+            stream->isSecure = v.compare("https") == 0;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool validHeader(const QByteArray &k, const QByteArray &v)
+{
+    return k.compare("connection") != 0 && (k.compare("te") != 0 || v.compare("trailers") == 0);
+}
+
+void consumeHeader(const QByteArray &k, const QByteArray &v, H2Stream *stream)
+{
+    if (k.compare("content-length") == 0) {
+        stream->contentLength = v.toLongLong();
+    }
+}
+
 } // namespace
 
 HPack::HPack(int maxTableSize)
@@ -269,60 +323,7 @@ enum ErrorCodes {
     ErrorHttp11Required     = 0xD
 };
 
-inline bool validPseudoHeader(const QByteArray &k, const QByteArray &v, H2Stream *stream)
-{
-    //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method <<
-    //    stream->scheme;
-    if (k.compare(":path") == 0) {
-        if (!stream->gotPath && !v.isEmpty()) {
-            int leadingSlash = 0;
-            while (leadingSlash < v.size() && v.at(leadingSlash) == u'/') {
-                ++leadingSlash;
-            }
-
-            int pos = v.indexOf('?');
-            if (pos == -1) {
-                QByteArray path = v.mid(leadingSlash);
-                stream->setPath(path);
-            } else {
-                QByteArray path = v.mid(leadingSlash, pos - leadingSlash);
-                stream->setPath(path);
-                stream->query = v.mid(++pos);
-            }
-            stream->gotPath = true;
-            return true;
-        }
-    } else if (k.compare(":method") == 0) {
-        if (stream->method.isEmpty()) {
-            stream->method = v;
-            return true;
-        }
-    } else if (k.compare(":authority") == 0) {
-        stream->serverAddress = v;
-        return true;
-    } else if (k.compare(":scheme") == 0) {
-        if (stream->scheme.isEmpty()) {
-            stream->scheme   = v;
-            stream->isSecure = v.compare("https") == 0;
-            return true;
-        }
-    }
-    return false;
-}
-
-inline bool validHeader(const QByteArray &k, const QByteArray &v)
-{
-    return k.compare("connection") != 0 && (k.compare("te") != 0 || v.compare("trailers") == 0);
-}
-
-inline void consumeHeader(const QByteArray &k, const QByteArray &v, H2Stream *stream)
-{
-    if (k.compare("content-length") == 0) {
-        stream->contentLength = v.toLongLong();
-    }
-}
-
-int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
+int HPack::decode(unsigned char *it, const unsigned char *itEnd, H2Stream *stream)
 {
     bool pseudoHeadersAllowed = true;
     bool allowedToUpdate      = true;

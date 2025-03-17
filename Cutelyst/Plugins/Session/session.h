@@ -165,7 +165,7 @@ public:
     /**
      * Constructs a new %Session object with the given @a parent.
      */
-    Session(Application *parent);
+    explicit Session(Application *parent);
 
     /**
      * Constructs a new %Session object with the given @a parent and @a defaultConfig.

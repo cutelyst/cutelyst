@@ -82,12 +82,12 @@ void Headers::setContentType(const QByteArray &contentType)
 QByteArray Headers::contentTypeCharset() const
 {
     QByteArray ret;
-    const QByteArray contentType = header("Content-Type");
-    if (!contentType.isEmpty()) {
-        int pos = contentType.indexOf("charset=", 0);
+    const QByteArray _contentType = header("Content-Type");
+    if (!_contentType.isEmpty()) {
+        int pos = _contentType.indexOf("charset=", 0);
         if (pos != -1) {
-            int endPos = contentType.indexOf(u';', pos);
-            ret        = contentType.mid(pos + 8, endPos).trimmed().toUpper();
+            int endPos = _contentType.indexOf(u';', pos);
+            ret        = _contentType.mid(pos + 8, endPos).trimmed().toUpper();
         }
     }
 
@@ -102,29 +102,29 @@ void Headers::setContentTypeCharset(const QByteArray &charset)
         return;
     }
 
-    QByteArray contentType = result->value;
-    int pos                = contentType.indexOf("charset=", 0);
+    QByteArray _contentType = result->value;
+    int pos                 = _contentType.indexOf("charset=", 0);
     if (pos != -1) {
-        int endPos = contentType.indexOf(';', pos);
+        int endPos = _contentType.indexOf(';', pos);
         if (endPos == -1) {
             if (charset.isEmpty()) {
-                int lastPos = contentType.lastIndexOf(';', pos);
+                int lastPos = _contentType.lastIndexOf(';', pos);
                 if (lastPos == -1) {
                     removeHeader("Content-Type");
                     return;
                 } else {
-                    contentType.remove(lastPos, contentType.length() - lastPos);
+                    _contentType.remove(lastPos, _contentType.length() - lastPos);
                 }
             } else {
-                contentType.replace(pos + 8, contentType.length() - pos + 8, charset);
+                _contentType.replace(pos + 8, _contentType.length() - pos + 8, charset);
             }
         } else {
-            contentType.replace(pos + 8, endPos, charset);
+            _contentType.replace(pos + 8, endPos, charset);
         }
     } else if (!charset.isEmpty()) {
-        contentType.append("; charset=" + charset);
+        _contentType.append("; charset=" + charset);
     }
-    setContentType(contentType);
+    setContentType(_contentType);
 }
 
 bool Headers::contentIsText() const
@@ -488,17 +488,13 @@ QByteArrayList Headers::keys() const
 {
     QByteArrayList ret;
 
-    for (const auto &header : m_data) {
-        bool found = false;
-        for (const auto &key : ret) {
-            if (header.key.compare(key, Qt::CaseInsensitive) == 0) {
-                found = true;
-                break;
-            }
-        }
+    for (const auto &_header : m_data) {
+        const bool exists = std::ranges::any_of(ret, [&](const QByteArray &key) {
+            return _header.key.compare(key, Qt::CaseInsensitive) == 0;
+        });
 
-        if (!found) {
-            ret.append(header.key);
+        if (!exists) {
+            ret.append(_header.key);
         }
     }
 

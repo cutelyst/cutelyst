@@ -89,7 +89,7 @@ QByteArray ProtocolWebSocket::createWebsocketCloseReply(const QString &msg, quin
 void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
 {
     qint64 bytesAvailable = io->bytesAvailable();
-    auto request          = static_cast<ProtoRequestHttp *>(sock->protoData);
+    const auto *request   = static_cast<ProtoRequestHttp *>(sock->protoData);
 
     Q_FOREVER
     {
@@ -156,7 +156,7 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
 
     auto toUtf16        = QStringDecoder(QStringDecoder::Utf8);
     const QString frame = toUtf16(payload);
-    const bool failed   = false; // FIXME
+    const bool failed   = toUtf16.hasError();
 
     if (singleFrame && (failed || (frame.isEmpty() && payload.size()))) {
         sock->connectionClose();
@@ -172,10 +172,8 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         if (singleFrame || protoRequest->websocket_payload == protoRequest->websocket_message) {
             Q_EMIT request->webSocketTextMessage(frame, protoRequest->context);
         } else {
-            auto toUtf16      = QStringDecoder(QStringDecoder::Utf8);
             const QString msg = toUtf16(protoRequest->websocket_message);
-            const bool failed = false; // FIXME
-            if (failed) {
+            if (toUtf16.hasError()) {
                 sock->connectionClose();
                 return false;
             }
@@ -212,14 +210,14 @@ void ProtocolWebSocket::send_binary(Cutelyst::Context *c, Socket *sock, bool sin
     }
 }
 
-void ProtocolWebSocket::send_pong(QIODevice *io, const QByteArray data) const
+void ProtocolWebSocket::send_pong(QIODevice *io, const QByteArray &data) const
 {
     io->write(ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePong,
                                                        quint64(data.size())));
     io->write(data);
 }
 
-void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevice *io) const
+void ProtocolWebSocket::send_closed(const Cutelyst::Context *c, Socket *sock, QIODevice *io) const
 {
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     quint16 closeCode = Cutelyst::Response::CloseCodeMissingStatusCode;
@@ -387,7 +385,7 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock,
                                                 QIODevice *io) const
 {
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
-    auto mask         = reinterpret_cast<quint8 *>(&protoRequest->websocket_mask);
+    const auto *mask  = reinterpret_cast<quint8 *>(&protoRequest->websocket_mask);
     for (int i = 0, maskIx = protoRequest->websocket_payload.size(); i < len; ++i, ++maskIx) {
         buf[i] = buf[i] ^ mask[maskIx % 4];
     }
