@@ -292,7 +292,7 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &qu
 #define CPreparedSqlQueryThreadFO(str) \
     ([]() -> QSqlQuery { \
         static thread_local QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQueryThread(str, = {}, true); \
+            Cutelyst::Sql::preparedQueryThread(str, {}, true); \
         return query_temp; \
     }()) /**/
 
