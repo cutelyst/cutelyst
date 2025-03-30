@@ -13,11 +13,12 @@
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
-class ActionREST : public Controller
+class ActionRESTController : public Controller
 {
     Q_OBJECT
+    C_NAMESPACE("/action/rest")
 public:
-    explicit ActionREST(QObject *parent)
+    explicit ActionRESTController(QObject *parent)
         : Controller(parent)
     {
     }
@@ -112,7 +113,7 @@ TestEngine *TestActionREST::getEngine()
 
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
-    new ActionREST(app);
+    new ActionRESTController(app);
 
     if (!engine->init()) {
         return nullptr;
