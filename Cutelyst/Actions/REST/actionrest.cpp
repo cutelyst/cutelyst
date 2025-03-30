@@ -1,9 +1,10 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2025 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "actionrest_p.h"
 #include "context.h"
+#include "context_p.h"
 #include "controller.h"
 #include "dispatcher.h"
 
@@ -60,11 +61,24 @@ bool ActionREST::doExecute(Context *c)
 {
     Q_D(const ActionREST);
 
+    int &actionRefCount = c->d_ptr->actionRefCount;
+
     if (!Action::doExecute(c)) {
         return false;
     }
 
-    return d->dispatchRestMethod(c, c->request()->method());
+    Action *action = d->getRestAction(c, c->request()->method());
+    if (action) {
+        if (actionRefCount) {
+            // Async
+            c->d_ptr->pendingAsync.enqueue(action);
+            return true;
+        } else {
+            return c->execute(action);
+        }
+    }
+
+    return true;
 }
 
 ActionRESTPrivate::ActionRESTPrivate(ActionREST *q)
@@ -72,7 +86,7 @@ ActionRESTPrivate::ActionRESTPrivate(ActionREST *q)
 {
 }
 
-bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QByteArray &httpMethod) const
+Action *ActionRESTPrivate::getRestAction(Context *c, const QByteArray &httpMethod) const
 {
     Q_Q(const ActionREST);
     const QString restMethod = q->name() + u'_' + QString::fromLatin1(httpMethod);
@@ -90,38 +104,34 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QByteArray &httpMet
         }
     }
 
-    if (action) {
-        return c->execute(action);
+    if (!action) {
+        if (httpMethod == "HEAD") {
+            // redispatch to GET
+            action = getRestAction(c, "GET"_ba);
+        } else if (httpMethod == "OPTIONS") {
+            returnOptions(c, q->name());
+        } else if (httpMethod == "not_implemented") {
+            // not_implemented
+            returnNotImplemented(c, q->name());
+        } else {
+            // try dispatching to foo_not_implemented
+            action = getRestAction(c, "not_implemented"_ba);
+        }
     }
 
-    bool ret = false;
-    if (httpMethod.compare("OPTIONS") == 0) {
-        ret = returnOptions(c, q->name());
-    } else if (httpMethod.compare("HEAD") == 0) {
-        // redispatch to GET
-        ret = dispatchRestMethod(c, "GET"_ba);
-    } else if (httpMethod.compare("not_implemented") != 0) {
-        // try dispatching to foo_not_implemented
-        ret = dispatchRestMethod(c, "not_implemented"_ba);
-    } else {
-        // not_implemented
-        ret = returnNotImplemented(c, q->name());
-    }
-
-    return ret;
+    return action;
 }
 
-bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) const
+void ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) const
 {
     Response *response = c->response();
     response->setContentType("text/plain"_ba);
     response->setStatus(Response::OK); // 200
     response->setHeader("Allow", getAllowedMethods(c->controller(), methodName));
     response->body().clear();
-    return true;
 }
 
-bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodName) const
+void ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodName) const
 {
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
@@ -130,7 +140,6 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
     const QByteArray body = "Method " + c->req()->method() + " not implemented for " +
                             c->request()->uri().toString(QUrl::FullyEncoded).toLatin1();
     response->setBody(body);
-    return true;
 }
 
 QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller,

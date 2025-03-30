@@ -626,6 +626,7 @@ protected:
 
     friend class Application;
     friend class Action;
+    friend class ActionREST;
     friend class ActionChain;
     friend class DispatchType;
     friend class Plugin;
