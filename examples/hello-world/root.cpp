@@ -178,9 +178,11 @@ void Root::read_session(Context *c)
 void Root::async(Context *c, const QString &timeout)
 {
     ASync async(c);
-    auto t = new QTimer(c);
+    auto t = new QTimer;
     t->setInterval(timeout.toInt() * 1000);
-    connect(t, &QTimer::timeout, c, [async, c, timeout] {
+    connect(t, &QTimer::timeout, c, [async, c, t, timeout] {
+        t->deleteLater(); // we need to free this lambda so async object goes out of scope
+
         qDebug() << "Finished async" << timeout;
         c->response()->setBody(QStringLiteral("Hello async in %1 seconds.\n").arg(timeout));
     });
