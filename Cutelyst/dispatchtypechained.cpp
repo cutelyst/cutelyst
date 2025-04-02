@@ -30,13 +30,12 @@ QByteArray DispatchTypeChained::list() const
 
     QByteArray buffer;
     Actions endPoints = d->endPoints;
-    std::sort(endPoints.begin(), endPoints.end(), [](Action *a, Action *b) -> bool {
-        return a->reverse() < b->reverse();
-    });
+    std::ranges::sort(endPoints,
+                      [](Action *a, Action *b) -> bool { return a->reverse() < b->reverse(); });
 
     QVector<QStringList> paths;
     QVector<QStringList> unattachedTable;
-    for (Action *endPoint : endPoints) {
+    for (Action *endPoint : std::as_const(endPoints)) {
         QStringList parts;
         if (endPoint->numberOfArgs() == -1) {
             parts.append(QLatin1String("..."));
@@ -367,12 +366,12 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
 
     const StringActionsMap &children = it.value();
     QStringList keys                 = children.keys();
-    std::sort(keys.begin(), keys.end(), [](const QString &a, const QString &b) -> bool {
+    std::ranges::sort(keys, [](const QString &a, const QString &b) -> bool {
         // action2 then action1 to try the longest part first
         return b.size() < a.size();
     });
 
-    for (const QString &tryPart : keys) {
+    for (const QString &tryPart : std::as_const(keys)) {
         auto parts = pathParts;
         if (!tryPart.isEmpty()) {
             // We want to count the number of parts a split would give

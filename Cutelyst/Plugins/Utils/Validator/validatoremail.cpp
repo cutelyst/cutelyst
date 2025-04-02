@@ -1225,7 +1225,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         }
         returnStatus = _rs;
 
-        std::sort(returnStatus.begin(), returnStatus.end(), std::greater<>());
+        std::ranges::sort(returnStatus, std::greater<>());
     }
 
     const ValidatorEmail::Diagnose finalStatus = returnStatus.at(0);

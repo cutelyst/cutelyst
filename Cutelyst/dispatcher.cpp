@@ -324,8 +324,8 @@ void DispatcherPrivate::printActions() const
     QVector<QStringList> table;
 
     auto keys = actions.keys();
-    std::sort(keys.begin(), keys.end());
-    for (const auto &key : keys) {
+    std::ranges::sort(keys);
+    for (const auto &key : std::as_const(keys)) {
         Action *action = actions.value(key).action;
         QString path   = key.toString();
         if (!path.startsWith(u'/')) {

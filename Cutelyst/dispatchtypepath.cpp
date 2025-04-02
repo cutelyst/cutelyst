@@ -35,10 +35,9 @@ QByteArray DispatchTypePath::list() const
 
     auto keys = d->paths.keys();
 
-    std::sort(keys.begin(), keys.end(), [](QStringView a, QStringView b) {
-        return a.compare(b, Qt::CaseInsensitive) < 0;
-    });
-    for (const auto &path : keys) {
+    std::ranges::sort(
+        keys, [](QStringView a, QStringView b) { return a.compare(b, Qt::CaseInsensitive) < 0; });
+    for (const auto &path : std::as_const(keys)) {
         const auto paths = d->paths.value(path);
         for (Action *action : paths.actions) {
             QString _path = u'/' + path;
@@ -167,11 +166,15 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         }
 
         actions.push_back(action);
-        std::sort(actions.begin(), actions.end(), [](Action *a, Action *b) -> bool {
+        std::ranges::sort(actions, [](Action *a, Action *b) -> bool {
             return a->numberOfArgs() < b->numberOfArgs();
         });
     } else {
-        paths.insert(_path, DispatchTypePathReplacement{_path, {action}});
+        paths.insert(_path,
+                     DispatchTypePathReplacement{
+                         .name    = _path,
+                         .actions = {action},
+                     });
     }
     return true;
 }
