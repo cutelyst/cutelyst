@@ -7,9 +7,14 @@
 #include <Cutelyst/Server/server.h>
 
 #include <QCoreApplication>
+#include <QLoggingCategory>
+
+using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
+    QLoggingCategory::setFilterRules(u"cutelyst.*.debug=true"_s);
+
     Cutelyst::Server server;
 
     QCoreApplication app(argc, argv);
