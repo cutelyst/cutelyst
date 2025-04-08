@@ -1,10 +1,12 @@
 /*
  * SPDX-FileCopyrightText: (C) 2020-2023 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #pragma once
 
 #include <Cutelyst/async.h>
+#include <Cutelyst/controller.h>
 #include <coroutine>
 #include <functional>
 #include <memory>
@@ -19,8 +21,8 @@ namespace Cutelyst {
  * This is a VOID coroutine context aimed at making coroutine
  * usage in Cutelyst safe.
  *
- * When entering the coroutine body one must call `co_yield context;`
- * This replaces the need for ASync if only coroutines are used.
+ * This replaces the need for the usage of ASync in a coroutine Context
+ * method if only coroutines are used.
  *
  * In the case of client disconnect Cutelyst::Context destroy() signal
  * is emitted and destroys this coroutine, making sure no use after
@@ -55,9 +57,13 @@ public:
         void unhandled_exception() {}
 
         bool await_ready() const noexcept { return false; }
+        void await_suspend(std::coroutine_handle<> h) noexcept {}
+        void await_resume() const noexcept {}
 
-        std::suspend_never yield_value(QObject *obj)
+        template <typename... ArgTypes>
+        promise_type(Cutelyst::Controller &controller, QObject *obj, ArgTypes &&...)
         {
+            Q_UNUSED(controller)
             auto conn = QObject::connect(obj, &QObject::destroyed, [this] {
                 clean();
 
@@ -66,20 +72,22 @@ public:
                 }
             });
             connections.emplace_back(std::move(conn));
-            return {};
         }
 
-        std::suspend_never yield_value(Cutelyst::Context *obj)
+        template <typename... ArgTypes>
+        promise_type(Cutelyst::Controller &controller, Cutelyst::Context *context, ArgTypes &&...)
         {
+            Q_UNUSED(controller)
+
             // Automatically delay replies
             // async cannot be used in coroutine body
             // else we get a double free when the coroutine
             // body ends and Cutelyst::Engine deletes the Context*
             // resulting in destroyed signal being emitted and
             // and coroutine dtor already on the stack to be called
-            ASync a(obj);
+            ASync a(context);
 
-            auto conn = QObject::connect(obj, &QObject::destroyed, [this, a] {
+            auto conn = QObject::connect(context, &QObject::destroyed, [this, a] {
                 clean();
 
                 if (handle) {
@@ -87,10 +95,7 @@ public:
                 }
             });
             connections.emplace_back(std::move(conn));
-            return {};
         }
-        void await_suspend(std::coroutine_handle<> h) noexcept {}
-        void await_resume() const noexcept {}
 
         ~promise_type() { clean(); }
     };
