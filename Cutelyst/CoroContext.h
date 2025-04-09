@@ -60,10 +60,8 @@ public:
         void await_suspend(std::coroutine_handle<> h) noexcept {}
         void await_resume() const noexcept {}
 
-        template <typename... ArgTypes>
-        promise_type(Cutelyst::Controller &controller, QObject *obj, ArgTypes &&...)
+        std::suspend_never yield_value(QObject *obj)
         {
-            Q_UNUSED(controller)
             auto conn = QObject::connect(obj, &QObject::destroyed, [this] {
                 clean();
 
@@ -72,6 +70,7 @@ public:
                 }
             });
             connections.emplace_back(std::move(conn));
+            return {};
         }
 
         template <typename... ArgTypes>
