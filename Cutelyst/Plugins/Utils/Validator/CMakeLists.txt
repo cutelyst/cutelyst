@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+# SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
 # SPDX-License-Identifier: BSD-3-Clause
 
 set(plugin_validator_SRC
@@ -92,6 +92,8 @@ set(plugin_validator_SRC
     validatorurl_p.h
     validatorresult.cpp
     validatorresult_p.h
+    cnameresolver.cpp
+    cnameresolver_p.h
 )
 
 
