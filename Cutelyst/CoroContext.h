@@ -21,8 +21,12 @@ namespace Cutelyst {
  * This is a VOID coroutine context aimed at making coroutine
  * usage in Cutelyst safe.
  *
- * This replaces the need for the usage of ASync in a coroutine Context
- * method if only coroutines are used.
+ * When used in a Cutelyst::Controller subclass method
+ * the call `co_yield context;` is done automatically.
+ * Otherwise when entering the coroutine body one must call `co_yield context;`
+ * This replaces the need for ASync if only coroutines are used.
+ * When in doubt `co_yield context;` will still work even if we are already
+ * tracking it.
  *
  * In the case of client disconnect Cutelyst::Context destroy() signal
  * is emitted and destroys this coroutine, making sure no use after
@@ -58,7 +62,10 @@ public:
 
         bool await_ready() const noexcept { return false; }
         void await_suspend(std::coroutine_handle<> h) noexcept {}
-        void await_resume() const noexcept {}
+        void await_resume() const noexcept
+        {
+            Q_ASSERT_X(!connections.empty(), "Cutelyst::CoroContext", "Did not yield any QObject*");
+        }
 
         std::suspend_never yield_value(QObject *obj)
         {
@@ -73,11 +80,23 @@ public:
             return {};
         }
 
+        std::suspend_never yield_value(Cutelyst::Context *context)
+        {
+            trackContext(context);
+            return {};
+        }
+
+        promise_type() = default; // required for lambdas
+
         template <typename... ArgTypes>
         promise_type(Cutelyst::Controller &controller, Cutelyst::Context *context, ArgTypes &&...)
         {
-            Q_UNUSED(controller)
+            Q_UNUSED(controller);
+            trackContext(context);
+        }
 
+        void trackContext(Context *context)
+        {
             // Automatically delay replies
             // async cannot be used in coroutine body
             // else we get a double free when the coroutine
