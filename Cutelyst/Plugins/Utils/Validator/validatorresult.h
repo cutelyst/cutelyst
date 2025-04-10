@@ -1,13 +1,17 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORRESULT_H
 #define CUTELYSTVALIDATORRESULT_H
 
 #include <Cutelyst/Plugins/Utils/validator_export.h>
+#include <Cutelyst/context.h>
+#include <coroutine>
+#include <functional>
 
 #include <QJsonObject>
+#include <QPointer>
 #include <QSharedDataPointer>
 #include <QString>
 #include <QStringList>
@@ -244,6 +248,61 @@ public:
 
 private:
     QSharedDataPointer<ValidatorResultPrivate> d;
+};
+
+/**
+ * \ingroup plugins-utils-validator
+ * \headerfile "" <Cutelyst/Plugins/Utils/ValdatorResult>
+ * \brief Coroutine awaitable for ValidatorResult.
+ * \since Cutelyst 5.0.0
+ */
+class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT AwaitedValidatorResult
+{
+public:
+    bool await_ready() const noexcept { return m_hasResult; }
+
+    bool await_suspend(std::coroutine_handle<> h) noexcept
+    {
+        m_handle = h;
+        if (m_receiver) {
+            m_destroyConn = QObject::connect(m_receiver, &QObject::destroyed, [h, this] {
+                m_result.addError(
+                    QString(), QStringLiteral("Internal Server Error: the context was destroyed."));
+                m_hasResult = true;
+                h.resume();
+            });
+        }
+
+        return !await_ready();
+    }
+
+    ValidatorResult await_resume() { return m_result; }
+
+    AwaitedValidatorResult(Context *c)
+        : m_receiver{c}
+    {
+        callback = [this](const ValidatorResult &result) {
+            m_result    = result;
+            m_hasResult = true;
+
+            if (m_handle) {
+                m_handle.resume();
+            }
+        };
+    }
+
+    ~AwaitedValidatorResult() { QObject::disconnect(m_destroyConn); }
+
+protected:
+    friend class Validator;
+    std::function<void(const ValidatorResult &result)> callback;
+
+private:
+    QMetaObject::Connection m_destroyConn;
+    QPointer<Context> m_receiver;
+    ValidatorResult m_result;
+    std::coroutine_handle<> m_handle;
+    bool m_hasResult{false};
 };
 
 } // namespace Cutelyst

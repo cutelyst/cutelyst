@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -56,6 +56,18 @@ QString ValidatorRule::label(const Context *c) const
     }
 
     return {};
+}
+
+void ValidatorRule::validateCb(Context *c,
+                               const ParamsMultiMap &params,
+                               Cutelyst::ValidatorRtFn cb) const
+{
+    Q_UNUSED(params)
+    qCCritical(C_VALIDATOR).noquote()
+        << debugString(c) << "validateCb method is not implemented on this validator";
+    //% "The validateCb method is no implemented for this validator."
+    cb(ValidatorReturnType{
+        .errorMessage = c->qtTrId("cutelyst-valrule-cb-not-impl-err"), .value = {}, .extra = {}});
 }
 
 QString ValidatorRule::validationError(Cutelyst::Context *c, const QVariant &errorData) const
@@ -151,6 +163,21 @@ void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result) const
         qCDebug(C_VALIDATOR).noquote().nospace()
             << d->validatorName << ": Using default value " << result->value << " for field \""
             << field() << "\" at " << c->controllerName() << "::" << c->actionName();
+    }
+}
+
+void ValidatorRule::defaultValue(Context *c, ValidatorRtFn cb) const
+{
+    Q_ASSERT_X(c, "getting default value", "invalid context object");
+    Q_D(const ValidatorRule);
+    if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
+        const auto defVal = c->stash(d->defValKey);
+        qCDebug(C_VALIDATOR).noquote().nospace()
+            << d->validatorName << ": Using default value " << defVal << " for field \"" << field()
+            << "\" at " << c->controllerName() << "::" << c->actionName();
+        cb({.errorMessage = {}, .value = defVal});
+    } else {
+        cb({});
     }
 }
 
