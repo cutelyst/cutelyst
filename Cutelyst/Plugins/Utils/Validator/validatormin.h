@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORMIN_H
@@ -76,6 +76,17 @@ protected:
      * converted into the \a type specified in the constructor.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input parameter value
+     * converted into the \a type specified in the constructor.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error message.

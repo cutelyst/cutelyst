@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -54,6 +54,11 @@ ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c,
     }
 
     return result;
+}
+
+void ValidatorNotIn::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
 }
 
 QString ValidatorNotIn::genericValidationError(Context *c, const QVariant &errorData) const

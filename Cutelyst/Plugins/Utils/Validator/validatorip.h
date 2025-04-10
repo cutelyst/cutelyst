@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORIP_H
@@ -46,7 +46,8 @@ public:
         NoReservedRange = 8, /**< Addresses from reserved networks like 192.88.99.0/24 and
                                 2001:db8::/32 are invalid. */
         NoMultiCast = 16,    /**< Multicast addresses are invalid. */
-        PublicOnly  = 32     /**< Combines NoPrivateRange, NoReservedRange and NoMultiCast. */
+        PublicOnly  = NoPrivateRange | NoReservedRange |
+                     NoMultiCast /**< Combines NoPrivateRange, NoReservedRange and NoMultiCast. */
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 
@@ -86,6 +87,17 @@ protected:
      * value as QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
+     * value as QString.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error message if validation failed.
