@@ -36,6 +36,16 @@ ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
     return result;
 }
 
+void ValidatorAccepted::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    if (Q_LIKELY(ValidatorAccepted::validate(value(params)))) {
+        cb({.errorMessage = {}, .value = true});
+    } else {
+        qCDebug(C_VALIDATOR).noquote() << debugString(c);
+        cb({.errorMessage = validationError(c), .value = false});
+    }
+}
+
 bool ValidatorAccepted::validate(const QString &value)
 {
     return ValidatorAcceptedPrivate::trueVals.contains(value, Qt::CaseInsensitive);

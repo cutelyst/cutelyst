@@ -69,6 +69,13 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     return result;
 }
 
+void ValidatorDigitsBetween::validateCb(Context *c,
+                                        const ParamsMultiMap &params,
+                                        ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 bool ValidatorDigitsBetween::validate(const QString &value, int min, int max)
 {
     bool allDigits = std::ranges::all_of(value, [](const QChar &ch) { return ch.isDigit(); });

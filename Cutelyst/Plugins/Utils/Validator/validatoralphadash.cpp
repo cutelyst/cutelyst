@@ -42,6 +42,13 @@ ValidatorReturnType ValidatorAlphaDash::validate(Context *c, const ParamsMultiMa
     return result;
 }
 
+void ValidatorAlphaDash::validateCb(Context *c,
+                                    const ParamsMultiMap &params,
+                                    ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 bool ValidatorAlphaDash::validate(const QString &value, bool asciiOnly)
 {
     bool valid = true;

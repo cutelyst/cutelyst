@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "cnameresolver_p.h"
 #include "validatordomain_p.h"
 
 #include <QDnsLookup>
 #include <QEventLoop>
+#include <QHostAddress>
 #include <QStringList>
 #include <QTimer>
 #include <QUrl>
@@ -14,17 +16,16 @@
 using namespace Cutelyst;
 
 ValidatorDomain::ValidatorDomain(const QString &field,
-                                 bool checkDNS,
+                                 Options options,
                                  const ValidatorMessages &messages,
                                  const QString &defValKey)
-    : ValidatorRule(*new ValidatorDomainPrivate(field, checkDNS, messages, defValKey))
+    : ValidatorRule(*new ValidatorDomainPrivate(field, options, messages, defValKey))
 {
 }
 
 ValidatorDomain::~ValidatorDomain() = default;
 
 bool ValidatorDomain::validate(const QString &value,
-                               bool checkDNS,
                                Cutelyst::ValidatorDomain::Diagnose *diagnose,
                                QString *extractedValue)
 {
@@ -150,37 +151,6 @@ bool ValidatorDomain::validate(const QString &value,
         diag = EmptyLabel;
     }
 
-    if (diag == Valid && checkDNS) {
-        QDnsLookup alookup(QDnsLookup::A, ace);
-        QEventLoop aloop;
-        QObject::connect(&alookup, &QDnsLookup::finished, &aloop, &QEventLoop::quit);
-        QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, &alookup, &QDnsLookup::abort);
-        alookup.lookup();
-        aloop.exec();
-
-        if (((alookup.error() != QDnsLookup::NoError) &&
-             (alookup.error() != QDnsLookup::OperationCancelledError)) ||
-            alookup.hostAddressRecords().empty()) {
-            QDnsLookup aaaaLookup(QDnsLookup::AAAA, ace);
-            QEventLoop aaaaLoop;
-            QObject::connect(&aaaaLookup, &QDnsLookup::finished, &aaaaLoop, &QEventLoop::quit);
-            QTimer::singleShot(
-                ValidatorDomainPrivate::dnsLookupTimeout, &aaaaLookup, &QDnsLookup::abort);
-            aaaaLookup.lookup();
-            aaaaLoop.exec();
-
-            if (((aaaaLookup.error() != QDnsLookup::NoError) &&
-                 (aaaaLookup.error() != QDnsLookup::OperationCancelledError)) ||
-                aaaaLookup.hostAddressRecords().empty()) {
-                diag = MissingDNS;
-            } else if (aaaaLookup.error() == QDnsLookup::OperationCancelledError) {
-                diag = DNSTimeout;
-            }
-        } else if (alookup.error() == QDnsLookup::OperationCancelledError) {
-            diag = DNSTimeout;
-        }
-    }
-
     if (diagnose) {
         *diagnose = diag;
     }
@@ -194,6 +164,100 @@ bool ValidatorDomain::validate(const QString &value,
     }
 
     return diag == Valid;
+}
+
+void ValidatorDomain::validateCb(
+    const QString &value,
+    Options options,
+    std::function<void(Diagnose diagnose, const QString &extractedValue)> cb)
+{
+    Diagnose diag;
+    QString extracted;
+
+    bool isValid = ValidatorDomain::validate(value, &diag, &extracted);
+    if (!isValid) {
+        cb(diag, {});
+        return;
+    }
+
+    if (!options.testAnyFlag(CheckDNS)) {
+        cb(diag, extracted);
+        return;
+    }
+
+    auto dns = new QDnsLookup{QDnsLookup::ANY, value};
+    QObject::connect(dns, &QDnsLookup::finished, [dns, options, cb, extracted] {
+        if (dns->error() == QDnsLookup::NoError) {
+
+            if (!dns->canonicalNameRecords().empty()) {
+                if (!options.testFlag(FollowCname)) {
+                    cb(MissingDNS, extracted);
+                } else {
+                    auto cnameDns = new CnameResolver;
+                    QObject::connect(
+                        cnameDns,
+                        &CnameResolver::finished,
+                        [cb, options, extracted](const QList<QDnsHostAddressRecord> &hostRecords,
+                                                 QDnsLookup::Error error) {
+                        if (error == QDnsLookup::NoError) {
+                            bool foundARecord    = !options.testFlag(CheckARecord);
+                            bool foundAaaaRecord = !options.testFlag(CheckAAAARecord);
+
+                            for (const auto &h : hostRecords) {
+                                if (!foundARecord) {
+                                    foundARecord =
+                                        h.value().protocol() == QAbstractSocket::IPv4Protocol;
+                                }
+                                if (!foundAaaaRecord) {
+                                    foundAaaaRecord =
+                                        h.value().protocol() == QAbstractSocket::IPv6Protocol;
+                                }
+                                if (foundARecord && foundAaaaRecord) {
+                                    cb(Valid, extracted);
+                                    return;
+                                }
+                            }
+
+                            cb(MissingDNS, extracted);
+                        } else if (error == QDnsLookup::OperationCancelledError) {
+                            cb(DNSTimeout, extracted);
+                        } else {
+                            cb(DNSError, extracted);
+                        }
+                    });
+                    const auto cname = dns->canonicalNameRecords().last();
+                    cnameDns->start(cname.value());
+                }
+            } else {
+                bool foundARecord    = !options.testFlag(CheckARecord);
+                bool foundAaaaRecord = !options.testFlag(CheckAAAARecord);
+
+                const auto addresses = dns->hostAddressRecords();
+                for (const auto &h : addresses) {
+                    if (!foundARecord) {
+                        foundARecord = h.value().protocol() == QAbstractSocket::IPv4Protocol;
+                    }
+                    if (!foundAaaaRecord) {
+                        foundAaaaRecord = h.value().protocol() == QAbstractSocket::IPv6Protocol;
+                    }
+                    if (foundARecord && foundAaaaRecord) {
+                        cb(Valid, extracted);
+                        return;
+                    }
+                }
+
+                cb(MissingDNS, extracted);
+            }
+
+        } else if (dns->error() == QDnsLookup::OperationCancelledError) {
+            cb(DNSTimeout, extracted);
+        } else {
+            cb(DNSError, extracted);
+        }
+        dns->deleteLater();
+    });
+    QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, dns, &QDnsLookup::abort);
+    dns->lookup();
 }
 
 QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QString &label)
@@ -245,6 +309,9 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
         case DNSTimeout:
             //% "The DNS lookup was aborted because it took too long."
             return c->qtTrId("cutelyst-valdomain-diag-dnstimeout");
+        case DNSError:
+            //% "An error occured while performing the DNS lookup."
+            return c->qtTrId("cutelyst-valdomain-diag-dnserror");
         default:
             Q_ASSERT_X(false, "domain validation diagnose", "invalid diagnose");
             return {};
@@ -302,10 +369,72 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
             //% "The DNS lookup for the domain name in the “%1” field was aborted "
             //% "because it took too long."
             return c->qtTrId("cutelyst-valdomain-diag-dnstimeout-label").arg(label);
+        case DNSError:
+            //% "The DNS lookup for the domain name in the “%1” field failed "
+            //% "becaus of an error in the DNS resolution."
+            return c->qtTrId("cutelyst-valdomain-diag-dnserror-label");
         default:
             Q_ASSERT_X(false, "domain validation diagnose", "invalid diagnose");
             return {};
         }
+    }
+}
+
+void writeDebugString(const QString &valInfo, ValidatorDomain::Diagnose diag, const QString &v)
+{
+    switch (diag) {
+    case ValidatorDomain::Valid:
+        break;
+    case ValidatorDomain::MissingDNS:
+        qCDebug(C_VALIDATOR).noquote() << valInfo << "Can not find valid DNS entry for" << v;
+        break;
+    case ValidatorDomain::InvalidChars:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "The domain name contains characters that are not allowed";
+        break;
+    case ValidatorDomain::LabelTooLong:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "At least on of the domain name labels exceeds the maximum" << "size of"
+            << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
+        break;
+    case ValidatorDomain::TooLong:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "The domain name exceeds the maximum size of"
+            << ValidatorDomainPrivate::maxDnsNameWithLastDot << "characters";
+        break;
+    case ValidatorDomain::InvalidLabelCount:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "Invalid label count. Either no labels or only TLD";
+        break;
+    case ValidatorDomain::EmptyLabel:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "At least one of the domain name labels is empty";
+        break;
+    case ValidatorDomain::InvalidTLD:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "The TLD label contains characters that are not allowed";
+        break;
+    case ValidatorDomain::DashStart:
+        qCDebug(C_VALIDATOR).noquote() << valInfo << "At least one label starts with a dash";
+        break;
+    case ValidatorDomain::DashEnd:
+        qCDebug(C_VALIDATOR).noquote() << valInfo << "At least one label ends with a dash";
+        break;
+    case ValidatorDomain::DigitStart:
+        qCDebug(C_VALIDATOR).noquote() << valInfo << "At least one label starts with a digit";
+        break;
+    case ValidatorDomain::DNSTimeout:
+        qCDebug(C_VALIDATOR).noquote() << valInfo << "The DNS lookup exceeds the timeout of"
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+                                       << ValidatorDomainPrivate::dnsLookupTimeout;
+#else
+                                       << ValidatorDomainPrivate::dnsLookupTimeout.count()
+                                       << "milliseconds";
+#endif
+    case ValidatorDomain::DNSError:
+        qCDebug(C_VALIDATOR).noquote()
+            << valInfo << "The DNS lookup failed because of errors in the"
+            << "DNS resolution";
     }
 }
 
@@ -319,68 +448,12 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
         Q_D(const ValidatorDomain);
         QString exVal;
         Diagnose diag{Valid};
-        if (ValidatorDomain::validate(v, d->checkDNS, &diag, &exVal)) {
+        if (ValidatorDomain::validate(v, &diag, &exVal)) {
             result.value.setValue(exVal);
         } else {
             result.errorMessage = validationError(c, diag);
             if (C_VALIDATOR().isDebugEnabled()) {
-                switch (diag) {
-                case Valid:
-                    break;
-                case MissingDNS:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "Can not find valid DNS entry for" << v;
-                    break;
-                case InvalidChars:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "The domain name contains characters that are not allowed";
-                    break;
-                case LabelTooLong:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "At least on of the domain name labels exceeds the maximum" << "size of"
-                        << ValidatorDomainPrivate::maxDnsLabelLength << "characters";
-                    break;
-                case TooLong:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "The domain name exceeds the maximum size of"
-                        << ValidatorDomainPrivate::maxDnsNameWithLastDot << "characters";
-                    break;
-                case InvalidLabelCount:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "Invalid label count. Either no labels or only TLD";
-                    break;
-                case EmptyLabel:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "At least one of the domain name labels is empty";
-                    break;
-                case InvalidTLD:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c)
-                        << "The TLD label contains characters that are not allowed";
-                    break;
-                case DashStart:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "At least one label starts with a dash";
-                    break;
-                case DashEnd:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "At least one label ends with a dash";
-                    break;
-                case DigitStart:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "At least one label starts with a digit";
-                    break;
-                case DNSTimeout:
-                    qCDebug(C_VALIDATOR).noquote()
-                        << debugString(c) << "The DNS lookup exceeds the timeout of"
-#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-                        << ValidatorDomainPrivate::dnsLookupTimeout;
-#else
-                        << ValidatorDomainPrivate::dnsLookupTimeout.count() << "milliseconds";
-#endif
-                }
+                writeDebugString(debugString(c), diag, v);
             }
         }
     } else {
@@ -388,6 +461,28 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
     }
 
     return result;
+}
+
+void ValidatorDomain::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    const QString v = value(params);
+
+    if (!v.isEmpty()) {
+        Q_D(const ValidatorDomain);
+        ValidatorDomain::validateCb(
+            v, d->options, [cb, this, c, v](Diagnose diagnose, const QString &extractedValue) {
+            if (diagnose == Valid) {
+                cb({.errorMessage = {}, .value = extractedValue});
+            } else {
+                if (C_VALIDATOR().isDebugEnabled()) {
+                    writeDebugString(debugString(c), diagnose, v);
+                }
+                cb({.errorMessage = validationError(c, diagnose)});
+            }
+        });
+    } else {
+        defaultValue(c, cb);
+    }
 }
 
 QString ValidatorDomain::genericValidationError(Context *c, const QVariant &errorData) const

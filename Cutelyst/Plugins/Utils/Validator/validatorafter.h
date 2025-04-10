@@ -128,6 +128,15 @@ protected:
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
     /**
+     * Performs the validation on the input \a params and writes the result to the callback \a cb.
+     *
+     * If validation succeeds, ValidatorReturnType::value will contain the converted input
+     * parameter value as QDateTime, QDate or QTime, accoring to the type of the \a comparison
+     * value.
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
+
+    /**
      * Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c,

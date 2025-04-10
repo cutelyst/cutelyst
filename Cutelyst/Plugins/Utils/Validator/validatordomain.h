@@ -59,21 +59,37 @@ public:
         DashStart  = 8,  /**< At least one label starts with a dash. */
         DashEnd    = 9,  /**< At least one label ends with a dash. */
         DigitStart = 10, /**< At least one label starts with a digit. */
-        DNSTimeout = 11  /**< The DNS lookup took too long. */
+        DNSTimeout = 11, /**< The DNS lookup took too long. */
+        DNSError   = 12  /**< Other DNS errors than timeouts or not existing domain (NXDOMAIN). */
     };
     Q_ENUM(Diagnose)
 
     /**
+     * \brief Options for the domain validation.
+     * \since Cutelyst 5.0.0
+     */
+    enum Option {
+        NoOption        = 0, /**< No special option selected. */
+        CheckARecord    = 1, /**< Check if there is an A record for the domain. */
+        CheckAAAARecord = 2, /**< Check if there is an AAAA record for the domain. */
+        CheckDNS = CheckARecord | CheckAAAARecord, /**< Check if there are bot, A and AAAA records
+                                                      for the domain. */
+        FollowCname = 4 /**< Follow CNAME records when checking for A and/or AAAA records. */
+    };
+    Q_DECLARE_FLAGS(Options, Option)
+
+    /**
      * \brief Constructs a new %ValidatorDomain object with the given parameters.
+     * \since Cutelyst 5.0.0
      * \param field     Name of the input field to validate.
-     * \param checkDNS  If \c true, a DNS lookup will be performed to check if the domain name
-     *                  exists in the domain name system.
+     * \param options   Options used for checking the domain. When checking DNS entries, it is
+     *                  highly recommended to use the validator in a coroutine context.
      * \param messages  Custom error messages if validation fails.
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if
      *                  input field is empty. This value will \b NOT be validated.
      */
     explicit ValidatorDomain(const QString &field,
-                             bool checkDNS                     = false,
+                             Options options                   = NoOption,
                              const ValidatorMessages &messages = {},
                              const QString &defValKey          = {});
 
@@ -85,9 +101,10 @@ public:
     /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a value is a valid fully qualified domain name.
+     * \note This will not perform any DNS lookup. For DNS lookups, use
+     * ValidatorDomain::validateCb()
+     * \since Cutelyst 5.0.0
      * \param value             The value to validate.
-     * \param checkDNS          If \c true, a DNS lookup will be performed to check if the domain
-     *                          name exists in the domain name system.
      * \param diagnose          Optional pointer to a variable that will be filled with the
      *                          Diagnose that describes the error if validation fails.
      * \param extractedValue    Optional pointer to a variable that will contain the validated
@@ -95,9 +112,22 @@ public:
      * \return \c true if the \a value is a valid domain name.
      */
     static bool validate(const QString &value,
-                         bool checkDNS,
                          Diagnose *diagnose      = nullptr,
                          QString *extractedValue = nullptr);
+
+    /**
+     * \ingroup plugins-utils-validator-rules
+     * \brief Checks if \a value is a vaid fully qualified domain name and writes the result
+     * to the callback \a cb.
+     * \since Cutelyst 5.0.0
+     * \param value      The value to validate.
+     * \param options    Options to use for the validation.
+     * \param cb         Callback funcion that will be called for the result.
+     */
+    static void
+        validateCb(const QString &value,
+                   Options options,
+                   std::function<void(Diagnose diagnose, const QString &extractedValue)> cb);
 
     /**
      * Returns a human readable description of a Diagnose.
@@ -119,6 +149,15 @@ protected:
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
     /**
+     * Performs the validation on the input \a params and writes the result to the
+     * callback function \a cb.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input parameter
+     * value as ACE version of the domain in a QString.
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
+
+    /**
      * \brief Returns a generic error message if validation failed.
      *
      * \a errorData will contain the Diagnose returned by ValidatorDomain::validate().
@@ -132,5 +171,7 @@ private:
 };
 
 } // namespace Cutelyst
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::ValidatorDomain::Options);
 
 #endif // CUTELYSTVALIDATORDOMAIN_H

@@ -221,6 +221,11 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
     return result;
 }
 
+void ValidatorBetween::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 QString ValidatorBetween::genericValidationError(Cutelyst::Context *c,
                                                  const QVariant &errorData) const
 {

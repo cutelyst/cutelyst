@@ -43,6 +43,11 @@ ValidatorReturnType ValidatorAlphaNum::validate(Context *c, const ParamsMultiMap
     return result;
 }
 
+void ValidatorAlphaNum::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 bool ValidatorAlphaNum::validate(const QString &value, bool asciiOnly)
 {
     bool valid = true;
