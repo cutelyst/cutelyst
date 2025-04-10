@@ -1,14 +1,17 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORRULE_H
 #define CUTELYSTVALIDATORRULE_H
 
 #include <Cutelyst/Plugins/Utils/validator_export.h>
+#include <Cutelyst/context.h>
 #include <Cutelyst/paramsmultimap.h>
+#include <functional>
 
 #include <QLoggingCategory>
+#include <QPointer>
 #include <QScopedPointer>
 #include <QVariant>
 
@@ -69,6 +72,14 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
      */
     [[nodiscard]] bool isValid() const noexcept { return errorMessage.isNull(); }
 };
+
+/**
+ * \related ValidatorRule
+ * \brief Void callback function for validator rules that processes the ValidatorReturnType.
+ *
+ * Has to be in the form void function(const ValidatorReturnType &result).
+ */
+using ValidatorRtFn = std::function<void(const ValidatorReturnType &result)>;
 
 /**
  * \ingroup plugins-utils-validator
@@ -362,7 +373,7 @@ protected:
      *     } else {
      *         const QString v = value(params);
      *         const QDate inputDate = QDate::fromString(v, Qt::ISODate);
-     *         if (!inputDate.isValie()) {
+     *         if (!inputDate.isValid()) {
      *             result.errorMessage = parsingError(c);
      *         } else {
      *             if (inputDate > m_myComparisonDate) {
@@ -378,6 +389,52 @@ protected:
      * \endcode
      */
     virtual ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const = 0;
+
+    /**
+     * Starts the validation and writes the \a result to the callback \a cb.
+     *
+     * This is the main function to reimplement when writing a custom validator that can be used
+     * in a coroutine. When reimplementing this function in a class derived from ValidatorRule,
+     * you have to set an empty \link ValidatorReturnType::errorMessage errorMessage\endlink if
+     * validation succeeded and the corresponding error if it fails. There are currently three
+     * error functions that should be used for different error cases:
+     *
+     * \li validationError() - if validation itself fails
+     * \li validationDataError() - if there is a problem with missing or invalid validation data,
+     * like comparison values
+     * \li parsingError() - if the parsing of an input data fails in a validator that not
+     * originally checks the parsing, but the parsed result
+     *
+     * If validation succeeded, you should put the extracted and validated value into the
+     * ValidatorReturnType::value. After the validation you can get the extracted values from
+     * ValidatorResult::values().
+     *
+     * <h3>Example</h3>
+     * \code{.cpp}
+     * void MyValidator::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb)
+     * const
+     * {
+     *     if (!m_myComparisonDate.isValid()) {
+     *         cb({.errorMessage = validationDataError(c)});
+     *     } else {
+     *         const QString v = value(params);
+     *         const QDate inputDate = QDate::fromString(v, Qt::ISODate);
+     *         if (!inputDate.isValid()) {
+     *             cb({.errorMessage = parsingError(c)});
+     *         } else {
+     *             if (inputDate > m_myComparisonDate) {
+     *                 cb({.errorMessage = {}, .value = inputDate});
+     *             } else {
+     *                 cb({.errorMessage = validationError(c)});
+     *             }
+     *         }
+     *     }
+     * }
+     * \endcode
+     *
+     * \since Cutelyst 5.0.0
+     */
+    virtual void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const;
 
     /**
      * Returns the name of the field to validate.
@@ -553,6 +610,15 @@ protected:
     void defaultValue(Context *c, ValidatorReturnType *result) const;
 
     /**
+     * If a \a defValKey has been set in the constructor, this will try to the the default
+     * value from the stash of context \a c and put it into the result written to the callback
+     * function \a cb.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void defaultValue(Context *c, ValidatorRtFn cb) const;
+
+    /**
      * Returns a string that can be used for debug output if validation fails.
      *
      * This returns something like <tt>MyValidator: Validation failed for field "my_field" at
@@ -584,6 +650,7 @@ private:
 
     friend class Validator;
     friend class ValidatorPrivate;
+    friend class AsyncValidator;
 };
 
 } // namespace Cutelyst

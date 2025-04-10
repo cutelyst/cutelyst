@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATOR_H
@@ -138,7 +138,7 @@ class ValidatorRule;
  *              // we are using a custom validation error message without a label
  *              new ValidatorEmail(QStringLiteral("email"),
  *                                 ValidatorEmail::Valid, // really strict validation
- *                                 false, // we will not perform a DNS check
+ *                                 ValidatorEmail::NoOption, // we will not perform a DNS check
  *                                 ValidatorMessages(nullptr,
  *                                                   QT_TRANSLATE_NOOP("MyController",
  *                                                                     "The email address in the
@@ -183,6 +183,38 @@ class ValidatorRule;
  *      }
  *
  *      c->setStash({QStringLiteral("template), QStringLiteral("myform.html")});
+ * }
+ * \endcode
+ *
+ * <h4>Coroutine example</h4>
+ * Supported since Cutelyst 5.0.0.
+ * \code{.cpp}
+ * #include <Cutelyst/Plugins/Utils/Validator> // includes the main validator
+ * #include <Cutelyst/Plugins/Utils/Validators> // includes all validator rules
+ * #include <Cutelyst/Plugins/Utils/ValidatorResult> // includes the validator result
+ *
+ * CoroContext MyController::myForm(Context *c)
+ * {
+ *     if (c->req()->isPost()) {
+ *         static Validator v{
+ *             new ValidatorRequired(QStringLiteral("email")),
+ *             new ValidatorEmail(QStringLiteral("email"),
+ *                                ValidatorEmail::Valid,
+ *                                ValidatorEmail::CheckDNS|ValidatorEmail::AllowIDN,
+ *                                ValidatorMessages(nullptr,
+ *                                                  QT_TRANSLATE_NOOP("MyController",
+ *                                                                    "The email address in the
+ *                                                                     Email field is not valid.")
+ *                                                 )
+ *                               )
+ *         };
+ *
+ *         auto vr = co_await v.coValidate(c);
+ *
+ *         if (vr) {
+ *             // process input values
+ *         }
+ *     }
  * }
  * \endcode
  *
@@ -280,7 +312,8 @@ public:
         NoSpecialBehavior = 0, /**< No special behavior, the default. */
         StopOnFirstError =
             1, /**< Will stop the validation process on the first failed validation. */
-        FillStashOnError = 2, /**< Will fill the context's stash with error information. */
+        FillStashOnError [[deprecated]] = 2, /**< Will fill the context's stash with error
+                                                information. Deprecated since Cutelyst 5.0.0 */
         NoTrimming = 4, /**< Will set \link ValidatorRule::trimBefore() trimBefore()\endlink to \c
                            false on every validator. (default behavior is \c true) */
         BodyParamsOnly =
@@ -349,6 +382,39 @@ public:
     ValidatorResult validate(Context *c,
                              const ParamsMultiMap &parameters,
                              ValidatorFlags flags = NoSpecialBehavior) const;
+
+    /**
+     * Starts the validation process asynchronous on Context \a c and returns an awaitable
+     * AwaitedValidatorResult.
+     *
+     * Requests the input parameters from Context \a c and processes any validator added through
+     * the constructor or via addValidator() (unless Validator::StopOnFirstError is set). Returns
+     * an AwaitedValidatorResult that will be transformed into a ValidatorResult that contains
+     * information about validation errors, if any. The result can be checked directly in
+     * \c if statements.
+     *
+     * \note This will ignore the deprecated Validator::FillStashOnError flag.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    AwaitedValidatorResult coValidate(Context *c, ValidatorFlags flags = NoSpecialBehavior) const;
+
+    /**
+     * Starts the validation process asynchronous on the \a params and returns an awaitable
+     * AwaitedValidatorResult.
+     *
+     * Processes any validator added through the constructor or via addValidator() (unless
+     * Validator::StopOnFirstError is set). Returns an AwaitedValidatorResult that will be
+     * transformed into a ValidatorResult that contains information about validation errors,
+     * if any. The result can be checked directly in \c if statements.
+     *
+     * \note This will ignore the deprecated Validator::FillStashOnError flag.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    AwaitedValidatorResult coValidate(Context *c,
+                                      const ParamsMultiMap &params,
+                                      ValidatorFlags flags = NoSpecialBehavior) const;
 
     /**
      * Adds a new ValidatorRule \a v to the list of validators. On destruction of the Validator,
