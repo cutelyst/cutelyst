@@ -594,7 +594,6 @@ public:
     C_ATTR(domainDns, :Local :AutoArgs)
     CoroContext domainDns(Context *c)
     {
-        co_yield c;
         Validator v(
             {new ValidatorDomain(u"field"_s, ValidatorDomain::CheckARecord, m_validatorMessages)});
         auto vr = co_await v.coValidate(c);
@@ -1198,7 +1197,6 @@ public:
     C_ATTR(asyncTest, :Local :AutoArgs)
     CoroContext asyncTest(Context *c)
     {
-        co_yield c;
         Validator v(
             {new ValidatorAfter(
                  u"after_field"_s, QDate::currentDate(), {}, nullptr, m_validatorMessages),
