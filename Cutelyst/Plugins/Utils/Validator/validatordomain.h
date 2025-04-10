@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -149,11 +149,13 @@ protected:
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
     /**
-     * Performs the validation on the input \a params and writes the result to the
-     * callback function \a cb.
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
      *
      * If validation succeeded, ValidatorReturnType::value will contain the input parameter
      * value as ACE version of the domain in a QString.
+     *
+     * \since Cutelyst 5.0.0
      */
     void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
