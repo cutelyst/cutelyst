@@ -45,6 +45,11 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
     return result;
 }
 
+void ValidatorBoolean::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 QString ValidatorBoolean::genericValidationError(Cutelyst::Context *c,
                                                  const QVariant &errorData) const
 {

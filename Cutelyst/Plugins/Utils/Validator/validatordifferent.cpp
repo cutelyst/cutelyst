@@ -41,6 +41,13 @@ ValidatorReturnType ValidatorDifferent::validate(Context *c, const ParamsMultiMa
     return result;
 }
 
+void ValidatorDifferent::validateCb(Context *c,
+                                    const ParamsMultiMap &params,
+                                    ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 QString ValidatorDifferent::genericValidationError(Context *c, const QVariant &errorData) const
 {
     Q_D(const ValidatorDifferent);

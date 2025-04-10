@@ -87,6 +87,8 @@ protected:
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
+
     /**
      * Returns a generic error message.
      */

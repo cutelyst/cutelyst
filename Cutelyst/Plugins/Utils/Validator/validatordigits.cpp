@@ -56,6 +56,11 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
     return result;
 }
 
+void ValidatorDigits::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 bool ValidatorDigits::validate(const QString &value, qsizetype length)
 {
     bool allDigits = std::ranges::all_of(value, [](const QChar &ch) { return ch.isDigit(); });

@@ -10,25 +10,27 @@
 
 #include <chrono>
 
+#include <QDnsHostAddressRecord>
+
 namespace Cutelyst {
 
 class ValidatorDomainPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorDomainPrivate(const QString &f,
-                           bool cd,
+                           ValidatorDomain::Options o,
                            const ValidatorMessages &m,
                            const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk, "ValidatorDomain")
-        , checkDNS(cd)
+        , options(o)
     {
     }
 
     static constexpr qsizetype maxDnsNameWithLastDot{253};
     static constexpr qsizetype maxDnsLabelLength{63};
-    static constexpr std::chrono::milliseconds dnsLookupTimeout{3100};
+    static constexpr std::chrono::milliseconds dnsLookupTimeout{10000};
 
-    bool checkDNS = false;
+    ValidatorDomain::Options options;
 };
 
 } // namespace Cutelyst

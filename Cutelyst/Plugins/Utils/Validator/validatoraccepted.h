@@ -56,9 +56,18 @@ protected:
     /**
      * Performs the validation on the input \a params and returns the result.
      *
-     * If validation succeeds, ValidatorReturnType::value will contain \c true.
+     * If validation succeeds, ValidatorReturnType::value will contain \c true,
+     * otherwise \c false.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and writes the result to the \a cb.
+     *
+     * If validation succeeds, ValidatorReturnType::value will contain \c true,
+     * otherwise \c false.
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error message.

@@ -58,6 +58,13 @@ ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c,
     return result;
 }
 
+void ValidatorCharNotAllowed::validateCb(Context *c,
+                                         const ParamsMultiMap &params,
+                                         ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 QString ValidatorCharNotAllowed::genericValidationError(Context *c, const QVariant &errorData) const
 {
     const QChar foundChar = errorData.toChar();

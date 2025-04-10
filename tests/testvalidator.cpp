@@ -4,6 +4,7 @@
 #include "coverageobject.h"
 #include "headers.h"
 
+#include <Cutelyst/CoroContext.h>
 #include <Cutelyst/Plugins/Utils/Validator/Validator>
 #include <Cutelyst/Plugins/Utils/Validator/Validators>
 #include <Cutelyst/Plugins/Utils/Validator/validatorresult.h>
@@ -177,6 +178,9 @@ private Q_SLOTS:
 
     void testValidatorUrl_data();
     void testValidatorUrl() { doTest(); };
+
+    void testValidatorAsync_data();
+    void testValidatorAsync() { doTest(); };
 
     void cleanupTestCase();
 
@@ -581,16 +585,20 @@ public:
     C_ATTR(domain, :Local :AutoArgs)
     void domain(Context *c)
     {
-        Validator v({new ValidatorDomain(u"field"_s, false, m_validatorMessages)});
+        Validator v(
+            {new ValidatorDomain(u"field"_s, ValidatorDomain::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 
     // ***** Endpoint for ValidatorDomain with DNS check *****
     C_ATTR(domainDns, :Local :AutoArgs)
-    void domainDns(Context *c)
+    CoroContext domainDns(Context *c)
     {
-        Validator v({new ValidatorDomain(u"field"_s, true, m_validatorMessages)});
-        checkResponse(c, v.validate(c));
+        co_yield c;
+        Validator v(
+            {new ValidatorDomain(u"field"_s, ValidatorDomain::CheckARecord, m_validatorMessages)});
+        auto vr = co_await v.coValidate(c);
+        checkResponse(c, vr);
     }
 
     // ***** Endpoint for ValidatorEmail valid ****
@@ -1184,6 +1192,22 @@ public:
 
         Validator v({new ValidatorUrl(u"field"_s, constraints, schemes, m_validatorMessages)});
         checkResponse(c, v.validate(c));
+    }
+
+    // ******* Endpoint for async validator tests
+    C_ATTR(asyncTest, :Local :AutoArgs)
+    CoroContext asyncTest(Context *c)
+    {
+        co_yield c;
+        Validator v(
+            {new ValidatorAfter(
+                 u"after_field"_s, QDate::currentDate(), {}, nullptr, m_validatorMessages),
+             new ValidatorAccepted(u"accepted_field"_s, m_validatorMessages),
+             new ValidatorDomain(u"domain_field"_s,
+                                 ValidatorDomain::CheckARecord | ValidatorDomain::FollowCname,
+                                 m_validatorMessages)});
+        auto vr = co_await v.coValidate(c);
+        checkResponse(c, vr);
     }
 
 private:
@@ -3979,6 +4003,23 @@ void TestValidator::testValidatorUrl_data()
             << u"/url"_s << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
         count++;
     }
+}
+
+void TestValidator::testValidatorAsync_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QByteArray>("body");
+    QTest::addColumn<QByteArray>("output");
+
+    QUrlQuery query;
+    query.addQueryItem(u"after_field"_s, QDate::currentDate().addDays(2).toString(Qt::ISODate));
+    query.addQueryItem(u"accepted_field"_s, u"yes"_s);
+    if (qEnvironmentVariableIsSet("CUTELYST_VALIDATORS_TEST_NETWORK")) {
+        query.addQueryItem(u"domain_field"_s, u"www.example.net"_s);
+    }
+
+    QTest::newRow("asynctest") << u"/asyncTest?"_s + query.toString(QUrl::FullyEncoded)
+                               << QByteArray() << valid;
 }
 
 QTEST_MAIN(TestValidator)

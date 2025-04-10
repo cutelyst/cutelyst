@@ -43,6 +43,11 @@ ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c,
     return result;
 }
 
+void ValidatorAlpha::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 bool ValidatorAlpha::validate(const QString &value, bool asciiOnly)
 {
     bool valid = true;

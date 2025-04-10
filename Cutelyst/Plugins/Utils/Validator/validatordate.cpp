@@ -44,6 +44,11 @@ ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &pa
     return result;
 }
 
+void ValidatorDate::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
+}
+
 QString ValidatorDate::genericValidationError(Context *c, const QVariant &errorData) const
 {
     Q_D(const ValidatorDate);
