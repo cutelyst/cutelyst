@@ -216,7 +216,7 @@ void AsyncValidator::doValidation()
         return;
     }
 
-    v->validateCb(m_context.get(), m_params, [this, v](const ValidatorReturnType &singleResult) {
+    v->validateCb(m_context.get(), m_params, [this, v](ValidatorReturnType &&singleResult) {
         if (singleResult.extra.isValid()) {
             m_result.addExtra(v->field(), singleResult.extra);
         }

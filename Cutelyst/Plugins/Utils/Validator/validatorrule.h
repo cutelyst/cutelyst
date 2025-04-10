@@ -77,9 +77,9 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
  * \related ValidatorRule
  * \brief Void callback function for validator rules that processes the ValidatorReturnType.
  *
- * Has to be in the form void function(const ValidatorReturnType &result).
+ * Has to be in the form void function(ValidatorReturnType &&result).
  */
-using ValidatorRtFn = std::function<void(const ValidatorReturnType &result)>;
+using ValidatorRtFn = std::function<void(ValidatorReturnType &&result)>;
 
 /**
  * \ingroup plugins-utils-validator
