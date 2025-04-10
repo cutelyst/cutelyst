@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORJSON_H
@@ -75,6 +75,18 @@ protected:
      * to ExpectedType::Array, or a QJsonObject if \a expectedType is set to ExpectedType::Object.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain a QJsonDocument if
+     * \a expectedType is set to ExpectedType::All, a QJsonArray if \a expectedType is set
+     * to ExpectedType::Array, or a QJsonObject if \a expectedType is set to ExpectedType::Object.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error message if validation failed.

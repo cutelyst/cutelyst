@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -47,6 +47,11 @@ ValidatorReturnType ValidatorIp::validate(Cutelyst::Context *c, const ParamsMult
     }
 
     return result;
+}
+
+void ValidatorIp::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
 }
 
 bool ValidatorIp::validate(const QString &value, Constraints constraints)
@@ -139,7 +144,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
             {// unspecified address
              {QHostAddress(QStringLiteral("::")), 128},
 
-             // loopback address to the loca host
+             // loopback address to the local host
              {QHostAddress(QStringLiteral("::1")), 128},
 
              // IPv4 mapped addresses
@@ -180,24 +185,21 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
                         valid = false;
                     }
 
-                    if (valid && (constraints.testFlag(NoPrivateRange) ||
-                                  constraints.testFlag(PublicOnly))) {
+                    if (valid && constraints.testFlag(NoPrivateRange)) {
                         valid = !std::ranges::any_of(
                             ipv4Private, [&a](const std::pair<QHostAddress, int> &subnet) {
                             return a.isInSubnet(subnet.first, subnet.second);
                         });
                     }
 
-                    if (valid && (constraints.testFlag(NoReservedRange) ||
-                                  constraints.testFlag(PublicOnly))) {
+                    if (valid && constraints.testFlag(NoReservedRange)) {
                         valid = !std::ranges::any_of(
                             ipv4Reserved, [&a](const std::pair<QHostAddress, int> &subnet) {
                             return a.isInSubnet(subnet.first, subnet.second);
                         });
                     }
 
-                    if (valid &&
-                        (constraints.testFlag(NoMultiCast) || constraints.testFlag(PublicOnly))) {
+                    if (valid && constraints.testFlag(NoMultiCast)) {
                         if (a.isInSubnet(QHostAddress(QStringLiteral("224.0.0.0")), 4)) {
                             valid = false;
                         }
@@ -209,24 +211,21 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
                         valid = false;
                     }
 
-                    if (valid && (constraints.testFlag(NoPrivateRange) ||
-                                  constraints.testFlag(PublicOnly))) {
+                    if (valid && constraints.testFlag(NoPrivateRange)) {
                         valid = !std::ranges::any_of(
                             ipv6Private, [&a](const std::pair<QHostAddress, int> &subnet) {
                             return a.isInSubnet(subnet.first, subnet.second);
                         });
                     }
 
-                    if (valid && (constraints.testFlag(NoReservedRange) ||
-                                  constraints.testFlag(PublicOnly))) {
+                    if (valid && constraints.testFlag(NoReservedRange)) {
                         valid = !std::ranges::any_of(
                             ipv6Reserved, [&a](const std::pair<QHostAddress, int> &subnet) {
                             return a.isInSubnet(subnet.first, subnet.second);
                         });
                     }
 
-                    if (valid &&
-                        (constraints.testFlag(NoMultiCast) || constraints.testFlag(PublicOnly))) {
+                    if (valid && constraints.testFlag(NoMultiCast)) {
                         if (a.isInSubnet(QHostAddress(QStringLiteral("ff00::")), 8)) {
                             valid = false;
                         }

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2018-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2018-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -143,6 +143,17 @@ protected:
      * either as qulonglong (if that fits) or double.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the file size in bytes
+     * either as qulonglong (if that fits) or double.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error message if validation failed.
