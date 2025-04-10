@@ -1460,5 +1460,17 @@ than they are displayed.</oldsource>
         <extracomment>%1 will be replaced by the field label</extracomment>
         <translation>Die Daten im Feld „%1“ ergeben kein JSON‐Objekt.</translation>
     </message>
+    <message id="cutelyst-valrule-cb-not-impl-err">
+        <source>The validateCb method is no implemented for this validator.</source>
+        <translation>Die Methode validateCb ist für diesen Validator nicht implementiert.</translation>
+    </message>
+    <message id="cutelyst-valdomain-diag-dnserror">
+        <source>An error occured while performing the DNS lookup.</source>
+        <translation>Während der DNS-Abfrage ist ein Fehler aufgetreten.</translation>
+    </message>
+    <message id="cutelyst-valdomain-diag-dnserror-label">
+        <source>The DNS lookup for the domain name in the “%1” field failed becaus of an error in the DNS resolution.</source>
+        <translation>Die DNS-Abfrage für die Domäne im Feld „%1“ konnte auf Grund eines Fehlers in der Namensauflösung nicht durchgeführt werden.</translation>
+    </message>
 </context>
 </TS>

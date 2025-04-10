@@ -1460,5 +1460,17 @@ than they are displayed.</oldsource>
         <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message id="cutelyst-valrule-cb-not-impl-err">
+        <source>The validateCb method is no implemented for this validator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valdomain-diag-dnserror">
+        <source>An error occured while performing the DNS lookup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valdomain-diag-dnserror-label">
+        <source>The DNS lookup for the domain name in the “%1” field failed becaus of an error in the DNS resolution.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
