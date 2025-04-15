@@ -57,6 +57,17 @@ protected:
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
     /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
+     * value as QString.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
+
+    /**
      * \brief Returns a generic error message.
      */
     QString genericValidationError(Context *c,

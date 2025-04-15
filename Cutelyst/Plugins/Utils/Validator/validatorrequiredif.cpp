@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -34,7 +34,7 @@ ValidatorReturnType ValidatorRequiredIf::validate(Context *c, const ParamsMultiM
             if (v.isEmpty()) {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR).noquote().nospace()
-                    << debugString(c) << " The field is not present or empty but \""
+                    << debugString(c) << " The field is not present or is empty but \""
                     << d->otherField << "\" contains " << ov;
             } else {
                 result.value.setValue(v);
@@ -47,6 +47,13 @@ ValidatorReturnType ValidatorRequiredIf::validate(Context *c, const ParamsMultiM
     }
 
     return result;
+}
+
+void ValidatorRequiredIf::validateCb(Context *c,
+                                     const ParamsMultiMap &params,
+                                     ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
 }
 
 QString ValidatorRequiredIf::genericValidationError(Context *c, const QVariant &errorData) const
