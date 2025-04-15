@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -41,31 +41,12 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
 
     Q_D(const ValidatorEmail);
 
+    if (d->options.testFlag(CheckDNS)) {
+        qCWarning(C_VALIDATOR) << "ValidatorEmail: using the CheckDNS option on validate() is"
+                               << "not supported anymore. Use validateCb().";
+    }
+
     if (!v.isEmpty()) {
-
-        //        QString email;
-        //        const int atPos = v.lastIndexOf(QLatin1Char('@'));
-        //        if (atPos > 0) {
-        //            const QStringRef local = v.leftRef(atPos);
-        //            const QString domain = v.mid(atPos + 1);
-        //            bool asciiDomain = true;
-        //            for (const QChar &ch : domain) {
-        //                const ushort &uc = ch.unicode();
-        //                if (uc > 127) {
-        //                    asciiDomain = false;
-        //                    break;
-        //                }
-        //            }
-
-        //            if (asciiDomain) {
-        //                email = v;
-        //            } else {
-        //                email = local + QLatin1Char('@') +
-        //                QString::fromLatin1(QUrl::toAce(domain));
-        //            }
-        //        } else {
-        //            email = v;
-        //        }
 
         ValidatorEmailDiagnoseStruct diag;
 
@@ -87,6 +68,35 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
     }
 
     return result;
+}
+
+void ValidatorEmail::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    const QString v = value(params);
+
+    Q_D(const ValidatorEmail);
+
+    if (!v.isEmpty()) {
+        ValidatorEmail::validateCb(v,
+                                   d->threshold,
+                                   d->options,
+                                   [c, cb, this, v](bool isValid,
+                                                    const QString &cleanedEmail,
+                                                    const QList<Diagnose> &diagnoses) {
+            ValidatorReturnType rt;
+            rt.extra = QVariant::fromValue<QList<Diagnose>>(diagnoses);
+            if (isValid) {
+                rt.value.setValue(cleanedEmail);
+            } else {
+                qCDebug(C_VALIDATOR).noquote() << debugString(c) << diagnoses;
+                rt.errorMessage =
+                    validationError(c, QVariant::fromValue<Diagnose>(diagnoses.at(0)));
+            }
+            cb(std::move(rt));
+        });
+    } else {
+        defaultValue(c, cb);
+    }
 }
 
 QString ValidatorEmail::genericValidationError(Context *c, const QVariant &errorData) const
@@ -119,7 +129,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     QMap<int, QString> atomListDomain;
     int elementCount = 0;
     int elementLen   = 0;
-    bool hypenFlag   = false;
+    bool hyphenFlag  = false;
     bool endOrDie    = false;
     int crlf_count   = 0;
 
@@ -411,7 +421,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     returnStatus.push_back((elementCount == 0)
                                                ? ValidatorEmail::ErrorDotStart
                                                : ValidatorEmail::ErrorConsecutiveDots);
-                } else if (hypenFlag) {
+                } else if (hyphenFlag) {
                     // Previous subdomain ended in a hyphen
                     returnStatus.push_back(ValidatorEmail::ErrorDomainHyphenEnd); // fatal error
                 } else {
@@ -516,7 +526,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 }
 
                 const char16_t uni = token.unicode();
-                hypenFlag = false; // Assume this token isn't a hyphen unless we discover it is
+                hyphenFlag = false; // Assume this token isn't a hyphen unless we discover it is
 
                 if ((uni < ValidatorEmailPrivate::asciiExclamationMark) ||
                     (uni > ValidatorEmailPrivate::asciiTilde) ||
@@ -524,11 +534,11 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // Fatal error
                 } else if (token == QLatin1Char('-')) {
                     if (elementLen == 0) {
-                        // Hyphens can't be at the beggining of a subdomain
+                        // Hyphens can't be at the beginning of a subdomain
                         returnStatus.push_back(
                             ValidatorEmail::ErrorDomainHyphenStart); // Fatal error
                     }
-                    hypenFlag = true;
+                    hyphenFlag = true;
                 } else if (!(((uni >= ValidatorRulePrivate::ascii_0) &&
                               (uni <= ValidatorRulePrivate::ascii_9)) ||
                              ((uni >= ValidatorRulePrivate::ascii_A) &&
@@ -1090,7 +1100,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             returnStatus.push_back(ValidatorEmail::ErrorNoDomain);
         } else if (elementLen == 0) {
             returnStatus.push_back(ValidatorEmail::ErrorDotEnd);
-        } else if (hypenFlag) {
+        } else if (hyphenFlag) {
             returnStatus.push_back(ValidatorEmail::ErrorDomainHyphenEnd);
         } else if (parseDomain.size() > ValidatorEmailPrivate::maxDomainLength) {
             // https://tools.ietf.org/html/rfc5321#section-4.5.3.1.2
@@ -1125,52 +1135,54 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     // Check DNS?
     bool dnsChecked = false;
 
-    if (checkDns &&
-        (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
-         static_cast<int>(threshold))) {
-        // https://tools.ietf.org/html/rfc5321#section-2.3.5
-        //   Names that can
-        //   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
-        //   in Section 5) are permitted, as are CNAME RRs whose targets can be
-        //   resolved, in turn, to MX or address RRs.
-        //
-        // https://tools.ietf.org/html/rfc5321#section-5.1
-        //   The lookup first attempts to locate an MX record associated with the
-        //   name.  If a CNAME record is found, the resulting name is processed as
-        //   if it were the initial name. ... If an empty list of MXs is returned,
-        //   the address is treated as if it was associated with an implicit MX
-        //   RR, with a preference of 0, pointing to that host.
+    // if (checkDns &&
+    //     (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd()))
+    //     <
+    //      static_cast<int>(threshold))) {
+    //     // https://tools.ietf.org/html/rfc5321#section-2.3.5
+    //     //   Names that can
+    //     //   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
+    //     //   in Section 5) are permitted, as are CNAME RRs whose targets can be
+    //     //   resolved, in turn, to MX or address RRs.
+    //     //
+    //     // https://tools.ietf.org/html/rfc5321#section-5.1
+    //     //   The lookup first attempts to locate an MX record associated with the
+    //     //   name.  If a CNAME record is found, the resulting name is processed as
+    //     //   if it were the initial name. ... If an empty list of MXs is returned,
+    //     //   the address is treated as if it was associated with an implicit MX
+    //     //   RR, with a preference of 0, pointing to that host.
 
-        if (elementCount == 0) {
-            parseDomain += QLatin1Char('.');
-        }
+    //     if (elementCount == 0) {
+    //         parseDomain += QLatin1Char('.');
+    //     }
 
-        QDnsLookup mxLookup(QDnsLookup::MX, parseDomain);
-        QEventLoop mxLoop;
-        QObject::connect(&mxLookup, &QDnsLookup::finished, &mxLoop, &QEventLoop::quit);
-        QTimer::singleShot(ValidatorEmailPrivate::dnsLookupTimeout, &mxLookup, &QDnsLookup::abort);
-        mxLookup.lookup();
-        mxLoop.exec();
+    //     QDnsLookup mxLookup(QDnsLookup::MX, parseDomain);
+    //     QEventLoop mxLoop;
+    //     QObject::connect(&mxLookup, &QDnsLookup::finished, &mxLoop, &QEventLoop::quit);
+    //     QTimer::singleShot(ValidatorEmailPrivate::dnsLookupTimeout, &mxLookup,
+    //     &QDnsLookup::abort); mxLookup.lookup(); mxLoop.exec();
 
-        if ((mxLookup.error() == QDnsLookup::NoError) && !mxLookup.mailExchangeRecords().empty()) {
-            dnsChecked = true;
-        } else {
-            returnStatus.push_back(ValidatorEmail::DnsWarnNoMxRecord);
-            QDnsLookup aLookup(QDnsLookup::A, parseDomain);
-            QEventLoop aLoop;
-            QObject::connect(&aLookup, &QDnsLookup::finished, &aLoop, &QEventLoop::quit);
-            QTimer::singleShot(
-                ValidatorEmailPrivate::dnsLookupTimeout, &aLookup, &QDnsLookup::abort);
-            aLookup.lookup();
-            aLoop.exec();
+    //     if ((mxLookup.error() == QDnsLookup::NoError) && !mxLookup.mailExchangeRecords().empty())
+    //     {
+    //         dnsChecked = true;
+    //     } else {
+    //         returnStatus.push_back(ValidatorEmail::DnsWarnNoMxRecord);
+    //         QDnsLookup aLookup(QDnsLookup::A, parseDomain);
+    //         QEventLoop aLoop;
+    //         QObject::connect(&aLookup, &QDnsLookup::finished, &aLoop, &QEventLoop::quit);
+    //         QTimer::singleShot(
+    //             ValidatorEmailPrivate::dnsLookupTimeout, &aLookup, &QDnsLookup::abort);
+    //         aLookup.lookup();
+    //         aLoop.exec();
 
-            if ((aLookup.error() == QDnsLookup::NoError) && !aLookup.hostAddressRecords().empty()) {
-                dnsChecked = true;
-            } else {
-                returnStatus.push_back(ValidatorEmail::DnsWarnNoRecord);
-            }
-        }
-    }
+    //         if ((aLookup.error() == QDnsLookup::NoError) &&
+    //         !aLookup.hostAddressRecords().empty()) {
+    //             dnsChecked = true;
+    //         } else {
+    //             returnStatus.push_back(ValidatorEmail::DnsNoRecordFound);
+    //         }
+    //     }
+    // }
 
     // Check for TLD addresses
     // -----------------------
@@ -1206,7 +1218,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     //   component label to start with a digit even if it is not all-numeric.
     if (!dnsChecked &&
         (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
-         static_cast<int>(ValidatorEmail::DNSWarn))) {
+         static_cast<int>(ValidatorEmail::DNSFailed))) {
         if (elementCount == 0) {
             returnStatus.push_back(ValidatorEmail::RFC5321TLD);
         }
@@ -1236,6 +1248,11 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         diagnoseStruct->localpart    = parseLocalPart;
         diagnoseStruct->domain       = parseDomain;
         diagnoseStruct->literal      = parseLiteral;
+        if (!parseLiteral.isEmpty()) {
+            diagnoseStruct->cleanedEmail = parseLocalPart + QLatin1Char('@') + parseLiteral;
+        } else {
+            diagnoseStruct->cleanedEmail = parseLocalPart + QLatin1Char('@') + parseDomain;
+        }
     }
 
     return static_cast<int>(finalStatus) < static_cast<int>(threshold);
@@ -1253,9 +1270,18 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
         case DnsWarnNoMxRecord:
             //% "Could not find an MX record for this address’ domain but an A record exists."
             return c->qtTrId("cutelyst-valemail-diag-nomx");
-        case DnsWarnNoRecord:
+        case DnsMxDisabled:
+            //% "MX for this address’ domain is explicitely disabled."
+            return c->qtTrId("cutelyst-valemail-diag-mxdisabled");
+        case DnsNoRecordFound:
             //% "Could neither find an MX record nor an A record for this address’ domain."
             return c->qtTrId("cutelyst-valemail-diag-noarec");
+        case DnsErrorTimeout:
+            //% "Timeout while performing DNS check for address’ domain."
+            return c->qtTrId("cutelyst-valemail-diag-dnstimeout");
+        case DnsError:
+            //% "Error while performing DNS check for address’ domain."
+            return c->qtTrId("cutelyst-valemail-diag-dnserror");
         case RFC5321TLD:
             //% "Address is valid but at a Top Level Domain."
             return c->qtTrId("cutelyst-valemail-diag-rfc5321tld");
@@ -1433,10 +1459,19 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             //% "Could not find an MX record for the address’ domain in the “%1” "
             //% "field but an A record exists."
             return c->qtTrId("cutelyst-valemail-diag-nomx-label").arg(label);
-        case DnsWarnNoRecord:
+        case DnsMxDisabled:
+            //% "MX for the address’ domain in the “%1” field is explicitely disabled."
+            return c->qtTrId("cutelyst-valemail-diag-mxdisabled").arg(label);
+        case DnsNoRecordFound:
             //% "Could neither find an MX record nor an A record for the address’ "
             //% "domain in the “%1” field."
             return c->qtTrId("cutelyst-valemail-diag-noarec-label").arg(label);
+        case DnsErrorTimeout:
+            //% "Timeout while performing DNS check for address’ domain in the “%1” field."
+            return c->qtTrId("cutelyst-valemail-diag-dnstimeout").arg(label);
+        case DnsError:
+            //% "Error while performing DNS check for address’ domain in the “%1” field."
+            return c->qtTrId("cutelyst-valemail-diag-dnserror").arg(label);
         case RFC5321TLD:
             //% "The address in the “%1” field is valid but at a Top Level Domain."
             return c->qtTrId("cutelyst-valemail-diag-rfc5321tld-label").arg(label);
@@ -1641,8 +1676,11 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
             //% "Address is valid."
             return c->qtTrId("cutelyst-valemail-cat-valid");
         case DNSWarn:
-            //% "Address is valid but a DNS check was not successful."
+            //% "Address is valid but there is a warning about the DNS."
             return c->qtTrId("cutelyst-valemail-cat-dnswarn");
+        case DNSFailed:
+            //% "Address is valid but a DNS check was not successful."
+            return c->qtTrId("cutelyst-valemail-cat-dnsfailed");
         case RFC5321:
             //% "Address is valid for SMTP but has unusual elements."
             return c->qtTrId("cutelyst-valemail-cat-rfc5321");
@@ -1668,8 +1706,11 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
             //% "The address in the “%1” field is valid."
             return c->qtTrId("cutelyst-valemail-cat-valid-label").arg(label);
         case DNSWarn:
-            //% "The address in the “%1” field is valid but a DNS check was not successful."
+            //%" The address in the “%1” field is valid but there are warnings about the DNS."
             return c->qtTrId("cutelyst-valemail-cat-dnswarn-label").arg(label);
+        case DNSFailed:
+            //% "The address in the “%1” field is valid but a DNS check was not successful."
+            return c->qtTrId("cutelyst-valemail-cat-dnsfailed-label").arg(label);
         case RFC5321:
             //% "The address in the “%1” field is valid for SMTP but has unusual elements."
             return c->qtTrId("cutelyst-valemail-cat-rfc5321-label").arg(label);
@@ -1702,6 +1743,8 @@ Cutelyst::ValidatorEmail::Category ValidatorEmail::category(Diagnose diagnose)
         cat = Valid;
     } else if (diag < static_cast<int>(DNSWarn)) {
         cat = DNSWarn;
+    } else if (diag < static_cast<int>(DNSFailed)) {
+        cat = DNSFailed;
     } else if (diag < static_cast<int>(RFC5321)) {
         cat = RFC5321;
     } else if (diag < static_cast<int>(CFWS)) {
@@ -1725,6 +1768,11 @@ bool ValidatorEmail::validate(const QString &email,
                               Options options,
                               QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
 {
+    if (options.testFlag(CheckDNS)) {
+        qCWarning(C_VALIDATOR) << "ValidatorEmail: using the CheckDNS option on validate() is"
+                               << "not supported anymore. Use validateCb().";
+    }
+
     ValidatorEmailDiagnoseStruct diag;
     bool ret = ValidatorEmailPrivate::checkEmail(email, options, threshold, &diag);
 
@@ -1733,6 +1781,128 @@ bool ValidatorEmail::validate(const QString &email,
     }
 
     return ret;
+}
+
+void ValidatorEmail::validateCb(
+    const QString &email,
+    Category threshold,
+    Options options,
+    std::function<void(bool isValid, const QString &cleanedEmail, const QList<Diagnose> &diagnoses)>
+        cb)
+{
+    ValidatorEmailDiagnoseStruct diag;
+    const bool ret = ValidatorEmailPrivate::checkEmail(email, options, threshold, &diag);
+
+    if (ret && options.testFlag(ValidatorEmail::CheckDNS)) {
+
+        if (diag.domain.isEmpty()) {
+
+            diag.returnStatus.append(DnsError);
+            diag.sortReturnStatus();
+            cb(diag.isBelowThreshold(threshold), diag.cleanedEmail, diag.returnStatus);
+
+        } else {
+
+            auto mxLookup = new QDnsLookup{QDnsLookup::MX, diag.domain};
+            QObject::connect(
+                mxLookup, &QDnsLookup::finished, [mxLookup, cb, diag, threshold]() mutable {
+                if (mxLookup->error() == QDnsLookup::NoError &&
+                    !mxLookup->mailExchangeRecords().empty()) {
+                    const auto records = mxLookup->mailExchangeRecords();
+                    for (const auto &h : records) {
+                        if (h.preference() > 0 && !h.exchange().isEmpty()) {
+                            // these both values might have already been set, but as we found a
+                            // valid MX, they are no errors
+                            diag.returnStatus.removeAll(RFC5321TLD);
+                            diag.returnStatus.removeAll(RFC5321TLDNumeric);
+                            break;
+                        } else if (h.preference() == 0 &&
+                                   (h.exchange().isEmpty() || h.exchange() == "."_L1)) {
+                            // this is a Null MX that explicitely indicates, that the domain
+                            // accepts no mail
+                            diag.returnStatus.append(DnsMxDisabled);
+                            break;
+                        }
+                    }
+                    diag.sortReturnStatus();
+                    cb(diag.isBelowThreshold(threshold), diag.cleanedEmail, diag.returnStatus);
+                } else {
+                    if (mxLookup->error() == QDnsLookup::NoError) {
+
+                        auto aLookup = new QDnsLookup{QDnsLookup::A, diag.domain};
+                        QObject::connect(aLookup,
+                                         &QDnsLookup::finished,
+                                         [aLookup, cb, diag, threshold]() mutable {
+                            if (aLookup->error() == QDnsLookup::NoError) {
+                                if (!aLookup->hostAddressRecords().empty()) {
+                                    diag.returnStatus.append(DnsWarnNoMxRecord);
+                                } else {
+                                    diag.returnStatus.append(DnsNoRecordFound);
+                                }
+                                diag.sortReturnStatus();
+                                cb(diag.isBelowThreshold(threshold),
+                                   diag.cleanedEmail,
+                                   diag.returnStatus);
+                            } else {
+                                switch (aLookup->error()) {
+                                case QDnsLookup::NotFoundError:
+                                    diag.returnStatus.append(DnsNoRecordFound);
+                                    break;
+                                case QDnsLookup::OperationCancelledError:
+                                    diag.returnStatus.append(DnsErrorTimeout);
+                                    break;
+                                default:
+                                    diag.returnStatus.append(DnsError);
+                                    break;
+                                }
+                                diag.sortReturnStatus();
+                                cb(diag.isBelowThreshold(threshold),
+                                   diag.cleanedEmail,
+                                   diag.returnStatus);
+                            }
+                            aLookup->deleteLater();
+                        });
+                        QTimer::singleShot(
+                            ValidatorEmailPrivate::dnsLookupTimeout, aLookup, &QDnsLookup::abort);
+                        aLookup->lookup();
+
+                    } else {
+                        switch (mxLookup->error()) {
+                        case QDnsLookup::NotFoundError:
+                            diag.returnStatus.append(DnsNoRecordFound);
+                            break;
+                        case QDnsLookup::OperationCancelledError:
+                            diag.returnStatus.append(DnsErrorTimeout);
+                            break;
+                        default:
+                            diag.returnStatus.append(DnsError);
+                            break;
+                        }
+                        diag.sortReturnStatus();
+                        cb(diag.isBelowThreshold(threshold), diag.cleanedEmail, diag.returnStatus);
+                    }
+                }
+                mxLookup->deleteLater();
+            });
+            QTimer::singleShot(
+                ValidatorEmailPrivate::dnsLookupTimeout, mxLookup, &QDnsLookup::abort);
+            mxLookup->lookup();
+        }
+
+    } else {
+        cb(ret, diag.cleanedEmail, diag.returnStatus);
+    }
+}
+
+void ValidatorEmailDiagnoseStruct::sortReturnStatus()
+{
+    std::ranges::sort(returnStatus, std::greater<>());
+    finalStatus = returnStatus.at(0);
+}
+
+bool ValidatorEmailDiagnoseStruct::isBelowThreshold(ValidatorEmail::Category threshold) const
+{
+    return static_cast<int>(finalStatus) < static_cast<int>(threshold);
 }
 
 #include "moc_validatoremail.cpp"

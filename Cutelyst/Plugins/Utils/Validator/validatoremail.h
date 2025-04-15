@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATOREMAIL_H
@@ -48,27 +48,6 @@ class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorEmail : public ValidatorRu
     Q_GADGET
 public:
     /**
-     * \brief Validation category, used as threshold to define valid addresses.
-     */
-    enum Category : int {
-        Valid   = 1,  /**< Address is completely valid. */
-        DNSWarn = 7,  /**< Address is valid but a DNS check was not successful. Diagnose in this
-                         category is only returned if \a checkDns ist set to \c true. */
-        RFC5321 = 15, /**< Address is valid for SMTP according to <a
-                         href="https://tools.ietf.org/html/rfc5321">RFC 5321</a> but has unusual
-                         Elements. */
-        CFWS = 31, /**< Address is valid within the message but can not be used unmodified for the
-                      envelope. */
-        Deprecated = 63, /**< Address contains deprecated elements but may still be valid in
-                            restricted contexts. */
-        RFC5322 = 127,   /**< Address is only valid according to the broad definition of <a
-                            href="https://tools.ietf.org/html/rfc5322">RFC 5322</a>. It is otherwise
-                            invalid. */
-        Error = 255      /**< Address is invalid for any purpose. */
-    };
-    Q_ENUM(Category)
-
-    /**
      * \brief Single diagnose values that show why an address is not valid.
      */
     enum Diagnose : int {
@@ -77,10 +56,21 @@ public:
             0, /**< Address is valid. Please note that this does not mean the address actually
                   exists, nor even that the domain actually exists. This address could be issued by
                   the domain owner without breaking the rules of any RFCs. */
-        // Address is valid but a DNS check was not successful
+        // Address is valid but there are warnings about the DNS
         DnsWarnNoMxRecord =
-            5, /**< Couldn't find a MX record for this domain but an A-record does exist. */
-        DnsWarnNoRecord = 6, /**< Could neither find a MX record nor an A-record for this domain. */
+            4, /**< Couldn’t find a MX record for this domain but an A record does exist. When a MX
+                  record is missing, an A/AAAA record is used as fallback. This is often
+                  misconfigured where there is no mail exchange running on the server that has the
+                  A/AAAA record. See also <a
+                  href="https://datatracker.ietf.org/doc/html/rfc7505">RFC 7505</a>. */
+        // Address is valid but a DNS check was not successful
+        DnsMxDisabled = 5, /**< MX is explicitely disabled for this domain. See also <a
+                              href="https://datatracker.ietf.org/doc/html/rfc7505">RFC 7505</a>. */
+        DnsNoRecordFound =
+            6,               /**< Could neither find a MX record nor an A record for this domain. */
+        DnsErrorTimeout = 7, /**< Failed to resolve DNS records within timeout. */
+        DnsError =
+            8, /**< Failed to resolve DNS records because of an error in the DNS resolution. */
         // Address is valid for SMTP but has unusual Elements
         RFC5321TLD = 9, /**< Address is valid but at a Top Level Domain. */
         RFC5321TLDNumeric =
@@ -157,10 +147,36 @@ public:
     };
     Q_ENUM(Diagnose)
 
+    /**
+     * \brief Validation category, used as threshold to define valid addresses.
+     */
+    enum Category : int {
+        Valid = 1, /**< Address is completely valid. */
+        DNSWarn =
+            DnsMxDisabled, /**< Address is valid but there are warnings about the DNS. Diagnose in
+                   this category is only returned if the ValidatorEmail::CheckDNS option is set. */
+        DNSFailed =
+            RFC5321TLD, /**< Address is valid but a DNS check was not successful. Diagnose in this
+                category is only returned if the ValidatorEmail::CheckDNS option is set. */
+        RFC5321 = CFWSComment,      /**< Address is valid for SMTP according to <a
+                              href="https://tools.ietf.org/html/rfc5321">RFC 5321</a> but has unusual
+                              Elements. */
+        CFWS = DeprecatedLocalpart, /**< Address is valid within the message but can not be used
+                      unmodified for the envelope. */
+        Deprecated = RFC5322Domain, /**< Address contains deprecated elements but may still be valid
+                            in restricted contexts. */
+        RFC5322 = ErrorExpectingDText, /**< Address is only valid according to the broad definition
+                          of <a href="https://tools.ietf.org/html/rfc5322">RFC 5322</a>. It is
+                          otherwise invalid. */
+        Error = 255 /**< Address is invalid for any purpose. Using this as threshold, all addresses
+                       are valid. */
+    };
+    Q_ENUM(Category)
+
     enum Option : quint8 {
-        NoOption = 0, /**< No option enabled, the default. */
-        CheckDNS =
-            1, /**< Enables a DNS lookup to check if there are MX records for the mail domain. */
+        NoOption = 0,  /**< No option enabled, the default. */
+        CheckDNS = 1,  /**< Enables a DNS lookup to check if there are MX records for the mail
+                        domain.  Since %Cutelyst 5.0.0 this only works on validateCb(). */
         UTF8Local = 2, /**< Allows UTF8 characters in the email address local part. */
         AllowIDN  = 4, /**< Allows internationalized domain names (IDN). */
         AllowUTF8 = UTF8Local | AllowIDN /**< Allows UTF8 characters in the email local part and
@@ -227,6 +243,8 @@ public:
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a email is a valid address according to the Category given in the
      * \a threshold.
+     * \note Since %Cutelyst 5.0.0 this will not perform any DNS lookup, even if
+     * ValidatorEmail::CheckDNS has been set to the \a options. For DNS lookups use validateCb().
      * \param[in] email         The address to validate.
      * \param[in] threshold     The threshold category that limits the diagnose that is accepted
      *                          as valid.
@@ -241,6 +259,27 @@ public:
                          Options options            = NoOption,
                          QList<Diagnose> *diagnoses = nullptr);
 
+    /**
+     * \ingroup plugins-utils-validator-rules
+     * \brief Checks if the \a email is a valid address according to the Category given in the
+     * \a threshold.
+     * \param   email       The address to validate.
+     * \param   threshold   The threshold category that limits the diagnose that is accepted
+     *                      as valid.
+     * \param   options     Options for the validation process.
+     * \param   cb          Callback function that will be called after validation. \a isValid
+     *                      will be \c true if the \a email is valid, \a diagnoses will contain
+     *                      a list of all issues found by the check, ordered from the highest
+     *                      to the lowest.
+     * \since %Cutelyst 5.0.0
+     */
+    static void validateCb(
+        const QString &email,
+        Category threshold,
+        Options options,
+        std::function<
+            void(bool isValid, const QString &cleanedEmail, const QList<Diagnose> &diagnoses)> cb);
+
 protected:
     /**
      * Performs the validation on the input \a params and returns the result.
@@ -249,8 +288,24 @@ protected:
      * without any comments as QString. ValidatorReturnType::extra will contain a QList<Diagnose>
      * list containing all issues found in the checked email, ordered from the highest to the
      * lowest.
+     *
+     * \note Since %Cutelyst 5.0.0 this will not perform any DNS lookup, even if
+     * ValidatorEmail::CheckDNS has been set to the options. For DNS lookups use validateCb().
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the cleaned up email address
+     * without any comments as QString. ValidatorReturnType::extra will contain a QList<Diagnose>
+     * list containing all issues found in the checked email, ordered from the highest to the
+     * lowest.
+     *
+     * \since %Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error if validation failed.
