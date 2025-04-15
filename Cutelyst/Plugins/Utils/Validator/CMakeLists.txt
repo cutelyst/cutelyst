@@ -92,8 +92,6 @@ set(plugin_validator_SRC
     validatorurl_p.h
     validatorresult.cpp
     validatorresult_p.h
-    cnameresolver.cpp
-    cnameresolver_p.h
 )
 
 
