@@ -278,11 +278,11 @@ public:
 
     ValidatorResult await_resume() { return m_result; }
 
-    AwaitedValidatorResult(Context *c)
+    explicit AwaitedValidatorResult(Context *c)
         : m_receiver{c}
     {
         callback = [this](const ValidatorResult &result) {
-            m_result    = result;
+            m_result    = result; // cppcheck-suppress useInitializationList
             m_hasResult = true;
 
             if (m_handle) {
