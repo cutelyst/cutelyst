@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATOREMAIL_P_H
@@ -18,6 +18,10 @@ struct ValidatorEmailDiagnoseStruct {
     QString localpart;
     QString domain;
     QString literal;
+    QString cleanedEmail;
+
+    void sortReturnStatus();
+    bool isBelowThreshold(ValidatorEmail::Category threshold) const;
 };
 
 class ValidatorEmailPrivate : public ValidatorRulePrivate
@@ -71,7 +75,7 @@ public:
     // The maximum total length of a domain name or number is 255 octets.
     static constexpr qsizetype maxDomainLength{255};
 
-    static constexpr std::chrono::milliseconds dnsLookupTimeout{3100};
+    static constexpr std::chrono::milliseconds dnsLookupTimeout{10000};
 
     static const QRegularExpression ipv4Regex;
     static const QRegularExpression ipv6PartRegex;

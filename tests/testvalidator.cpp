@@ -611,11 +611,12 @@ public:
 
     // ***** Endpoint for ValidatorEmail valid emails completely valid *****
     C_ATTR(emailDnsWarnValid, :Local :AutoArgs)
-    void emailDnsWarnValid(Context *c)
+    CoroContext emailDnsWarnValid(Context *c)
     {
         Validator v({new ValidatorEmail(
             u"field"_s, ValidatorEmail::Valid, ValidatorEmail::CheckDNS, m_validatorMessages)});
-        checkResponse(c, v.validate(c, Validator::NoTrimming | Validator::BodyParamsOnly));
+        auto vr = co_await v.coValidate(c, Validator::NoTrimming | Validator::BodyParamsOnly);
+        checkResponse(c, vr);
     }
 
     // ***** Endpoint for ValidatorEmail RFC5321 conformant emails valid *****
@@ -1997,7 +1998,7 @@ void TestValidator::testValidatorEmail_data()
          u"cdburgess+!#$%&'*-/=?+_{}|~test@gmail.com"_s});
 
     const QList<QString> dnsWarnEmails({
-        u"test@example.com"_s, // no mx record
+        u"test@example.com"_s, // disabled mx
         // addresses are taken from
         // https://github.com/dominicsayers/isemail/blob/master/test/tests.xml
         u"test@e.com"_s,                                                               // no record
