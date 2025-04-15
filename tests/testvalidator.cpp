@@ -1198,13 +1198,11 @@ public:
     C_ATTR(asyncTest, :Local :AutoArgs)
     CoroContext asyncTest(Context *c)
     {
-        Validator v(
-            {new ValidatorAfter(
-                 u"after_field"_s, QDate::currentDate(), {}, nullptr, m_validatorMessages),
-             new ValidatorAccepted(u"accepted_field"_s, m_validatorMessages),
-             new ValidatorDomain(u"domain_field"_s,
-                                 ValidatorDomain::CheckARecord | ValidatorDomain::FollowCname,
-                                 m_validatorMessages)});
+        Validator v({new ValidatorAfter(
+                         u"after_field"_s, QDate::currentDate(), {}, nullptr, m_validatorMessages),
+                     new ValidatorAccepted(u"accepted_field"_s, m_validatorMessages),
+                     new ValidatorDomain(
+                         u"domain_field"_s, ValidatorDomain::CheckARecord, m_validatorMessages)});
         auto vr = co_await v.coValidate(c);
         checkResponse(c, vr);
     }

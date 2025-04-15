@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "cnameresolver_p.h"
 #include "validatordomain_p.h"
 
 #include <QDnsLookup>
@@ -185,79 +184,69 @@ void ValidatorDomain::validateCb(
         return;
     }
 
-    auto dns = new QDnsLookup{QDnsLookup::ANY, value};
-    QObject::connect(dns, &QDnsLookup::finished, [dns, options, cb, extracted] {
-        if (dns->error() == QDnsLookup::NoError) {
+    if (options.testFlag(CheckARecord)) {
 
-            if (!dns->canonicalNameRecords().empty()) {
-                if (!options.testFlag(FollowCname)) {
+        auto dns = new QDnsLookup{QDnsLookup::A, extracted};
+        QObject::connect(dns, &QDnsLookup::finished, [dns, options, cb, extracted] {
+            if (dns->error() == QDnsLookup::NoError) {
+                if (dns->hostAddressRecords().empty()) {
                     cb(MissingDNS, extracted);
                 } else {
-                    auto cnameDns = new CnameResolver;
-                    QObject::connect(
-                        cnameDns,
-                        &CnameResolver::finished,
-                        [cb, options, extracted](const QList<QDnsHostAddressRecord> &hostRecords,
-                                                 QDnsLookup::Error error) {
-                        if (error == QDnsLookup::NoError) {
-                            bool foundARecord    = !options.testFlag(CheckARecord);
-                            bool foundAaaaRecord = !options.testFlag(CheckAAAARecord);
-
-                            for (const auto &h : hostRecords) {
-                                if (!foundARecord) {
-                                    foundARecord =
-                                        h.value().protocol() == QAbstractSocket::IPv4Protocol;
-                                }
-                                if (!foundAaaaRecord) {
-                                    foundAaaaRecord =
-                                        h.value().protocol() == QAbstractSocket::IPv6Protocol;
-                                }
-                                if (foundARecord && foundAaaaRecord) {
-                                    cb(Valid, extracted);
-                                    return;
-                                }
-                            }
-
-                            cb(MissingDNS, extracted);
-                        } else if (error == QDnsLookup::OperationCancelledError) {
-                            cb(DNSTimeout, extracted);
-                        } else {
-                            cb(DNSError, extracted);
-                        }
-                    });
-                    const auto cname = dns->canonicalNameRecords().last();
-                    cnameDns->start(cname.value());
-                }
-            } else {
-                bool foundARecord    = !options.testFlag(CheckARecord);
-                bool foundAaaaRecord = !options.testFlag(CheckAAAARecord);
-
-                const auto addresses = dns->hostAddressRecords();
-                for (const auto &h : addresses) {
-                    if (!foundARecord) {
-                        foundARecord = h.value().protocol() == QAbstractSocket::IPv4Protocol;
-                    }
-                    if (!foundAaaaRecord) {
-                        foundAaaaRecord = h.value().protocol() == QAbstractSocket::IPv6Protocol;
-                    }
-                    if (foundARecord && foundAaaaRecord) {
+                    if (!options.testFlag(CheckAAAARecord)) {
                         cb(Valid, extracted);
-                        return;
+                    } else {
+
+                        auto dns2 = new QDnsLookup{QDnsLookup::AAAA, extracted};
+                        QObject::connect(
+                            dns2, &QDnsLookup::finished, [dns2, options, cb, extracted] {
+                            if (dns2->error() == QDnsLookup::NoError) {
+                                if (dns2->hostAddressRecords().empty()) {
+                                    cb(MissingDNS, extracted);
+                                } else {
+                                    cb(Valid, extracted);
+                                }
+                            } else if (dns2->error() == QDnsLookup::OperationCancelledError) {
+                                cb(DNSTimeout, extracted);
+                            } else {
+                                cb(DNSError, extracted);
+                            }
+                            dns2->deleteLater();
+                        });
+                        QTimer::singleShot(
+                            ValidatorDomainPrivate::dnsLookupTimeout, dns2, &QDnsLookup::abort);
+                        dns2->lookup();
                     }
                 }
-
-                cb(MissingDNS, extracted);
+            } else if (dns->error() == QDnsLookup::OperationCancelledError) {
+                cb(DNSTimeout, extracted);
+            } else {
+                cb(DNSError, extracted);
             }
+            dns->deleteLater();
+        });
+        QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, dns, &QDnsLookup::abort);
+        dns->lookup();
 
-        } else if (dns->error() == QDnsLookup::OperationCancelledError) {
-            cb(DNSTimeout, extracted);
-        } else {
-            cb(DNSError, extracted);
-        }
-        dns->deleteLater();
-    });
-    QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, dns, &QDnsLookup::abort);
-    dns->lookup();
+    } else if (options.testFlag(CheckAAAARecord)) {
+
+        auto dns2 = new QDnsLookup{QDnsLookup::AAAA, extracted};
+        QObject::connect(dns2, &QDnsLookup::finished, [dns2, options, cb, extracted] {
+            if (dns2->error() == QDnsLookup::NoError) {
+                if (dns2->hostAddressRecords().empty()) {
+                    cb(MissingDNS, extracted);
+                } else {
+                    cb(Valid, extracted);
+                }
+            } else if (dns2->error() == QDnsLookup::OperationCancelledError) {
+                cb(DNSTimeout, extracted);
+            } else {
+                cb(DNSError, extracted);
+            }
+            dns2->deleteLater();
+        });
+        QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, dns2, &QDnsLookup::abort);
+        dns2->lookup();
+    }
 }
 
 QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QString &label)

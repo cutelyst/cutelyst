@@ -18,10 +18,12 @@ class ValidatorDomainPrivate;
  * \brief Checks if the value of the input \a field contains a FQDN according to RFC 1035.
  *
  * The \a field under validation must contain a fully qualified domain name according to <a
- * href="https://tools.ietf.org/html/rfc1035">RFC 1035</a>. If \a checkDNS is set to \c false, there
- * will be no check if the domain is known to the domain name system, the validator will only check
- * conformance to RFC 1035. Internationalized domain names will first be converted into puny code
- * according to IDNA.
+ * href="https://tools.ietf.org/html/rfc1035">RFC 1035</a>. Internationalized domain names will
+ * first be converted into puny code according to IDNA. To also check if there are A and/or AAAA
+ * records published for the domain, use the CheckARecord, CheckAAAARecord or CheckDNS options,
+ * otherwise there will be no check if the domain is known to the domain name system and the
+ * validator will only check the conformance to RFC 1035. DNS lookups are only supported by the
+ * validateCb() methods.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link
  * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
@@ -72,9 +74,8 @@ public:
         NoOption        = 0, /**< No special option selected. */
         CheckARecord    = 1, /**< Check if there is an A record for the domain. */
         CheckAAAARecord = 2, /**< Check if there is an AAAA record for the domain. */
-        CheckDNS = CheckARecord | CheckAAAARecord, /**< Check if there are bot, A and AAAA records
+        CheckDNS = CheckARecord | CheckAAAARecord /**< Check if there are bot, A and AAAA records
                                                       for the domain. */
-        FollowCname = 4 /**< Follow CNAME records when checking for A and/or AAAA records. */
     };
     Q_DECLARE_FLAGS(Options, Option)
 
@@ -101,9 +102,8 @@ public:
     /**
      * \ingroup plugins-utils-validator-rules
      * \brief Returns \c true if \a value is a valid fully qualified domain name.
-     * \note This will not perform any DNS lookup. For DNS lookups, use
+     * \note Since %Cutelyst 5.0.0, this will not perform any DNS lookup. For DNS lookups, use
      * ValidatorDomain::validateCb()
-     * \since Cutelyst 5.0.0
      * \param value             The value to validate.
      * \param diagnose          Optional pointer to a variable that will be filled with the
      *                          Diagnose that describes the error if validation fails.
