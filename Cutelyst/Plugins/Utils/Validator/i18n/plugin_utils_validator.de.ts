@@ -907,8 +907,9 @@ than they are displayed.</oldsource>
         <translation>Adresse ist gültig.</translation>
     </message>
     <message id="cutelyst-valemail-cat-dnswarn">
-        <source>Address is valid but a DNS check was not successful.</source>
-        <translation>Die Adresse ist gültig aber eine DNS‐Prüfung war nicht erfolgreich.</translation>
+        <source>Address is valid but there is a warning about the DNS.</source>
+        <oldsource>Address is valid but a DNS check was not successful.</oldsource>
+        <translation>Die Adresse ist gültig aber es gab eine Warnung bei der DNS-Abfrage.</translation>
     </message>
     <message id="cutelyst-valemail-cat-rfc5321">
         <source>Address is valid for SMTP but has unusual elements.</source>
@@ -935,8 +936,8 @@ than they are displayed.</oldsource>
         <translation>Die Adresse im Feld „%1“ ist gültig.</translation>
     </message>
     <message id="cutelyst-valemail-cat-dnswarn-label">
-        <source>The address in the “%1” field is valid but a DNS check was not successful.</source>
-        <translation>Die Adresse im Feld „%1“ ist gültig aber eine DNS-Prüfung war nicht erfolgreich.</translation>
+        <source>The address in the “%1” field is valid but there are warnings about the DNS.</source>
+        <translation>Die Adresse im Feld „%1“ ist gültig aber es gab eine Warnung bei der DNS-Abfrage.</translation>
     </message>
     <message id="cutelyst-valemail-cat-rfc5321-label">
         <source>The address in the “%1” field is valid for SMTP but has unusual elements.</source>
@@ -1471,6 +1472,38 @@ than they are displayed.</oldsource>
     <message id="cutelyst-valdomain-diag-dnserror-label">
         <source>The DNS lookup for the domain name in the “%1” field failed becaus of an error in the DNS resolution.</source>
         <translation>Die DNS-Abfrage für die Domäne im Feld „%1“ konnte auf Grund eines Fehlers in der Namensauflösung nicht durchgeführt werden.</translation>
+    </message>
+    <message id="cutelyst-valemail-diag-mxdisabled">
+        <source>MX for this address’ domain is explicitely disabled.</source>
+        <translation>Der MX ist für die Domäne dieser Adresse explizit deaktiviert.</translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnstimeout">
+        <source>Timeout while performing DNS check for address’ domain.</source>
+        <translation>Zeitübschreitung bei der DNS-Abfrage.</translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnserror">
+        <source>Error while performing DNS check for address’ domain.</source>
+        <translation>Fehler bei der DNS-Abfrage für die Domäne dieser Adresse.</translation>
+    </message>
+    <message id="cutelyst-valemail-cat-dnsfailed">
+        <source>Address is valid but a DNS check was not successful.</source>
+        <translation>Die Adresse ist gültig aber die DNS-Abfrage ist fehlgeschlagen.</translation>
+    </message>
+    <message id="cutelyst-valemail-cat-dnsfailed-label">
+        <source>The address in the “%1” field is valid but a DNS check was not successful.</source>
+        <translation>Die Adresse im Feld „%1“ ist gültig, aber die DNS-Prüfung ergab Fehler.</translation>
+    </message>
+    <message id="cutelyst-valemail-diag-mxdisabled-label">
+        <source>MX for the address’ domain in the “%1” field is explicitely disabled.</source>
+        <translation>Der MX für die Domäne der Adresse im Feld „%1“ ist explizit deaktiviert.</translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnstimeout-label">
+        <source>Timeout while performing DNS check for address’ domain in the “%1” field.</source>
+        <translation>Zeitüberschreitung bei der DNS-Abfrage für die Domäne der Adresse im Feld „%1“.</translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnserror-label">
+        <source>Error while performing DNS check for address’ domain in the “%1” field.</source>
+        <translation>Fehler bei der DNS-Abrage für die Domäne der Adresse im Feld „%1“.</translation>
     </message>
 </context>
 </TS>

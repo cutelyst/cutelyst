@@ -1461,17 +1461,17 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             return c->qtTrId("cutelyst-valemail-diag-nomx-label").arg(label);
         case DnsMxDisabled:
             //% "MX for the address’ domain in the “%1” field is explicitely disabled."
-            return c->qtTrId("cutelyst-valemail-diag-mxdisabled").arg(label);
+            return c->qtTrId("cutelyst-valemail-diag-mxdisabled-label").arg(label);
         case DnsNoRecordFound:
             //% "Could neither find an MX record nor an A record for the address’ "
             //% "domain in the “%1” field."
             return c->qtTrId("cutelyst-valemail-diag-noarec-label").arg(label);
         case DnsErrorTimeout:
             //% "Timeout while performing DNS check for address’ domain in the “%1” field."
-            return c->qtTrId("cutelyst-valemail-diag-dnstimeout").arg(label);
+            return c->qtTrId("cutelyst-valemail-diag-dnstimeout-label").arg(label);
         case DnsError:
             //% "Error while performing DNS check for address’ domain in the “%1” field."
-            return c->qtTrId("cutelyst-valemail-diag-dnserror").arg(label);
+            return c->qtTrId("cutelyst-valemail-diag-dnserror-label").arg(label);
         case RFC5321TLD:
             //% "The address in the “%1” field is valid but at a Top Level Domain."
             return c->qtTrId("cutelyst-valemail-diag-rfc5321tld-label").arg(label);
@@ -1706,7 +1706,7 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
             //% "The address in the “%1” field is valid."
             return c->qtTrId("cutelyst-valemail-cat-valid-label").arg(label);
         case DNSWarn:
-            //%" The address in the “%1” field is valid but there are warnings about the DNS."
+            //% "The address in the “%1” field is valid but there are warnings about the DNS."
             return c->qtTrId("cutelyst-valemail-cat-dnswarn-label").arg(label);
         case DNSFailed:
             //% "The address in the “%1” field is valid but a DNS check was not successful."

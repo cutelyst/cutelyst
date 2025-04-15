@@ -907,7 +907,8 @@ than they are displayed.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelyst-valemail-cat-dnswarn">
-        <source>Address is valid but a DNS check was not successful.</source>
+        <source>Address is valid but there is a warning about the DNS.</source>
+        <oldsource>Address is valid but a DNS check was not successful.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelyst-valemail-cat-rfc5321">
@@ -935,7 +936,7 @@ than they are displayed.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelyst-valemail-cat-dnswarn-label">
-        <source>The address in the “%1” field is valid but a DNS check was not successful.</source>
+        <source>The address in the “%1” field is valid but there are warnings about the DNS.</source>
         <translation type="unfinished"></translation>
     </message>
     <message id="cutelyst-valemail-cat-rfc5321-label">
@@ -1470,6 +1471,38 @@ than they are displayed.</oldsource>
     </message>
     <message id="cutelyst-valdomain-diag-dnserror-label">
         <source>The DNS lookup for the domain name in the “%1” field failed becaus of an error in the DNS resolution.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-diag-mxdisabled">
+        <source>MX for this address’ domain is explicitely disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnstimeout">
+        <source>Timeout while performing DNS check for address’ domain.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnserror">
+        <source>Error while performing DNS check for address’ domain.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-cat-dnsfailed">
+        <source>Address is valid but a DNS check was not successful.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-cat-dnsfailed-label">
+        <source>The address in the “%1” field is valid but a DNS check was not successful.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-diag-mxdisabled-label">
+        <source>MX for the address’ domain in the “%1” field is explicitely disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnstimeout-label">
+        <source>Timeout while performing DNS check for address’ domain in the “%1” field.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="cutelyst-valemail-diag-dnserror-label">
+        <source>Error while performing DNS check for address’ domain in the “%1” field.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
