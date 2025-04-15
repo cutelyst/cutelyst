@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef CUTELYSTVALIDATORTIME_H
@@ -18,9 +18,9 @@ class ValidatorTimePrivate;
  *
  * This validator checks if the input \a field can be parsed into a QTime, it will check the parsing
  * ability and will convert the input data into a QTime. If a custom \a format is given, the
- * validator will at first try to parse the date according to that \a format. If that fails or if
- * there is no custom \a inputFormat set, it will try to parse the date based on standard formats in
- * the following order: \link Context::locale() Context locale's \endlink \link QLocale::toDate()
+ * validator will at first try to parse the time according to that \a format. If that fails or if
+ * there is no custom \a inputFormat set, it will try to parse the time based on standard formats in
+ * the following order: \link Context::locale() Context locale’s \endlink \link QLocale::toDate()
  * toDate() \endlink with QLocale::ShortFormat and QLocale::LongFormat, Qt::ISODate,
  * Qt::RFC2822Date, Qt::TextDate
  *
@@ -68,6 +68,17 @@ protected:
      * converted into a QTime.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /**
+     * Performs the validation on the input \a params and calls the \a cb with the
+     * ValidatorReturnType as argument.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramater value
+     * converted into a QTime.
+     *
+     * \since Cutelyst 5.0.0
+     */
+    void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
 
     /**
      * Returns a generic error if validation failed.

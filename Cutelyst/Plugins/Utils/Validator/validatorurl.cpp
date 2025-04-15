@@ -1,5 +1,5 @@
 ﻿/*
- * SPDX-FileCopyrightText: (C) 2017-2023 Matthias Fehring <mf@huessenbergnetz.de>
+ * SPDX-FileCopyrightText: (C) 2017-2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -32,12 +32,7 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
 
         bool valid = true;
 
-        QUrl::ParsingMode parsingMode = QUrl::TolerantMode;
-        if (d->constraints.testFlag(StrictParsing)) {
-            parsingMode = QUrl::StrictMode;
-        }
-
-        QUrl url(v, parsingMode);
+        QUrl url(v, d->constraints.testFlag(StrictParsing) ? QUrl::StrictMode : QUrl::TolerantMode);
         if (!url.isValid() || url.isEmpty()) {
             valid = false;
         }
@@ -60,20 +55,8 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
                     ? QStringList({QStringLiteral("http"), QStringLiteral("https")})
                     : d->schemes;
 
-            //            if (d->constraints.testFlag(WebsiteOnly)) {
-            //                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive))
-            //                {
-            //                    schemeList.append(QStringLiteral("http"));
-            //                }
-            //                if (!schemeList.contains(QStringLiteral("https"),
-            //                Qt::CaseInsensitive)) {
-            //                    schemeList.append(QStringLiteral("https"));
-            //                }
-            //            }
-
             if (!schemeList.empty()) {
 
-                //                const QStringList sc = schemeList;
                 bool foundScheme = false;
                 for (const QString &s : schemeList) {
                     const QString sl = s.toLower();
@@ -83,9 +66,7 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
                     }
                 }
 
-                if (!foundScheme) {
-                    valid = false;
-                }
+                valid = foundScheme;
             }
         }
 
@@ -100,6 +81,11 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
     }
 
     return result;
+}
+
+void ValidatorUrl::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+{
+    cb(validate(c, params));
 }
 
 QString ValidatorUrl::genericValidationError(Context *c, const QVariant &errorData) const

@@ -212,6 +212,10 @@ class ValidatorRulePrivate;
  * \link ValidatorReturnType::errorMessages errorMessages\endlink is the most important one. If
  * that returns \c true for QString::isNull(), the validation has succeeded.
  *
+ * For validators that can be used in coroutine contexts, you also have to implement validateCb().
+ * The callback function there takes a ValidatorReturnType struct as returned by validate(). So
+ * for that the rules are the same as in the previous paragraph.
+ *
  * So lets implement a custom validator that can check for a specific value to be set. (Maybe not
  * a realistic example, but it should be enough for demonstration.)
  *
@@ -235,13 +239,18 @@ class ValidatorRulePrivate;
  *
  *     ~MyValidator();
  *
+ * protected:
  *     // this will contain the validation logic and should return
  *     // a ValidatorResult with a null errorMessage string on success
  *     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
  *
- * protected:
+ *     // this will contain the validaion logic for asynchronous validation
+ *     // the callback cb will take the ValidatorResult with a null errorMessage string on success
+ *     void validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const override;
+ *
  *     // we want to have a generic error message
- *     QString validationError(Context *c) const override;
+ *     QString genericValidationError(Context *c,
+ *                                    const QVariant &errorData = {}) const override;
  *
  * private:
  *     // storing our comparison value
@@ -292,6 +301,36 @@ class ValidatorRulePrivate;
  *     return result;
  * }
  *
+ * // This will be used for async validation. For the ValidatorReturnType that has to be given
+ * // to the callback function cb, keep the notes from the synchronous implementation from above
+ * // in mind.
+ * void MyValidator::validateCb(Context *c, const ParamsMultiMap &params, ValidatorRtFn cb) const
+ * {
+ *     // Note that for demonstration purposes we use a more complex approach.
+ *     // For simple validators like this you normally can simply do the following:
+ *     // cb(validate(c, params));
+ *
+ *     // lets get the field value
+ *     const QString v = value(params);
+ *
+ *     // if our comparison value is empty, the validation should fail and we want
+ *     // to return an error message according to this situation
+ *     if (m_compareValue.isEmpty()) {
+ *         cb({.errorMessage = validationDataError(c)});
+ *     } else {
+ *
+ *         // if the value is empty or the field is missing, the validation should succeed,
+ *         // because we already have the required validators for that purpose
+ *         // than we will compare our values and if they are not the same, we
+ *         // will return an error string
+ *         if (!v.isEmpty() && (m_compareValue != v)) {
+ *             cb({.errorMessage = validationError(c)});
+ *         } else {
+ *             cb({.errorMessage = {}, .value = v})
+ *         }
+ *     }
+ * }
+ *
  *
  * QString MyValidator::genericValidationError(Context *c) const
  * {
@@ -309,7 +348,7 @@ class ValidatorRulePrivate;
  * }
  * \endcode
  *
- * That's it. Now you can use your own validator rule in the main Validator.
+ * That’s it. Now you can use your own validator rule in the main Validator.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRule
 {
