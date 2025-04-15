@@ -87,7 +87,7 @@ class ValidatorRule;
  *
  * In %Cutelyst 1.x \link plugins-utils-validator-rules validator rules\endlink were usable
  * standalone without being part of a %Validator object - even though they were never meant to be.
- * This changed in %Cutelyst 2.0.0 so that only the constructor and destructor of a ValiadtorRule
+ * This changed in %Cutelyst 2.0.0 so that only the constructor and destructor of a ValidatorRule
  * are public anymore. However they now can be used more flexible by pointing them to other
  * input fields or stash keys to get validation data like compare values. Some validator rules like
  * the ValidatorEmail export their validation logic as static function so that it can be used
@@ -97,8 +97,8 @@ class ValidatorRule;
  * of the \link ValidatorRequired required validators\endlink if the input field is required.
  * This approach is more flexible than having a simple switch in any validator. There are different
  * validators to require a field that make it possible to have more complex requirements. You can
- * find information about the behavior on empty input fields in the documenation of every validator
- * rule. You can find some more general information at ValidatorRule and for sure in the
+ * find information about the behavior on empty input fields in the documentation of every
+ * validator rule. You can find some more general information at ValidatorRule and for sure in the
  * documentation for every single \link plugins-utils-validator-rules validator rule\endlink.
  * Information about writing your own validators that work with this concept can be found at
  * ValidatorRule.
@@ -229,6 +229,9 @@ class ValidatorRule;
  *
  * <h3>Automatically filling the stash</h3>
  *
+ * \note This is deprecated since %Cutelyst 5.0.0 and not supported by validateCb(). Use the
+ * returned ValidatorResult to put the data to the stash.
+ *
  * If you set the \link Validator::FillStashOnError FillStashOnError\endlink flag on the validate()
  * function, the %Validator will automatically fill the \link Context::stash() stash \endlink of
  * the Context with error information and field values that are not sensible (field names that do
@@ -264,7 +267,7 @@ class ValidatorRule;
  * used to prefill the form fields for the next attempt and can give the user some hints what was
  * wrong.
  *
- * <h3>Usage with Cutelee</h3>
+ * <h4>Usage with Cutelee</h4>
  *
  * The following example shows possible usage of the error data with
  * \link CuteleeView Cutelee \endlink and the Bootstrap3 framework.
