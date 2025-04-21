@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2020-2023 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2024-2025 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-FileCopyrightText: (C) 2025 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -21,7 +21,7 @@ namespace Cutelyst {
  * This is a VOID coroutine context aimed at making coroutine
  * usage in Cutelyst safe.
  *
- * When used in a Cutelyst::Controller subclass method
+ * When used in a QObject subclass method
  * the call `co_yield context;` is done automatically.
  * Otherwise when entering the coroutine body one must call `co_yield context;`
  * This replaces the need for ASync if only coroutines are used.
@@ -29,8 +29,7 @@ namespace Cutelyst {
  * tracking it.
  *
  * In the case of client disconnect Cutelyst::Context destroy() signal
- * is emitted and destroys this coroutine, making sure no use after
- * free is done.
+ * is emitted and destroys this coroutine, making sure no use after free happens.
  *
  */
 class CoroContext
@@ -89,9 +88,9 @@ public:
         promise_type() = default; // required for lambdas
 
         template <typename... ArgTypes>
-        promise_type(Cutelyst::Controller &controller, Cutelyst::Context *context, ArgTypes &&...)
+        promise_type(QObject &obj, Cutelyst::Context *context, ArgTypes &&...)
         {
-            Q_UNUSED(controller);
+            Q_UNUSED(obj);
             trackContext(context);
         }
 

@@ -53,7 +53,7 @@ cmake_dependent_option(BUILD_DOCS_QUIET "Tell doxygen to be quiet while building
 cmake_dependent_option(BUILD_DOCS_AWESOME "Use Doxygen Awesome theme to butify the documentation." ON "BUILD_DOCS" OFF)
 
 if (BUILD_TESTS)
-  enable_testing()
+    enable_testing()
 endif()
 
 if (CUTELYST_STATIC_PLUGINS OR NOT BUILD_SHARED_LIBS)
