@@ -3,8 +3,7 @@ project(cutelyst_tests
     VERSION 4
 )
 
-find_package(QT NAMES Qt6 COMPONENTS Core Network Sql Test REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 6.4.0 COMPONENTS Core Network Sql Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network Sql Test REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 

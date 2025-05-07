@@ -102,7 +102,7 @@ public:
             // body ends and Cutelyst::Engine deletes the Context*
             // resulting in destroyed signal being emitted and
             // and coroutine dtor already on the stack to be called
-            ASync a(context);
+            ASync a = context->response()->isFinalized() ? ASync{} : ASync{context};
 
             auto conn = QObject::connect(context, &QObject::destroyed, [this, a] {
                 clean();

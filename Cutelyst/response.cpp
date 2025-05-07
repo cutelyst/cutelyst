@@ -295,6 +295,12 @@ Headers &Response::headers() noexcept
     return d->headers;
 }
 
+bool Response::isFinalized() const noexcept
+{
+    Q_D(const Response);
+    return d->engineRequest->status & EngineRequest::Finalized;
+}
+
 bool Response::isFinalizedHeaders() const noexcept
 {
     Q_D(const Response);

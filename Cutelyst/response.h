@@ -334,6 +334,12 @@ public:
     Headers &headers() noexcept;
 
     /**
+     * Returns \c true if the request is finalized, this will be true for active websocket
+     * connections because they are HTTP finalized (ie can't send an HTTP body anymore).
+     */
+    bool isFinalized() const noexcept;
+
+    /**
      * Returns \c true if Headers are finalized (sent to the client).
      */
     bool isFinalizedHeaders() const noexcept;

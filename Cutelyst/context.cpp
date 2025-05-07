@@ -366,12 +366,14 @@ void Context::attachAsync()
         return;
     }
 
-    if (Q_UNLIKELY(d->engineRequest->status & EngineRequest::Finalized)) {
+    if (Q_UNLIKELY((d->engineRequest->status & EngineRequest::Finalized) &&
+                   !(d->engineRequest->status & EngineRequest::Async))) {
         qCWarning(CUTELYST_ASYNC) << "Trying to async attach to a finalized request! Skipping...";
         return;
     }
 
-    if (d->engineRequest->status & EngineRequest::Async) {
+    if ((d->engineRequest->status & EngineRequest::Async) &&
+        !(d->engineRequest->status & EngineRequest::Finalized)) {
         while (!d->pendingAsync.isEmpty()) {
             Component *action = d->pendingAsync.dequeue();
             const bool ret    = execute(action);
