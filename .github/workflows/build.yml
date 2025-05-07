@@ -24,8 +24,8 @@ jobs:
           - Debug
           - Release
         config:
-          - qt_version: "6.4.2"
-          - qt_version: "6.7.3"
+          - qt_version: 6.4.2
+          - qt_version: 6.9.0
 
     steps:
       - name: Install dependencies on Ubuntu
