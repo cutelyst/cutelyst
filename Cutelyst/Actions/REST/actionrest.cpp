@@ -156,7 +156,7 @@ QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller
     }
 
     if (methods.contains(u"GET")) {
-        methods.append(QStringLiteral("HEAD"));
+        methods.append(u"HEAD"_s);
     }
 
     methods.removeDuplicates();

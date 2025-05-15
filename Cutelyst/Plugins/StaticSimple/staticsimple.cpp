@@ -59,15 +59,14 @@ bool StaticSimple::setup(Cutelyst::Application *app)
     return true;
 }
 
-void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
+void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod) const
 {
-    Q_D(StaticSimple);
+    Q_D(const StaticSimple);
 
     if (*skipMethod) {
         return;
     }
 
-    // TODO mid(1) quick fix for path not having leading slash
     const QString path          = c->req()->path().mid(1);
     const QRegularExpression re = d->re; // Thread-safe
 
@@ -95,7 +94,7 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
     }
 }
 
-bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
+bool StaticSimple::locateStaticFile(Context *c, const QString &relPath) const
 {
     Q_D(const StaticSimple);
 

@@ -126,8 +126,8 @@ protected:
     StaticSimplePrivate *d_ptr;
 
 private:
-    void beforePrepareAction(Context *c, bool *skipMethod);
-    bool locateStaticFile(Context *c, const QString &relPath);
+    void beforePrepareAction(Context *c, bool *skipMethod) const;
+    bool locateStaticFile(Context *c, const QString &relPath) const;
 };
 
 } // namespace Cutelyst

@@ -9,6 +9,7 @@
 #include <Cutelyst/Dispatcher>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 
+using namespace Qt::StringLiterals;
 using namespace Cutelyst;
 
 /**
@@ -181,8 +182,7 @@ bool RoleACL::canVisit(Context *c) const
 {
     Q_D(const RoleACL);
 
-    const QStringList user_has =
-        Authentication::user(c).value(QStringLiteral("roles")).toStringList();
+    const QStringList user_has = Authentication::user(c).value(u"roles"_s).toStringList();
 
     const QStringList required = d->requiresRole;
     const QStringList allowed  = d->allowedRole;

@@ -130,9 +130,9 @@ public:
      *
      * The path requested by the user agent '/index', MUST have a leading slash
      */
-    void setPath(char *rawPath, const int len);
+    void setPath(char *rawPath, int len);
 
-    inline void setPath(QByteArray &path)
+    void setPath(QByteArray &path)
     {
         Q_ASSERT_X(path.startsWith('/'), "leading slash", "Path must always start with /");
         setPath(path.data(), path.size());
