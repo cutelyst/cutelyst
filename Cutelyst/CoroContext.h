@@ -94,6 +94,12 @@ public:
             trackContext(context);
         }
 
+        template <typename... ArgTypes>
+        explicit promise_type(Cutelyst::Context *context, ArgTypes &&...)
+        {
+            trackContext(context);
+        }
+
         void trackContext(Context *context)
         {
             // Automatically delay replies
