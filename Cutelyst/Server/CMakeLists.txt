@@ -126,12 +126,6 @@ target_link_libraries(cutelystd
     Cutelyst::Server
 )
 
-if (TARGET Cutelyst::EventLoopEPoll)
-target_link_libraries(cutelystd
-    PRIVATE Cutelyst::EventLoopEPoll
-)
-endif ()
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQtServer.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/${target_name}.pc
     @ONLY
