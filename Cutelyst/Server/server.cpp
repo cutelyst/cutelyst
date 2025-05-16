@@ -879,7 +879,7 @@ bool ServerPrivate::listenTcpSockets()
     }
 
     // HTTP
-    for (const auto &socket : qAsConst(httpSockets)) {
+    for (const auto &socket : std::as_const(httpSockets)) {
         if (!listenTcp(socket, getHttpProto(), false)) {
             return false;
         }
