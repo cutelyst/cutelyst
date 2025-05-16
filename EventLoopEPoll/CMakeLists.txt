@@ -11,7 +11,7 @@ set(eventloop_epoll_HEADERS
 )
 
 set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
-add_library(${target_name} OBJECT
+add_library(${target_name}
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )
@@ -30,3 +30,5 @@ target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Event
 if(TARGET epoll-shim::epoll-shim) # FreeBSD only
     target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll epoll-shim::epoll-shim)
 endif()
+
+install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})

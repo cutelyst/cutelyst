@@ -18,6 +18,11 @@ target_link_libraries(cutelyst-skell
     PRIVATE Cutelyst::Core
     PRIVATE Cutelyst::Server
 )
+if (LINUX)
+target_link_libraries(cutelyst-skell
+    PRIVATE Cutelyst::EventLoopEPoll
+)
+endif ()
 
 set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR})
 install(TARGETS cutelyst-skell DESTINATION ${CMAKE_INSTALL_BINDIR})
