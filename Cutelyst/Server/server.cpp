@@ -886,14 +886,14 @@ bool ServerPrivate::listenTcpSockets()
     }
 
     // HTTPS
-    for (const auto &socket : qAsConst(httpsSockets)) {
+    for (const auto &socket : std::as_const(httpsSockets)) {
         if (!listenTcp(socket, getHttpProto(), true)) {
             return false;
         }
     }
 
     // HTTP/2
-    for (const auto &socket : qAsConst(http2Sockets)) {
+    for (const auto &socket : std::as_const(http2Sockets)) {
         if (!listenTcp(socket, getHttp2Proto(), false)) {
             return false;
         }
