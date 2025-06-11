@@ -102,22 +102,24 @@ public:
 
         void trackContext(Context *context)
         {
-            // Automatically delay replies
-            // async cannot be used in coroutine body
-            // else we get a double free when the coroutine
-            // body ends and Cutelyst::Engine deletes the Context*
-            // resulting in destroyed signal being emitted and
-            // and coroutine dtor already on the stack to be called
-            ASync a = context->response()->isFinalized() ? ASync{} : ASync{context};
+            if (context) {
+                // Automatically delay replies
+                // async cannot be used in coroutine body
+                // else we get a double free when the coroutine
+                // body ends and Cutelyst::Engine deletes the Context*
+                // resulting in destroyed signal being emitted and
+                // and coroutine dtor already on the stack to be called
+                ASync a = context->response()->isFinalized() ? ASync{} : ASync{context};
 
-            auto conn = QObject::connect(context, &QObject::destroyed, [this, a] {
-                clean();
+                auto conn = QObject::connect(context, &QObject::destroyed, [this, a] {
+                    clean();
 
-                if (handle) {
-                    handle.destroy();
-                }
-            });
-            connections.emplace_back(std::move(conn));
+                    if (handle) {
+                        handle.destroy();
+                    }
+                });
+                connections.emplace_back(std::move(conn));
+            }
         }
 
         ~promise_type() { clean(); }
