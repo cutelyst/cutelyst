@@ -88,10 +88,10 @@ target_link_libraries(${target_name}
 )
 
 if (TARGET Cutelyst::EventLoopEPoll)
-target_link_libraries(${target_name}
-    PRIVATE Cutelyst::EventLoopEPoll
-)
-target_compile_definitions(${target_name} PRIVATE HAS_EventLoopEPoll)
+    target_link_libraries(${target_name}
+        PRIVATE Cutelyst::EventLoopEPoll
+    )
+    target_compile_definitions(${target_name} PRIVATE HAS_EventLoopEPoll)
 endif ()
 
 if(ENABLE_LTO)
@@ -110,6 +110,7 @@ add_executable(cutelystd main.cpp)
 
 if (USE_MIMALLOC)
     target_link_libraries(cutelystd PRIVATE mimalloc-static)
+    target_compile_definitions(cutelystd PRIVATE USE_MIMALLOC)
 elseif (JEMALLOC_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
     target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
