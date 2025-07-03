@@ -101,17 +101,6 @@ ValidatorResult
         }
     }
 
-    if (!result && flags.testFlag(FillStashOnError)) {
-        c->setStash(u"validationErrorStrings"_s, result.errorStrings());
-        c->setStash(u"validationErrors"_s, QVariant::fromValue(result.errors()));
-
-        for (const auto &[key, value] : params.asKeyValueRange()) {
-            if (!key.contains(u"password"_s, Qt::CaseInsensitive)) {
-                c->setStash(key, value);
-            }
-        }
-    }
-
     return result;
 }
 
@@ -192,7 +181,6 @@ void AsyncValidator::start(const std::vector<ValidatorRule *> &validators,
 
     m_stopOnFirstError = flags.testFlag(Validator::StopOnFirstError);
     m_noTrimming       = flags.testFlag(Validator::NoTrimming);
-    m_fillStashOnError = flags.testFlag(Validator::FillStashOnError);
 
     QMetaObject::invokeMethod(this, "doValidation", Qt::DirectConnection);
 }
