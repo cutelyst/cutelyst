@@ -75,7 +75,6 @@ private:
     bool m_cancelValidation{false};
     bool m_stopOnFirstError{false};
     bool m_noTrimming{false};
-    bool m_fillStashOnError{false};
 };
 
 } // namespace Cutelyst

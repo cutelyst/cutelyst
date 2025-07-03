@@ -314,16 +314,14 @@ public:
     enum ValidatorFlag {
         NoSpecialBehavior = 0, /**< No special behavior, the default. */
         StopOnFirstError =
-            1, /**< Will stop the validation process on the first failed validation. */
-        FillStashOnError [[deprecated]] = 2, /**< Will fill the context's stash with error
-                                                information. Deprecated since Cutelyst 5.0.0 */
-        NoTrimming = 4, /**< Will set \link ValidatorRule::trimBefore() trimBefore()\endlink to \c
+            1,          /**< Will stop the validation process on the first failed validation. */
+        NoTrimming = 2, /**< Will set \link ValidatorRule::trimBefore() trimBefore()\endlink to \c
                            false on every validator. (default behavior is \c true) */
         BodyParamsOnly =
-            8, /**< Will only check for parameters that are send in the \link
+            4, /**< Will only check for parameters that are send in the \link
                   Request::bodyParameters() request body\endlink. (since Cutelyst 2.0.0) */
         QueryParamsOnly =
-            16 /**< Will only check for parameters that are part of the \link
+            8 /**< Will only check for parameters that are part of the \link
                   Request::queryParameters() request URL query\endlink. (since Cutelyst 2.0.0) */
     };
     Q_DECLARE_FLAGS(ValidatorFlags, ValidatorFlag)
