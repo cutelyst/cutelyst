@@ -12,7 +12,7 @@ http://www.techempower.com/benchmarks/
 ## FEATURES:
 
  * Cross-platform
- * Stable API/ABI - v3 tagged from v3.x.x, v2 tags, v1 on v1.x.x branch (unmaintained)
+ * Stable API/ABI - v5 tags, older vX.X.X branches are unmaintained
  * Pluggable Engines
    * Cutelyst::Server - A cross-platform and fast server engine
      * HTTP/1.1 - Pipelining and Keep-Alive
@@ -40,7 +40,8 @@ http://www.techempower.com/benchmarks/
    * Async SQL with [ASql](https://github.com/cutelyst/asql)
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
- * C++20
+ * C++23 (g++-14 or newer)
+  - coroutines support with CoroContext which replaces the need for ASync RAII class.
  * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
  * Unit tested
@@ -56,8 +57,8 @@ Get started with our [Tutorial](https://github.com/cutelyst/cutelyst/wiki/Tutori
 
 ## REQUIREMENTS
 
- * CMake - for the build system (>= 3.16)
- * Qt - the core library of this framework (>= 6.2)
+ * CMake - for the build system (>= 3.28)
+ * Qt - the core library of this framework (>= 6.4)
 
 ## LICENSE
 
