@@ -20,9 +20,10 @@ jobs:
             cmake_arg: '-DCMAKE_CXX_CLANG_TIDY=clang-tidy'
             qt_version: 6.9.0
 
-          - name: clazy
-            cmake_arg: '-DCMAKE_CXX_COMPILER=clazy'
-            qt_version: 6.9.0
+          # clazy from ubuntu 24 is based on clang 15 which is too old to build our code
+          # - name: clazy
+          #   cmake_arg: '-DCMAKE_CXX_COMPILER=clazy'
+          #   qt_version: 6.9.0
 
     steps:
       - name: Install dependencies on Ubuntu
