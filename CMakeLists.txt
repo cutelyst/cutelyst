@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.28)
 
 project(cutelyst
     VERSION 5.0.0
@@ -30,12 +30,12 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (WIN32)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-  if(MSVC)
-    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
-  endif()
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    if(MSVC)
+        add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+        add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
+    endif()
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -82,8 +82,8 @@ option(PLUGIN_VALIDATOR_PWQUALITY "Enables ValidatorPwQuality that requires libp
 # NONE
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX
-    "/usr" CACHE PATH "cutelyst default install prefix" FORCE)
+    set(CMAKE_INSTALL_PREFIX
+        "/usr" CACHE PATH "cutelyst default install prefix" FORCE)
 endif()
 
 if (ENABLE_LTO)
@@ -110,32 +110,32 @@ message(STATUS "CUTELYST_I18N_DIR: ${CUTELYST_I18N_FULL_DIR}")
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 macro(set_compiler_flags targetName)
-  if(ENABLE_MAINTAINER_CFLAGS)
-    target_compile_definitions(${targetName} PRIVATE QT_DEPRECATED_WARNINGS)
+    if(ENABLE_MAINTAINER_CFLAGS)
+        target_compile_definitions(${targetName} PRIVATE QT_DEPRECATED_WARNINGS)
 
-    if(NOT MSVC)
-      target_compile_options(${targetName} PRIVATE
-        -Wall
-        -Wextra
-        -Wcast-align
-        -Wno-uninitialized
-        -Wempty-body
-        -Wformat-security
-        -Wformat
-        -Winit-self
-        -Wunused-variable
-      )
+        if(NOT MSVC)
+            target_compile_options(${targetName} PRIVATE
+                -Wall
+                -Wextra
+                -Wcast-align
+                -Wno-uninitialized
+                -Wempty-body
+                -Wformat-security
+                -Wformat
+                -Winit-self
+                -Wunused-variable
+            )
+        endif()
+
+        if(APPLE)
+            target_compile_options(${targetName} PRIVATE -Wweak-vtables)
+        endif()
     endif()
 
-    if(APPLE)
-      target_compile_options(${targetName} PRIVATE -Wweak-vtables)
+    # Enable -Werror
+    if(NOT MSVC OR IS_CLANG_BUILD) # clang-cl accepts these too
+        target_compile_options(${targetName} PRIVATE -Werror -Wundef -Wno-error=deprecated-declarations)
     endif()
-  endif()
-
-  # Enable -Werror
-  if(NOT MSVC OR IS_CLANG_BUILD) # clang-cl accepts these too
-    target_compile_options(${targetName} PRIVATE -Werror -Wundef -Wno-error=deprecated-declarations)
-  endif()
 endmacro()
 
 add_definitions(
@@ -148,7 +148,7 @@ add_definitions(
     -DQT_USE_QSTRINGBUILDER
     -DQT_NO_SIGNALS_SLOTS_KEYWORDS
     -DQT_USE_FAST_OPERATOR_PLUS
-    -DQT_DISABLE_DEPRECATED_BEFORE=0x060200
+    -DQT_DISABLE_DEPRECATED_BEFORE=0x060400
 )
 
 include_directories(
@@ -211,11 +211,11 @@ add_subdirectory(cmd)
 add_subdirectory(dox)
 
 if (BUILD_EXAMPLES)
-  add_subdirectory(examples)
+    add_subdirectory(examples)
 endif()
 
 if (BUILD_TESTS)
-  add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()
 
 # Adds targets to create docs, namely webdocs, htmldocs, qtdocs and docs - where docs
