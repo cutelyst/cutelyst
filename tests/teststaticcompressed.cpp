@@ -111,7 +111,7 @@ TestEngine::TestResponse TestStaticCompressed::getFile(const QString &path, cons
     const Headers hdrs = headers.data().empty()
                              ? Headers({{"Accept-Encoding", "gzip, deflate, br, zstd"}})
                              : headers;
-    return m_engine->createRequest("GET", path, {}, headers, nullptr);
+    return m_engine->createRequest("GET", path, {}, hdrs, nullptr);
 }
 
 TestEngine::TestResponse TestStaticCompressed::getForcedFile(const QString &path,
@@ -120,7 +120,7 @@ TestEngine::TestResponse TestStaticCompressed::getForcedFile(const QString &path
     const Headers hdrs = headers.data().empty()
                              ? Headers({{"Accept-Encoding", "gzip, deflate, br, zstd"}})
                              : headers;
-    return m_engineDirsOnly->createRequest("GET", path, {}, headers, nullptr);
+    return m_engineDirsOnly->createRequest("GET", path, {}, hdrs, nullptr);
 }
 
 bool TestStaticCompressed::writeTestFile(const QString &name)

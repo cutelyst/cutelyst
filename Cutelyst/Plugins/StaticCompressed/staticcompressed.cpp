@@ -205,7 +205,7 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
     // TODO mid(1) quick fix for path now having leading slash
     const QString path = c->req()->path().mid(1);
 
-    for (const QString &dir : std::as_const(dirs)) {
+    bool found = std::ranges::any_of(dirs, [&](const QString &dir) {
         if (path.startsWith(dir)) {
             if (!locateCompressedFile(c, path)) {
                 Response *res = c->response();
@@ -213,10 +213,14 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
                 res->setContentType("text/html"_ba);
                 res->setBody(u"File not found: "_s + path);
             }
-
-            *skipMethod = true;
-            return;
+            return true;
         }
+        return false;
+    });
+
+    if (found) {
+        *skipMethod = true;
+        return;
     }
 
     if (serveDirsOnly) {
