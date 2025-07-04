@@ -20,7 +20,7 @@
 #include <QUrlQuery>
 
 using namespace Cutelyst;
-using namespace Qt::Literals::StringLiterals;
+using namespace Qt::StringLiterals;
 
 Context::Context(ContextPrivate *priv)
     : d_ptr(priv)
