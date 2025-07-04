@@ -15,23 +15,23 @@ class AuthenticationRealm;
 class AuthenticationPrivate
 {
 public:
-    std::shared_ptr<AuthenticationRealm> realm(const QString &realmName) const;
+    std::shared_ptr<AuthenticationRealm> realm(QStringView realmName) const;
 
     static inline AuthenticationUser
-        restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName);
+        restoreUser(Context *c, const QVariant &frozenUser, QStringView realmName);
     static inline std::shared_ptr<AuthenticationRealm>
         findRealmForPersistedUser(Cutelyst::Context *c,
                                   const QMap<QString, std::shared_ptr<AuthenticationRealm>> &realms,
                                   const QStringList &realmsOrder);
     static inline void setAuthenticated(Context *c,
                                         const AuthenticationUser &user,
-                                        const QString &realmName,
+                                        QStringView realmName,
                                         std::shared_ptr<AuthenticationRealm> realm);
     static inline void
-        setUser(Context *c, const AuthenticationUser &user, const QString &realmName = {});
+        setUser(Context *c, const AuthenticationUser &user, QStringView realmName = {});
     static inline void persistUser(Context *c,
                                    const AuthenticationUser &user,
-                                   const QString &realmName,
+                                   QStringView realmName,
                                    std::shared_ptr<AuthenticationRealm> realm);
 
     QString defaultRealm;

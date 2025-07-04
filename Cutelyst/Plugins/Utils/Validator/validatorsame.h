@@ -34,7 +34,7 @@ class ValidatorSamePrivate;
  *                                    QT_TRANSLATE_NOOP("MyController", "Other Field"),
  *                                    ValidatorMessages(QT_TRANSLATE_NOOP("MyController",
  *                                                                        "Field")))
- *                 }, QLatin1String("MyController"));
+ *                 }, u"MyController"_s);
  * }
  * \endcode
  *

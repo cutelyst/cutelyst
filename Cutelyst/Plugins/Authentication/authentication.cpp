@@ -17,9 +17,9 @@ Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication", QtWarning
 using namespace Cutelyst;
 using namespace Qt::StringLiterals;
 
-char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
-char *AuthenticationRealm::defaultRealm =
-    const_cast<char *>("cutelyst_authentication_default_realm");
+const QStringView Authentication::defaultRealm      = u"cutelyst_authentication_default_realm";
+const QStringView AuthenticationRealm::defaultRealm = u"cutelyst_authentication_default_realm";
+
 namespace {
 thread_local Authentication *auth = nullptr;
 
@@ -50,20 +50,20 @@ void Authentication::addRealm(std::shared_ptr<Cutelyst::AuthenticationRealm> rea
 void Cutelyst::Authentication::addRealm(
     std::shared_ptr<Cutelyst::AuthenticationStore> store,
     std::shared_ptr<Cutelyst::AuthenticationCredential> credential,
-    const QString &name)
+    QStringView name)
 {
     addRealm(std::make_shared<AuthenticationRealm>(store, credential, name));
 }
 
-std::shared_ptr<Cutelyst::AuthenticationRealm> Authentication::realm(const QString &name) const
+std::shared_ptr<Cutelyst::AuthenticationRealm> Authentication::realm(QStringView name) const
 {
     Q_D(const Authentication);
-    return d->realms.value(name);
+    return d->realms.value(name.toString());
 }
 
 bool Authentication::authenticate(Cutelyst::Context *c,
                                   const ParamsMultiMap &userinfo,
-                                  const QString &realm)
+                                  QStringView realm)
 {
     if (!auth) {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
@@ -86,7 +86,7 @@ bool Authentication::authenticate(Cutelyst::Context *c,
 
 AuthenticationUser Authentication::findUser(Cutelyst::Context *c,
                                             const ParamsMultiMap &userinfo,
-                                            const QString &realm)
+                                            QStringView realm)
 {
     AuthenticationUser ret;
     if (!auth) {
@@ -133,7 +133,7 @@ bool Authentication::userExists(Cutelyst::Context *c)
     }
 }
 
-bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realmName)
+bool Authentication::userInRealm(Cutelyst::Context *c, QStringView realmName)
 {
     const QVariant authUser = c->stash(AUTHENTICATION_USER);
     if (!authUser.isNull()) {
@@ -174,14 +174,14 @@ bool Authentication::setup(Application *app)
     return connect(app, &Application::postForked, this, [this] { auth = this; });
 }
 
-std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::realm(const QString &realmName) const
+std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::realm(QStringView realmName) const
 {
-    return realms.value(realmName.isNull() ? defaultRealm : realmName);
+    return realms.value(QStringView{realmName.isNull() ? defaultRealm : realmName}.toString());
 }
 
 AuthenticationUser AuthenticationPrivate::restoreUser(Context *c,
                                                       const QVariant &frozenUser,
-                                                      const QString &realmName)
+                                                      QStringView realmName)
 {
     AuthenticationUser ret;
     if (!auth) {
@@ -219,7 +219,7 @@ std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::findRealmForPersiste
         }
     } else {
         // we have no choice but to ask each realm whether it has a persisted user.
-        for (const QString &realmName : realmsOrder) {
+        for (const auto &realmName : realmsOrder) {
             std::shared_ptr<AuthenticationRealm> realmPtr = realms.value(realmName);
             if (realmPtr && !realmPtr->userIsRestorable(c).isNull()) {
                 return realmPtr;
@@ -232,7 +232,7 @@ std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::findRealmForPersiste
 
 void AuthenticationPrivate::setAuthenticated(Context *c,
                                              const AuthenticationUser &user,
-                                             const QString &realmName,
+                                             QStringView realmName,
                                              std::shared_ptr<AuthenticationRealm> realm)
 {
     AuthenticationPrivate::setUser(c, user, realmName);
@@ -246,24 +246,24 @@ void AuthenticationPrivate::setAuthenticated(Context *c,
 
 void AuthenticationPrivate::setUser(Context *c,
                                     const AuthenticationUser &user,
-                                    const QString &realmName)
+                                    QStringView realmName)
 {
     if (user.isNull()) {
         c->setStash(AUTHENTICATION_USER, QVariant());
         c->setStash(AUTHENTICATION_USER_REALM, QVariant());
     } else {
         c->setStash(AUTHENTICATION_USER, QVariant::fromValue(user));
-        c->setStash(AUTHENTICATION_USER_REALM, realmName);
+        c->setStash(AUTHENTICATION_USER_REALM, realmName.toString());
     }
 }
 
 void AuthenticationPrivate::persistUser(Context *c,
                                         const AuthenticationUser &user,
-                                        const QString &realmName,
+                                        QStringView realmName,
                                         std::shared_ptr<AuthenticationRealm> realm)
 {
     if (Authentication::userInRealm(c, realmName)) {
-        Session::setValue(c, AUTHENTICATION_USER_REALM, realmName);
+        Session::setValue(c, AUTHENTICATION_USER_REALM, realmName.toString());
 
         if (realm) {
             realm->persistUser(c, user);

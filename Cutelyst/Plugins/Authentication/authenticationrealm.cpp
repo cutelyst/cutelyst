@@ -19,15 +19,17 @@ Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm", QtWarni
 
 AuthenticationRealm::AuthenticationRealm(std::shared_ptr<AuthenticationStore> store,
                                          std::shared_ptr<AuthenticationCredential> credential,
-                                         const QString &name,
+                                         QStringView name,
                                          QObject *parent)
     : Component(parent)
     , m_store(store)
     , m_credential(credential)
 {
     m_credential->setParent(this);
-    setObjectName(name);
-    setName(name);
+
+    const QString realmName = name.toString();
+    setObjectName(realmName);
+    setName(realmName);
 }
 
 AuthenticationRealm::~AuthenticationRealm()

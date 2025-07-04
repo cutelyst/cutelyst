@@ -33,7 +33,7 @@ public:
     /**
      * Default realm name.
      */
-    static char *defaultRealm;
+    static const QStringView defaultRealm;
 
     /**
      * Constructs a new %AuthenticationRealm object with the given \a store, \a credential
@@ -41,8 +41,8 @@ public:
      */
     explicit AuthenticationRealm(std::shared_ptr<AuthenticationStore> store,
                                  std::shared_ptr<AuthenticationCredential> credential,
-                                 const QString &name = QLatin1String(defaultRealm),
-                                 QObject *parent     = nullptr);
+                                 QStringView name = defaultRealm,
+                                 QObject *parent  = nullptr);
     ~AuthenticationRealm() override;
 
     /**
