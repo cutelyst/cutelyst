@@ -1095,7 +1095,7 @@ void Server::setProcesses(const QString &process)
 {
 #ifdef Q_OS_UNIX
     Q_D(Server);
-    if (process.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
+    if (process.compare(u"auto", Qt::CaseInsensitive) == 0) {
         d->processes = -1;
     } else {
         d->processes = process.toInt();

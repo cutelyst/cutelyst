@@ -44,7 +44,7 @@ bool Upload::save(const QString &newName)
 
     if (error) {
         out.close();
-        setErrorString(QLatin1String("Failed to open file for saving: ") + out.errorString());
+        setErrorString(u"Failed to open file for saving: " + out.errorString());
         qCWarning(CUTELYST_UPLOAD) << errorString();
     } else {
         qint64 posOrig = d->pos;
@@ -57,7 +57,7 @@ bool Upload::save(const QString &newName)
                 break;
             }
             if (in != out.write(block, in)) {
-                setErrorString(QLatin1String("Failure to write block"));
+                setErrorString(u"Failure to write block"_s);
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;
@@ -107,7 +107,7 @@ std::unique_ptr<QTemporaryFile> Upload::createTemporaryFile(const QString &templ
             }
 
             if (in != ret->write(block, in)) {
-                setErrorString(QLatin1String("Failure to write block"));
+                setErrorString(u"Failure to write block"_s);
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;

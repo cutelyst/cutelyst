@@ -1006,7 +1006,7 @@ static QByteArray createBody(QByteArray &result, int count)
     QMap<QString, QByteArray> uploads;
 
     for (int i = 0; i < count; ++i) {
-        QString name = QLatin1String("file-") + QString::number(i) + QLatin1String(".bin");
+        QString name = u"file-" + QString::number(i) + u".bin";
         body.append("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\n");
         body.append("Content-Disposition: form-data; name=\"" + name.toLatin1() +
                     "\"; filename=\"file.bin\"\r\nContent-Type: application/octet-stream\r\n\r\n");

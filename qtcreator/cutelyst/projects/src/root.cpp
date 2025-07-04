@@ -35,7 +35,7 @@ void Root::index(Context *c)
            "</html>\\n";
     body = body.arg(QCoreApplication::applicationName()).arg(Application::cutelystVersion());
     c->response()->setBody(body);
-    c->response()->setContentType(QLatin1String("text/html; charset=utf-8"));
+    c->response()->setContentType(u"text/html; charset=utf-8");
 }
 
 void Root::defaultPage(Context *c)

@@ -29,7 +29,7 @@ public:
     explicit TestLangselect(QObject *parent = nullptr)
         : CoverageObject(parent)
     {
-        auto file = new QTemporaryFile(staticDir.path() + QLatin1String("/staticfile"), this);
+        auto file = new QTemporaryFile(staticDir.path() + u"/staticfile", this);
         file->open();
         staticFile.setFile(file->fileName());
     }

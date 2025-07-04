@@ -50,14 +50,14 @@ bool createController(const QString &controllerName)
     }
 
     if (!buildControllerHeader(projectDir.absoluteFilePath(u"src/"_s) % controllerName.toLower() %
-                                   QLatin1String(".h"),
+                                   u".h",
                                controllerName,
                                false)) {
         return false;
     }
 
     if (!buildControllerImplementation(projectDir.absoluteFilePath(u"src/"_s) %
-                                           controllerName.toLower() % QLatin1String(".cpp"),
+                                           controllerName.toLower() % u".cpp",
                                        controllerName,
                                        false)) {
         return false;
@@ -406,30 +406,27 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    if (!createDir(currentDir, name % QLatin1String("/src"))) {
+    if (!createDir(currentDir, name % u"/src")) {
         return false;
     }
 
-    if (!buildSrcCMakeLists(name % QLatin1String("/src/CMakeLists.txt"), nameWithUnderscore)) {
+    if (!buildSrcCMakeLists(name % u"/src/CMakeLists.txt", nameWithUnderscore)) {
         return false;
     }
 
-    if (!buildControllerHeader(name % QLatin1String("/src/root.h"), u"Root"_s, true)) {
+    if (!buildControllerHeader(name % u"/src/root.h", u"Root"_s, true)) {
         return false;
     }
 
-    if (!buildControllerImplementation(name % QLatin1String("/src/root.cpp"), u"Root"_s, true)) {
+    if (!buildControllerImplementation(name % u"/src/root.cpp", u"Root"_s, true)) {
         return false;
     }
 
-    if (!buildApplicationHeader(name % QLatin1String("/src/") % name.toLower() %
-                                    QLatin1String(".h"),
-                                nameWithUnderscore)) {
+    if (!buildApplicationHeader(name % u"/src/" % name.toLower() % u".h", nameWithUnderscore)) {
         return false;
     }
 
-    if (!buildApplicationImplementation(name % QLatin1String("/src/") % name.toLower() %
-                                            QLatin1String(".cpp"),
+    if (!buildApplicationImplementation(name % u"/src/" % name.toLower() % u".cpp",
                                         nameWithUnderscore)) {
         return false;
     }
@@ -457,7 +454,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(QStringLiteral(CUTELYST_VERSION));
 
     QTranslator qtTranslator;
-    if (qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
+    if (qtTranslator.load(u"qt_" % QLocale::system().name(),
                           QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
         QCoreApplication::installTranslator(&qtTranslator);
     } else {

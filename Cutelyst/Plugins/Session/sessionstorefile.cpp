@@ -122,7 +122,7 @@ QVariantHash loadSessionData(Context *c, const QByteArray &sid)
         if (data.isEmpty()) {
             QFile::remove(file->fileName());
         } else {
-            QLockFile lock(file->fileName() + QLatin1String(".lock"));
+            QLockFile lock(file->fileName() + u".lock");
             if (lock.lock()) {
                 QDataStream in(file);
 
@@ -143,7 +143,7 @@ QVariantHash loadSessionData(Context *c, const QByteArray &sid)
     });
 
     // Load data
-    QLockFile lock(file->fileName() + QLatin1String(".lock"));
+    QLockFile lock(file->fileName() + u".lock");
     if (lock.lock()) {
         QDataStream in(file);
         in >> data;

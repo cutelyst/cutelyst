@@ -722,7 +722,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
 
             id = QMetaType::fromName(instanceName.toLatin1().data());
             if (!id.isValid() && !instanceName.startsWith(u"Cutelyst::")) {
-                instanceName = QLatin1String("Cutelyst::") + instanceName;
+                instanceName = u"Cutelyst::" + instanceName;
                 id           = QMetaType::fromName(instanceName.toLatin1().data());
             }
         }

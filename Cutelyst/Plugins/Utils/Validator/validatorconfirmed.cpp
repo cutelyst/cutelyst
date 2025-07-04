@@ -21,7 +21,7 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        const QString ofn = field() + QLatin1String("_confirmation");
+        const QString ofn = field() + u"_confirmation";
         QString ofv       = params.value(ofn);
 
         if (trimBefore()) {
