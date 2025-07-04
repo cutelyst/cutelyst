@@ -8,6 +8,7 @@
 #include <QUrl>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 ValidatorUrl::ValidatorUrl(const QString &field,
                            Constraints constraints,
@@ -50,10 +51,9 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
         }
 
         if (valid) {
-            const QStringList schemeList =
-                d->constraints.testFlag(WebsiteOnly)
-                    ? QStringList({QStringLiteral("http"), QStringLiteral("https")})
-                    : d->schemes;
+            const QStringList schemeList = d->constraints.testFlag(WebsiteOnly)
+                                               ? QStringList({u"http"_s, u"https"_s})
+                                               : d->schemes;
 
             if (!schemeList.empty()) {
 

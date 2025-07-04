@@ -21,15 +21,15 @@ using namespace Qt::Literals::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session", QtWarningMsg)
 
-#define SESSION_VALUES QStringLiteral("_c_session_values")
-#define SESSION_EXPIRES QStringLiteral("_c_session_expires")
-#define SESSION_TRIED_LOADING_EXPIRES QStringLiteral("_c_session_tried_loading_expires")
-#define SESSION_EXTENDED_EXPIRES QStringLiteral("_c_session_extended_expires")
-#define SESSION_UPDATED QStringLiteral("_c_session_updated")
-#define SESSION_ID QStringLiteral("_c_session_id")
-#define SESSION_TRIED_LOADING_ID QStringLiteral("_c_session_tried_loading_id")
-#define SESSION_DELETED_ID QStringLiteral("_c_session_deleted_id")
-#define SESSION_DELETE_REASON QStringLiteral("_c_session_delete_reason")
+#define SESSION_VALUES u"_c_session_values"_s
+#define SESSION_EXPIRES u"_c_session_expires"_s
+#define SESSION_TRIED_LOADING_EXPIRES u"_c_session_tried_loading_expires"_s
+#define SESSION_EXTENDED_EXPIRES u"_c_session_extended_expires"_s
+#define SESSION_UPDATED u"_c_session_updated"_s
+#define SESSION_ID u"_c_session_id"_s
+#define SESSION_TRIED_LOADING_ID u"_c_session_tried_loading_id"_s
+#define SESSION_DELETED_ID u"_c_session_deleted_id"_s
+#define SESSION_DELETE_REASON u"_c_session_delete_reason"_s
 
 namespace {
 thread_local Session *m_instance = nullptr;
@@ -357,10 +357,10 @@ void SessionPrivate::_q_saveSession(Context *c)
         return;
     }
     QVariantHash sessionData = c->stash(SESSION_VALUES).toHash();
-    sessionData.insert(QStringLiteral("__updated"), QDateTime::currentSecsSinceEpoch());
+    sessionData.insert(u"__updated"_s, QDateTime::currentSecsSinceEpoch());
 
     const auto sid = c->stash(SESSION_ID).toByteArray();
-    m_instance->d_ptr->store->storeSessionData(c, sid, QStringLiteral("session"), sessionData);
+    m_instance->d_ptr->store->storeSessionData(c, sid, u"session"_s, sessionData);
 }
 
 void SessionPrivate::deleteSession(Session *session, Context *c, const QString &reason)
@@ -370,9 +370,9 @@ void SessionPrivate::deleteSession(Session *session, Context *c, const QString &
     const QVariant sidVar = c->stash(SESSION_ID).toString();
     if (!sidVar.isNull()) {
         const auto sid = sidVar.toByteArray();
-        session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("session"));
-        session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("expires"));
-        session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("flash"));
+        session->d_ptr->store->deleteSessionData(c, sid, u"session"_s);
+        session->d_ptr->store->deleteSessionData(c, sid, u"expires"_s);
+        session->d_ptr->store->deleteSessionData(c, sid, u"flash"_s);
 
         deleteSessionId(session, c, sid);
     }
@@ -411,8 +411,7 @@ QVariant SessionPrivate::loadSession(Context *c)
         if (SessionPrivate::validateSessionId(sid)) {
 
             const QVariantHash sessionData =
-                m_instance->d_ptr->store->getSessionData(c, sid, QStringLiteral("session"))
-                    .toHash();
+                m_instance->d_ptr->store->getSessionData(c, sid, u"session"_s).toHash();
             c->setStash(SESSION_VALUES, sessionData);
 
             if (m_instance->d_ptr->verifyAddress) {
@@ -422,7 +421,7 @@ QVariant SessionPrivate::loadSession(Context *c)
                     qCWarning(C_SESSION)
                         << "Deleting session" << sid << "due to address mismatch:" << *it
                         << "!=" << c->request()->address().toString();
-                    deleteSession(m_instance, c, QStringLiteral("address mismatch"));
+                    deleteSession(m_instance, c, u"address mismatch"_s);
                     return ret;
                 }
             }
@@ -434,7 +433,7 @@ QVariant SessionPrivate::loadSession(Context *c)
                     qCWarning(C_SESSION)
                         << "Deleting session" << sid << "due to user agent mismatch:" << *it
                         << "!=" << c->request()->userAgent();
-                    deleteSession(m_instance, c, QStringLiteral("user agent mismatch"));
+                    deleteSession(m_instance, c, u"user agent mismatch"_s);
                     return ret;
                 }
             }
@@ -483,8 +482,7 @@ qint64 SessionPrivate::getStoredSessionExpires(Session *session,
                                                Context *c,
                                                const QByteArray &sessionid)
 {
-    const QVariant expires =
-        session->d_ptr->store->getSessionData(c, sessionid, QStringLiteral("expires"), 0);
+    const QVariant expires = session->d_ptr->store->getSessionData(c, sessionid, u"expires"_s, 0);
     return expires.toLongLong();
 }
 
@@ -492,15 +490,15 @@ QVariant SessionPrivate::initializeSessionData(const Session *session, const Con
 {
     QVariantHash ret;
     const qint64 now = QDateTime::currentSecsSinceEpoch();
-    ret.insert(QStringLiteral("__created"), now);
-    ret.insert(QStringLiteral("__updated"), now);
+    ret.insert(u"__created"_s, now);
+    ret.insert(u"__updated"_s, now);
 
     if (session->d_ptr->verifyAddress) {
-        ret.insert(QStringLiteral("__address"), c->request()->address().toString());
+        ret.insert(u"__address"_s, c->request()->address().toString());
     }
 
     if (session->d_ptr->verifyUserAgent) {
-        ret.insert(QStringLiteral("__user_agent"), c->request()->userAgent());
+        ret.insert(u"__user_agent"_s, c->request()->userAgent());
     }
 
     return ret;
@@ -520,8 +518,7 @@ void SessionPrivate::saveSessionExpires(Context *c)
             const qint64 current  = getStoredSessionExpires(m_instance, c, sid);
             const qint64 extended = Session::expires(c);
             if (extended > current) {
-                m_instance->d_ptr->store->storeSessionData(
-                    c, sid, QStringLiteral("expires"), extended);
+                m_instance->d_ptr->store->storeSessionData(c, sid, u"expires"_s, extended);
             }
         }
     }
@@ -544,7 +541,7 @@ QVariant
             c->setStash(SESSION_EXPIRES, expires);
             ret = expires;
         } else {
-            deleteSession(session, c, QStringLiteral("session expired"));
+            deleteSession(session, c, u"session expired"_s);
             ret = 0;
         }
     }

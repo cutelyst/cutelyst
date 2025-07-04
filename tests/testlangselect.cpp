@@ -121,22 +121,22 @@ void TestLangselect::testController_data()
 
     Headers headers;
 
-    QTest::newRow("test-auto-cookie-00") << QStringLiteral("/langselect/test/testLang") << headers
-                                         << 200 << QByteArrayLiteral("en-GB");
+    QTest::newRow("test-auto-cookie-00")
+        << u"/langselect/test/testLang"_s << headers << 200 << QByteArrayLiteral("en-GB");
     headers.setHeader("Accept-Language", "de-AT");
     QTest::newRow("test-auto-cookie-01")
-        << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("de");
+        << u"/langselect/test/testLang"_s << headers << 200 << QByteArrayLiteral("de");
     headers.setHeader("Cookie", QNetworkCookie("lang", QByteArrayLiteral("pt")).toRawForm());
     QTest::newRow("test-auto-cookie-02")
-        << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("pt");
+        << u"/langselect/test/testLang"_s << headers << 200 << QByteArrayLiteral("pt");
     headers.setHeader("Accept-Language", "ru");
     headers.setHeader(
         "Cookie", QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("dk")).toRawForm());
-    QTest::newRow("test-auto-cookie-03") << QStringLiteral("/langselect/test/testLang") << headers
-                                         << 200 << QByteArrayLiteral("en-GB");
+    QTest::newRow("test-auto-cookie-03")
+        << u"/langselect/test/testLang"_s << headers << 200 << QByteArrayLiteral("en-GB");
 
     QTest::newRow("test-auto-static-file")
-        << QStringLiteral("/") + staticFile.fileName() << headers << 200 << QByteArray();
+        << u"/"_s + staticFile.fileName() << headers << 200 << QByteArray();
 }
 
 QTEST_MAIN(TestLangselect)

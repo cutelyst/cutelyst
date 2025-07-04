@@ -174,8 +174,7 @@ public:
     {
         c->response()->setBody(
             c->request()
-                ->uriWith(ParamsMultiMap{{QStringLiteral("foo"), QStringLiteral("baz")},
-                                         {QStringLiteral("fooz"), QStringLiteral("bar")}},
+                ->uriWith(ParamsMultiMap{{u"foo"_s, u"baz"_s}, {u"fooz"_s, u"bar"_s}},
                           QVariant(append).toBool())
                 .toString(QUrl::FullyEncoded));
     }
@@ -186,7 +185,7 @@ public:
         QUrlQuery ret;
         auto params = c->request()->mangleParams(
             ParamsMultiMap{
-                {QStringLiteral("foo"), QStringLiteral("baz")},
+                {u"foo"_s, u"baz"_s},
             },
             QVariant(append).toBool());
         for (const auto &[key, value] : params.asKeyValueRange()) {
@@ -281,24 +280,22 @@ public:
     void bodyParametersList(Context *c)
     {
         const QStringList params =
-            c->request()->bodyParameters(c->request()->queryParam(QStringLiteral("param")));
+            c->request()->bodyParameters(c->request()->queryParam(u"param"_s));
         c->response()->setBody(params.join(QLatin1Char('&')));
     }
 
     C_ATTR(bodyParameter, :Local :AutoArgs)
     void bodyParameter(Context *c)
     {
-        c->response()->setBody(
-            c->request()->bodyParameter(c->request()->queryParam(QStringLiteral("param")),
-                                        c->request()->queryParam(QStringLiteral("defaultValue"))));
+        c->response()->setBody(c->request()->bodyParameter(
+            c->request()->queryParam(u"param"_s), c->request()->queryParam(u"defaultValue"_s)));
     }
 
     C_ATTR(bodyParam, :Local :AutoArgs)
     void bodyParam(Context *c)
     {
-        c->response()->setBody(
-            c->request()->bodyParam(c->request()->queryParam(QStringLiteral("param")),
-                                    c->request()->queryParam(QStringLiteral("defaultValue"))));
+        c->response()->setBody(c->request()->bodyParam(
+            c->request()->queryParam(u"param"_s), c->request()->queryParam(u"defaultValue"_s)));
     }
 
     C_ATTR(bodyData, :Local :AutoArgs)
@@ -422,59 +419,57 @@ void TestRequest::testController_data()
     Headers headers;
     QByteArray body;
 
-    QTest::newRow("address-test00") << get << QStringLiteral("/request/test/address") << headers
-                                    << QByteArray() << QByteArrayLiteral("127.0.0.1");
+    QTest::newRow("address-test00") << get << u"/request/test/address"_s << headers << QByteArray()
+                                    << QByteArrayLiteral("127.0.0.1");
 
-    QTest::newRow("args-test00") << get << QStringLiteral("/request/test/args/a%C3%A9%C3%A3u")
-                                 << headers << QByteArray()
-                                 << QByteArrayLiteral("a\xC3\xA9\xC3\xA3u");
+    QTest::newRow("args-test00") << get << u"/request/test/args/a%C3%A9%C3%A3u"_s << headers
+                                 << QByteArray() << QByteArrayLiteral("a\xC3\xA9\xC3\xA3u");
 
     QTest::newRow("hostname-test00")
-        << get << QStringLiteral("/request/test/hostname") << headers << QByteArray()
-        << QHostInfo::fromName(QStringLiteral("127.0.0.1")).hostName().toLatin1();
-    QTest::newRow("port-test00") << get << QStringLiteral("/request/test/port") << headers
-                                 << QByteArray() << QByteArrayLiteral("3000");
-    QTest::newRow("uri-test00") << get << QStringLiteral("/request/test/uri") << headers
-                                << QByteArray()
+        << get << u"/request/test/hostname"_s << headers << QByteArray()
+        << QHostInfo::fromName(u"127.0.0.1"_s).hostName().toLatin1();
+    QTest::newRow("port-test00") << get << u"/request/test/port"_s << headers << QByteArray()
+                                 << QByteArrayLiteral("3000");
+    QTest::newRow("uri-test00") << get << u"/request/test/uri"_s << headers << QByteArray()
                                 << QByteArrayLiteral("http://127.0.0.1/request/test/uri");
-    QTest::newRow("base-test00") << get << QStringLiteral("/request/test/base") << headers
-                                 << QByteArray() << QByteArrayLiteral("http://127.0.0.1");
-    QTest::newRow("path-test00") << get << QStringLiteral("/request/test/path") << headers
-                                 << QByteArray() << QByteArrayLiteral("/request/test/path");
-    QTest::newRow("match-test00") << get << QStringLiteral("/request/test/match") << headers
-                                  << QByteArray() << QByteArrayLiteral("/request/test/match");
+    QTest::newRow("base-test00") << get << u"/request/test/base"_s << headers << QByteArray()
+                                 << QByteArrayLiteral("http://127.0.0.1");
+    QTest::newRow("path-test00") << get << u"/request/test/path"_s << headers << QByteArray()
+                                 << QByteArrayLiteral("/request/test/path");
+    QTest::newRow("match-test00") << get << u"/request/test/match"_s << headers << QByteArray()
+                                  << QByteArrayLiteral("/request/test/match");
 
-    QTest::newRow("method-test00") << get << QStringLiteral("/request/test/method") << headers
-                                   << QByteArray() << QByteArrayLiteral("GET");
-    QTest::newRow("method-test01") << post << QStringLiteral("/request/test/method") << headers
-                                   << QByteArray() << QByteArrayLiteral("POST");
-    QTest::newRow("method-test02") << head << QStringLiteral("/request/test/method") << headers
-                                   << QByteArray() << QByteArrayLiteral("HEAD");
+    QTest::newRow("method-test00")
+        << get << u"/request/test/method"_s << headers << QByteArray() << QByteArrayLiteral("GET");
+    QTest::newRow("method-test01") << post << u"/request/test/method"_s << headers << QByteArray()
+                                   << QByteArrayLiteral("POST");
+    QTest::newRow("method-test02") << head << u"/request/test/method"_s << headers << QByteArray()
+                                   << QByteArrayLiteral("HEAD");
 
-    QTest::newRow("isPost-test00") << get << QStringLiteral("/request/test/isPost") << headers
-                                   << QByteArray() << QByteArrayLiteral("false");
-    QTest::newRow("isPost-test01") << PoSt << QStringLiteral("/request/test/isPost") << headers
-                                   << QByteArray() << QByteArrayLiteral("false");
-    QTest::newRow("isPost-test02") << post << QStringLiteral("/request/test/isPost") << headers
-                                   << QByteArray() << QByteArrayLiteral("true");
+    QTest::newRow("isPost-test00") << get << u"/request/test/isPost"_s << headers << QByteArray()
+                                   << QByteArrayLiteral("false");
+    QTest::newRow("isPost-test01") << PoSt << u"/request/test/isPost"_s << headers << QByteArray()
+                                   << QByteArrayLiteral("false");
+    QTest::newRow("isPost-test02") << post << u"/request/test/isPost"_s << headers << QByteArray()
+                                   << QByteArrayLiteral("true");
 
-    QTest::newRow("isGet-test00") << post << QStringLiteral("/request/test/isGet") << headers
-                                  << QByteArray() << QByteArrayLiteral("false");
-    QTest::newRow("isGet-test01") << GeT << QStringLiteral("/request/test/isGet") << headers
-                                  << QByteArray() << QByteArrayLiteral("false");
-    QTest::newRow("isGet-test02") << get << QStringLiteral("/request/test/isGet") << headers
-                                  << QByteArray() << QByteArrayLiteral("true");
+    QTest::newRow("isGet-test00") << post << u"/request/test/isGet"_s << headers << QByteArray()
+                                  << QByteArrayLiteral("false");
+    QTest::newRow("isGet-test01") << GeT << u"/request/test/isGet"_s << headers << QByteArray()
+                                  << QByteArrayLiteral("false");
+    QTest::newRow("isGet-test02") << get << u"/request/test/isGet"_s << headers << QByteArray()
+                                  << QByteArrayLiteral("true");
 
-    QTest::newRow("protocol-test00") << get << QStringLiteral("/request/test/protocol") << headers
+    QTest::newRow("protocol-test00") << get << u"/request/test/protocol"_s << headers
                                      << QByteArray() << QByteArrayLiteral("HTTP/1.1");
-    QTest::newRow("remoteUser-test00") << get << QStringLiteral("/request/test/remoteUser")
-                                       << headers << QByteArray() << QByteArrayLiteral("");
+    QTest::newRow("remoteUser-test00")
+        << get << u"/request/test/remoteUser"_s << headers << QByteArray() << QByteArrayLiteral("");
 
     headers.clear();
-    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("bar"));
+    headers.setAuthorizationBasic(u"foo"_s, u"bar"_s);
     headers.setReferer("http://www.cutelyst.org");
     QTest::newRow("headers-test00")
-        << get << QStringLiteral("/request/test/headers") << headers << QByteArray()
+        << get << u"/request/test/headers"_s << headers << QByteArray()
         << QByteArrayLiteral(
                "Authorization=Basic%20Zm9vOmJhcg%3D%3D&Referer=http://www.cutelyst.org");
 
@@ -483,35 +478,33 @@ void TestRequest::testController_data()
                       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, "
                       "like Gecko) Chrome/51.0.2704.79 Safari/537.36");
     QTest::newRow("userAgent-test00")
-        << get << QStringLiteral("/request/test/userAgent") << headers << QByteArray()
+        << get << u"/request/test/userAgent"_s << headers << QByteArray()
         << QByteArrayLiteral("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like "
                              "Gecko) Chrome/51.0.2704.79 Safari/537.36");
 
     headers.clear();
     headers.setHeader("Referer", "http://www.cutelyst.org");
-    QTest::newRow("referer-test00") << get << QStringLiteral("/request/test/referer") << headers
-                                    << QByteArray() << QByteArrayLiteral("http://www.cutelyst.org");
+    QTest::newRow("referer-test00") << get << u"/request/test/referer"_s << headers << QByteArray()
+                                    << QByteArrayLiteral("http://www.cutelyst.org");
 
     headers.clear();
     headers.setHeader("Content-Encoding", "gzip");
-    QTest::newRow("contentEncoding-test00")
-        << get << QStringLiteral("/request/test/contentEncoding") << headers << QByteArray()
-        << QByteArrayLiteral("gzip");
+    QTest::newRow("contentEncoding-test00") << get << u"/request/test/contentEncoding"_s << headers
+                                            << QByteArray() << QByteArrayLiteral("gzip");
 
     headers.clear();
     headers.setHeader("Content-Type", "text/html; charset=UTF-8");
-    QTest::newRow("contentType-test00")
-        << get << QStringLiteral("/request/test/contentType") << headers << QByteArray()
-        << QByteArrayLiteral("text/html");
+    QTest::newRow("contentType-test00") << get << u"/request/test/contentType"_s << headers
+                                        << QByteArray() << QByteArrayLiteral("text/html");
 
     query.clear();
     headers.setHeader("Cookie", QByteArray{});
-    QTest::newRow("cookies-test00") << get << QStringLiteral("/request/test/cookies") << headers
-                                    << QByteArray() << QByteArrayLiteral("");
+    QTest::newRow("cookies-test00")
+        << get << u"/request/test/cookies"_s << headers << QByteArray() << QByteArrayLiteral("");
     query.clear();
     headers.setHeader("Cookie", QByteArray(""));
-    QTest::newRow("cookies-test01") << get << QStringLiteral("/request/test/cookies") << headers
-                                    << QByteArray() << QByteArrayLiteral("");
+    QTest::newRow("cookies-test01")
+        << get << u"/request/test/cookies"_s << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
     headers.setHeader("Cookie",
@@ -520,7 +513,7 @@ void TestRequest::testController_data()
                       "S=something=qjgNs_EA:more=n1Ki8xVsQ:andmore=FSg:andmore=nQMU_"
                       "0VRlTJAbs_4fw:gmail=j4yGWsKuoZg");
     QTest::newRow("cookies-test02")
-        << get << QStringLiteral("/request/test/cookies") << headers << QByteArray()
+        << get << u"/request/test/cookies"_s << headers << QByteArray()
         << QByteArrayLiteral(
                "FIRST=10186486272&S=something%3DqjgNs_EA:more%3Dn1Ki8xVsQ:andmore%3DFSg:andmore%"
                "3DnQMU_0VRlTJAbs_4fw:gmail%3Dj4yGWsKuoZg&S=foo%3DTGp743-6uvY:first%3DMnBbT3wcrA-uy%"
@@ -528,13 +521,13 @@ void TestRequest::testController_data()
 
     query.clear();
     headers.setHeader("Cookie", "b=1; a=1; a=2; a=3; b=0");
-    QTest::newRow("cookies-test03") << get << QStringLiteral("/request/test/cookies/a") << headers
+    QTest::newRow("cookies-test03") << get << u"/request/test/cookies/a"_s << headers
                                     << QByteArray() << QByteArrayLiteral("a=1&a=2&a=3");
 
     query.clear();
     headers.setHeader("Cookie", QByteArray{});
-    QTest::newRow("cookie-test00") << get << QStringLiteral("/request/test/cookie/foo") << headers
-                                   << QByteArray() << QByteArrayLiteral("");
+    QTest::newRow("cookie-test00")
+        << get << u"/request/test/cookie/foo"_s << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
     headers.setHeader("Cookie",
@@ -543,255 +536,232 @@ void TestRequest::testController_data()
                       "S=something=qjgNs_EA:more=n1Ki8xVsQ:andmore=FSg:andmore=nQMU_"
                       "0VRlTJAbs_4fw:gmail=j4yGWsKuoZg");
     QTest::newRow("cookie-test01")
-        << get << QStringLiteral("/request/test/cookie/S") << headers << QByteArray()
+        << get << u"/request/test/cookie/S"_s << headers << QByteArray()
         << QByteArrayLiteral("S=something%3DqjgNs_EA:more%3Dn1Ki8xVsQ:andmore%3DFSg:andmore%3DnQMU_"
                              "0VRlTJAbs_4fw:gmail%3Dj4yGWsKuoZg");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
     QTest::newRow("queryKeywords-test00")
-        << get
-        << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << QByteArrayLiteral("some text to ask");
+        << get << u"/request/test/queryKeywords?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << QByteArrayLiteral("some text to ask");
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QStringLiteral("not"));
+    query.addQueryItem(u"some text to ask"_s, u"not"_s);
     QTest::newRow("queryKeywords-test01")
-        << get
-        << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << QByteArrayLiteral("");
+        << get << u"/request/test/queryKeywords?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     QTest::newRow("queryKeywords-test02")
-        << get
-        << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray()
+        << get << u"/request/test/queryKeywords?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray()
         << QByteArrayLiteral("some text to ask&another keyword&and yet another is fine");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some+text+to+ask"), QString{});
+    query.addQueryItem(u"some+text+to+ask"_s, QString{});
     QTest::newRow("queryKeywords-test03")
-        << get
-        << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << QByteArrayLiteral("some text to ask");
+        << get << u"/request/test/queryKeywords?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << QByteArrayLiteral("some text to ask");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    query.addQueryItem(u"foo"_s, u"bar"_s);
     QTest::newRow("uriWith-test00")
-        << get
-        << QStringLiteral("/request/test/uriWith/false?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray()
+        << get << u"/request/test/uriWith/false?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray()
         << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/false?fooz=bar&foo=baz");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    query.addQueryItem(u"foo"_s, u"bar"_s);
     QTest::newRow("uriWith-test01")
-        << get << QStringLiteral("/request/test/uriWith/true?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray()
+        << get << u"/request/test/uriWith/true?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray()
         << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/true?fooz=bar&foo=bar&foo=baz");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
+    query.addQueryItem(u"foo"_s, u"baz"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("mangleParams-test00")
-        << post << QStringLiteral("/request/test/mangleParams/false?foo=bar&x=y") << headers
+        << post << u"/request/test/mangleParams/false?foo=bar&x=y"_s << headers
         << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo=baz&x=y");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
+    query.addQueryItem(u"foo"_s, u"baz"_s);
     headers.setContentType("application/x-www-form-urlencoded");
-    QTest::newRow("mangleParams-test01")
-        << post << QStringLiteral("/request/test/mangleParams/true?foo=bar&x=y") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1()
-        << QByteArrayLiteral("foo=baz&foo=bar&x=y");
+    QTest::newRow("mangleParams-test01") << post << u"/request/test/mangleParams/true?foo=bar&x=y"_s
+                                         << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+                                         << QByteArrayLiteral("foo=baz&foo=bar&x=y");
 
     query.clear();
-    QTest::newRow("body-test00") << get << QStringLiteral("/request/test/body") << headers
-                                 << QByteArray() << QByteArray();
+    QTest::newRow("body-test00") << get << u"/request/test/body"_s << headers << QByteArray()
+                                 << QByteArray();
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
-    QTest::newRow("body-test00") << get << QStringLiteral("/request/test/body") << headers << body
-                                 << body;
+    QTest::newRow("body-test00") << get << u"/request/test/body"_s << headers << body << body;
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     QTest::newRow("queryParameters-test00")
-        << get
-        << QStringLiteral("/request/test/queryParameters?") + query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParameters?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
+    query.addQueryItem(u"bar"_s, u"baz"_s);
     QTest::newRow("queryParameters-test01")
-        << get
-        << QStringLiteral("/request/test/queryParameters?") + query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParameters?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray()
         << QByteArrayLiteral(
                "and%20yet%20another%20is%20fine&another%20keyword&bar=baz&some%20text%20to%20ask");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     QTest::newRow("queryParams-test00")
-        << get << QStringLiteral("/request/test/queryParams?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << QByteArrayLiteral("");
+        << get << u"/request/test/queryParams?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
+    query.addQueryItem(u"bar"_s, u"baz"_s);
     QTest::newRow("queryParams-test01")
-        << get << QStringLiteral("/request/test/queryParams?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray()
+        << get << u"/request/test/queryParams?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray()
         << QByteArrayLiteral(
                "and%20yet%20another%20is%20fine&another%20keyword&bar=baz&some%20text%20to%20ask");
 
     QTest::newRow("queryParams-test02")
-        << get << QStringLiteral("/request/test/queryParams?&=&=&foo&&&=ooo&=bar") << headers
-        << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo");
+        << get << u"/request/test/queryParams?&=&=&foo&&&=ooo&=bar"_s << headers << QByteArray()
+        << QByteArrayLiteral("=bar&=ooo&foo");
 
     QTest::newRow("queryParams-test03")
-        << get << QStringLiteral("/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar")
-        << headers << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
+        << get << u"/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar"_s << headers
+        << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
 
     QTest::newRow("queryParams-test04")
-        << get << QStringLiteral("/request/test/queryParams?foo=bar&=&something&&&=ooo&=bar&")
-        << headers << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
+        << get << u"/request/test/queryParams?foo=bar&=&something&&&=ooo&=bar&"_s << headers
+        << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
 
     QTest::newRow("queryParams-test05")
-        << get << QStringLiteral("/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar&")
-        << headers << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
+        << get << u"/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar&"_s << headers
+        << QByteArray() << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
 
     QTest::newRow("queryParams-test06")
-        << get << QStringLiteral("/request/test/queryParams?a=1&a=2&b=0&a=0&a=1&a=3&a=2") << headers
+        << get << u"/request/test/queryParams?a=1&a=2&b=0&a=0&a=1&a=3&a=2"_s << headers
         << QByteArray() << QByteArrayLiteral("a=2&a=3&a=1&a=0&a=2&a=1&b=0");
     QTest::newRow("queryParams-test07")
-        << get << QStringLiteral("/request/test/queryParams?foo=bar&baz=") << headers
-        << QByteArray() << QByteArrayLiteral("baz&foo=bar");
+        << get << u"/request/test/queryParams?foo=bar&baz="_s << headers << QByteArray()
+        << QByteArrayLiteral("baz&foo=bar");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     QTest::newRow("queryParametersVariant-test00")
-        << get
-        << QStringLiteral("/request/test/queryParametersVariant?") +
-               query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParametersVariant?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
+    query.addQueryItem(u"bar"_s, u"baz"_s);
     QTest::newRow("queryParametersVariant-test01")
-        << get
-        << QStringLiteral("/request/test/queryParametersVariant?") +
-               query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParametersVariant?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray()
         << QByteArrayLiteral(
                "and%20yet%20another%20is%20fine&another%20keyword&bar=baz&some%20text%20to%20ask");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"foo"_s, u"Cutelyst"_s);
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     QTest::newRow("queryParameter-test00")
         << get
-        << QStringLiteral("/request/test/queryParameter/foo/gotDefault?") +
-               query.toString(QUrl::FullyEncoded)
+        << u"/request/test/queryParameter/foo/gotDefault?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("Cutelyst");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, u"Cutelyst"_s);
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     QTest::newRow("queryParameter-test01")
         << get
-        << QStringLiteral("/request/test/queryParameter/x/gotDefault?") +
-               query.toString(QUrl::FullyEncoded)
+        << u"/request/test/queryParameter/x/gotDefault?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("foo"), QString::fromLatin1(body));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, QString::fromLatin1(body));
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     QTest::newRow("queryParameter-test02")
         << get
-        << QStringLiteral("/request/test/queryParameter/y/gotDefault?") +
-               query.toString(QUrl::FullyEncoded)
+        << u"/request/test/queryParameter/y/gotDefault?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("gotDefault");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral(""));
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, u""_s);
+    query.addQueryItem(u"foo"_s, u"bar"_s);
+    query.addQueryItem(u"foo"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     QTest::newRow("queryParametersList-test00")
-        << get
-        << QStringLiteral("/request/test/queryParametersList/foo?") +
-               query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParametersList/foo?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("&bar&baz");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"foo"_s, u"Cutelyst"_s);
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     QTest::newRow("queryParam-test00")
-        << get
-        << QStringLiteral("/request/test/queryParam/foo/gotDefault?") +
-               query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParam/foo/gotDefault?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("Cutelyst");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
-    QTest::newRow("queryParam-test01") << get
-                                       << QStringLiteral("/request/test/queryParam/x/gotDefault?") +
-                                              query.toString(QUrl::FullyEncoded)
-                                       << headers << QByteArray() << QByteArrayLiteral("");
+    query.addQueryItem(u"foo"_s, u"Cutelyst"_s);
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
+    QTest::newRow("queryParam-test01")
+        << get << u"/request/test/queryParam/x/gotDefault?"_s + query.toString(QUrl::FullyEncoded)
+        << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("foo"), QString::fromLatin1(body));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, QString::fromLatin1(body));
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     QTest::newRow("queryParam-test02")
-        << get
-        << QStringLiteral("/request/test/queryParam/y/gotDefault?") +
-               query.toString(QUrl::FullyEncoded)
+        << get << u"/request/test/queryParam/y/gotDefault?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("gotDefault");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParameters-test00")
-        << get << QStringLiteral("/request/test/bodyParameters") << headers
+        << get << u"/request/test/bodyParameters"_s << headers
         << query.toString(QUrl::FullyEncoded).toLatin1()
         << QByteArrayLiteral(
                "and%20yet%20another%20is%20fine&another%20keyword&some%20text%20to%20ask");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("some text to ask"), QString{});
-    query.addQueryItem(QStringLiteral("another keyword"), QString{});
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"some text to ask"_s, QString{});
+    query.addQueryItem(u"another keyword"_s, QString{});
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParams-test00")
-        << get << QStringLiteral("/request/test/bodyParams") << headers
+        << get << u"/request/test/bodyParams"_s << headers
         << query.toString(QUrl::FullyEncoded).toLatin1()
         << QByteArrayLiteral(
                "and%20yet%20another%20is%20fine&another%20keyword&some%20text%20to%20ask");
@@ -799,14 +769,14 @@ void TestRequest::testController_data()
     query.clear();
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParams-test01")
-        << get << QStringLiteral("/request/test/bodyParams") << headers
-        << QByteArrayLiteral("foo=bar&baz=") << QByteArrayLiteral("baz&foo=bar");
+        << get << u"/request/test/bodyParams"_s << headers << QByteArrayLiteral("foo=bar&baz=")
+        << QByteArrayLiteral("baz&foo=bar");
 
     query.clear();
     headers.clear();
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
     QTest::newRow("bodyParams-test02")
-        << get << QStringLiteral("/request/test/bodyParams") << headers
+        << get << u"/request/test/bodyParams"_s << headers
         << QByteArrayLiteral(
                "------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; "
                "name=\"path\"\r\n\r\ntextooooo\r\n------"
@@ -824,7 +794,7 @@ void TestRequest::testController_data()
     headers.clear();
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
     QTest::newRow("bodyParams-test03")
-        << get << QStringLiteral("/request/test/bodyParams") << headers
+        << get << u"/request/test/bodyParams"_s << headers
         << QByteArrayLiteral(
                "------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; "
                "name=\"path\"\r\n\r\ntexto1\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-"
@@ -836,128 +806,123 @@ void TestRequest::testController_data()
         << QByteArrayLiteral("path=texto2&path=texto1");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("foo"), u""_s);
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baa"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"foo"_s, u"bar"_s);
+    query.addQueryItem(u"foo"_s, u""_s);
+    query.addQueryItem(u"foo"_s, u"baa"_s);
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParametersList-test00")
-        << get << QStringLiteral("/request/test/bodyParametersList?param=foo") << headers
+        << get << u"/request/test/bodyParametersList?param=foo"_s << headers
         << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("bar&&baa");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("foo"), QString::fromLatin1(body));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
+    query.addQueryItem(u"foo"_s, QString::fromLatin1(body));
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"and yet another is fine"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
-    QTest::newRow("bodyParam-test00")
-        << get << QStringLiteral("/request/test/bodyParam?param=foo") << headers
-        << query.toString(QUrl::FullyEncoded).toLatin1() << body;
+    QTest::newRow("bodyParam-test00") << get << u"/request/test/bodyParam?param=foo"_s << headers
+                                      << query.toString(QUrl::FullyEncoded).toLatin1() << body;
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("foo"), QString::fromLatin1(body));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, QString::fromLatin1(body));
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParam-test01")
-        << get << QStringLiteral("/request/test/bodyParam?param=y&defaultValue=SomeDefaultValue")
-        << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-        << QByteArrayLiteral("SomeDefaultValue");
+        << get << u"/request/test/bodyParam?param=y&defaultValue=SomeDefaultValue"_s << headers
+        << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("SomeDefaultValue");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("foo"), QString::fromLatin1(body));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, QString::fromLatin1(body));
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParam-test02")
-        << get << QStringLiteral("/request/test/bodyParam?param=x&defaultValue=SomeDefaultValue")
-        << headers << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("");
+        << get << u"/request/test/bodyParam?param=x&defaultValue=SomeDefaultValue"_s << headers
+        << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("x"), QStringLiteral("foo bar"));
+    query.addQueryItem(u"x"_s, u"foo bar"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParam-test02")
-        << get << QStringLiteral("/request/test/bodyParam?param=x&defaultValue=SomeDefaultValue")
-        << headers << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo bar");
+        << get << u"/request/test/bodyParam?param=x&defaultValue=SomeDefaultValue"_s << headers
+        << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo bar");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("x+y"), QStringLiteral("foo+bar"));
+    query.addQueryItem(u"x+y"_s, u"foo+bar"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParam-test03")
-        << get << QStringLiteral("/request/test/bodyParam?param=x+y&defaultValue=SomeDefaultValue")
-        << headers << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo bar");
+        << get << u"/request/test/bodyParam?param=x+y&defaultValue=SomeDefaultValue"_s << headers
+        << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo bar");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("x%2By"), QStringLiteral("foo%2Bbar"));
+    query.addQueryItem(u"x%2By"_s, u"foo%2Bbar"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyParam-test04")
-        << get
-        << QStringLiteral("/request/test/bodyParam?param=x%2By&defaultValue=SomeDefaultValue")
-        << headers << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo+bar");
+        << get << u"/request/test/bodyParam?param=x%2By&defaultValue=SomeDefaultValue"_s << headers
+        << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("foo+bar");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString{});
+    query.addQueryItem(u"foo"_s, u"Cutelyst"_s);
+    query.addQueryItem(u"bar"_s, u"baz"_s);
+    query.addQueryItem(u"x"_s, QString{});
     headers.setContentType("application/x-www-form-urlencoded");
-    QTest::newRow("bodyData-test01") << post << QStringLiteral("/request/test/bodyData") << headers
+    QTest::newRow("bodyData-test01") << post << u"/request/test/bodyData"_s << headers
                                      << query.toString(QUrl::FullyEncoded).toLatin1()
                                      << QByteArrayLiteral("QMultiMap<QString,QString>");
 
     query.clear();
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyData-test02")
-        << post << QStringLiteral("/request/test/bodyData") << headers << QByteArray()
+        << post << u"/request/test/bodyData"_s << headers << QByteArray()
         << QByteArrayLiteral("QMultiMap<QString,QString>");
 
     query.clear();
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("bodyData-test03")
-        << post << QStringLiteral("/request/test/bodyData") << headers << QByteArray()
+        << post << u"/request/test/bodyData"_s << headers << QByteArray()
         << QByteArrayLiteral("QMultiMap<QString,QString>");
 
     query.clear();
     headers.setContentType("application/json");
-    QTest::newRow("bodyData-test04") << post << QStringLiteral("/request/test/bodyData") << headers
+    QTest::newRow("bodyData-test04") << post << u"/request/test/bodyData"_s << headers
                                      << QByteArray() << QByteArrayLiteral("QJsonDocument");
 
     query.clear();
     headers.setContentType("multipart/form-data");
-    QTest::newRow("bodyData-test05") << post << QStringLiteral("/request/test/bodyData") << headers
-                                     << QByteArray() << QByteArrayLiteral("");
+    QTest::newRow("bodyData-test05")
+        << post << u"/request/test/bodyData"_s << headers << QByteArray() << QByteArrayLiteral("");
 
     query.clear();
     QJsonObject obj;
-    obj.insert(QStringLiteral("foo"), QStringLiteral("bar"));
+    obj.insert(u"foo"_s, u"bar"_s);
     QJsonArray array;
     array.append(obj);
     headers.setContentType("application/json");
-    QTest::newRow("bodyDataJson-test00")
-        << post << QStringLiteral("/request/test/bodyDataJson") << headers
-        << QJsonDocument(array).toJson(QJsonDocument::Compact)
-        << QByteArrayLiteral("[{\"foo\":\"bar\"}]");
+    QTest::newRow("bodyDataJson-test00") << post << u"/request/test/bodyDataJson"_s << headers
+                                         << QJsonDocument(array).toJson(QJsonDocument::Compact)
+                                         << QByteArrayLiteral("[{\"foo\":\"bar\"}]");
 
     query.clear();
     obj   = QJsonObject();
     array = QJsonArray();
-    obj.insert(QStringLiteral("foo"), QStringLiteral("bar"));
+    obj.insert(u"foo"_s, u"bar"_s);
     array.append(obj);
     headers.setHeader("sequential", "true");
     headers.setContentType("application/json");
-    QTest::newRow("bodyDataJson-test01")
-        << post << QStringLiteral("/request/test/bodyDataJson") << headers
-        << QJsonDocument(array).toJson(QJsonDocument::Compact)
-        << QByteArrayLiteral("[{\"foo\":\"bar\"}]");
+    QTest::newRow("bodyDataJson-test01") << post << u"/request/test/bodyDataJson"_s << headers
+                                         << QJsonDocument(array).toJson(QJsonDocument::Compact)
+                                         << QByteArrayLiteral("[{\"foo\":\"bar\"}]");
 
     query.clear();
     headers.clear();
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
     QTest::newRow("uploads-test00")
-        << get << QStringLiteral("/request/test/uploads") << headers
+        << get << u"/request/test/uploads"_s << headers
         << QByteArrayLiteral(
                "------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; "
                "name=\"path\"\r\n\r\ntextooooo\r\n------"
@@ -980,7 +945,7 @@ void TestRequest::testController_data()
     headers.setHeader("sequential", "true");
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
     QTest::newRow("uploads-test01")
-        << post << QStringLiteral("/request/test/uploads") << headers
+        << post << u"/request/test/uploads"_s << headers
         << QByteArrayLiteral(
                "------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; "
                "name=\"path\"\r\n\r\ntextooooo\r\n------"
@@ -998,7 +963,7 @@ void TestRequest::testController_data()
     headers.clear();
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
     QTest::newRow("uploadsName-test00")
-        << get << QStringLiteral("/request/test/uploadsName/file1") << headers
+        << get << u"/request/test/uploadsName/file1"_s << headers
         << QByteArrayLiteral(
                "------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; "
                "name=\"path\"\r\n\r\ntextooooo\r\n------"
@@ -1019,7 +984,7 @@ void TestRequest::testController_data()
     headers.clear();
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
     QTest::newRow("upload-test00")
-        << post << QStringLiteral("/request/test/upload/file1") << headers
+        << post << u"/request/test/upload/file1"_s << headers
         << QByteArrayLiteral(
                "------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; "
                "name=\"path\"\r\n\r\ntextooooo\r\n------"
@@ -1055,8 +1020,8 @@ static QByteArray createBody(QByteArray &result, int count)
     QUrlQuery ret;
     for (const auto &[key, upload] : uploads.asKeyValueRange()) {
         ret.addQueryItem(key, key);
-        ret.addQueryItem(key, QStringLiteral("file.bin"));
-        ret.addQueryItem(key, QStringLiteral("application/octet-stream"));
+        ret.addQueryItem(key, u"file.bin"_s);
+        ret.addQueryItem(key, u"application/octet-stream"_s);
         ret.addQueryItem(key, QString::number(upload.size()));
         ret.addQueryItem(key, QString::fromLatin1(upload.toBase64()));
     }
@@ -1084,22 +1049,19 @@ void TestRequest::testUploads_data()
     headers.clear();
     body = createBody(result, 1);
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
-    QTest::newRow("uploads-1") << post << QStringLiteral("/request/test/uploads") << headers << body
-                               << result;
+    QTest::newRow("uploads-1") << post << u"/request/test/uploads"_s << headers << body << result;
 
     query.clear();
     headers.clear();
     body = createBody(result, 10);
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
-    QTest::newRow("uploads-10") << post << QStringLiteral("/request/test/uploads") << headers
-                                << body << result;
+    QTest::newRow("uploads-10") << post << u"/request/test/uploads"_s << headers << body << result;
 
     query.clear();
     headers.clear();
     body = createBody(result, 100);
     headers.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH");
-    QTest::newRow("uploads-100") << post << QStringLiteral("/request/test/uploads") << headers
-                                 << body << result;
+    QTest::newRow("uploads-100") << post << u"/request/test/uploads"_s << headers << body << result;
 }
 QTEST_MAIN(TestRequest)
 

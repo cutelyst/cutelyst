@@ -84,28 +84,28 @@ TestEngine *TestActionREST::getEngine()
     qputenv("RECURSION", QByteArrayLiteral("10"));
 
     QDir buildDir = QDir::current();
-    std::ignore   = buildDir.cd(QStringLiteral(".."));
+    std::ignore   = buildDir.cd(u".."_s);
 
     QDir current        = buildDir;
     QString pluginPaths = current.absolutePath();
 
-    std::ignore = current.cd(QStringLiteral("Cutelyst/Actions/REST"));
+    std::ignore = current.cd(u"Cutelyst/Actions/REST"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Release"));
+    std::ignore = current.cd(u"Release"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Release/Cutelyst/Actions/REST"));
+    std::ignore = current.cd(u"Release/Cutelyst/Actions/REST"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Debug"));
+    std::ignore = current.cd(u"Debug"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Debug/Cutelyst/Actions/REST"));
+    std::ignore = current.cd(u"Debug/Cutelyst/Actions/REST"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     qDebug() << "setting CUTELYST_PLUGINS_DIR to" << pluginPaths;
@@ -158,33 +158,33 @@ void TestActionREST::testController_data()
     const auto options      = "OPTIONS"_ba;
     const auto methodDELETE = "DELETE"_ba;
 
-    QTest::newRow("rest-test1-00") << get << QStringLiteral("/action/rest/test1/") << 200
+    QTest::newRow("rest-test1-00") << get << u"/action/rest/test1/"_s << 200
                                    << QByteArrayLiteral("test1.test1 GET.") << QString{};
-    QTest::newRow("rest-test1-01") << head << QStringLiteral("/action/rest/test1/") << 200
+    QTest::newRow("rest-test1-01") << head << u"/action/rest/test1/"_s << 200
                                    << QByteArrayLiteral("test1.test1 HEAD.") << QString{};
-    QTest::newRow("rest-test1-02") << options << QStringLiteral("/action/rest/test1/") << 200
-                                   << QByteArrayLiteral("") << QStringLiteral("GET, HEAD");
+    QTest::newRow("rest-test1-02")
+        << options << u"/action/rest/test1/"_s << 200 << QByteArrayLiteral("") << u"GET, HEAD"_s;
 
     // Test custom NOT implemented
     QTest::newRow("rest-test1-03")
-        << put << QStringLiteral("/action/rest/test1/") << 200
+        << put << u"/action/rest/test1/"_s << 200
         << QByteArrayLiteral("test1.test1 NOT IMPLEMENTED.") << QString{};
 
-    QTest::newRow("rest-test2-00") << get << QStringLiteral("/action/rest/test2/") << 200
+    QTest::newRow("rest-test2-00") << get << u"/action/rest/test2/"_s << 200
                                    << QByteArrayLiteral("test2.test2 GET.") << QString{};
     // HEAD when unavailable redispatches to GET
-    QTest::newRow("rest-test2-01") << head << QStringLiteral("/action/rest/test2/") << 200
+    QTest::newRow("rest-test2-01") << head << u"/action/rest/test2/"_s << 200
                                    << QByteArrayLiteral("test2.test2 GET.") << QString{};
 
-    QTest::newRow("rest-test2-02") << options << QStringLiteral("/action/rest/test2/") << 200
-                                   << QByteArrayLiteral("") << QStringLiteral("DELETE, GET, HEAD");
+    QTest::newRow("rest-test2-02") << options << u"/action/rest/test2/"_s << 200
+                                   << QByteArrayLiteral("") << u"DELETE, GET, HEAD"_s;
 
     // Test default NOT implemented
     QTest::newRow("rest-test2-03")
-        << put << QStringLiteral("/action/rest/test2/") << 405
+        << put << u"/action/rest/test2/"_s << 405
         << QByteArrayLiteral("Method PUT not implemented for http://127.0.0.1/action/rest/test2/")
-        << QStringLiteral("DELETE, GET, HEAD");
-    QTest::newRow("rest-test2-04") << methodDELETE << QStringLiteral("/action/rest/test2/") << 200
+        << u"DELETE, GET, HEAD"_s;
+    QTest::newRow("rest-test2-04") << methodDELETE << u"/action/rest/test2/"_s << 200
                                    << QByteArrayLiteral("test2.test2 DELETE.") << QString{};
 }
 

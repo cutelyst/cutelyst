@@ -28,7 +28,7 @@ bool WindowsFork::continueMaster(int *exit)
             &WindowsFork::childFinished);
 
     auto env = QProcessEnvironment::systemEnvironment();
-    env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));
+    env.insert(u"CUTELYST_WSGI_IGNORE_MASTER"_s, u"1"_s);
     m_masterChildProcess->setProcessEnvironment(env);
 
     m_masterChildProcess->setProcessChannelMode(QProcess::ForwardedChannels);

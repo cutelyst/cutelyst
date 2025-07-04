@@ -7,6 +7,8 @@
 
 #include "credentialhttp.h"
 
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class CredentialHttpPrivate
@@ -28,8 +30,8 @@ public:
 
     CredentialHttp::AuthType type             = CredentialHttp::Any;
     CredentialHttp::PasswordType passwordType = CredentialHttp::None;
-    QString usernameField                     = QStringLiteral("username");
-    QString passwordField                     = QStringLiteral("password");
+    QString usernameField                     = u"username"_s;
+    QString passwordField                     = u"password"_s;
     QString passwordPreSalt;
     QString passwordPostSalt;
     QString authorizationRequiredMessage;

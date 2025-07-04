@@ -9,6 +9,7 @@
 #include <limits>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 ValidatorFileSize::ValidatorFileSize(const QString &field,
                                      Option option,
@@ -393,10 +394,9 @@ QString ValidatorFileSize::genericValidationDataError(Context *c, const QVariant
 void ValidatorFileSize::inputPattern(Context *c, const QString &stashKey)
 {
     Q_ASSERT(c);
-    const QString pattern = c->locale().textDirection() == Qt::LeftToRight
-                                ? QStringLiteral("^\\d+[%1]?\\d*\\s*[KkMmGgTt]?[Ii]?[Bb]?")
-                                      .arg(c->locale().decimalPoint())
-                                : QStringLiteral("[KkMmGgTt]?[Ii]?[Bb]?\\s*\\d+[%1]?\\d*")
-                                      .arg(c->locale().decimalPoint());
+    const QString pattern =
+        c->locale().textDirection() == Qt::LeftToRight
+            ? u"^\\d+[%1]?\\d*\\s*[KkMmGgTt]?[Ii]?[Bb]?"_s.arg(c->locale().decimalPoint())
+            : u"[KkMmGgTt]?[Ii]?[Bb]?\\s*\\d+[%1]?\\d*"_s.arg(c->locale().decimalPoint());
     c->setStash(stashKey, pattern);
 }

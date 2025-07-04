@@ -15,11 +15,12 @@
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile", QtWarningMsg)
 
-#define SESSION_STORE_FILE_SAVE QStringLiteral("_c_session_store_file_save")
-#define SESSION_STORE_FILE_DATA QStringLiteral("_c_session_store_file_data")
+#define SESSION_STORE_FILE_SAVE u"_c_session_store_file_save"_s
+#define SESSION_STORE_FILE_DATA u"_c_session_store_file_data"_s
 
 namespace {
 QVariantHash loadSessionData(Context *c, const QByteArray &sid);

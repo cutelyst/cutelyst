@@ -28,49 +28,49 @@ public:
     void test0(Context *c)
     {
         c->response()->setContentType("text/plain"_ba);
-        c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
-        c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
+        c->setStash(u"foo"_s, QByteArrayLiteral("bar"));
+        c->setStash(u"bar"_s, QByteArrayLiteral("baz"));
         c->forward(c->view());
     }
 
     C_ATTR(test1, :Local)
     void test1(Context *c)
     {
-        c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
-        c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
-        c->setStash(QStringLiteral("SingleKey"), QByteArrayLiteral("ok"));
+        c->setStash(u"foo"_s, QByteArrayLiteral("bar"));
+        c->setStash(u"bar"_s, QByteArrayLiteral("baz"));
+        c->setStash(u"SingleKey"_s, QByteArrayLiteral("ok"));
         c->forward(c->view(u"view1"));
     }
 
     C_ATTR(test2, :Local)
     void test2(Context *c)
     {
-        c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
-        c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
-        c->setStash(QStringLiteral("SingleKey"), QByteArrayLiteral("ok"));
-        c->setStash(QStringLiteral("One"), 1);
-        c->setStash(QStringLiteral("Two"), 2);
-        c->forward(c->view(QStringLiteral("view2")));
+        c->setStash(u"foo"_s, QByteArrayLiteral("bar"));
+        c->setStash(u"bar"_s, QByteArrayLiteral("baz"));
+        c->setStash(u"SingleKey"_s, QByteArrayLiteral("ok"));
+        c->setStash(u"One"_s, 1);
+        c->setStash(u"Two"_s, 2);
+        c->forward(c->view(u"view2"_s));
     }
 
     C_ATTR(test3, :Local)
     void test3(Context *c)
     {
-        c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
-        c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
-        c->setStash(QStringLiteral("SingleKey"), QByteArrayLiteral("ok"));
-        c->setStash(QStringLiteral("One"), 1);
-        c->setStash(QStringLiteral("Two"), 2);
-        c->setStash(QStringLiteral("3"), 3);
-        c->setStash(QStringLiteral("4"), 4);
-        c->forward(c->view(QStringLiteral("view3")));
+        c->setStash(u"foo"_s, QByteArrayLiteral("bar"));
+        c->setStash(u"bar"_s, QByteArrayLiteral("baz"));
+        c->setStash(u"SingleKey"_s, QByteArrayLiteral("ok"));
+        c->setStash(u"One"_s, 1);
+        c->setStash(u"Two"_s, 2);
+        c->setStash(u"3"_s, 3);
+        c->setStash(u"4"_s, 4);
+        c->forward(c->view(u"view3"_s));
     }
 
     C_ATTR(test4, :Local)
     void test4(Context *c)
     {
-        c->setStash(QStringLiteral("1"), 1);
-        c->forward(c->view(QStringLiteral("view4")));
+        c->setStash(u"1"_s, 1);
+        c->forward(c->view(u"view4"_s));
     }
 };
 
@@ -112,18 +112,18 @@ TestEngine *TestActionRenderView::getEngine()
     new TestViewJSON(app);
 
     new ViewJson(app);
-    auto v1 = new ViewJson(app, QStringLiteral("view1"));
-    v1->setExposeStash(QStringLiteral("SingleKey"));
+    auto v1 = new ViewJson(app, u"view1"_s);
+    v1->setExposeStash(u"SingleKey"_s);
     v1->setXJsonHeader(true);
 
-    auto v2 = new ViewJson(app, QStringLiteral("view2"));
-    v2->setExposeStash({QStringLiteral("One"), QStringLiteral("Two")});
+    auto v2 = new ViewJson(app, u"view2"_s);
+    v2->setExposeStash({u"One"_s, u"Two"_s});
     v2->setXJsonHeader(true);
 
-    auto v3 = new ViewJson(app, QStringLiteral("view3"));
-    v3->setExposeStash(QRegularExpression(QStringLiteral("\\d")));
+    auto v3 = new ViewJson(app, u"view3"_s);
+    v3->setExposeStash(QRegularExpression(u"\\d"_s));
 
-    auto v4 = new ViewJson(app, QStringLiteral("view4"));
+    auto v4 = new ViewJson(app, u"view4"_s);
     v4->setOutputFormat(ViewJson::Indented);
 
     if (!engine->init()) {
@@ -175,21 +175,20 @@ void TestActionRenderView::testController_data()
     const auto get = "GET"_ba;
 
     QTest::newRow("viewjson-test-00")
-        << get << QStringLiteral("/test/view/json/test0") << true << 200
-        << QByteArrayLiteral("{\"bar\":\"baz\",\"foo\":\"bar\"}")
-        << QStringLiteral("application/json") << false;
-    QTest::newRow("viewjson-test-01") << get << QStringLiteral("/test/view/json/test1") << true
-                                      << 200 << QByteArrayLiteral("{\"SingleKey\":\"ok\"}")
-                                      << QStringLiteral("application/json") << true;
-    QTest::newRow("viewjson-test-02") << get << QStringLiteral("/test/view/json/test2") << false
-                                      << 200 << QByteArrayLiteral("{\"One\":1,\"Two\":2}")
-                                      << QStringLiteral("application/json") << false;
+        << get << u"/test/view/json/test0"_s << true << 200
+        << QByteArrayLiteral("{\"bar\":\"baz\",\"foo\":\"bar\"}") << u"application/json"_s << false;
+    QTest::newRow("viewjson-test-01")
+        << get << u"/test/view/json/test1"_s << true << 200
+        << QByteArrayLiteral("{\"SingleKey\":\"ok\"}") << u"application/json"_s << true;
+    QTest::newRow("viewjson-test-02")
+        << get << u"/test/view/json/test2"_s << false << 200
+        << QByteArrayLiteral("{\"One\":1,\"Two\":2}") << u"application/json"_s << false;
     QTest::newRow("viewjson-test-03")
-        << get << QStringLiteral("/test/view/json/test3") << true << 200
-        << QByteArrayLiteral("{\"3\":3,\"4\":4}") << QStringLiteral("application/json") << false;
+        << get << u"/test/view/json/test3"_s << true << 200
+        << QByteArrayLiteral("{\"3\":3,\"4\":4}") << u"application/json"_s << false;
     QTest::newRow("viewjson-test-04")
-        << get << QStringLiteral("/test/view/json/test4") << false << 200
-        << QByteArrayLiteral("{\n    \"1\": 1\n}\n") << QStringLiteral("application/json") << false;
+        << get << u"/test/view/json/test4"_s << false << 200
+        << QByteArrayLiteral("{\n    \"1\": 1\n}\n") << u"application/json"_s << false;
 }
 
 QTEST_MAIN(TestActionRenderView)

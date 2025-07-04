@@ -12,6 +12,8 @@
 
 #include <QDebug>
 
+using namespace Qt::StringLiterals;
+
 UriFor::UriFor(const QString &path, const QStringList &args, Cutelee::Parser *parser)
     : Cutelee::Node(parser)
     , m_path(path, parser)
@@ -120,7 +122,7 @@ Cutelee::Node *UriForTag::getNode(const QString &tagContent, Cutelee::Parser *p)
     parts.removeFirst(); // Not interested in the name of the tag.
     if (parts.isEmpty()) {
         throw Cutelee::Exception(Cutelee::TagSyntaxError,
-                                 QStringLiteral("c_uri_for requires at least the path"));
+                                 u"c_uri_for requires at least the path"_s);
     }
 
     return new UriFor(parts.first(), parts.mid(1), p);

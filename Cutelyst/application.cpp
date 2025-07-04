@@ -57,7 +57,7 @@ Application::Application(QObject *parent)
 
     d->dispatcher = new Dispatcher(this);
 
-    loadTranslations(QStringLiteral("cutelystcore"));
+    loadTranslations(u"cutelystcore"_s);
 }
 
 Application::~Application()
@@ -466,9 +466,9 @@ void replacePercentN(QString *result, int n)
             QString fmt;
             if (result->at(percentPos + len) == u'L') {
                 ++len;
-                fmt = QStringLiteral("%L1");
+                fmt = u"%L1"_s;
             } else {
-                fmt = QStringLiteral("%1");
+                fmt = u"%1"_s;
             }
             if (result->at(percentPos + len) == u'n') {
                 fmt = fmt.arg(n);
@@ -536,8 +536,8 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename,
         const QString _dir = directory.isEmpty() ? QStringLiteral(CUTELYST_I18N_DIR) : directory;
         const QDir i18nDir(_dir);
         if (Q_LIKELY(i18nDir.exists())) {
-            const QString _prefix         = prefix.isEmpty() ? QStringLiteral(".") : prefix;
-            const QString _suffix         = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QString _prefix         = prefix.isEmpty() ? u"."_s : prefix;
+            const QString _suffix         = suffix.isEmpty() ? u".qm"_s : suffix;
             const QStringList namesFilter = QStringList({filename + _prefix + u'*' + _suffix});
 
             const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
@@ -650,12 +650,12 @@ void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
     if (!config.contains(QLatin1String("home"))) {
-        config.insert(QStringLiteral("home"), QDir::currentPath());
+        config.insert(u"home"_s, QDir::currentPath());
     }
 
     if (!config.contains(QLatin1String("root"))) {
         QDir home = config.value(QLatin1String("home")).toString();
-        config.insert(QStringLiteral("root"), home.absoluteFilePath(QLatin1String("root")));
+        config.insert(u"root"_s, home.absoluteFilePath(QLatin1String("root")));
     }
 }
 
@@ -693,7 +693,7 @@ void Cutelyst::ApplicationPrivate::logRequest(const Request *req)
 {
     QString path = req->path();
     if (path.isEmpty()) {
-        path = QStringLiteral("/");
+        path = u"/"_s;
     }
     qCDebug(CUTELYST_REQUEST) << req->method() << "request for" << path << "from"
                               << req->addressString();

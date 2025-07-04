@@ -8,6 +8,8 @@
 #include <QDirIterator>
 #include <QMimeDatabase>
 
+using namespace Qt::StringLiterals;
+
 Helper::Helper(QObject *parent)
     : QObject(parent)
 {
@@ -15,7 +17,7 @@ Helper::Helper(QObject *parent)
 
 bool Helper::findProjectDir(const QDir &dir, QDir *projectDir)
 {
-    QFile cmake(dir.absoluteFilePath(QStringLiteral("CMakeLists.txt")));
+    QFile cmake(dir.absoluteFilePath(u"CMakeLists.txt"_s));
     if (cmake.exists()) {
         if (cmake.open(QFile::ReadOnly | QFile::Text)) {
             while (!cmake.atEnd()) {
@@ -43,7 +45,7 @@ QString Helper::findApplication(const QDir &projectDir)
     while (it.hasNext()) {
         QString file         = it.next();
         const QMimeType mime = m_db.mimeTypeForFile(file);
-        if (mime.inherits(QStringLiteral("application/x-sharedlib"))) {
+        if (mime.inherits(u"application/x-sharedlib"_s)) {
             return file;
         }
     }

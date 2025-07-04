@@ -12,6 +12,7 @@
 #include <QtCore/QLoggingCategory>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_STATUSMESSAGE, "cutelyst.plugins.statusmessage", QtWarningMsg)
 
@@ -26,10 +27,10 @@ class StatusMessagePrivate
 public:
     static void _q_postFork(Application *app);
 
-    QString sessionPrefix     = QStringLiteral("status_msg");
-    QString tokenParam        = QStringLiteral("mid");
-    QString statusMsgStashKey = QStringLiteral("status_msg");
-    QString errorMsgStashKey  = QStringLiteral("error_msg");
+    QString sessionPrefix     = u"status_msg"_s;
+    QString tokenParam        = u"mid"_s;
+    QString statusMsgStashKey = u"status_msg"_s;
+    QString errorMsgStashKey  = u"error_msg"_s;
 };
 
 void StatusMessagePrivate::_q_postFork(Application *app)

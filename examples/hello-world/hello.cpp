@@ -11,10 +11,12 @@
 #include <QCoreApplication>
 #include <QDebug>
 
+using namespace Qt::StringLiterals;
+
 HelloWorld::HelloWorld(QObject *parent)
     : Cutelyst::Application(parent)
 {
-    QCoreApplication::setApplicationName(QStringLiteral("HelloWorld"));
+    QCoreApplication::setApplicationName(u"HelloWorld"_s);
     qDebug() << "HelloWorld::HelloWorld" << QCoreApplication::applicationPid();
 }
 

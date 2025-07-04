@@ -357,14 +357,14 @@ void ControllerPrivate::setupFinished()
 {
     Q_Q(Controller);
 
-    const ActionList beginList = dispatcher->getActions(QStringLiteral("Begin"), pathPrefix);
+    const ActionList beginList = dispatcher->getActions(u"Begin"_s, pathPrefix);
     if (!beginList.isEmpty()) {
         beginAutoList.append(beginList.last());
     }
 
-    beginAutoList.append(dispatcher->getActions(QStringLiteral("Auto"), pathPrefix));
+    beginAutoList.append(dispatcher->getActions(u"Auto"_s, pathPrefix));
 
-    const ActionList endList = dispatcher->getActions(QStringLiteral("End"), pathPrefix);
+    const ActionList endList = dispatcher->getActions(u"End"_s, pathPrefix);
     if (!endList.isEmpty()) {
         end = endList.last();
     }
@@ -422,8 +422,8 @@ bool Controller::_DISPATCH(Context *c)
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    const auto attributes     = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
-    const QString actionClass = attributes.value(QStringLiteral("ActionClass"));
+    const auto attributes     = args.value(u"attributes"_s).value<ParamsMultiMap>();
+    const QString actionClass = attributes.value(u"ActionClass"_s);
 
     QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
     if (object) {
@@ -457,8 +457,8 @@ Action *ControllerPrivate::createAction(const QVariantHash &args,
     action->applyRoles(roles);
     action->setMethod(method);
     action->setController(controller);
-    action->setName(args.value(QStringLiteral("name")).toString());
-    action->setReverse(args.value(QStringLiteral("reverse")).toString());
+    action->setName(args.value(u"name"_s).toString());
+    action->setReverse(args.value(u"reverse"_s).toString());
     action->setupAction(args, app);
 
     return action;
@@ -499,14 +499,13 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta,
                 reverse = controller->ns() + QLatin1Char('/') + QString::fromLatin1(name);
             }
 
-            Action *action =
-                createAction({{QStringLiteral("name"), QVariant::fromValue(name)},
-                              {QStringLiteral("reverse"), QVariant::fromValue(reverse)},
-                              {QStringLiteral("namespace"), QVariant::fromValue(controller->ns())},
-                              {QStringLiteral("attributes"), QVariant::fromValue(attrs)}},
-                             method,
-                             controller,
-                             app);
+            Action *action = createAction({{u"name"_s, QVariant::fromValue(name)},
+                                           {u"reverse"_s, QVariant::fromValue(reverse)},
+                                           {u"namespace"_s, QVariant::fromValue(controller->ns())},
+                                           {u"attributes"_s, QVariant::fromValue(attrs)}},
+                                          method,
+                                          controller,
+                                          app);
 
             actions.insert(action->reverse(), {action->reverse(), action});
             actionList.append(action);
@@ -597,10 +596,10 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
         QString key   = pair.first;
         QString value = pair.second;
         if (key.compare(u"Global") == 0) {
-            key   = QStringLiteral("Path");
+            key   = u"Path"_s;
             value = parsePathAttr(QLatin1Char('/') + QString::fromLatin1(name));
         } else if (key.compare(u"Local") == 0) {
-            key   = QStringLiteral("Path");
+            key   = u"Path"_s;
             value = parsePathAttr(QString::fromLatin1(name));
         } else if (key.compare(u"Path") == 0) {
             value = parsePathAttr(value);
@@ -620,21 +619,19 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
     });
 
     // Handle special AutoArgs and AutoCaptureArgs case
-    if (!ret.contains(QStringLiteral("Args")) && !ret.contains(QStringLiteral("CaptureArgs")) &&
-        (ret.contains(QStringLiteral("AutoArgs")) ||
-         ret.contains(QStringLiteral("AutoCaptureArgs")))) {
-        if (ret.contains(QStringLiteral("AutoArgs")) &&
-            ret.contains(QStringLiteral("AutoCaptureArgs"))) {
+    if (!ret.contains(u"Args"_s) && !ret.contains(u"CaptureArgs"_s) &&
+        (ret.contains(u"AutoArgs"_s) || ret.contains(u"AutoCaptureArgs"_s))) {
+        if (ret.contains(u"AutoArgs"_s) && ret.contains(u"AutoCaptureArgs"_s)) {
             qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed",
                    name.constData());
         } else {
             QString parameterName;
-            if (ret.contains(QStringLiteral("AutoArgs"))) {
-                ret.remove(QStringLiteral("AutoArgs"));
-                parameterName = QStringLiteral("Args");
+            if (ret.contains(u"AutoArgs"_s)) {
+                ret.remove(u"AutoArgs"_s);
+                parameterName = u"Args"_s;
             } else {
-                ret.remove(QStringLiteral("AutoCaptureArgs"));
-                parameterName = QStringLiteral("CaptureArgs");
+                ret.remove(u"AutoCaptureArgs"_s);
+                parameterName = u"CaptureArgs"_s;
             }
 
             // If the signature is not QStringList we count them
@@ -663,8 +660,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
 QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
     QStack<Component *> roles;
-    const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
-    auto doesIt           = attributes.constFind(QStringLiteral("Does"));
+    const auto attributes = args.value(u"attributes"_s).value<ParamsMultiMap>();
+    auto doesIt           = attributes.constFind(u"Does"_s);
     while (doesIt != attributes.constEnd() && doesIt.key().compare(u"Does") == 0) {
         QObject *object =
             instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
@@ -689,7 +686,7 @@ QString ControllerPrivate::parsePathAttr(const QString &value)
 
 QString ControllerPrivate::parseChainedAttr(const QString &attr)
 {
-    QString ret = QStringLiteral("/");
+    QString ret = u"/"_s;
     if (attr.isEmpty()) {
         return ret;
     }

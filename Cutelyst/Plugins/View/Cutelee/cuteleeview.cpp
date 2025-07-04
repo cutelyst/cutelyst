@@ -21,6 +21,7 @@
 Q_LOGGING_CATEGORY(CUTELYST_CUTELEE, "cutelyst.view.cutelee", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 CUTELEE_BEGIN_LOOKUP(ParamsMultiMap) // cppcheck-suppress unknownMacro
 return object.value(property);
@@ -48,14 +49,13 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name)
     auto app = qobject_cast<Application *>(parent);
     if (app) {
         // make sure templates can be found on the current directory
-        setIncludePaths({app->config(QStringLiteral("root")).toString()});
+        setIncludePaths({app->config(u"root"_s).toString()});
 
         // If CUTELYST_VAR is set the template might have become
         // {{ Cutelyst.req.base }} instead of {{ c.req.base }}
-        d->cutelystVar =
-            app->config(QStringLiteral("CUTELYST_VAR"), QStringLiteral("c")).toString();
+        d->cutelystVar = app->config(u"CUTELYST_VAR"_s, u"c"_s).toString();
 
-        app->loadTranslations(QStringLiteral("plugin_view_cutelee"));
+        app->loadTranslations(u"plugin_view_cutelee"_s);
     } else {
         // make sure templates can be found on the current directory
         setIncludePaths({QDir::currentPath()});
@@ -171,7 +171,7 @@ QByteArray CuteleeView::render(Context *c) const
     QByteArray ret;
     c->setStash(d->cutelystVar, QVariant::fromValue(c));
     const QVariantHash stash = c->stash();
-    auto it                  = stash.constFind(QStringLiteral("template"));
+    auto it                  = stash.constFind(u"template"_s);
     QString templateFile;
     if (it != stash.constEnd()) {
         templateFile = it.value().toString();
@@ -231,7 +231,7 @@ QByteArray CuteleeView::render(Context *c) const
         }
 
         Cutelee::SafeString safeContent(content, true);
-        gc.insert(QStringLiteral("content"), safeContent);
+        gc.insert(u"content"_s, safeContent);
         content = wrapper->render(&gc);
 
         if (wrapper->error() != Cutelee::NoError) {
@@ -282,8 +282,8 @@ QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename,
     if (Q_LIKELY(!filename.isEmpty() && !directory.isEmpty())) {
         const QDir i18nDir(directory);
         if (Q_LIKELY(i18nDir.exists())) {
-            const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
-            const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QString _prefix = prefix.isEmpty() ? u"."_s : prefix;
+            const QString _suffix = suffix.isEmpty() ? u".qm"_s : suffix;
             const QStringList namesFilter =
                 QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
             const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
@@ -339,7 +339,7 @@ void CuteleeViewPrivate::initEngine()
         engine->addPluginPath(QString::fromLocal8Bit(dir));
     }
 
-    engine->insertDefaultLibrary(QStringLiteral("cutelee_cutelyst"), new CutelystCutelee(engine));
+    engine->insertDefaultLibrary(u"cutelee_cutelyst"_s, new CutelystCutelee(engine));
 }
 
 #include "moc_cuteleeview.cpp"

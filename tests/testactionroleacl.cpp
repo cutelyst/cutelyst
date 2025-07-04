@@ -92,9 +92,7 @@ private:
     bool Auto(Context *c)
     {
         bool ok = Authentication::authenticate(
-            c,
-            ParamsMultiMap{
-                {QStringLiteral("id"), c->request()->queryParam(QStringLiteral("user"))}});
+            c, ParamsMultiMap{{u"id"_s, c->request()->queryParam(u"user"_s)}});
         if (!ok) {
             c->response()->body() += QByteArrayLiteral("Failed login.");
         }
@@ -156,28 +154,28 @@ TestEngine *TestActionRoleACL::getEngine()
     qputenv("RECURSION", QByteArrayLiteral("10"));
 
     QDir buildDir = QDir::current();
-    std::ignore   = buildDir.cd(QStringLiteral(".."));
+    std::ignore   = buildDir.cd(u".."_s);
 
     QDir current        = buildDir;
     QString pluginPaths = current.absolutePath();
 
-    std::ignore = current.cd(QStringLiteral("Cutelyst/Actions/RoleACL"));
+    std::ignore = current.cd(u"Cutelyst/Actions/RoleACL"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Release"));
+    std::ignore = current.cd(u"Release"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Release/Cutelyst/Actions/RoleACL"));
+    std::ignore = current.cd(u"Release/Cutelyst/Actions/RoleACL"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Debug"));
+    std::ignore = current.cd(u"Debug"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     current     = buildDir;
-    std::ignore = current.cd(QStringLiteral("Debug/Cutelyst/Actions/RoleACL"));
+    std::ignore = current.cd(u"Debug/Cutelyst/Actions/RoleACL"_s);
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     qDebug() << "setting CUTELYST_PLUGINS_DIR to" << pluginPaths;
@@ -190,17 +188,16 @@ TestEngine *TestActionRoleACL::getEngine()
 
     auto clearStore = std::make_shared<StoreMinimal>(QStringLiteral(u"id"));
 
-    AuthenticationUser fooUser(QStringLiteral("foo"));
-    fooUser.insert(QStringLiteral("roles"), QStringList{QStringLiteral("admin")});
+    AuthenticationUser fooUser(u"foo"_s);
+    fooUser.insert(u"roles"_s, QStringList{u"admin"_s});
     clearStore->addUser(fooUser);
 
-    AuthenticationUser barUser(QStringLiteral("bar"));
-    barUser.insert(QStringLiteral("roles"),
-                   QStringList{QStringLiteral("admin"), QStringLiteral("writer")});
+    AuthenticationUser barUser(u"bar"_s);
+    barUser.insert(u"roles"_s, QStringList{u"admin"_s, u"writer"_s});
     clearStore->addUser(barUser);
 
-    AuthenticationUser bazUser(QStringLiteral("baz"));
-    bazUser.insert(QStringLiteral("roles"), QStringList{QStringLiteral("editor")});
+    AuthenticationUser bazUser(u"baz"_s);
+    bazUser.insert(u"roles"_s, QStringList{u"editor"_s});
     clearStore->addUser(bazUser);
 
     auto clearPassword = std::make_shared<CredentialPassword>();
@@ -242,34 +239,29 @@ void TestActionRoleACL::testController_data()
 
     // Path dispatcher
     QTest::newRow("roleacl-test00")
-        << QStringLiteral("/action/role/acl/acl_admin") << QByteArrayLiteral("Failed login.");
+        << u"/action/role/acl/acl_admin"_s << QByteArrayLiteral("Failed login.");
     QTest::newRow("roleacl-test01")
-        << QStringLiteral("/action/role/acl/acl_admin?user=foo") << QByteArrayLiteral("Ok.");
+        << u"/action/role/acl/acl_admin?user=foo"_s << QByteArrayLiteral("Ok.");
     QTest::newRow("roleacl-test02")
-        << QStringLiteral("/action/role/acl/acl_admin?user=bar") << QByteArrayLiteral("Ok.");
+        << u"/action/role/acl/acl_admin?user=bar"_s << QByteArrayLiteral("Ok.");
     QTest::newRow("roleacl-test03")
-        << QStringLiteral("/action/role/acl/acl_admin?user=baz") << QByteArrayLiteral("Denied.");
+        << u"/action/role/acl/acl_admin?user=baz"_s << QByteArrayLiteral("Denied.");
     QTest::newRow("roleacl-test04")
-        << QStringLiteral("/action/role/acl/acl_admin_editor_writer?user=foo")
-        << QByteArrayLiteral("Denied.");
+        << u"/action/role/acl/acl_admin_editor_writer?user=foo"_s << QByteArrayLiteral("Denied.");
     QTest::newRow("roleacl-test05")
-        << QStringLiteral("/action/role/acl/acl_admin_editor_writer?user=bar")
-        << QByteArrayLiteral("Ok.");
+        << u"/action/role/acl/acl_admin_editor_writer?user=bar"_s << QByteArrayLiteral("Ok.");
     QTest::newRow("roleacl-test06")
-        << QStringLiteral("/action/role/acl/acl_admin_editor_writer?user=baz")
-        << QByteArrayLiteral("Denied.");
-    QTest::newRow("roleacl-test07") << QStringLiteral("/action/role/acl/acl_editor_writer?user=foo")
-                                    << QByteArrayLiteral("Denied.");
-    QTest::newRow("roleacl-test08") << QStringLiteral("/action/role/acl/acl_editor_writer?user=bar")
-                                    << QByteArrayLiteral("Ok.");
-    QTest::newRow("roleacl-test09") << QStringLiteral("/action/role/acl/acl_editor_writer?user=baz")
-                                    << QByteArrayLiteral("Ok.");
-    QTest::newRow("roleacl-test10")
-        << QStringLiteral("/action/role/acl/acl_denied_detach_to_absolute?user=foo")
-        << QByteArrayLiteral("Denied on absolute action.");
-    QTest::newRow("roleacl-test11")
-        << QStringLiteral("/action/role/acl/acl_denied_detach_to_global?user=bar")
-        << QByteArrayLiteral("acl_denied_detach_to_global");
+        << u"/action/role/acl/acl_admin_editor_writer?user=baz"_s << QByteArrayLiteral("Denied.");
+    QTest::newRow("roleacl-test07")
+        << u"/action/role/acl/acl_editor_writer?user=foo"_s << QByteArrayLiteral("Denied.");
+    QTest::newRow("roleacl-test08")
+        << u"/action/role/acl/acl_editor_writer?user=bar"_s << QByteArrayLiteral("Ok.");
+    QTest::newRow("roleacl-test09")
+        << u"/action/role/acl/acl_editor_writer?user=baz"_s << QByteArrayLiteral("Ok.");
+    QTest::newRow("roleacl-test10") << u"/action/role/acl/acl_denied_detach_to_absolute?user=foo"_s
+                                    << QByteArrayLiteral("Denied on absolute action.");
+    QTest::newRow("roleacl-test11") << u"/action/role/acl/acl_denied_detach_to_global?user=bar"_s
+                                    << QByteArrayLiteral("acl_denied_detach_to_global");
 }
 
 QTEST_MAIN(TestActionRoleACL)

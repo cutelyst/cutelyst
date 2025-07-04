@@ -11,6 +11,7 @@
 #include <QTemporaryFile>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 QString Upload::filename() const
 {
@@ -35,7 +36,7 @@ bool Upload::save(const QString &newName)
     Q_D(Upload);
 
     bool error           = false;
-    QString fileTemplate = QStringLiteral("%1/qt_temp.XXXXXX");
+    QString fileTemplate = u"%1/qt_temp.XXXXXX"_s;
     QFile out(fileTemplate.arg(QFileInfo(newName).path()));
     if (!out.open(QIODevice::ReadWrite)) {
         error = true;
@@ -69,7 +70,7 @@ bool Upload::save(const QString &newName)
 
         if (!error && !out.rename(newName)) {
             error = true;
-            setErrorString(QStringLiteral("Cannot create %1 for output").arg(newName));
+            setErrorString(u"Cannot create %1 for output"_s.arg(newName));
             qCWarning(CUTELYST_UPLOAD) << errorString();
         }
         if (error) {

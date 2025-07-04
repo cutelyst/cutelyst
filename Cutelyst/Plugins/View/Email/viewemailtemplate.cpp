@@ -14,6 +14,7 @@
 Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAILTEMPLATE, "cutelyst.view.emailtemplate", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 ViewEmailTemplate::ViewEmailTemplate(QObject *parent, const QString &name)
     : ViewEmail(new ViewEmailTemplatePrivate, parent, name)
@@ -55,7 +56,7 @@ std::shared_ptr<MimePart>
     const QString defaultView = d->defaultView;
 
     const View *view = nullptr;
-    auto viewIt      = partHash.constFind(QStringLiteral("view"));
+    auto viewIt      = partHash.constFind(u"view"_s);
     if (viewIt != partHash.constEnd() && !viewIt.value().toString().isEmpty()) {
         // use the view specified for the email part
         const QString viewString = viewIt.value().toString();
@@ -75,11 +76,11 @@ std::shared_ptr<MimePart>
 
     // validate the per template view
     if (!view) {
-        c->appendError(QStringLiteral("Could not find a view to render"));
+        c->appendError(u"Could not find a view to render"_s);
         return nullptr;
     }
 
-    QString templateString = partHash.value(QStringLiteral("template")).toString();
+    QString templateString = partHash.value(u"template"_s).toString();
     ;
     // prefix with template_prefix if configured
     if (!d->templatePrefix.isEmpty()) {
@@ -89,7 +90,7 @@ std::shared_ptr<MimePart>
     // render the email part
     const QVariantHash currentStash = c->stash();
     c->stash(partHash);
-    c->setStash(QStringLiteral("template"), templateString);
+    c->setStash(u"template"_s, templateString);
     QByteArray output = view->render(c);
     if (c->error()) {
         qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Errors" << c->errors();
@@ -110,14 +111,14 @@ QByteArray ViewEmailTemplate::render(Context *c) const
 
     QByteArray ret;
     QVariantHash email              = c->stash(d->stashKey).toHash();
-    const QString templateName      = email.value(QStringLiteral("template")).toString();
-    const QVariantList templateList = email.value(QStringLiteral("templates")).toList();
+    const QString templateName      = email.value(u"template"_s).toString();
+    const QVariantList templateList = email.value(u"templates"_s).toList();
     if (templateName.isEmpty() && templateList.isEmpty()) {
         ret = ViewEmail::render(c);
         return ret;
     }
 
-    QVariantList parts = email.value(QStringLiteral("parts")).toList();
+    QVariantList parts = email.value(u"parts"_s).toList();
     if (!templateList.isEmpty() && templateList.first().typeId() == QMetaType::QVariantHash) {
         // multipart API
         for (const QVariant &part : templateList) {
@@ -129,17 +130,17 @@ QByteArray ViewEmailTemplate::render(Context *c) const
     } else if (!templateName.isEmpty()) {
         // single part API
         QVariantHash partArgs({
-            {QStringLiteral("template"), templateName},
+            {u"template"_s, templateName},
 
         });
-        auto contentTypeIt = email.constFind(QStringLiteral("content_type"));
+        auto contentTypeIt = email.constFind(u"content_type"_s);
         if (contentTypeIt != email.constEnd() && !contentTypeIt.value().toString().isEmpty()) {
-            partArgs.insert(QStringLiteral("content_type"), contentTypeIt.value().toString());
+            partArgs.insert(u"content_type"_s, contentTypeIt.value().toString());
         }
         auto partObj = generatePart(c, d, partArgs);
         parts.append(QVariant::fromValue(partObj));
     }
-    email.insert(QStringLiteral("parts"), parts);
+    email.insert(u"parts"_s, parts);
     c->setStash(d->stashKey, email);
 
     ret = ViewEmail::render(c);

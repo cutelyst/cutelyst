@@ -40,6 +40,6 @@ void Root::index(Context *c)
 
 void Root::defaultPage(Context *c)
 {
-    c->response()->setBody(QStringLiteral("Page not found!"));
+    c->response()->setBody(u"Page not found!"_s);
     c->response()->setStatus(404);
 }

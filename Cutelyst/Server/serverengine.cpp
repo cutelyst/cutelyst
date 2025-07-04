@@ -35,6 +35,7 @@
 Q_LOGGING_CATEGORY(C_SERVER_ENGINE, "cutelyst.server.engine", QtWarningMsg)
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 QByteArray dateHeader();
 
@@ -50,7 +51,7 @@ ServerEngine::ServerEngine(Application *localApp,
 
     if (m_server->socketTimeout()) {
         m_socketTimeout = new QTimer(this);
-        m_socketTimeout->setObjectName(QStringLiteral("Cutelyst::socketTimeout"));
+        m_socketTimeout->setObjectName(u"Cutelyst::socketTimeout"_s);
         m_socketTimeout->setInterval(std::chrono::seconds{m_server->socketTimeout()});
     }
 
@@ -164,9 +165,8 @@ void ServerEngine::postFork(int workerId)
 QByteArray ServerEngine::dateHeader()
 {
     QString ret;
-    ret = QLatin1String("\r\nDate: ") +
-          QLocale::c().toString(QDateTime::currentDateTimeUtc(),
-                                QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
+                                                              u"ddd, dd MMM yyyy hh:mm:ss 'GMT"_s);
     return ret.toLatin1();
 }
 

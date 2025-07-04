@@ -429,8 +429,8 @@ bool Context::execute(Component *code)
     static int recursion =
         qEnvironmentVariableIsSet("RECURSION") ? qEnvironmentVariableIntValue("RECURSION") : 1000;
     if (d->stack.size() >= recursion) {
-        QString msg = QStringLiteral("Deep recursion detected (stack size %1) calling %2, %3")
-                          .arg(QString::number(d->stack.size()), code->reverse(), code->name());
+        QString msg = u"Deep recursion detected (stack size %1) calling %2, %3"_s.arg(
+            QString::number(d->stack.size()), code->reverse(), code->name());
         appendError(msg);
         setState(false);
         return false;
@@ -514,15 +514,15 @@ void Context::finalize()
 
         QString average;
         if (duration.count() == 0.0) {
-            average = QStringLiteral("??");
+            average = u"??"_s;
         } else {
             average = QString::number(1.0 / duration.count(), 'f');
             average.truncate(average.size() - 3);
         }
-        qCInfo(CUTELYST_STATS) << qPrintable(QStringLiteral("Request took: %1s (%2/s)\n%3")
-                                                 .arg(QString::number(duration.count(), 'f'),
-                                                      average,
-                                                      QString::fromLatin1(d->stats->report())));
+        qCInfo(CUTELYST_STATS) << qPrintable(
+            u"Request took: %1s (%2/s)\n%3"_s.arg(QString::number(duration.count(), 'f'),
+                                                  average,
+                                                  QString::fromLatin1(d->stats->report())));
         delete d->stats;
         d->stats = nullptr;
     }

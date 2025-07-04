@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2015-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2015-2025 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "stats.h"
@@ -14,6 +14,7 @@
 #include <QtCore/QStringList>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 Stats::Stats(EngineRequest *request)
     : d_ptr(new StatsPrivate)
@@ -62,6 +63,6 @@ QByteArray Stats::report()
         table.append({stat.action, QString::number(duration.count(), 'f') + QLatin1Char('s')});
     }
 
-    ret = Utils::buildTable(table, {QStringLiteral("Action"), QStringLiteral("Time")});
+    ret = Utils::buildTable(table, {u"Action"_s, u"Time"_s});
     return ret;
 }

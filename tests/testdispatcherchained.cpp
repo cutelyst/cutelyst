@@ -78,24 +78,23 @@ void TestDispatcherChained::testController_data()
     QTest::addColumn<QByteArray>("output");
 
     // Chained dispatcher
-    QTest::newRow("chained-test00") << QStringLiteral("/root") << QByteArrayLiteral("/root");
-    QTest::newRow("chained-test01") << QStringLiteral("/root/") << QByteArrayLiteral("/root");
-    QTest::newRow("chained-test02") << QStringLiteral("/root////") << QByteArrayLiteral("/root");
-    QTest::newRow("chained-test03") << QStringLiteral("/root/item") << QByteArrayLiteral("/root");
-    QTest::newRow("chained-test04") << QStringLiteral("/root/item/") << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test00") << u"/root"_s << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test01") << u"/root/"_s << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test02") << u"/root////"_s << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test03") << u"/root/item"_s << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test04") << u"/root/item/"_s << QByteArrayLiteral("/root");
 
-    QTest::newRow("chained-test05")
-        << QStringLiteral("/chain/item") << QByteArrayLiteral("/chain/item[MANY]/");
+    QTest::newRow("chained-test05") << u"/chain/item"_s << QByteArrayLiteral("/chain/item[MANY]/");
     QTest::newRow("chained-test07")
-        << QStringLiteral("/chain/item/foo") << QByteArrayLiteral("/chain/item[ONE]/foo");
+        << u"/chain/item/foo"_s << QByteArrayLiteral("/chain/item[ONE]/foo");
     QTest::newRow("chained-test08")
-        << QStringLiteral("/chain/item/foo/bar") << QByteArrayLiteral("/chain/item[MANY]/foo/bar");
+        << u"/chain/item/foo/bar"_s << QByteArrayLiteral("/chain/item[MANY]/foo/bar");
 
-    QTest::newRow("chained-test09") << QStringLiteral("/chain/midle/one/two/end")
-                                    << QByteArrayLiteral("/chain/midle/one/two/end");
-    QTest::newRow("chained-test10") << QStringLiteral("/chain/midle/TWO/ONE/end")
-                                    << QByteArrayLiteral("/chain/midle/TWO/ONE/end");
-    QTest::newRow("chained-test12") << QStringLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5")
+    QTest::newRow("chained-test09")
+        << u"/chain/midle/one/two/end"_s << QByteArrayLiteral("/chain/midle/one/two/end");
+    QTest::newRow("chained-test10")
+        << u"/chain/midle/TWO/ONE/end"_s << QByteArrayLiteral("/chain/midle/TWO/ONE/end");
+    QTest::newRow("chained-test12") << u"/chain/midle/TWO/ONE/end/1/2/3/4/5"_s
                                     << QByteArrayLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5");
 }
 

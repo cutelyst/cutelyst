@@ -49,14 +49,14 @@ bool createController(const QString &controllerName)
         return false;
     }
 
-    if (!buildControllerHeader(projectDir.absoluteFilePath(QStringLiteral("src/")) %
-                                   controllerName.toLower() % QLatin1String(".h"),
+    if (!buildControllerHeader(projectDir.absoluteFilePath(u"src/"_s) % controllerName.toLower() %
+                                   QLatin1String(".h"),
                                controllerName,
                                false)) {
         return false;
     }
 
-    if (!buildControllerImplementation(projectDir.absoluteFilePath(QStringLiteral("src/")) %
+    if (!buildControllerImplementation(projectDir.absoluteFilePath(u"src/"_s) %
                                            controllerName.toLower() % QLatin1String(".cpp"),
                                        controllerName,
                                        false)) {
@@ -65,7 +65,7 @@ bool createController(const QString &controllerName)
 
 #ifdef Q_OS_UNIX
     // Change the modification time of CMakeLists.txt to force FILE_GLOB to be updated
-    utime(projectDir.absoluteFilePath(QStringLiteral("CMakeLists.txt")).toLatin1().data(), nullptr);
+    utime(projectDir.absoluteFilePath(u"CMakeLists.txt"_s).toLatin1().data(), nullptr);
 #endif
 
     //% "Now, on your application class include and instantiate the controller."
@@ -394,15 +394,15 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    if (!buildProjectCMakeLists(name % QStringLiteral("/CMakeLists.txt"), nameWithUnderscore)) {
+    if (!buildProjectCMakeLists(name % u"/CMakeLists.txt"_s, nameWithUnderscore)) {
         return false;
     }
 
-    if (!createDir(currentDir, name % QStringLiteral("/build"))) {
+    if (!createDir(currentDir, name % u"/build"_s)) {
         return false;
     }
 
-    if (!createDir(currentDir, name % QStringLiteral("/root"))) {
+    if (!createDir(currentDir, name % u"/root"_s)) {
         return false;
     }
 
@@ -414,12 +414,11 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    if (!buildControllerHeader(name % QLatin1String("/src/root.h"), QStringLiteral("Root"), true)) {
+    if (!buildControllerHeader(name % QLatin1String("/src/root.h"), u"Root"_s, true)) {
         return false;
     }
 
-    if (!buildControllerImplementation(
-            name % QLatin1String("/src/root.cpp"), QStringLiteral("Root"), true)) {
+    if (!buildControllerImplementation(name % QLatin1String("/src/root.cpp"), u"Root"_s, true)) {
         return false;
     }
 
@@ -452,9 +451,9 @@ int main(int argc, char *argv[])
     qputenv("QT_LOGGING_RULES", logging);
 
     QCoreApplication app(argc, argv);
-    QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
-    QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
-    QCoreApplication::setApplicationName(QStringLiteral("cutelyst"));
+    QCoreApplication::setOrganizationName(u"Cutelyst"_s);
+    QCoreApplication::setOrganizationDomain(u"cutelyst.org"_s);
+    QCoreApplication::setApplicationName(u"cutelyst"_s);
     QCoreApplication::setApplicationVersion(QStringLiteral(CUTELYST_VERSION));
 
     QTranslator qtTranslator;
@@ -466,10 +465,8 @@ int main(int argc, char *argv[])
     }
 
     QTranslator appTranslator;
-    if (appTranslator.load(QLocale(),
-                           QStringLiteral("cutelystcmd"),
-                           QStringLiteral("."),
-                           QStringLiteral(CUTELYST_I18N_DIR))) {
+    if (appTranslator.load(
+            QLocale(), u"cutelystcmd"_s, u"."_s, QStringLiteral(CUTELYST_I18N_DIR))) {
         QCoreApplication::installTranslator(&appTranslator);
     } else {
         std::cerr << "Error: can not load app translations" << '\n';
@@ -483,7 +480,7 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption appName(QStringLiteral("create-app"),
+    QCommandLineOption appName(u"create-app"_s,
                                //: CLI option description
                                //% "Create a new Cutelyst application with the given name."
                                qtTrId("cutelystcmd-opt-create-app-desc"),
@@ -492,20 +489,20 @@ int main(int argc, char *argv[])
                                qtTrId("cutelystcmd-opt-value-name"));
     parser.addOption(appName);
 
-    QCommandLineOption controller(QStringLiteral("controller"),
+    QCommandLineOption controller(u"controller"_s,
                                   //: CLI option description
                                   //% "Create a new Cutelyst controller with the given name."
                                   qtTrId("cutelystcmd-opt-controller-desc"),
                                   qtTrId("cutelystcmd-opt-value-name"));
     parser.addOption(controller);
 
-    QCommandLineOption serverOption(QStringLiteral("server"),
+    QCommandLineOption serverOption(u"server"_s,
                                     //: CLI option description
                                     //% "Start a HTTP server."
                                     qtTrId("cutelystcmd-opt-server-desc"));
     parser.addOption(serverOption);
 
-    QCommandLineOption appFile(QStringLiteral("app-file"),
+    QCommandLineOption appFile(u"app-file"_s,
                                //: CLI option description
                                //% "Application file to use with the server (usually in "
                                //% "build/src/lib*.so). If not set it will try to auto-detect."
@@ -515,7 +512,7 @@ int main(int argc, char *argv[])
                                qtTrId("cutelystcmd-opt-app-file-value"));
     parser.addOption(appFile);
 
-    QCommandLineOption serverPort({QStringLiteral("server-port"), QStringLiteral("p")},
+    QCommandLineOption serverPort({u"server-port"_s, u"p"_s},
                                   //: CLI option description
                                   //% "Development server port. Default: 3000"
                                   qtTrId("cutelystcmd-opt-server-port-desc"),
@@ -526,7 +523,7 @@ int main(int argc, char *argv[])
     parser.addOption(serverPort);
 
     QCommandLineOption restartOpt(
-        {QStringLiteral("restart"), QStringLiteral("r")},
+        {u"restart"_s, u"r"_s},
         //: CLI option description
         //% "Restarts the development server when the applicatoin file changes."
         qtTrId("cutelystcmd-opt-restart-desc"));
@@ -536,7 +533,7 @@ int main(int argc, char *argv[])
     QStringList argsBeforeDashDash;
     QStringList argsAfterDashDash = arguments.mid(0, 1);
 
-    int pos = arguments.indexOf(QStringLiteral("--"));
+    int pos = arguments.indexOf(u"--"_s);
     if (pos != -1) {
         argsBeforeDashDash = arguments.mid(0, pos);
         argsAfterDashDash.append(arguments.mid(pos + 1));
