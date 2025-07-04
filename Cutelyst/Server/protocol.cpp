@@ -30,7 +30,7 @@ ProtocolData::~ProtocolData()
     delete[] buffer;
 }
 
-Cutelyst::Protocol::Protocol(Cutelyst::Server *server)
+Cutelyst::Protocol::Protocol(const Cutelyst::Server *server)
     : m_postBufferSize{qMax(static_cast<qint64>(32), server->postBufferingBufsize())}
     , m_postBuffering{server->postBuffering()}
     , m_postBuffer{new char[server->postBufferingBufsize()]}

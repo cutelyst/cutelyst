@@ -18,7 +18,7 @@ class TestView : public View
 {
     Q_OBJECT
 public:
-    TestView(QObject *parent, const QString &name = {})
+    explicit TestView(QObject *parent, const QString &name = {})
         : View(parent, name)
     {
     }
@@ -101,7 +101,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
 private:
-    TestEngine *m_engine;
+    TestEngine *m_engine = nullptr;
 
     TestEngine *getEngine();
 
@@ -119,28 +119,28 @@ TestEngine *TestActionRenderView::getEngine()
     qputenv("RECURSION", QByteArrayLiteral("10"));
 
     QDir buildDir = QDir::current();
-    buildDir.cd(QStringLiteral(".."));
+    std::ignore   = buildDir.cd(QStringLiteral(".."));
 
     QDir current        = buildDir;
     QString pluginPaths = current.absolutePath();
 
-    current.cd(QStringLiteral("Cutelyst/Actions/RenderView"));
+    std::ignore = current.cd(QStringLiteral("Cutelyst/Actions/RenderView"));
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
-    current = buildDir;
-    current.cd(QStringLiteral("Release"));
+    current     = buildDir;
+    std::ignore = current.cd(QStringLiteral("Release"));
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
-    current = buildDir;
-    current.cd(QStringLiteral("Release/Cutelyst/Actions/RenderView"));
+    current     = buildDir;
+    std::ignore = current.cd(QStringLiteral("Release/Cutelyst/Actions/RenderView"));
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
-    current = buildDir;
-    current.cd(QStringLiteral("Debug"));
+    current     = buildDir;
+    std::ignore = current.cd(QStringLiteral("Debug"));
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
-    current = buildDir;
-    current.cd(QStringLiteral("Debug/Cutelyst/Actions/RenderView"));
+    current     = buildDir;
+    std::ignore = current.cd(QStringLiteral("Debug/Cutelyst/Actions/RenderView"));
     pluginPaths += QLatin1Char(';') + current.absolutePath();
 
     qDebug() << "setting CUTELYST_PLUGINS_DIR to" << pluginPaths;

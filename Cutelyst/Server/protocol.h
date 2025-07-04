@@ -22,6 +22,9 @@ public:
     ProtocolData(Socket *sock, int bufferSize);
     virtual ~ProtocolData();
 
+    ProtocolData(const ProtocolData &)            = delete;
+    ProtocolData &operator=(const ProtocolData &) = delete;
+
     enum class HeaderConnection {
         NotSet = 0,
         Keep,
@@ -38,7 +41,7 @@ public:
     };
     Q_ENUM(ParserState)
 
-    inline virtual void resetData()
+    virtual void resetData()
     {
         connState         = MethodLine;
         buf_size          = 0;
@@ -73,7 +76,7 @@ public:
     enum class Type { Unknown, Http11, Http11Websocket, Http2, FastCGI1 };
     Q_ENUM(Type)
 
-    Protocol(Server *wsgi);
+    Protocol(const Server *server);
     virtual ~Protocol();
 
     virtual Type type() const;

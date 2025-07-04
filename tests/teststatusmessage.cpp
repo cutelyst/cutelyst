@@ -112,8 +112,8 @@ private:
     QString m_tokenParam;
     QString m_statusMsgStashKey;
     QString m_errorMsgStashKey;
-    TestEngine *m_engine;
-    StatusMessage *m_sm;
+    TestEngine *m_engine = nullptr;
+    StatusMessage *m_sm  = nullptr;
 
     TestEngine *getEngine();
 

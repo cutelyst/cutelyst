@@ -115,7 +115,7 @@ public:
 class ProtocolHttp2 final : public Protocol
 {
 public:
-    explicit ProtocolHttp2(Server *wsgi);
+    explicit ProtocolHttp2(Server *server);
     ~ProtocolHttp2() override;
 
     Type type() const override;
@@ -127,8 +127,8 @@ public:
     int parseSettings(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
     int parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
     int parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
-    int parsePriority(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
-    int parsePing(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parsePriority(const ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parsePing(const ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
     int parseRstStream(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
     int parseWindowUpdate(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
 

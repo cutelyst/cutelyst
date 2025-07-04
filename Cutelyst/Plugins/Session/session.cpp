@@ -288,7 +288,7 @@ QByteArray SessionPrivate::loadSessionId(Context *c, const QByteArray &sessionNa
     return ret;
 }
 
-QByteArray SessionPrivate::getSessionId(Context *c, const QByteArray &sessionName)
+QByteArray SessionPrivate::getSessionId(const Context *c, const QByteArray &sessionName)
 {
     QByteArray ret;
     bool deleted = !c->stash(SESSION_DELETED_ID).isNull();
@@ -450,14 +450,9 @@ QVariant SessionPrivate::loadSession(Context *c)
 
 bool SessionPrivate::validateSessionId(QByteArrayView id)
 {
-    for (auto c : id) {
-        if ((c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')) {
-            continue;
-        }
-        return false;
-    }
-
-    return !id.empty();
+    return !id.empty() && std::ranges::all_of(id, [](char c) {
+        return (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9');
+    });
 }
 
 qint64 SessionPrivate::extendSessionExpires(Session *session, Context *c, qint64 expires)
@@ -493,7 +488,7 @@ qint64 SessionPrivate::getStoredSessionExpires(Session *session,
     return expires.toLongLong();
 }
 
-QVariant SessionPrivate::initializeSessionData(Session *session, Context *c)
+QVariant SessionPrivate::initializeSessionData(const Session *session, const Context *c)
 {
     QVariantHash ret;
     const qint64 now = QDateTime::currentSecsSinceEpoch();
@@ -587,13 +582,13 @@ qint64
     return exp;
 }
 
-void SessionPrivate::updateSessionCookie(Context *c, const QNetworkCookie &updated)
+void SessionPrivate::updateSessionCookie(const Context *c, const QNetworkCookie &updated)
 {
     c->response()->setCookie(updated);
 }
 
 QNetworkCookie SessionPrivate::makeSessionCookie(Session *session,
-                                                 Context *c,
+                                                 const Context *c,
                                                  const QByteArray &sid,
                                                  const QDateTime &expires)
 {
@@ -609,7 +604,7 @@ QNetworkCookie SessionPrivate::makeSessionCookie(Session *session,
 }
 
 void SessionPrivate::extendSessionId(Session *session,
-                                     Context *c,
+                                     const Context *c,
                                      const QByteArray &sid,
                                      qint64 expires)
 {

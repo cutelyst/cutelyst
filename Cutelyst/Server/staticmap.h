@@ -23,7 +23,7 @@ class StaticMap final : public Cutelyst::Plugin
 {
     Q_OBJECT
 public:
-    StaticMap(Cutelyst::Application *parent);
+    explicit StaticMap(Cutelyst::Application *parent);
 
     virtual bool setup(Cutelyst::Application *app) override;
 

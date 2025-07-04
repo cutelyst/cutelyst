@@ -52,15 +52,14 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     d->ns = args.value(u"namespace"_s).toString();
 
-    const auto attributes = args.value(u"attributes"_s).value<ParamsMultiMap>();
-    d->attributes         = attributes;
+    d->attributes = args.value(u"attributes"_s).value<ParamsMultiMap>();
 
-    const QString argsAttr = attributes.value(u"Args"_s);
+    const QString argsAttr = d->attributes.value(u"Args"_s);
     if (!argsAttr.isEmpty()) {
         d->numberOfArgs = qint8(argsAttr.toInt());
     }
 
-    const QString capturesAttr = attributes.value(u"CaptureArgs"_s);
+    const QString capturesAttr = d->attributes.value(u"CaptureArgs"_s);
     if (!capturesAttr.isEmpty()) {
         d->numberOfCaptures = qint8(capturesAttr.toInt());
     }

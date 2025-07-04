@@ -24,7 +24,7 @@ class ServerPrivate : public QObject
     Q_OBJECT
     Q_DECLARE_PUBLIC(Server)
 public:
-    inline ServerPrivate(Server *parent)
+    explicit ServerPrivate(Server *parent)
         : QObject(parent)
         , q_ptr(parent)
     {
@@ -58,7 +58,7 @@ public:
     std::vector<QObject *> servers;
     std::vector<ServerEngine *> engines;
     Cutelyst::Application *app = nullptr;
-    ServerEngine *engine       = nullptr;
+    ServerEngine *mainEngine   = nullptr;
 
     QVariantMap opt;
     QVariantMap config;

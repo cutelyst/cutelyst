@@ -133,7 +133,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     bool endOrDie    = false;
     int crlf_count   = 0;
 
-    const bool checkDns       = options.testFlag(ValidatorEmail::CheckDNS);
+    // const bool checkDns       = options.testFlag(ValidatorEmail::CheckDNS);
     const bool allowUtf8Local = options.testFlag(ValidatorEmail::UTF8Local);
     const bool allowIdn       = options.testFlag(ValidatorEmail::AllowIDN);
 
@@ -568,8 +568,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             //
             //   obs-dtext       =   obs-NO-WS-CTL / quoted-pair
             if (token == QLatin1Char(']')) { // End of domain literal
-                if (static_cast<int>(
-                        *std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+                if (static_cast<int>(*std::ranges::max_element(returnStatus.constBegin(),
+                                                               returnStatus.constEnd())) <
                     static_cast<int>(ValidatorEmail::Deprecated)) {
                     // Could be a valid RFC 5321 address literal, so let's check
 
@@ -689,12 +689,11 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                                 ValidatorEmail::RFC5322IPv6ColonEnd); // Address ends with a single
                                                                       // colon
                         } else {
-                            int unmatchedChars = 0;
-                            for (const QString &ip : matchesIP) {
-                                if (!ip.contains(ValidatorEmailPrivate::ipv6PartRegex)) {
-                                    unmatchedChars++;
-                                }
-                            }
+                            int unmatchedChars =
+                                std::ranges::count_if(matchesIP, [](const QString &ip) {
+                                return !ip.contains(ValidatorEmailPrivate::ipv6PartRegex);
+                            });
+
                             if (unmatchedChars != 0) {
                                 returnStatus.push_back(ValidatorEmail::RFC5322IPv6BadChar);
                             } else {
@@ -1022,8 +1021,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     break;
                 }
 
-                if (crlf_count > 0) {
-                    if (++crlf_count > 1) {
+                // TODO FIXME
+                if (crlf_count > 0) {       // cppcheck-suppress knownConditionTrueFalse
+                    if (++crlf_count > 1) { // cppcheck-suppress knownConditionTrueFalse
                         returnStatus.push_back(
                             ValidatorEmail::DeprecatedFWS); // Multiple folds = obsolete FWS
                     }
@@ -1043,7 +1043,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     break;
                 }
 
-                crlf_count = std::min(crlf_count, 0);
+                crlf_count = std::ranges::min(crlf_count, 0);
 
                 contextPrior = context;
                 context      = contextStack.takeLast(); // End of FWS
@@ -1077,14 +1077,15 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         }
 
         if (static_cast<int>(
-                *std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) >
+                *std::ranges::max_element(returnStatus.constBegin(), returnStatus.constEnd())) >
             static_cast<int>(ValidatorEmail::RFC5322)) {
             break;
         }
     }
 
     // Some simple final tests
-    if (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+    if (static_cast<int>(
+            *std::ranges::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
         static_cast<int>(ValidatorEmail::RFC5322)) {
         if (context == ContextQuotedString) {
             returnStatus.push_back(ValidatorEmail::ErrorUnclosedQuotedStr);
@@ -1136,7 +1137,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     bool dnsChecked = false;
 
     // if (checkDns &&
-    //     (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd()))
+    //     (static_cast<int>(*std::ranges::max_element(returnStatus.constBegin(),
+    //     returnStatus.constEnd()))
     //     <
     //      static_cast<int>(threshold))) {
     //     // https://tools.ietf.org/html/rfc5321#section-2.3.5
@@ -1216,8 +1218,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     //   However, a valid host name can never have the dotted-decimal
     //   form #.#.#.#, since this change does not permit the highest-level
     //   component label to start with a digit even if it is not all-numeric.
-    if (!dnsChecked &&
-        (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+    if (!dnsChecked && // cppcheck-suppress knownConditionTrueFalse
+        (static_cast<int>(
+             *std::ranges::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
          static_cast<int>(ValidatorEmail::DNSFailed))) {
         if (elementCount == 0) {
             returnStatus.push_back(ValidatorEmail::RFC5321TLD);
@@ -1258,7 +1261,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     return static_cast<int>(finalStatus) < static_cast<int>(threshold);
 }
 
-QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QString &label)
+QString ValidatorEmail::diagnoseString(const Cutelyst::Context *c,
+                                       Diagnose diagnose,
+                                       const QString &label)
 {
     if (label.isEmpty()) {
         switch (diagnose) {
@@ -1668,7 +1673,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
     }
 }
 
-QString ValidatorEmail::categoryString(Context *c, Category category, const QString &label)
+QString ValidatorEmail::categoryString(const Context *c, Category category, const QString &label)
 {
     if (label.isEmpty()) {
         switch (category) {
@@ -1758,7 +1763,7 @@ Cutelyst::ValidatorEmail::Category ValidatorEmail::category(Diagnose diagnose)
     return cat;
 }
 
-QString ValidatorEmail::categoryString(Context *c, Diagnose diagnose, const QString &label)
+QString ValidatorEmail::categoryString(const Context *c, Diagnose diagnose, const QString &label)
 {
     return categoryString(c, category(diagnose), label);
 }

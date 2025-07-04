@@ -19,9 +19,9 @@ Q_LOGGING_CATEGORY(C_SERVER_WS, "cutelyst.server.websocket", QtWarningMsg)
 
 using namespace Cutelyst;
 
-ProtocolWebSocket::ProtocolWebSocket(Server *wsgi)
-    : Protocol(wsgi)
-    , m_websockets_max_size(wsgi->websocketMaxSize() * 1024)
+ProtocolWebSocket::ProtocolWebSocket(Server *server)
+    : Protocol(server)
+    , m_websockets_max_size(server->websocketMaxSize() * 1024)
 {
 }
 

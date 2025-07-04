@@ -18,7 +18,7 @@ public:
     Action *getRestAction(Context *c, const QByteArray &httpMethod) const;
     void returnOptions(Context *c, const QString &methodName) const;
     void returnNotImplemented(Context *c, const QString &methodName) const;
-    QByteArray getAllowedMethods(Controller *controller, const QString &methodName) const;
+    QByteArray getAllowedMethods(const Controller *controller, const QString &methodName) const;
 
     ActionREST *q_ptr;
 };

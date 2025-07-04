@@ -75,8 +75,8 @@ Server::Server(QObject *parent)
         delete d->protoFCGI;
         d->protoFCGI = nullptr;
 
-        delete d->engine;
-        d->engine = nullptr;
+        delete d->mainEngine;
+        d->mainEngine = nullptr;
 
         qDeleteAll(d->servers);
         d->servers.clear();
@@ -124,7 +124,7 @@ void Server::parseCommandLine(const QStringList &arguments)
                                qtTrId("cutelystd-opt-value-file"));
     parser.addOption(jsonOpt);
 
-    QCommandLineOption chdir(
+    QCommandLineOption chdirOpt(
         QStringLiteral("chdir"),
         //: CLI option description
         //% "Change to the specified directory before the application is loaded."
@@ -132,92 +132,93 @@ void Server::parseCommandLine(const QStringList &arguments)
         //: CLI option value name
         //% "directory"
         qtTrId("cutelystd-opt-value-directory"));
-    parser.addOption(chdir);
+    parser.addOption(chdirOpt);
 
-    QCommandLineOption chdir2(
+    QCommandLineOption chdir2Opt(
         QStringLiteral("chdir2"),
         //: CLI option description
         //% "Change to the specified directory after the application has been loaded."
         qtTrId("cutelystd-opt-chdir2-desc"),
         qtTrId("cutelystd-opt-value-directory"));
-    parser.addOption(chdir2);
+    parser.addOption(chdir2Opt);
 
-    QCommandLineOption lazyOption(
+    QCommandLineOption lazyOpt(
         QStringLiteral("lazy"),
         //: CLI option description
         //% "Use lazy mode (load the application in the workers instead of master)."
         qtTrId("cutelystd-opt-lazy-desc"));
-    parser.addOption(lazyOption);
+    parser.addOption(lazyOpt);
 
-    QCommandLineOption application({QStringLiteral("application"), QStringLiteral("a")},
-                                   //: CLI option description
-                                   //% "Path to the application file to load."
-                                   qtTrId("cutelystd-opt-application-desc"),
-                                   qtTrId("cutelystd-opt-value-file"));
-    parser.addOption(application);
+    QCommandLineOption applicationOpt({QStringLiteral("application"), QStringLiteral("a")},
+                                      //: CLI option description
+                                      //% "Path to the application file to load."
+                                      qtTrId("cutelystd-opt-application-desc"),
+                                      qtTrId("cutelystd-opt-value-file"));
+    parser.addOption(applicationOpt);
 
-    QCommandLineOption threads({QStringLiteral("threads"), QStringLiteral("t")},
-                               //: CLI option description
-                               //% "The number of threads to use. If set to “auto”, the ideal "
-                               //% "thread count is used."
-                               qtTrId("cutelystd-opt-threads-desc"),
-                               //: CLI option value name
-                               //% "threads"
-                               qtTrId("cutelystd-opt-threads-value"));
-    parser.addOption(threads);
+    QCommandLineOption threadsOpt({QStringLiteral("threads"), QStringLiteral("t")},
+                                  //: CLI option description
+                                  //% "The number of threads to use. If set to “auto”, the ideal "
+                                  //% "thread count is used."
+                                  qtTrId("cutelystd-opt-threads-desc"),
+                                  //: CLI option value name
+                                  //% "threads"
+                                  qtTrId("cutelystd-opt-threads-value"));
+    parser.addOption(threadsOpt);
 
 #ifdef Q_OS_UNIX
-    QCommandLineOption processes({QStringLiteral("processes"), QStringLiteral("p")},
-                                 //: CLI option description
-                                 //% "Spawn the specified number of processes. If set to “auto”, "
-                                 //% "the ideal process count is used."
-                                 qtTrId("cutelystd-opt-processes-desc"),
-                                 //: CLI option value name
-                                 //% "processes"
-                                 qtTrId("cutelystd-opt-processes-value"));
-    parser.addOption(processes);
+    QCommandLineOption processesOpt({QStringLiteral("processes"), QStringLiteral("p")},
+                                    //: CLI option description
+                                    //% "Spawn the specified number of processes. If set to “auto”,
+                                    //" % "the ideal process count is used."
+                                    qtTrId("cutelystd-opt-processes-desc"),
+                                    //: CLI option value name
+                                    //% "processes"
+                                    qtTrId("cutelystd-opt-processes-value"));
+    parser.addOption(processesOpt);
 #endif
 
-    QCommandLineOption master({QStringLiteral("master"), QStringLiteral("M")},
-                              //: CLI option description
-                              //% "Enable master process."
-                              qtTrId("cutelystd-opt-master-desc"));
-    parser.addOption(master);
+    QCommandLineOption masterOpt({QStringLiteral("master"), QStringLiteral("M")},
+                                 //: CLI option description
+                                 //% "Enable master process."
+                                 qtTrId("cutelystd-opt-master-desc"));
+    parser.addOption(masterOpt);
 
-    QCommandLineOption listenQueue({QStringLiteral("listen"), QStringLiteral("l")},
-                                   //: CLI option description
-                                   //% "Set the socket listen queue size. Default value: 100."
-                                   qtTrId("cutelystd-opt-listen-desc"),
-                                   //: CLI option value name
-                                   //% "size"
-                                   qtTrId("cutelystd-opt-value-size"));
-    parser.addOption(listenQueue);
+    QCommandLineOption listenQueueOpt({QStringLiteral("listen"), QStringLiteral("l")},
+                                      //: CLI option description
+                                      //% "Set the socket listen queue size. Default value: 100."
+                                      qtTrId("cutelystd-opt-listen-desc"),
+                                      //: CLI option value name
+                                      //% "size"
+                                      qtTrId("cutelystd-opt-value-size"));
+    parser.addOption(listenQueueOpt);
 
-    QCommandLineOption bufferSize({QStringLiteral("buffer-size"), QStringLiteral("b")},
-                                  //: CLI option description
-                                  //% "Set the internal buffer size. Default value: 4096."
-                                  qtTrId("cutelystd-opt-buffer-size-desc"),
-                                  //: CLI option value name
-                                  //% "bytes"
-                                  qtTrId("cutelystd-opt-value-bytes"));
-    parser.addOption(bufferSize);
-
-    QCommandLineOption postBuffering(QStringLiteral("post-buffering"),
+    QCommandLineOption bufferSizeOpt({QStringLiteral("buffer-size"), QStringLiteral("b")},
                                      //: CLI option description
-                                     //% "Sets the size after which buffering takes place on the "
-                                     //% "hard disk instead of in the main memory. "
-                                     //% "Default value: -1."
-                                     qtTrId("cutelystd-opt-post-buffering-desc"),
+                                     //% "Set the internal buffer size. Default value: 4096."
+                                     qtTrId("cutelystd-opt-buffer-size-desc"),
+                                     //: CLI option value name
+                                     //% "bytes"
                                      qtTrId("cutelystd-opt-value-bytes"));
-    parser.addOption(postBuffering);
+    parser.addOption(bufferSizeOpt);
 
-    QCommandLineOption postBufferingBufsize(
+    QCommandLineOption postBufferingOpt(
+        QStringLiteral("post-buffering"),
+        //: CLI option description
+        //% "Sets the size after which buffering takes place on the "
+        //% "hard disk instead of in the main memory. "
+        //% "Default value: -1."
+        qtTrId("cutelystd-opt-post-buffering-desc"),
+        qtTrId("cutelystd-opt-value-bytes"));
+    parser.addOption(postBufferingOpt);
+
+    QCommandLineOption postBufferingBufsizeOpt(
         QStringLiteral("post-buffering-bufsize"),
         //: CLI option description
         //% "Set the buffer size for read() in post buffering mode. Default value: 4096."
         qtTrId("cutelystd-opt-post-buffering-bufsize-desc"),
         qtTrId("cutelystd-opt-value-bytes"));
-    parser.addOption(postBufferingBufsize);
+    parser.addOption(postBufferingBufsizeOpt);
 
     QCommandLineOption httpSocketOpt({QStringLiteral("http-socket"), QStringLiteral("h1")},
                                      //: CLI option description
@@ -271,7 +272,7 @@ void Server::parseCommandLine(const QStringList &arguments)
         qtTrId("cutelystd-opt-value-address"));
     parser.addOption(fastcgiSocketOpt);
 
-    QCommandLineOption socketAccess(
+    QCommandLineOption socketAccessOpt(
         QStringLiteral("socket-access"),
         //: CLI option description
         //% "Set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access."
@@ -279,16 +280,16 @@ void Server::parseCommandLine(const QStringList &arguments)
         //: CLI option value name
         //% "options"
         qtTrId("cutelystd-opt-socket-access-value"));
-    parser.addOption(socketAccess);
+    parser.addOption(socketAccessOpt);
 
-    QCommandLineOption socketTimeout({QStringLiteral("socket-timeout"), QStringLiteral("z")},
-                                     //: CLI option description
-                                     //% "Set internal socket timeouts. Default value: 4."
-                                     qtTrId("cutelystd-opt-socket-timeout-desc"),
-                                     //: CLI option value name
-                                     //% "seconds"
-                                     qtTrId("cutelystd-opt-socket-timeout-value"));
-    parser.addOption(socketTimeout);
+    QCommandLineOption socketTimeoutOpt({QStringLiteral("socket-timeout"), QStringLiteral("z")},
+                                        //: CLI option description
+                                        //% "Set internal socket timeouts. Default value: 4."
+                                        qtTrId("cutelystd-opt-socket-timeout-desc"),
+                                        //: CLI option value name
+                                        //% "seconds"
+                                        qtTrId("cutelystd-opt-socket-timeout-value"));
+    parser.addOption(socketTimeoutOpt);
 
     QCommandLineOption staticMapOpt(QStringLiteral("static-map"),
                                     //: CLI option description
@@ -312,12 +313,12 @@ void Server::parseCommandLine(const QStringList &arguments)
                                      qtTrId("cutelystd-opt-value-static-map"));
     parser.addOption(staticMap2Opt);
 
-    QCommandLineOption autoReload({QStringLiteral("auto-restart"), QStringLiteral("r")},
-                                  //: CLI option description
-                                  //% "Auto restarts when the application file changes. Master "
-                                  //% "process and lazy mode have to be enabled."
-                                  qtTrId("cutelystd-opt-auto-restart-desc"));
-    parser.addOption(autoReload);
+    QCommandLineOption autoReloadOpt({QStringLiteral("auto-restart"), QStringLiteral("r")},
+                                     //: CLI option description
+                                     //% "Auto restarts when the application file changes. Master "
+                                     //% "process and lazy mode have to be enabled."
+                                     qtTrId("cutelystd-opt-auto-restart-desc"));
+    parser.addOption(autoReloadOpt);
 
     QCommandLineOption touchReloadOpt(
         QStringLiteral("touch-reload"),
@@ -340,21 +341,21 @@ void Server::parseCommandLine(const QStringList &arguments)
                                    qtTrId("cutelystd-opt-so-keepalive-desc"));
     parser.addOption(soKeepAlive);
 
-    QCommandLineOption socketSndbuf(QStringLiteral("socket-sndbuf"),
-                                    //: CLI option description
-                                    //% "Sets the socket send buffer size in bytes at the OS "
-                                    //% "level. This maps to the SO_SNDBUF socket option."
-                                    qtTrId("cutelystd-opt-socket-sndbuf-desc"),
-                                    qtTrId("cutelystd-opt-value-bytes"));
-    parser.addOption(socketSndbuf);
+    QCommandLineOption socketSndbufOpt(QStringLiteral("socket-sndbuf"),
+                                       //: CLI option description
+                                       //% "Sets the socket send buffer size in bytes at the OS "
+                                       //% "level. This maps to the SO_SNDBUF socket option."
+                                       qtTrId("cutelystd-opt-socket-sndbuf-desc"),
+                                       qtTrId("cutelystd-opt-value-bytes"));
+    parser.addOption(socketSndbufOpt);
 
-    QCommandLineOption socketRcvbuf(QStringLiteral("socket-rcvbuf"),
-                                    //: CLI option description
-                                    //% "Sets the socket receive buffer size in bytes at the OS "
-                                    //% "level. This maps to the SO_RCVBUF socket option."
-                                    qtTrId("cutelystd-opt-socket-rcvbuf-desc"),
-                                    qtTrId("cutelystd-opt-value-bytes"));
-    parser.addOption(socketRcvbuf);
+    QCommandLineOption socketRcvbufOpt(QStringLiteral("socket-rcvbuf"),
+                                       //: CLI option description
+                                       //% "Sets the socket receive buffer size in bytes at the OS "
+                                       //% "level. This maps to the SO_RCVBUF socket option."
+                                       qtTrId("cutelystd-opt-socket-rcvbuf-desc"),
+                                       qtTrId("cutelystd-opt-value-bytes"));
+    parser.addOption(socketRcvbufOpt);
 
     QCommandLineOption wsMaxSize(QStringLiteral("websocket-max-size"),
                                  //: CLI option description
@@ -383,56 +384,56 @@ void Server::parseCommandLine(const QStringList &arguments)
     parser.addOption(pidfile2Opt);
 
 #ifdef Q_OS_UNIX
-    QCommandLineOption stopOption(QStringLiteral("stop"),
-                                  //: CLI option description
-                                  //% "Stop an instance identified by the PID in the pidfile."
-                                  qtTrId("cutelystd-opt-stop-desc"),
-                                  qtTrId("cutelystd-opt-value-pidfile"));
-    parser.addOption(stopOption);
+    QCommandLineOption stopOpt(QStringLiteral("stop"),
+                               //: CLI option description
+                               //% "Stop an instance identified by the PID in the pidfile."
+                               qtTrId("cutelystd-opt-stop-desc"),
+                               qtTrId("cutelystd-opt-value-pidfile"));
+    parser.addOption(stopOpt);
 
-    QCommandLineOption uidOption(QStringLiteral("uid"),
-                                 //: CLI option description
-                                 //% "Setuid to the specified user/uid."
-                                 qtTrId("cutelystd-opt-uid-desc"),
-                                 //: CLI option value name
-                                 //% "user/uid"
-                                 qtTrId("cutelystd-opt-uid-value"));
-    parser.addOption(uidOption);
+    QCommandLineOption uidOpt(QStringLiteral("uid"),
+                              //: CLI option description
+                              //% "Setuid to the specified user/uid."
+                              qtTrId("cutelystd-opt-uid-desc"),
+                              //: CLI option value name
+                              //% "user/uid"
+                              qtTrId("cutelystd-opt-uid-value"));
+    parser.addOption(uidOpt);
 
-    QCommandLineOption gidOption(QStringLiteral("gid"),
-                                 //: CLI option description
-                                 //% "Setuid to the specified group/gid."
-                                 qtTrId("cutelystd-opt-gid-desc"),
-                                 //: CLI option value name
-                                 //% "group/gid"
-                                 qtTrId("cutelystd-opt-gid-value"));
-    parser.addOption(gidOption);
+    QCommandLineOption gidOpt(QStringLiteral("gid"),
+                              //: CLI option description
+                              //% "Setuid to the specified group/gid."
+                              qtTrId("cutelystd-opt-gid-desc"),
+                              //: CLI option value name
+                              //% "group/gid"
+                              qtTrId("cutelystd-opt-gid-value"));
+    parser.addOption(gidOpt);
 
-    QCommandLineOption noInitgroupsOption(QStringLiteral("no-initgroups"),
-                                          //: CLI option description
-                                          //% "Disable additional groups set via initgroups()."
-                                          qtTrId("cutelystd-opt-no-init-groups-desc"));
-    parser.addOption(noInitgroupsOption);
+    QCommandLineOption noInitgroupsOpt(QStringLiteral("no-initgroups"),
+                                       //: CLI option description
+                                       //% "Disable additional groups set via initgroups()."
+                                       qtTrId("cutelystd-opt-no-init-groups-desc"));
+    parser.addOption(noInitgroupsOpt);
 
-    QCommandLineOption chownSocketOption(QStringLiteral("chown-socket"),
-                                         //: CLI option description
-                                         //% "Change the ownership of the UNIX socket."
-                                         qtTrId("cutelystd-opt-chown-socket-desc"),
-                                         //: CLI option value name
-                                         //% "uid:gid"
-                                         qtTrId("cutelystd-opt-chown-socket-value"));
-    parser.addOption(chownSocketOption);
+    QCommandLineOption chownSocketOpt(QStringLiteral("chown-socket"),
+                                      //: CLI option description
+                                      //% "Change the ownership of the UNIX socket."
+                                      qtTrId("cutelystd-opt-chown-socket-desc"),
+                                      //: CLI option value name
+                                      //% "uid:gid"
+                                      qtTrId("cutelystd-opt-chown-socket-value"));
+    parser.addOption(chownSocketOpt);
 
-    QCommandLineOption umaskOption(QStringLiteral("umask"),
-                                   //: CLI option description
-                                   //% "Set file mode creation mask."
-                                   qtTrId("cutelystd-opt-umask-desc"),
-                                   //: CLI option value name
-                                   //% "mask"
-                                   qtTrId("cutelystd-opt-umask-value"));
-    parser.addOption(umaskOption);
+    QCommandLineOption umaskOpt(QStringLiteral("umask"),
+                                //: CLI option description
+                                //% "Set file mode creation mask."
+                                qtTrId("cutelystd-opt-umask-desc"),
+                                //: CLI option value name
+                                //% "mask"
+                                qtTrId("cutelystd-opt-umask-value"));
+    parser.addOption(umaskOpt);
 
-    QCommandLineOption cpuAffinityOption(
+    QCommandLineOption cpuAffinityOpt(
         QStringLiteral("cpu-affinity"),
         //: CLI option description
         //% "Set CPU affinity with the number of CPUs available for each worker core."
@@ -440,15 +441,15 @@ void Server::parseCommandLine(const QStringList &arguments)
         //: CLI option value name
         //% "core count"
         qtTrId("cutelystd-opt-cpu-affinity-value"));
-    parser.addOption(cpuAffinityOption);
+    parser.addOption(cpuAffinityOpt);
 #endif // Q_OS_UNIX
 
 #ifdef Q_OS_LINUX
-    QCommandLineOption reusePortOption(QStringLiteral("reuse-port"),
-                                       //: CLI option description
-                                       //% "Enable SO_REUSEPORT flag on socket (Linux 3.9+)."
-                                       qtTrId("cutelystd-opt-reuse-port-desc"));
-    parser.addOption(reusePortOption);
+    QCommandLineOption reusePortOpt(QStringLiteral("reuse-port"),
+                                    //: CLI option description
+                                    //% "Enable SO_REUSEPORT flag on socket (Linux 3.9+)."
+                                    qtTrId("cutelystd-opt-reuse-port-desc"));
+    parser.addOption(reusePortOpt);
 #endif
 
     QCommandLineOption threadBalancerOpt(
@@ -471,25 +472,25 @@ void Server::parseCommandLine(const QStringList &arguments)
 
     setJson(parser.values(jsonOpt));
 
-    if (parser.isSet(chdir)) {
-        setChdir(parser.value(chdir));
+    if (parser.isSet(chdirOpt)) {
+        setChdir(parser.value(chdirOpt));
     }
 
-    if (parser.isSet(chdir2)) {
-        setChdir2(parser.value(chdir2));
+    if (parser.isSet(chdir2Opt)) {
+        setChdir2(parser.value(chdir2Opt));
     }
 
-    if (parser.isSet(threads)) {
-        setThreads(parser.value(threads));
+    if (parser.isSet(threadsOpt)) {
+        setThreads(parser.value(threadsOpt));
     }
 
-    if (parser.isSet(socketAccess)) {
-        setSocketAccess(parser.value(socketAccess));
+    if (parser.isSet(socketAccessOpt)) {
+        setSocketAccess(parser.value(socketAccessOpt));
     }
 
-    if (parser.isSet(socketTimeout)) {
+    if (parser.isSet(socketTimeoutOpt)) {
         bool ok;
-        auto size = parser.value(socketTimeout).toInt(&ok);
+        auto size = parser.value(socketTimeoutOpt).toInt(&ok);
         setSocketTimeout(size);
         if (!ok || size < 0) {
             parser.showHelp(1);
@@ -505,37 +506,37 @@ void Server::parseCommandLine(const QStringList &arguments)
     }
 
 #ifdef Q_OS_UNIX
-    if (parser.isSet(stopOption)) {
-        UnixFork::stopWSGI(parser.value(stopOption));
+    if (parser.isSet(stopOpt)) {
+        UnixFork::stopSERVER(parser.value(stopOpt));
     }
 
-    if (parser.isSet(processes)) {
-        setProcesses(parser.value(processes));
+    if (parser.isSet(processesOpt)) {
+        setProcesses(parser.value(processesOpt));
     }
 
-    if (parser.isSet(uidOption)) {
-        setUid(parser.value(uidOption));
+    if (parser.isSet(uidOpt)) {
+        setUid(parser.value(uidOpt));
     }
 
-    if (parser.isSet(gidOption)) {
-        setGid(parser.value(gidOption));
+    if (parser.isSet(gidOpt)) {
+        setGid(parser.value(gidOpt));
     }
 
-    if (parser.isSet(noInitgroupsOption)) {
+    if (parser.isSet(noInitgroupsOpt)) {
         setNoInitgroups(true);
     }
 
-    if (parser.isSet(chownSocketOption)) {
-        setChownSocket(parser.value(chownSocketOption));
+    if (parser.isSet(chownSocketOpt)) {
+        setChownSocket(parser.value(chownSocketOpt));
     }
 
-    if (parser.isSet(umaskOption)) {
-        setUmask(parser.value(umaskOption));
+    if (parser.isSet(umaskOpt)) {
+        setUmask(parser.value(umaskOpt));
     }
 
-    if (parser.isSet(cpuAffinityOption)) {
+    if (parser.isSet(cpuAffinityOpt)) {
         bool ok;
-        auto value = parser.value(cpuAffinityOption).toInt(&ok);
+        auto value = parser.value(cpuAffinityOpt).toInt(&ok);
         setCpuAffinity(value);
         if (!ok || value < 0) {
             parser.showHelp(1);
@@ -544,60 +545,60 @@ void Server::parseCommandLine(const QStringList &arguments)
 #endif // Q_OS_UNIX
 
 #ifdef Q_OS_LINUX
-    if (parser.isSet(reusePortOption)) {
+    if (parser.isSet(reusePortOpt)) {
         setReusePort(true);
     }
 #endif
 
-    if (parser.isSet(lazyOption)) {
+    if (parser.isSet(lazyOpt)) {
         setLazy(true);
     }
 
-    if (parser.isSet(listenQueue)) {
+    if (parser.isSet(listenQueueOpt)) {
         bool ok;
-        auto size = parser.value(listenQueue).toInt(&ok);
+        auto size = parser.value(listenQueueOpt).toInt(&ok);
         setListenQueue(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
     }
 
-    if (parser.isSet(bufferSize)) {
+    if (parser.isSet(bufferSizeOpt)) {
         bool ok;
-        auto size = parser.value(bufferSize).toInt(&ok);
+        auto size = parser.value(bufferSizeOpt).toInt(&ok);
         setBufferSize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
     }
 
-    if (parser.isSet(postBuffering)) {
+    if (parser.isSet(postBufferingOpt)) {
         bool ok;
-        auto size = parser.value(postBuffering).toLongLong(&ok);
+        auto size = parser.value(postBufferingOpt).toLongLong(&ok);
         setPostBuffering(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
     }
 
-    if (parser.isSet(postBufferingBufsize)) {
+    if (parser.isSet(postBufferingBufsizeOpt)) {
         bool ok;
-        auto size = parser.value(postBufferingBufsize).toLongLong(&ok);
+        auto size = parser.value(postBufferingBufsizeOpt).toLongLong(&ok);
         setPostBufferingBufsize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
     }
 
-    if (parser.isSet(application)) {
-        setApplication(parser.value(application));
+    if (parser.isSet(applicationOpt)) {
+        setApplication(parser.value(applicationOpt));
     }
 
-    if (parser.isSet(master)) {
+    if (parser.isSet(masterOpt)) {
         setMaster(true);
     }
 
-    if (parser.isSet(autoReload)) {
+    if (parser.isSet(autoReloadOpt)) {
         setAutoReload(true);
     }
 
@@ -617,18 +618,18 @@ void Server::parseCommandLine(const QStringList &arguments)
         setHttpsH2(true);
     }
 
-    if (parser.isSet(socketSndbuf)) {
+    if (parser.isSet(socketSndbufOpt)) {
         bool ok;
-        auto size = parser.value(socketSndbuf).toInt(&ok);
+        auto size = parser.value(socketSndbufOpt).toInt(&ok);
         setSocketSndbuf(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
     }
 
-    if (parser.isSet(socketRcvbuf)) {
+    if (parser.isSet(socketRcvbufOpt)) {
         bool ok;
-        auto size = parser.value(socketRcvbuf).toInt(&ok);
+        auto size = parser.value(socketRcvbufOpt).toInt(&ok);
         setSocketRcvbuf(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
@@ -832,7 +833,7 @@ bool Server::start(Application *app)
 {
     Q_D(Server);
 
-    if (d->engine) {
+    if (d->mainEngine) {
         //% "Server not fully stopped."
         Q_EMIT errorOccured(qtTrId("cutelystd-err-server-not-fully-stopped"));
         return false;
@@ -879,24 +880,27 @@ bool ServerPrivate::listenTcpSockets()
     }
 
     // HTTP
-    for (const auto &socket : std::as_const(httpSockets)) {
-        if (!listenTcp(socket, getHttpProto(), false)) {
-            return false;
-        }
+    bool httpOk = std::ranges::all_of(httpSockets, [this](const auto &socket) {
+        return listenTcp(socket, getHttpProto(), false);
+    });
+    if (!httpOk) {
+        return false;
     }
 
     // HTTPS
-    for (const auto &socket : std::as_const(httpsSockets)) {
-        if (!listenTcp(socket, getHttpProto(), true)) {
-            return false;
-        }
+    bool httpsOk = std::ranges::all_of(httpsSockets, [this](const auto &socket) {
+        return listenTcp(socket, getHttpProto(), true);
+    });
+    if (!httpsOk) {
+        return false;
     }
 
     // HTTP/2
-    for (const auto &socket : std::as_const(http2Sockets)) {
-        if (!listenTcp(socket, getHttp2Proto(), false)) {
-            return false;
-        }
+    bool http2Ok = std::ranges::all_of(http2Sockets, [this](const auto &socket) {
+        return listenTcp(socket, getHttp2Proto(), false);
+    });
+    if (!http2Ok) {
+        return false;
     }
 
     // FastCGI
@@ -1710,18 +1714,18 @@ bool ServerPrivate::setupApplication()
     }
 
     if (threads > 1) {
-        engine = createEngine(localApp, 0);
+        mainEngine = createEngine(localApp, 0);
         for (int i = 1; i < threads; ++i) {
             if (createEngine(localApp, i)) {
                 ++workersNotRunning;
             }
         }
     } else {
-        engine            = createEngine(localApp, 0);
+        mainEngine        = createEngine(localApp, 0);
         workersNotRunning = 1;
     }
 
-    if (!engine) {
+    if (!mainEngine) {
         std::cerr << "Application failed to init, cheaping..." << '\n';
         return false;
     }
@@ -1734,12 +1738,14 @@ void ServerPrivate::engineShutdown(ServerEngine *engine)
     const auto engineThread = engine->thread();
     if (QThread::currentThread() != engineThread) {
         connect(engineThread, &QThread::finished, this, [this, engine] {
-            engines.erase(std::remove(engines.begin(), engines.end(), engine), engines.end());
+            auto [first, last] = std::ranges::remove(engines, engine);
+            engines.erase(first, last);
             checkEngineShutdown();
         });
         engineThread->quit();
     } else {
-        engines.erase(std::remove(engines.begin(), engines.end(), engine), engines.end());
+        auto [first, last] = std::ranges::remove(engines, engine);
+        engines.erase(first, last);
     }
 
     checkEngineShutdown();
@@ -1922,8 +1928,8 @@ void ServerPrivate::loadConfig()
         if (config.contains(key)) {
             QVariantMap currentMap      = config.value(key).toMap();
             const QVariantMap loadedMap = value.toMap();
-            for (const auto &[key, value] : loadedMap.asKeyValueRange()) {
-                currentMap.insert(key, value);
+            for (const auto &[mapKey, mapValue] : loadedMap.asKeyValueRange()) {
+                currentMap.insert(mapKey, mapValue);
             }
             config.insert(key, currentMap);
         } else {

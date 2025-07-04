@@ -30,12 +30,12 @@ QByteArray http11StatusMessage(quint16 status);
 Q_LOGGING_CATEGORY(C_SERVER_HTTP, "cutelyst.server.http", QtWarningMsg)
 Q_DECLARE_LOGGING_CATEGORY(C_SERVER_SOCK)
 
-ProtocolHttp::ProtocolHttp(Server *wsgi, ProtocolHttp2 *upgradeH2c)
-    : Protocol(wsgi)
-    , m_websocketProto(new ProtocolWebSocket(wsgi))
+ProtocolHttp::ProtocolHttp(Server *server, ProtocolHttp2 *upgradeH2c)
+    : Protocol(server)
+    , m_websocketProto(new ProtocolWebSocket(server))
     , m_upgradeH2c(upgradeH2c)
 {
-    usingFrontendProxy = wsgi->usingFrontendProxy();
+    usingFrontendProxy = server->usingFrontendProxy();
 }
 
 ProtocolHttp::~ProtocolHttp()
@@ -118,7 +118,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
         //        protoRequest->buf_size);
         int ix = CrLfIndexIn(protoRequest->buffer, protoRequest->buf_size, protoRequest->last);
         if (ix != -1) {
-            qint64 len              = ix - protoRequest->beginLine;
+            len                     = ix - protoRequest->beginLine;
             char *ptr               = protoRequest->buffer + protoRequest->beginLine;
             protoRequest->beginLine = ix + 2;
             protoRequest->last      = protoRequest->beginLine;
@@ -543,10 +543,10 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QByteArray &key,
         QCryptographicHash::hash(wsKey, QCryptographicHash::Sha1).toBase64();
     headers.setHeader("Sec-Websocket-Accept"_ba, wsAccept);
 
-    headerConnection  = ProtoRequestHttp::HeaderConnection::Upgrade;
-    websocketUpgraded = true;
-    auto httpProto    = static_cast<ProtocolHttp *>(sock->proto);
-    sock->proto       = httpProto->m_websocketProto;
+    headerConnection      = ProtoRequestHttp::HeaderConnection::Upgrade;
+    websocketUpgraded     = true;
+    const auto *httpProto = static_cast<ProtocolHttp *>(sock->proto);
+    sock->proto           = httpProto->m_websocketProto;
 
     return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
 }

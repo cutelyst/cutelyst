@@ -23,7 +23,7 @@ class MemcachedPrivate
 public:
     MemcachedPrivate() = default;
 
-    MemcachedPrivate(const QVariantMap &defConf)
+    explicit MemcachedPrivate(const QVariantMap &defConf)
         : defaultConfig(defConf)
     {
     }
@@ -47,7 +47,7 @@ public:
 
     static Memcached::ReturnType returnTypeConvert(memcached_return_t rt);
     static void setReturnType(Memcached::ReturnType *rt1, memcached_return_t rt2);
-    static bool isRegistered(Memcached *ptr, Memcached::ReturnType *rt);
+    static bool isRegistered(const Memcached *ptr, Memcached::ReturnType *rt);
     static QByteArray compressIfNeeded(const QByteArray &value, Flags &flags);
     static QByteArray uncompressIfNeeded(const QByteArray &value, memcached_result_st *result);
 

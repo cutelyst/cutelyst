@@ -67,10 +67,9 @@ bool Component::execute(Context *c)
 
     if (d->proccessRoles) {
         const auto beforeRoles = d->beforeRoles;
-        for (Component *code : beforeRoles) {
-            if (!code->beforeExecute(c)) {
-                return false;
-            }
+        if (!std::ranges::all_of(beforeRoles,
+                                 [&](Component *code) { return code->beforeExecute(c); })) {
+            return false;
         }
 
         QStack<Component *> stack = d->aroundRoles;
@@ -81,10 +80,9 @@ bool Component::execute(Context *c)
         }
 
         const auto afterRoles = d->afterRoles;
-        for (Component *code : afterRoles) {
-            if (!code->afterExecute(c)) {
-                return false;
-            }
+        if (!std::ranges::all_of(afterRoles,
+                                 [&](Component *code) { return code->afterExecute(c); })) {
+            return false;
         }
 
         // Do not call doExecute twice

@@ -112,7 +112,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer,
                     // nothing was read
                     state = EndHeaders;
                 } else {
-                    char *pch = static_cast<char *>(memchr(buffer + i, '\r', len - i));
+                    const char *pch = static_cast<char *>(memchr(buffer + i, '\r', len - i));
                     if (pch == nullptr) {
                         headerLine.append(buffer + i, len - i);
                         i = len;

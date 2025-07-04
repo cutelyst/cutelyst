@@ -48,8 +48,8 @@ void TestServer::writeIniFile(const QString &fileName, const QMap<QString, QVari
 
     for (const auto &[key, map] : data.asKeyValueRange()) {
         ini.beginGroup(key);
-        for (const auto &[key, value] : map.asKeyValueRange()) {
-            ini.setValue(key, value);
+        for (const auto &[mapKey, mapValue] : map.asKeyValueRange()) {
+            ini.setValue(mapKey, mapValue);
         }
         ini.endGroup();
     }

@@ -65,7 +65,7 @@ public:
     /**
      * Constructs a new %StaticSimple object with the given \a parent.
      */
-    StaticSimple(Application *parent);
+    explicit StaticSimple(Application *parent);
 
     /**
      * Destroys the %StaticSimple object.

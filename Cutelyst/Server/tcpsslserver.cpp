@@ -16,9 +16,9 @@ using namespace Cutelyst;
 
 TcpSslServer::TcpSslServer(const QByteArray &serverAddress,
                            Protocol *protocol,
-                           Server *wsgi,
+                           Server *server,
                            QObject *parent)
-    : TcpServer(serverAddress, protocol, wsgi, parent)
+    : TcpServer(serverAddress, protocol, server, parent)
 {
 }
 

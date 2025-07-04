@@ -12,6 +12,7 @@
 #include <Cutelyst/Response>
 #include <Cutelyst/utils.h>
 #include <map>
+#include <ranges>
 #include <utility>
 
 #include <QDir>
@@ -689,7 +690,7 @@ bool LangSelectPrivate::getFromHeader(Context *c, const QByteArray &name) const
             c->req()->headers().headerAsString(name).split(u',', Qt::SkipEmptyParts);
         if (Q_LIKELY(!accpetedLangs.empty())) {
             std::map<float, QLocale> langMap;
-            for (const auto &al : accpetedLangs) {
+            std::ranges::for_each(accpetedLangs, [&](const auto &al) {
                 const auto idx = al.indexOf(u';');
                 float priority = 1.0F;
                 QString langPart;
@@ -708,32 +709,39 @@ bool LangSelectPrivate::getFromHeader(Context *c, const QByteArray &name) const
                         langMap.insert({priority, locale});
                     }
                 }
-            }
+            });
+
             if (!langMap.empty()) {
-                auto i = langMap.crbegin();
-                while (i != langMap.crend()) {
-                    if (locales.contains(i->second)) {
-                        c->setLocale(i->second);
+                // Check for exact locale match in descending priority order
+                auto range = langMap | std::views::reverse;
+                auto found = std::ranges::any_of(range, [&](const auto &entry) {
+                    if (locales.contains(entry.second)) {
+                        c->setLocale(entry.second);
                         qCDebug(C_LANGSELECT)
                             << "Selected locale" << c->locale() << "from" << name << "header";
                         return true;
                     }
-                    ++i;
+                    return false;
+                });
+                if (found) {
+                    return true;
                 }
-                // if there is no exact match, lets try to find a locale
-                // where at least the language matches
-                i                       = langMap.crbegin();
+
+                // Fallback to language-only match
                 const auto constLocales = locales;
-                while (i != langMap.crend()) {
-                    for (const QLocale &l : constLocales) {
-                        if (l.language() == i->second.language()) {
+                found                   = std::ranges::any_of(range, [&](const auto &entry) {
+                    return std::ranges::any_of(constLocales, [&](const QLocale &l) {
+                        if (l.language() == entry.second.language()) {
                             c->setLocale(l);
                             qCDebug(C_LANGSELECT)
                                 << "Selected locale" << c->locale() << "from" << name << "header";
                             return true;
                         }
-                    }
-                    ++i;
+                        return false;
+                    });
+                });
+                if (found) {
+                    return true;
                 }
             }
         }
@@ -742,7 +750,7 @@ bool LangSelectPrivate::getFromHeader(Context *c, const QByteArray &name) const
     return false;
 }
 
-void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
+void LangSelectPrivate::setToQuery(const Context *c, const QString &key) const
 {
     auto uri = c->req()->uri();
     QUrlQuery query(uri);
@@ -756,7 +764,7 @@ void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
     c->res()->redirect(uri, Response::TemporaryRedirect);
 }
 
-void LangSelectPrivate::setToCookie(Context *c, const QByteArray &name) const
+void LangSelectPrivate::setToCookie(const Context *c, const QByteArray &name) const
 {
     qCDebug(C_LANGSELECT) << "Storing selected" << c->locale() << "in cookie with name" << name;
     QNetworkCookie cookie(name, c->locale().bcp47Name().toLatin1());

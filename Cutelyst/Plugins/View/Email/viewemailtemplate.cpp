@@ -54,8 +54,8 @@ std::shared_ptr<MimePart>
 {
     const QString defaultView = d->defaultView;
 
-    View *view  = nullptr;
-    auto viewIt = partHash.constFind(QStringLiteral("view"));
+    const View *view = nullptr;
+    auto viewIt      = partHash.constFind(QStringLiteral("view"));
     if (viewIt != partHash.constEnd() && !viewIt.value().toString().isEmpty()) {
         // use the view specified for the email part
         const QString viewString = viewIt.value().toString();

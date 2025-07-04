@@ -318,8 +318,8 @@ QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
 
     const QByteArray salt = CSRFProtectionPrivate::getNewCsrfString();
     std::vector<std::pair<int, int>> pairs;
-    pairs.reserve(std::min(secret.size(), salt.size()));
-    for (int i = 0; i < std::min(secret.size(), salt.size()); ++i) {
+    pairs.reserve(std::ranges::min(secret.size(), salt.size()));
+    for (int i = 0; i < std::ranges::min(secret.size(), salt.size()); ++i) {
         pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(secret.at(i)),
                            CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
     }
@@ -352,8 +352,8 @@ QByteArray CSRFProtectionPrivate::unsaltCipherToken(const QByteArray &token)
     const QByteArray _token = token.mid(CSRFProtectionPrivate::secretLength);
 
     std::vector<std::pair<int, int>> pairs;
-    pairs.reserve(std::min(salt.size(), _token.size()));
-    for (int i = 0; i < std::min(salt.size(), _token.size()); ++i) {
+    pairs.reserve(std::ranges::min(salt.size(), _token.size()));
+    for (int i = 0; i < std::ranges::min(salt.size(), _token.size()); ++i) {
         pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(_token.at(i)),
                            CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
     }
@@ -676,7 +676,10 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         if (goodReferer.isEmpty()) {
                             goodReferer = uri.host();
                         }
-                        const int serverPort = uri.port(c->req()->secure() ? httpsPort : httpPort);
+                        const int serverPort =
+                            uri.port(c->req()->secure() // cppcheck-suppress knownConditionTrueFalse
+                                         ? httpsPort
+                                         : httpPort);
                         if ((serverPort != httpPort) && (serverPort != httpsPort)) {
                             goodReferer += u':' + QString::number(serverPort);
                         }
@@ -691,15 +694,13 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                             refererHost += u':' + QString::number(refererPort);
                         }
 
-                        bool refererCheck = false;
-                        for (const auto &host : std::as_const(goodHosts)) {
-                            if ((host.startsWith(u'.') &&
-                                 (refererHost.endsWith(host) || (refererHost == host.mid(1)))) ||
-                                host == refererHost) {
-                                refererCheck = true;
-                                break;
-                            }
-                        }
+                        bool refererCheck =
+                            std::ranges::any_of(goodHosts, [&refererHost](const auto &host) {
+                            return (host.startsWith(u'.') &&
+                                    (refererHost.endsWith(host) ||
+                                     refererHost == QStringView{host}.mid(1))) ||
+                                   host == refererHost;
+                        });
 
                         if (Q_UNLIKELY(!refererCheck)) {
                             ok = false;

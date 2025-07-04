@@ -20,28 +20,28 @@ using namespace Cutelyst;
 
 TcpServer::TcpServer(const QByteArray &serverAddress,
                      Protocol *protocol,
-                     Server *wsgi,
+                     Server *server,
                      QObject *parent)
     : QTcpServer(parent)
     , m_serverAddress(serverAddress)
-    , m_wsgi(wsgi)
+    , m_server(server)
     , m_protocol(protocol)
 {
     m_engine = qobject_cast<ServerEngine *>(parent);
 
-    if (m_wsgi->tcpNodelay()) {
+    if (m_server->tcpNodelay()) {
         m_socketOptions.emplace_back(QAbstractSocket::LowDelayOption, 1);
     }
-    if (m_wsgi->soKeepalive()) {
+    if (m_server->soKeepalive()) {
         m_socketOptions.emplace_back(QAbstractSocket::KeepAliveOption, 1);
     }
-    if (m_wsgi->socketSndbuf() != -1) {
+    if (m_server->socketSndbuf() != -1) {
         m_socketOptions.emplace_back(QAbstractSocket::SendBufferSizeSocketOption,
-                                     m_wsgi->socketSndbuf());
+                                     m_server->socketSndbuf());
     }
-    if (m_wsgi->socketRcvbuf() != -1) {
+    if (m_server->socketRcvbuf() != -1) {
         m_socketOptions.emplace_back(QAbstractSocket::ReceiveBufferSizeSocketOption,
-                                     m_wsgi->socketRcvbuf());
+                                     m_server->socketRcvbuf());
     }
 }
 

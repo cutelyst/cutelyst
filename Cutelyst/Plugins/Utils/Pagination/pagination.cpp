@@ -34,25 +34,20 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
     insert(QStringLiteral("currentPage"), currentPage);
     insert(QStringLiteral("current"), currentPage);
 
-    int lastPage = (numberOfItems - 1) / itemsPerPage + 1;
-    if (currentPage > lastPage) {
-        currentPage = lastPage;
-    }
+    const int resultLastPage = ((numberOfItems - 1) / itemsPerPage) + 1;
+    currentPage              = std::ranges::min(currentPage, resultLastPage);
 
-    int startPage = (currentPage < pageLinks + 1) ? 1 : currentPage - pageLinks;
-    int endPage   = (pageLinks * 2) + startPage;
-    if (lastPage < endPage) {
-        endPage = lastPage;
-    }
+    const int startPage = (currentPage < pageLinks + 1) ? 1 : currentPage - pageLinks;
+    const int endPage   = std::ranges::min((pageLinks * 2) + startPage, resultLastPage);
 
-    QVector<int> pages;
+    QVector<int> resultPages;
     for (int i = startPage; i <= endPage; ++i) {
-        pages.append(i);
+        resultPages.append(i);
     }
     insert(QStringLiteral("enableFirst"), currentPage > 1);
-    insert(QStringLiteral("enableLast"), currentPage != lastPage);
-    insert(QStringLiteral("pages"), QVariant::fromValue(pages));
-    insert(QStringLiteral("lastPage"), lastPage);
+    insert(QStringLiteral("enableLast"), currentPage != resultLastPage);
+    insert(QStringLiteral("pages"), QVariant::fromValue(resultPages));
+    insert(QStringLiteral("lastPage"), resultLastPage);
     insert(QStringLiteral("numberOfItems"), numberOfItems);
 }
 

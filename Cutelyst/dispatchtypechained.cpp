@@ -30,8 +30,9 @@ QByteArray DispatchTypeChained::list() const
 
     QByteArray buffer;
     Actions endPoints = d->endPoints;
-    std::ranges::sort(endPoints,
-                      [](Action *a, Action *b) -> bool { return a->reverse() < b->reverse(); });
+    std::ranges::sort(endPoints, [](const Action *a, const Action *b) -> bool {
+        return a->reverse() < b->reverse();
+    });
 
     QVector<QStringList> paths;
     QVector<QStringList> unattachedTable;
@@ -83,7 +84,7 @@ QByteArray DispatchTypeChained::list() const
         }
 
         QVector<QStringList> rows;
-        for (Action *p : parents) {
+        for (const Action *p : parents) {
             QString name = QLatin1Char('/') + p->reverse();
 
             QString extraHttpMethod = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
@@ -273,7 +274,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     QString parent;
     QStringList localCaptures = captures;
     QStringList parts;
-    Action *curr = action;
+    const Action *curr = action;
     while (curr) {
         const ParamsMultiMap curr_attributes = curr->attributes();
         if (curr_attributes.contains(QStringLiteral("CaptureArgs"))) {
@@ -423,19 +424,19 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
                 //    No best action currently
                 // OR The action has less parts
                 // OR The action has equal parts but less captured data (ergo more defined)
-                ActionList actions        = ret.actions;
+                ActionList bestActions    = ret.actions;
                 const auto actionCaptures = ret.captures;
                 const auto actionParts    = ret.parts;
                 int bestActionParts       = bestAction.parts.size();
 
-                if (!actions.isEmpty() &&
+                if (!bestActions.isEmpty() &&
                     (bestAction.isNull || actionParts.size() < bestActionParts ||
                      (actionParts.size() == bestActionParts &&
                       actionCaptures.size() < bestAction.captures.size() &&
                       ret.n_pathParts > bestAction.n_pathParts))) {
-                    actions.prepend(action);
+                    bestActions.prepend(action);
                     int pathparts          = attributes.value(u"PathPart"_s).count(u'/') + 1;
-                    bestAction.actions     = actions;
+                    bestAction.actions     = bestActions;
                     bestAction.captures    = captures + actionCaptures;
                     bestAction.parts       = actionParts;
                     bestAction.n_pathParts = pathparts + ret.n_pathParts;
@@ -470,7 +471,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
     return bestAction;
 }
 
-bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name) const
+bool DispatchTypeChainedPrivate::checkArgsAttr(const Action *action, const QString &name) const
 {
     const auto attributes = action->attributes();
     if (!attributes.contains(name)) {
@@ -496,7 +497,7 @@ bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
     return true;
 }
 
-QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
+QString DispatchTypeChainedPrivate::listExtraHttpMethods(const Action *action)
 {
     QString ret;
     const auto attributes = action->attributes();
@@ -507,7 +508,7 @@ QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
     return ret;
 }
 
-QString DispatchTypeChainedPrivate::listExtraConsumes(Action *action)
+QString DispatchTypeChainedPrivate::listExtraConsumes(const Action *action)
 {
     QString ret;
     const auto attributes = action->attributes();

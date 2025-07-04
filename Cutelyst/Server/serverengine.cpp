@@ -41,23 +41,23 @@ QByteArray dateHeader();
 ServerEngine::ServerEngine(Application *localApp,
                            int workerCore,
                            const QVariantMap &opts,
-                           Server *wsgi)
+                           Server *server)
     : Engine(localApp, workerCore, opts)
-    , m_wsgi(wsgi)
+    , m_lastDate{dateHeader()}
+    , m_server(server)
 {
-    m_lastDate = dateHeader();
     m_lastDateTimer.start();
 
-    if (m_wsgi->socketTimeout()) {
+    if (m_server->socketTimeout()) {
         m_socketTimeout = new QTimer(this);
         m_socketTimeout->setObjectName(QStringLiteral("Cutelyst::socketTimeout"));
-        m_socketTimeout->setInterval(std::chrono::seconds{m_wsgi->socketTimeout()});
+        m_socketTimeout->setInterval(std::chrono::seconds{m_server->socketTimeout()});
     }
 
     connect(this, &ServerEngine::shutdown, app(), [this] { Q_EMIT app()->shuttingDown(app()); });
 
-    const QStringList staticMap  = m_wsgi->staticMap();
-    const QStringList staticMap2 = m_wsgi->staticMap2();
+    const QStringList staticMap  = m_server->staticMap();
+    const QStringList staticMap2 = m_server->staticMap2();
     if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
         // NOLINTNEXTLINE
         auto staticMapPlugin = new StaticMap(app());
@@ -91,25 +91,27 @@ void ServerEngine::setServers(const std::vector<QObject *> &servers)
     for (QObject *server : servers) {
         auto balancer = qobject_cast<TcpServerBalancer *>(server);
         if (balancer) {
-            TcpServer *server = balancer->createServer(this);
-            if (server) {
+            TcpServer *cloneServer = balancer->createServer(this);
+            if (cloneServer) {
                 ++m_runningServers;
                 if (m_socketTimeout) {
-                    connect(
-                        m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
+                    connect(m_socketTimeout,
+                            &QTimer::timeout,
+                            cloneServer,
+                            &TcpServer::timeoutConnections);
                 }
 
-                if (server->protocol()->type() == Protocol::Type::Http11) {
-                    server->setProtocol(getProtoHttp());
-                } else if (server->protocol()->type() == Protocol::Type::Http2) {
-                    server->setProtocol(getProtoHttp2());
-                } else if (server->protocol()->type() == Protocol::Type::FastCGI1) {
-                    server->setProtocol(getProtoFastCgi());
+                if (cloneServer->protocol()->type() == Protocol::Type::Http11) {
+                    cloneServer->setProtocol(getProtoHttp());
+                } else if (cloneServer->protocol()->type() == Protocol::Type::Http2) {
+                    cloneServer->setProtocol(getProtoHttp2());
+                } else if (cloneServer->protocol()->type() == Protocol::Type::FastCGI1) {
+                    cloneServer->setProtocol(getProtoFastCgi());
                 }
 
 #ifndef QT_NO_SSL
-                if (m_wsgi->httpsH2()) {
-                    auto sslServer = qobject_cast<TcpSslServer *>(server);
+                if (m_server->httpsH2()) {
+                    auto sslServer = qobject_cast<TcpSslServer *>(cloneServer);
                     if (sslServer) {
                         sslServer->setHttp2Protocol(getProtoHttp2());
                     }
@@ -118,24 +120,24 @@ void ServerEngine::setServers(const std::vector<QObject *> &servers)
             }
         }
 
-        auto localServer = qobject_cast<LocalServer *>(server);
+        const auto localServer = qobject_cast<LocalServer *>(server);
         if (localServer) {
-            LocalServer *server = localServer->createServer(this);
-            if (server) {
+            LocalServer *cloneServer = localServer->createServer(this);
+            if (cloneServer) {
                 ++m_runningServers;
                 if (m_socketTimeout) {
                     connect(m_socketTimeout,
                             &QTimer::timeout,
-                            server,
+                            cloneServer,
                             &LocalServer::timeoutConnections);
                 }
 
-                if (server->protocol()->type() == Protocol::Type::Http11) {
-                    server->setProtocol(getProtoHttp());
-                } else if (server->protocol()->type() == Protocol::Type::Http2) {
-                    server->setProtocol(getProtoHttp2());
-                } else if (server->protocol()->type() == Protocol::Type::FastCGI1) {
-                    server->setProtocol(getProtoFastCgi());
+                if (cloneServer->protocol()->type() == Protocol::Type::Http11) {
+                    cloneServer->setProtocol(getProtoHttp());
+                } else if (cloneServer->protocol()->type() == Protocol::Type::Http2) {
+                    cloneServer->setProtocol(getProtoHttp2());
+                } else if (cloneServer->protocol()->type() == Protocol::Type::FastCGI1) {
+                    cloneServer->setProtocol(getProtoFastCgi());
                 }
             }
         }
@@ -147,7 +149,7 @@ void ServerEngine::postFork(int workerId)
     m_workerId = workerId;
 
 #ifdef Q_OS_UNIX
-    UnixFork::setSched(m_wsgi, workerId, workerCore());
+    UnixFork::setSched(m_server, workerId, workerCore());
 #endif
 
     if (Q_LIKELY(postForkApplication())) {
@@ -171,10 +173,10 @@ QByteArray ServerEngine::dateHeader()
 Protocol *ServerEngine::getProtoHttp()
 {
     if (!m_protoHttp) {
-        if (m_wsgi->upgradeH2c()) {
-            m_protoHttp = new ProtocolHttp(m_wsgi, getProtoHttp2());
+        if (m_server->upgradeH2c()) {
+            m_protoHttp = new ProtocolHttp(m_server, getProtoHttp2());
         } else {
-            m_protoHttp = new ProtocolHttp(m_wsgi);
+            m_protoHttp = new ProtocolHttp(m_server);
         }
     }
     return m_protoHttp;
@@ -183,7 +185,7 @@ Protocol *ServerEngine::getProtoHttp()
 ProtocolHttp2 *ServerEngine::getProtoHttp2()
 {
     if (!m_protoHttp2) {
-        m_protoHttp2 = new ProtocolHttp2(m_wsgi);
+        m_protoHttp2 = new ProtocolHttp2(m_server);
     }
     return m_protoHttp2;
 }
@@ -191,7 +193,7 @@ ProtocolHttp2 *ServerEngine::getProtoHttp2()
 Protocol *ServerEngine::getProtoFastCgi()
 {
     if (!m_protoFcgi) {
-        m_protoFcgi = new ProtocolFastCGI(m_wsgi);
+        m_protoFcgi = new ProtocolFastCGI(m_server);
     }
     return m_protoFcgi;
 }

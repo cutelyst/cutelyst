@@ -41,7 +41,7 @@ public:
 
         void clean()
         {
-            for (auto &conn : connections) {
+            for (const auto &conn : connections) {
                 QObject::disconnect(conn);
             }
             connections.clear();
@@ -66,7 +66,7 @@ public:
             Q_ASSERT_X(!connections.empty(), "Cutelyst::CoroContext", "Did not yield any QObject*");
         }
 
-        std::suspend_never yield_value(QObject *obj)
+        std::suspend_never yield_value(const QObject *obj)
         {
             auto conn = QObject::connect(obj, &QObject::destroyed, [this] {
                 clean();

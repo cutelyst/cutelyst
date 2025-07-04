@@ -173,7 +173,7 @@ public:
     /**
      * Constructs a new %Memcached object with the given @a parent.
      */
-    Memcached(Application *parent);
+    explicit Memcached(Application *parent);
 
     /**
      * Contructs a new %Memcached object with the given @a parent and @a defaultConfig.

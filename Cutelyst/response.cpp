@@ -208,8 +208,8 @@ void Response::setCookie(const QNetworkCookie &cookie)
 void Response::setCookies(const QList<QNetworkCookie> &cookies)
 {
     Q_D(Response);
-    for (const QNetworkCookie &cookie : cookies) {
-        d->cookies.insert(cookie.name(), cookie);
+    for (const QNetworkCookie &cookieItem : cookies) {
+        d->cookies.insert(cookieItem.name(), cookieItem);
     }
 }
 
@@ -226,10 +226,10 @@ void Response::redirect(const QUrl &url, quint16 status)
     d->status   = status;
 
     if (url.isValid()) {
-        const auto location = url.toEncoded(QUrl::FullyEncoded);
-        qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location << status;
+        const auto locationRedirect = url.toEncoded(QUrl::FullyEncoded);
+        qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << locationRedirect << status;
 
-        d->headers.setHeader("Location"_ba, location);
+        d->headers.setHeader("Location"_ba, locationRedirect);
         d->headers.setContentType("text/html; charset=utf-8"_ba);
 
         const QByteArray buf = R"V0G0N(<!DOCTYPE html>
@@ -239,7 +239,7 @@ void Response::redirect(const QUrl &url, quint16 status)
   </head>
   <body>
      <p>This item has moved <a href=")V0G0N" +
-                               location + R"V0G0N(">here</a>.</p>
+                               locationRedirect + R"V0G0N(">here</a>.</p>
   </body>
 </html>
 )V0G0N";

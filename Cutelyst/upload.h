@@ -30,7 +30,7 @@ public:
     /**
      * This class provides access to client upload requests
      */
-    Upload(UploadPrivate *prv);
+    explicit Upload(UploadPrivate *prv);
     /**
      * Destroys the %Upload object.
      */

@@ -70,7 +70,7 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod) const
     const QString path          = c->req()->path().mid(1);
     const QRegularExpression re = d->re; // Thread-safe
 
-    for (const QString &dir : d->dirs) {
+    bool found = std::ranges::any_of(d->dirs, [&](const QString &dir) {
         if (path.startsWith(dir)) {
             if (!locateStaticFile(c, path)) {
                 Response *res = c->response();
@@ -78,10 +78,14 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod) const
                 res->setContentType("text/html"_ba);
                 res->setBody("File not found: " + path.toUtf8());
             }
-
-            *skipMethod = true;
-            return;
+            return true;
         }
+        return false;
+    });
+
+    if (found) {
+        *skipMethod = true;
+        return;
     }
 
     if (d->serveDirsOnly) {

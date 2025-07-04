@@ -1406,7 +1406,7 @@ void MemcachedPrivate::setReturnType(Memcached::ReturnType *rt1, memcached_retur
  * Checks if the %Memcached plugin @a ptr is registered to the application and sets
  * the @a rt accordingly.
  */
-bool MemcachedPrivate::isRegistered(Memcached *ptr, Memcached::ReturnType *rt)
+bool MemcachedPrivate::isRegistered(const Memcached *ptr, Memcached::ReturnType *rt)
 {
     if (!ptr) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";

@@ -32,7 +32,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
 private:
-    TestEngine *m_engine;
+    TestEngine *m_engine = nullptr;
 
     TestEngine *getEngine();
 
@@ -74,7 +74,8 @@ public:
     C_ATTR(controller, :Local :AutoArgs)
     void controller(Context *c)
     {
-        Controller *controller = c->controller(c->request()->queryParam(QStringLiteral("name")));
+        const Controller *controller =
+            c->controller(c->request()->queryParam(QStringLiteral("name")));
         if (!controller) {
             c->response()->setBody(QStringLiteral("__NOT_FOUND__"));
         } else {
@@ -91,8 +92,8 @@ public:
     C_ATTR(getAction, :Local :AutoArgs)
     void getAction(Context *c)
     {
-        Action *action = c->getAction(c->request()->queryParam(QStringLiteral("action")),
-                                      c->request()->queryParam(QStringLiteral("ns")));
+        const Action *action = c->getAction(c->request()->queryParam(QStringLiteral("action")),
+                                            c->request()->queryParam(QStringLiteral("ns")));
         if (!action) {
             c->response()->setBody(QStringLiteral("__NOT_FOUND__"));
         } else {
@@ -109,7 +110,7 @@ public:
             c->response()->setBody(QStringLiteral("__NOT_FOUND__"));
         } else {
             QString ret;
-            for (Action *action : actions) {
+            for (const Action *action : actions) {
                 ret.append(action->reverse() + QLatin1Char(';'));
             }
             c->response()->setBody(ret);

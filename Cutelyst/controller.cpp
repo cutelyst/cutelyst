@@ -9,6 +9,8 @@
 #include "controller_p.h"
 #include "dispatcher.h"
 
+#include <ranges>
+
 #include <QMetaClassInfo>
 #include <QRegularExpression>
 
@@ -367,8 +369,7 @@ void ControllerPrivate::setupFinished()
         end = endList.last();
     }
 
-    const auto actions = actionList;
-    for (Action *action : actions) {
+    for (Action *action : std::as_const(actionList)) {
         action->dispatcherReady(dispatcher, q);
     }
 
@@ -381,7 +382,7 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
-    int &actionRefCount = c->d_ptr->actionRefCount;
+    const int &actionRefCount = c->d_ptr->actionRefCount;
 
     // Dispatch to Begin and Auto
     const auto beginAutoList = d->beginAutoList;
@@ -528,11 +529,10 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
     int size = str.size();
     int pos  = 0;
     while (pos < size) {
-        QString key;
-        QString value;
-
         // find the start of a key
         if (str.at(pos) == ':') {
+            QString key;
+            QString value;
             int keyStart  = ++pos;
             int keyLength = 0;
             while (pos < size) {
@@ -552,7 +552,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
                                 break;
                             } else if (pos >= size) {
                                 // found the end of the string
-                                // save the remainig as the value
+                                // save the remaining as the value
                                 value =
                                     QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
                                 break;
@@ -562,7 +562,6 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
                         }
                         ++pos;
                     }
-
                     break;
                 } else if (str.at(pos) == ':') {
                     // Attribute has no value
@@ -572,7 +571,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
                 ++pos;
             }
 
-            // stopre the key
+            // store the key
             key = QString::fromLatin1(str.mid(keyStart, keyLength));
 
             // remove quotes
@@ -593,9 +592,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
 
     const static auto digitRE = QRegularExpression(u"\\D"_s);
 
-    // Add the attributes to the map in the reverse order so
-    // that values() return them in the right order
-    for (const auto &pair : attributes) {
+    // Add the attributes to the map in the reverse order
+    std::ranges::for_each(attributes | std::views::reverse, [&](const auto &pair) {
         QString key   = pair.first;
         QString value = pair.second;
         if (key.compare(u"Global") == 0) {
@@ -619,7 +617,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
         }
 
         ret.insert(key, value);
-    }
+    });
 
     // Handle special AutoArgs and AutoCaptureArgs case
     if (!ret.contains(QStringLiteral("Args")) && !ret.contains(QStringLiteral("CaptureArgs")) &&

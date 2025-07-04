@@ -1,7 +1,7 @@
 .TH cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2023-11-29" "cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
-cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Fast, developer friendly WSGI server for Cutelyst applications.
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Fast, developer friendly web server for Cutelyst applications.
 
 .SH SYNOPSIS
 .B cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
@@ -9,7 +9,7 @@ cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Fast, developer friendly
 
 .SH DESCRIPTION
 .B cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
-is a developer friendly WSGI server for Cutelyst applications that can either be used as standalone HTTP server or as a gateway between your Cutelyst application and another webserver like Apache or nginx. It supports HTTP, HTTPS, HTTP/2 and FastCGI sockets.
+is a developer friendly web server for Cutelyst applications that can either be used as standalone HTTP server or as a gateway between your Cutelyst application and another webserver like Apache or nginx. It supports HTTP, HTTPS, HTTP/2 and FastCGI sockets.
 
 .SH OPTIONS
 .SS "Generic Program Information"

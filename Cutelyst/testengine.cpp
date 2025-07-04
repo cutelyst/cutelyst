@@ -109,6 +109,8 @@ qint64 SequentialBuffer::writeData(const char *data, qint64 len)
     return -1;
 }
 
+TestEngineConnection::TestEngineConnection() = default;
+
 qint64 TestEngineConnection::doWrite(const char *data, qint64 len)
 {
     m_responseData.append(data, len);

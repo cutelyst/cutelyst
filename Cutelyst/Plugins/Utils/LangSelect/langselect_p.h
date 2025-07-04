@@ -28,8 +28,8 @@ public:
     bool getFromDomain(Context *c, const QMap<QString, QLocale> &map) const;
     bool getFromHeader(Context *c,
                        const QByteArray &name = QByteArrayLiteral("Accept-Language")) const;
-    void setToQuery(Context *c, const QString &key) const;
-    void setToCookie(Context *c, const QByteArray &name) const;
+    void setToQuery(const Context *c, const QString &key) const;
+    void setToCookie(const Context *c, const QByteArray &name) const;
     void setToSession(Context *c, const QString &key) const;
     void setFallback(Context *c) const;
     void setContentLanguage(Context *c) const;

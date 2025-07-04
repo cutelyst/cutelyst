@@ -1,5 +1,5 @@
-#ifndef _TEST_COVERAGE_OBJECT_H
-#define _TEST_COVERAGE_OBJECT_H
+#ifndef TEST_COVERAGE_OBJECT_H
+#define TEST_COVERAGE_OBJECT_H
 
 #include "config.h"
 
@@ -25,6 +25,7 @@ public:
     }
     virtual void initTest() {}
     virtual void cleanupTest() {}
+
 protected Q_SLOTS:
     void init();
     void cleanup();
@@ -39,7 +40,7 @@ class RootController : public Controller
     Q_OBJECT
     C_NAMESPACE("")
 public:
-    RootController(QObject *parent)
+    explicit RootController(QObject *parent)
         : Controller(parent)
     {
     }
@@ -91,7 +92,7 @@ class TestController : public Controller
     Q_OBJECT
     C_NAMESPACE("///test/controller")
 public:
-    TestController(QObject *parent)
+    explicit TestController(QObject *parent)
         : Controller(parent)
     {
     }
@@ -256,14 +257,14 @@ class TestApplication : public Application
 {
     Q_OBJECT
 public:
-    TestApplication(QObject *parent = 0)
+    explicit TestApplication(QObject *parent = nullptr)
         : Application(parent)
     {
         defaultHeaders() = Headers();
         // load the core translations from the build directory
         loadTranslations(u"cutelystcore"_s, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s);
     }
-    virtual bool init()
+    bool init() override
     {
         new TestController(this);
 

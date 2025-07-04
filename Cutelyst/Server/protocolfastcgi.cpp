@@ -73,8 +73,8 @@ __attribute__((__packed__));
 
 using namespace Cutelyst;
 
-ProtocolFastCGI::ProtocolFastCGI(Server *wsgi)
-    : Protocol(wsgi)
+ProtocolFastCGI::ProtocolFastCGI(Server *server)
+    : Protocol(server)
 {
 }
 
@@ -93,8 +93,8 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
                                    const char *val,
                                    quint16 vallen) const
 {
-    char *buffer    = request->buffer + request->pktsize;
-    char *watermark = request->buffer + m_bufferSize;
+    char *buffer          = request->buffer + request->pktsize;
+    const char *watermark = request->buffer + m_bufferSize;
 
     if (buffer + keylen + vallen + 2 + 2 >= watermark) {
         qCWarning(C_SERVER_FCGI,
@@ -145,7 +145,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
     }
 
     // #ifdef DEBUG
-    //     qCDebug(C_SERVER_FCGI, "add uwsgi var: %.*s = %.*s", keylen, key, vallen, val);
+    //     qCDebug(C_SERVER_FCGI, "add server var: %.*s = %.*s", keylen, key, vallen, val);
     // #endif
 
     return keylen + vallen + 2 + 2;
@@ -211,7 +211,7 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
     Q_FOREVER
     {
         if (request->buf_size >= int(sizeof(struct fcgi_record))) {
-            auto fr = reinterpret_cast<struct fcgi_record *>(request->buffer);
+            const auto *fr = reinterpret_cast<struct fcgi_record *>(request->buffer);
 
             quint8 fcgi_type    = fr->type;
             auto fcgi_len       = quint16(fr->cl0 | (fr->cl1 << 8));
@@ -255,7 +255,7 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
                         return WSGI_ERROR;
                     }
                 } else if (fcgi_type == FCGI_BEGIN_REQUEST) {
-                    auto brb = reinterpret_cast<struct fcgi_begin_request_body *>(
+                    const auto *brb = reinterpret_cast<struct fcgi_begin_request_body *>(
                         request->buffer + sizeof(struct fcgi_begin_request_body));
                     request->headerConnection = (brb->flags & FCGI_KEEP_CONN)
                                                     ? ProtoRequestFastCGI::HeaderConnection::Keep
@@ -509,7 +509,7 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 void ProtoRequestFastCGI::processingFinished()
 {
     char end_request[] = FCGI_END_REQUEST_DATA;
-    char *sid          = reinterpret_cast<char *>(&stream_id);
+    const char *sid    = reinterpret_cast<char *>(&stream_id);
     // update with request id
     end_request[2]  = sid[1];
     end_request[3]  = sid[0];

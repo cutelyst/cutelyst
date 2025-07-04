@@ -14,7 +14,7 @@ class ControllerPrivate
 {
     Q_DECLARE_PUBLIC(Controller)
 public:
-    ControllerPrivate(Controller *parent);
+    explicit ControllerPrivate(Controller *parent);
     void init(Application *app, Dispatcher *_dispatcher);
     // Called when the Dispatcher has finished
     // setting up all controllers

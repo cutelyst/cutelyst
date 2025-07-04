@@ -30,11 +30,11 @@ public:
 
     qint64 doWrite(const char *data, qint64 len) override final;
 
-    inline qint64 doWrite(const QByteArray &data) { return doWrite(data.constData(), data.size()); }
+    qint64 doWrite(const QByteArray &data) { return doWrite(data.constData(), data.size()); }
 
     void processingFinished() override final;
 
-    inline void resetData() override final
+    void resetData() override final
     {
         ProtocolData::resetData();
 
@@ -61,7 +61,7 @@ public:
 class ProtocolFastCGI final : public Protocol
 {
 public:
-    ProtocolFastCGI(Server *wsgi);
+    explicit ProtocolFastCGI(Server *server);
     ~ProtocolFastCGI() override;
 
     Type type() const override;

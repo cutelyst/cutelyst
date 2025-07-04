@@ -20,7 +20,7 @@ class TcpServerBalancer final : public QTcpServer
 {
     Q_OBJECT
 public:
-    TcpServerBalancer(Server *parent);
+    explicit TcpServerBalancer(Server *parent);
     ~TcpServerBalancer() override;
 
     bool listen(const QString &address, Protocol *protocol, bool secure);

@@ -21,7 +21,7 @@ public:
     void setupHome();
     void setupChildren(const QObjectList &children);
 
-    void logRequest(Request *req);
+    void logRequest(const Request *req);
     void logRequestParameters(const ParamsMultiMap &params, const QString &title);
     void logRequestUploads(const QVector<Upload *> &uploads);
     Component *

@@ -20,9 +20,9 @@
 namespace {
 /* The first passed file descriptor is fd 3 */
 constexpr auto SD_LISTEN_FDS_START = 3;
-} // namespace
-
 Q_LOGGING_CATEGORY(C_SERVER_SYSTEMD, "cutelyst.server.systemd", QtWarningMsg)
+
+} // namespace
 
 using namespace Cutelyst;
 
@@ -51,7 +51,7 @@ systemdNotify::systemdNotify(QObject *parent)
         return;
     }
 
-    auto systemd_socket = getenv("NOTIFY_SOCKET");
+    const auto *systemd_socket = getenv("NOTIFY_SOCKET");
     if (systemd_socket) {
         struct sockaddr_un *sd_sun;
         struct msghdr *msghdr;

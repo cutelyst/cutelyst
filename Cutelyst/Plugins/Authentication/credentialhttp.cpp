@@ -177,7 +177,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c,
 }
 
 AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c,
-                                                               AuthenticationRealm *realm,
+                                                               const AuthenticationRealm *realm,
                                                                const ParamsMultiMap &authinfo)
 {
     Q_UNUSED(authinfo);
@@ -204,13 +204,14 @@ bool CredentialHttpPrivate::isAuthTypeBasic() const
     return type == CredentialHttp::Basic || type == CredentialHttp::Any;
 }
 
-void CredentialHttpPrivate::createBasicAuthResponse(Context *c, AuthenticationRealm *realm)
+void CredentialHttpPrivate::createBasicAuthResponse(const Context *c,
+                                                    const AuthenticationRealm *realm)
 {
     c->res()->headers().setWwwAuthenticate(
         joinAuthHeaderParts("Basic"_ba, buildAuthHeaderCommon(realm)));
 }
 
-QByteArrayList CredentialHttpPrivate::buildAuthHeaderCommon(AuthenticationRealm *realm) const
+QByteArrayList CredentialHttpPrivate::buildAuthHeaderCommon(const AuthenticationRealm *realm) const
 {
     QByteArrayList ret;
     // TODO

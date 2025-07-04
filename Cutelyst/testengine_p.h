@@ -11,7 +11,7 @@ class SequentialBuffer : public QIODevice
 {
     Q_OBJECT
 public:
-    SequentialBuffer(QByteArray *buffer);
+    explicit SequentialBuffer(QByteArray *buffer);
     bool isSequential() const override;
 
     qint64 bytesAvailable() const override;
@@ -27,7 +27,7 @@ private:
 class TestEngineConnection final : public Cutelyst::EngineRequest
 {
 public:
-    TestEngineConnection() {}
+    TestEngineConnection();
 
 protected:
     qint64 doWrite(const char *data, qint64 len) override;
@@ -38,5 +38,5 @@ public:
     QEventLoop m_eventLoop;
     QByteArray m_responseData;
     Headers m_headers;
-    quint16 m_statusCode;
+    quint16 m_statusCode = 0;
 };

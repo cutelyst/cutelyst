@@ -22,7 +22,7 @@ Q_LOGGING_CATEGORY(CUTELYST_CUTELEE, "cutelyst.view.cutelee", QtWarningMsg)
 
 using namespace Cutelyst;
 
-CUTELEE_BEGIN_LOOKUP(ParamsMultiMap)
+CUTELEE_BEGIN_LOOKUP(ParamsMultiMap) // cppcheck-suppress unknownMacro
 return object.value(property);
 CUTELEE_END_LOOKUP
 

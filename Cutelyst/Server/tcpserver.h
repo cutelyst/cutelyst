@@ -19,7 +19,7 @@ class TcpServer : public QTcpServer
 public:
     explicit TcpServer(const QByteArray &serverAddress,
                        Protocol *protocol,
-                       Server *wsgi,
+                       Server *server,
                        QObject *parent = nullptr);
 
     Q_INVOKABLE
@@ -39,7 +39,7 @@ protected:
 
     QByteArray m_serverAddress;
     ServerEngine *m_engine;
-    Server *m_wsgi;
+    Server *m_server;
 
     std::vector<std::pair<QAbstractSocket::SocketOption, QVariant>> m_socketOptions;
     Protocol *m_protocol;

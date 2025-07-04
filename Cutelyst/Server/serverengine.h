@@ -28,7 +28,7 @@ public:
     ServerEngine(Cutelyst::Application *localApp,
                  int workerCore,
                  const QVariantMap &opts,
-                 Server *wsgi);
+                 Server *server);
     virtual ~ServerEngine() override;
 
     virtual int workerId() const override;
@@ -97,7 +97,7 @@ private:
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     QTimer *m_socketTimeout = nullptr;
-    Server *m_wsgi;
+    Server *m_server;
     ProtocolHttp *m_protoHttp    = nullptr;
     ProtocolHttp2 *m_protoHttp2  = nullptr;
     ProtocolFastCGI *m_protoFcgi = nullptr;

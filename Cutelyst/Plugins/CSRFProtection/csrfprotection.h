@@ -240,7 +240,7 @@ public:
     /**
      * Constructs a new %CSRFProtection object with the given @a parent.
      */
-    CSRFProtection(Application *parent);
+    explicit CSRFProtection(Application *parent);
 
     /**
      * Contructs a new %CSRFProtection object with the given @a parent and @a defaultConfig.

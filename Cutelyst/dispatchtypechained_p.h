@@ -30,9 +30,9 @@ public:
     BestActionMatch recurseMatch(int reqArgsSize,
                                  const QString &parent,
                                  const QList<QStringView> &pathParts) const;
-    bool checkArgsAttr(Action *action, const QString &name) const;
-    static QString listExtraHttpMethods(Action *action);
-    static QString listExtraConsumes(Action *action);
+    bool checkArgsAttr(const Action *action, const QString &name) const;
+    static QString listExtraHttpMethods(const Action *action);
+    static QString listExtraConsumes(const Action *action);
 
     Actions endPoints;
     StringActionMap actions;

@@ -72,12 +72,12 @@ bool Authentication::authenticate(Cutelyst::Context *c,
 
     std::shared_ptr<AuthenticationRealm> realmPtr = auth->d_ptr->realm(realm);
     if (realmPtr) {
-        const AuthenticationUser user = realmPtr->authenticate(c, userinfo);
-        if (!user.isNull()) {
-            AuthenticationPrivate::setAuthenticated(c, user, realm, realmPtr);
+        const AuthenticationUser authUser = realmPtr->authenticate(c, userinfo);
+        if (!authUser.isNull()) {
+            AuthenticationPrivate::setAuthenticated(c, authUser, realm, realmPtr);
         }
 
-        return !user.isNull();
+        return !authUser.isNull();
     }
 
     qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
@@ -135,19 +135,19 @@ bool Authentication::userExists(Cutelyst::Context *c)
 
 bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realmName)
 {
-    const QVariant user = c->stash(AUTHENTICATION_USER);
-    if (!user.isNull()) {
-        return user.value<AuthenticationUser>().authRealm() == realmName;
+    const QVariant authUser = c->stash(AUTHENTICATION_USER);
+    if (!authUser.isNull()) {
+        return authUser.value<AuthenticationUser>().authRealm() == realmName;
     } else {
         if (!auth) {
             qCCritical(C_AUTHENTICATION, "Authentication plugin not registered!");
             return false;
         }
 
-        auto realm = AuthenticationPrivate::findRealmForPersistedUser(
+        auto realmPtr = AuthenticationPrivate::findRealmForPersistedUser(
             c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
-        if (realm) {
-            return realm->name() == realmName;
+        if (realmPtr) {
+            return realmPtr->name() == realmName;
         } else {
             return false;
         }
@@ -159,10 +159,10 @@ void Authentication::logout(Context *c)
     AuthenticationPrivate::setUser(c, AuthenticationUser());
 
     if (auth) {
-        auto realm = AuthenticationPrivate::findRealmForPersistedUser(
+        auto realmPtr = AuthenticationPrivate::findRealmForPersistedUser(
             c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
-        if (realm) {
-            realm->removePersistedUser(c);
+        if (realmPtr) {
+            realmPtr->removePersistedUser(c);
         }
     } else {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
@@ -213,16 +213,16 @@ std::shared_ptr<AuthenticationRealm> AuthenticationPrivate::findRealmForPersiste
 {
     const QVariant realmVariant = Session::value(c, AUTHENTICATION_USER_REALM);
     if (!realmVariant.isNull()) {
-        std::shared_ptr<AuthenticationRealm> realm = realms.value(realmVariant.toString());
-        if (realm && !realm->userIsRestorable(c).isNull()) {
-            return realm;
+        std::shared_ptr<AuthenticationRealm> realmPtr = realms.value(realmVariant.toString());
+        if (realmPtr && !realmPtr->userIsRestorable(c).isNull()) {
+            return realmPtr;
         }
     } else {
         // we have no choice but to ask each realm whether it has a persisted user.
         for (const QString &realmName : realmsOrder) {
-            std::shared_ptr<AuthenticationRealm> realm = realms.value(realmName);
-            if (realm && !realm->userIsRestorable(c).isNull()) {
-                return realm;
+            std::shared_ptr<AuthenticationRealm> realmPtr = realms.value(realmName);
+            if (realmPtr && !realmPtr->userIsRestorable(c).isNull()) {
+                return realmPtr;
             }
         }
     }

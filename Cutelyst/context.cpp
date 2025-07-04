@@ -30,13 +30,13 @@ Context::Context(ContextPrivate *priv)
 Context::Context(Application *app)
     : d_ptr(new ContextPrivate(app, app->engine(), app->dispatcher(), app->plugins()))
 {
-    auto req  = new DummyRequest(this);
-    req->body = new QBuffer(this);
-    req->body->open(QBuffer::ReadWrite);
-    req->context = this;
+    auto dummyRequest  = new DummyRequest(this);
+    dummyRequest->body = new QBuffer(this);
+    dummyRequest->body->open(QBuffer::ReadWrite);
+    dummyRequest->context = this;
 
-    d_ptr->response               = new Response(app->defaultHeaders(), req);
-    d_ptr->request                = new Request(req);
+    d_ptr->response               = new Response(app->defaultHeaders(), dummyRequest);
+    d_ptr->request                = new Request(dummyRequest);
     d_ptr->request->d_ptr->engine = d_ptr->engine;
     d_ptr->locale                 = app->defaultLocale();
 }
@@ -263,12 +263,10 @@ QUrl Context::uriFor(const QString &path,
     QUrlQuery query;
     if (!queryValues.isEmpty()) {
         // Avoid a trailing '?'
-        if (!queryValues.isEmpty()) {
-            auto it = queryValues.constEnd();
-            while (it != queryValues.constBegin()) {
-                --it;
-                query.addQueryItem(it.key(), it.value());
-            }
+        auto it = queryValues.constEnd();
+        while (it != queryValues.constBegin()) {
+            --it;
+            query.addQueryItem(it.key(), it.value());
         }
     }
     uri.setQuery(query);
@@ -291,7 +289,7 @@ QUrl Context::uriFor(Action *action,
     QStringList localArgs     = args;
     QStringList localCaptures = captures;
 
-    Action *expandedAction = d->dispatcher->expandAction(this, action);
+    const Action *expandedAction = d->dispatcher->expandAction(this, action);
     if (expandedAction->numberOfCaptures() > 0) {
         while (localCaptures.size() < expandedAction->numberOfCaptures() && !localArgs.isEmpty()) {
             localCaptures.append(localArgs.takeFirst());
@@ -321,13 +319,13 @@ QUrl Context::uriForAction(QStringView path,
     Q_D(const Context);
 
     QUrl uri;
-    Action *action = d->dispatcher->getActionByPath(path);
-    if (!action) {
+    Action *actionFound = d->dispatcher->getActionByPath(path);
+    if (!actionFound) {
         qCWarning(CUTELYST_CORE) << "Can not find action for" << path;
         return uri;
     }
 
-    uri = uriFor(action, captures, args, queryValues);
+    uri = uriFor(actionFound, captures, args, queryValues);
     return uri;
 }
 
@@ -375,8 +373,8 @@ void Context::attachAsync()
     if ((d->engineRequest->status & EngineRequest::Async) &&
         !(d->engineRequest->status & EngineRequest::Finalized)) {
         while (!d->pendingAsync.isEmpty()) {
-            Component *action = d->pendingAsync.dequeue();
-            const bool ret    = execute(action);
+            Component *pendingAction = d->pendingAsync.dequeue();
+            const bool ret           = execute(pendingAction);
 
             if (d->actionRefCount) {
                 return;

@@ -15,14 +15,14 @@ class SessionPrivate
 {
     Q_DECLARE_PUBLIC(Session)
 public:
-    inline SessionPrivate(Session *q)
+    explicit SessionPrivate(Session *q)
         : q_ptr(q)
     {
     }
 
     static inline QByteArray generateSessionId();
     static QByteArray loadSessionId(Context *c, const QByteArray &sessionName);
-    static QByteArray getSessionId(Context *c, const QByteArray &sessionName);
+    static QByteArray getSessionId(const Context *c, const QByteArray &sessionName);
     static QByteArray createSessionIdIfNeeded(Session *session, Context *c, qint64 expires);
     static inline QByteArray createSessionId(Session *session, Context *c, qint64 expires);
     static void _q_saveSession(Context *c);
@@ -34,7 +34,7 @@ public:
     static qint64
         getStoredSessionExpires(Session *session, Context *c, const QByteArray &sessionid);
 
-    static inline QVariant initializeSessionData(Session *session, Context *c);
+    static inline QVariant initializeSessionData(const Session *session, const Context *c);
     static void saveSessionExpires(Context *c);
     static QVariant loadSessionExpires(Session *session, Context *c, const QByteArray &sessionId);
     static inline qint64 initialSessionExpires(Session *session, Context *c);
@@ -43,13 +43,13 @@ public:
     static inline qint64
         resetSessionExpires(Session *session, Context *c, const QByteArray &sessionId);
 
-    static inline void updateSessionCookie(Context *c, const QNetworkCookie &updated);
+    static inline void updateSessionCookie(const Context *c, const QNetworkCookie &updated);
     static inline QNetworkCookie makeSessionCookie(Session *session,
-                                                   Context *c,
+                                                   const Context *c,
                                                    const QByteArray &sid,
                                                    const QDateTime &expires);
     static inline void
-        extendSessionId(Session *session, Context *c, const QByteArray &sid, qint64 expires);
+        extendSessionId(Session *session, const Context *c, const QByteArray &sid, qint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QByteArray &sid);
     QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 

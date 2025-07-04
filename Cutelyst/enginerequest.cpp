@@ -27,17 +27,17 @@ EngineRequest::~EngineRequest()
 void EngineRequest::finalizeBody()
 {
     if (!(status & EngineRequest::Chunked)) {
-        Response *response = context->response();
-        QIODevice *body    = response->bodyDevice();
+        Response *response    = context->response();
+        QIODevice *bodyDevice = response->bodyDevice();
 
-        if (body) {
-            if (!body->isSequential()) {
-                body->seek(0);
+        if (bodyDevice) {
+            if (!bodyDevice->isSequential()) {
+                bodyDevice->seek(0);
             }
 
             char block[64 * 1024];
-            while (!body->atEnd()) {
-                qint64 in = body->read(block, sizeof(block));
+            while (!bodyDevice->atEnd()) {
+                qint64 in = bodyDevice->read(block, sizeof(block));
                 if (in <= 0) {
                     break;
                 }
@@ -63,15 +63,15 @@ void EngineRequest::finalizeError()
 
     res->setContentType("text/html; charset=utf-8"_ba);
 
-    QByteArray body;
+    QByteArray erroBody;
 
     // Trick IE. Old versions of IE would display their own error page instead
     // of ours if we'd give it less than 512 bytes.
-    body.reserve(512);
+    erroBody.reserve(512);
 
-    body.append(context->errors().join(QLatin1Char('\n')).toUtf8());
+    erroBody.append(context->errors().join(QLatin1Char('\n')).toUtf8());
 
-    res->setBody(body);
+    res->setBody(erroBody);
 
     // Return 500
     res->setStatus(Response::InternalServerError);
@@ -93,30 +93,30 @@ void EngineRequest::finalize()
 
 void EngineRequest::finalizeCookies()
 {
-    Response *res      = context->response();
-    Headers &headers   = res->headers();
-    const auto cookies = res->cookies();
+    Response *res       = context->response();
+    Headers &headersRef = res->headers();
+    const auto cookies  = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
-        headers.pushHeader("Set-Cookie"_ba, cookie.toRawForm());
+        headersRef.pushHeader("Set-Cookie"_ba, cookie.toRawForm());
     }
 }
 
 bool EngineRequest::finalizeHeaders()
 {
-    Response *response = context->response();
-    Headers &headers   = response->headers();
+    Response *response  = context->response();
+    Headers &headersRef = response->headers();
 
     // Set content length if we have a valid one
     const qint64 size = response->size();
     if (size >= 0) {
-        headers.setContentLength(size);
+        headersRef.setContentLength(size);
     }
 
     finalizeCookies();
 
     // Done
     status |= EngineRequest::FinalizedHeaders;
-    return writeHeaders(response->status(), headers);
+    return writeHeaders(response->status(), headersRef);
 }
 
 qint64 EngineRequest::write(const char *data, qint64 len)

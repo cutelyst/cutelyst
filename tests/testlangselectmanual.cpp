@@ -34,7 +34,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
 private:
-    TestEngine *m_engine;
+    TestEngine *m_engine = nullptr;
 
     TestEngine *getEngine();
 

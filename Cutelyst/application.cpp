@@ -266,14 +266,14 @@ bool Application::setup(Engine *engine)
         bool zeroCore = engine->workerCore() == 0;
 
         QVector<QStringList> tablePlugins;
-        const auto plugins = d->plugins;
-        for (Plugin *plugin : plugins) {
-            if (plugin->objectName().isEmpty()) {
-                plugin->setObjectName(QString::fromLatin1(plugin->metaObject()->className()));
+        for (Plugin *pluginItem : std::as_const(d->plugins)) {
+            if (pluginItem->objectName().isEmpty()) {
+                pluginItem->setObjectName(
+                    QString::fromLatin1(pluginItem->metaObject()->className()));
             }
-            tablePlugins.append({plugin->objectName()});
+            tablePlugins.append({pluginItem->objectName()});
             // Configure plugins
-            plugin->setup(this);
+            pluginItem->setup(this);
         }
 
         if (zeroCore && !tablePlugins.isEmpty()) {
@@ -320,30 +320,27 @@ bool Application::setup(Engine *engine)
         QVector<QStringList> table;
         QStringList controllerNames = d->controllersHash.keys();
         controllerNames.sort();
-        for (const QString &controller : controllerNames) {
+        for (const QString &controller : std::as_const(controllerNames)) {
             table.append({controller, QLatin1String("Controller")});
         }
 
-        const auto views = d->views;
-        for (View *view : views) {
-            if (view->reverse().isEmpty()) {
-                const QString className = QString::fromLatin1(view->metaObject()->className()) +
-                                          QLatin1String("->execute");
-                view->setReverse(className);
+        for (View *viewItem : std::as_const(d->views)) {
+            if (viewItem->reverse().isEmpty()) {
+                const QString className =
+                    QString::fromLatin1(viewItem->metaObject()->className()) + u"->execute";
+                viewItem->setReverse(className);
             }
-            table.append({view->reverse(), QLatin1String("View")});
+            table.append({viewItem->reverse(), u"View"_s});
         }
 
         if (zeroCore && !table.isEmpty()) {
-            qCDebug(CUTELYST_CORE)
-                << Utils::buildTable(table,
-                                     {QLatin1String("Class"), QLatin1String("Type")},
-                                     QLatin1String("Loaded components:"))
-                       .constData();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(table,
+                                                        {u"Class"_s, u"Type"_s},
+                                                        QLatin1String("Loaded components:"))
+                                          .constData();
         }
 
-        const auto controllers = d->controllers;
-        for (Controller *controller : controllers) {
+        for (Controller *controller : std::as_const(d->controllers)) {
             controller->d_ptr->init(this, d->dispatcher);
         }
 
@@ -369,9 +366,7 @@ void Application::handleRequest(EngineRequest *request)
 {
     Q_D(Application);
 
-    Engine *engine = d->engine;
-
-    auto priv = new ContextPrivate(this, engine, d->dispatcher, d->plugins);
+    auto priv = new ContextPrivate(this, d->engine, d->dispatcher, d->plugins);
     auto c    = new Context(priv);
 
     request->context    = c;
@@ -418,11 +413,10 @@ bool Application::enginePostFork()
         return false;
     }
 
-    const auto controllers = d->controllers;
-    for (Controller *controller : controllers) {
-        if (!controller->postFork(this)) {
-            return false;
-        }
+    if (!std::ranges::all_of(d->controllers, [this](Controller *controller) {
+        return controller->postFork(this);
+    })) {
+        return false;
     }
 
     Q_EMIT postForked(this);
@@ -695,7 +689,7 @@ void ApplicationPrivate::setupChildren(const QObjectList &children)
     }
 }
 
-void Cutelyst::ApplicationPrivate::logRequest(Request *req)
+void Cutelyst::ApplicationPrivate::logRequest(const Request *req)
 {
     QString path = req->path();
     if (path.isEmpty()) {
@@ -746,7 +740,7 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
 void Cutelyst::ApplicationPrivate::logRequestUploads(const QVector<Cutelyst::Upload *> &uploads)
 {
     QVector<QStringList> table;
-    for (Upload *upload : uploads) {
+    for (const Upload *upload : uploads) {
         table.append({upload->name(),
                       upload->filename(),
                       QString::fromLatin1(upload->contentType()),
@@ -805,8 +799,8 @@ Component *ApplicationPrivate::createComponentPlugin(const QString &name,
 
     QDir pluginsDir(directory);
     QPluginLoader loader;
-    const auto plugins = pluginsDir.entryList(QDir::Files);
-    for (const QString &fileName : plugins) {
+    const auto pluginFiles = pluginsDir.entryList(QDir::Files);
+    for (const QString &fileName : pluginFiles) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
 
         if (matchMetadata(loader.metaData())) {

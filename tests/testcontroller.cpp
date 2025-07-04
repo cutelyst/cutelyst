@@ -19,16 +19,16 @@ public:
     {
     }
 
-private Q_SLOTS:
-    void init();
-    void cleanup();
+    void initTest() override;
+    void cleanupTest() override;
 
+private Q_SLOTS:
     void testController_data();
     void testController();
 
 private:
-    TestApplication *m_app;
-    TestEngine *m_engine;
+    TestApplication *m_app = nullptr;
+    TestEngine *m_engine   = nullptr;
 };
 
 class ApiV1Users : public Controller
@@ -53,13 +53,13 @@ class NamespacedController : public Controller
 };
 } // namespace ApiV1
 
-void ControllerTest::init()
+void ControllerTest::initTest()
 {
     m_app    = new TestApplication;
     m_engine = new TestEngine(m_app, QVariantMap());
 }
 
-void ControllerTest::cleanup()
+void ControllerTest::cleanupTest()
 {
     delete m_app;
 }

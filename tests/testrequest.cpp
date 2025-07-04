@@ -42,7 +42,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
 private:
-    TestEngine *m_engine;
+    TestEngine *m_engine = nullptr;
 
     TestEngine *getEngine();
 
@@ -109,12 +109,12 @@ public:
     {
         QUrlQuery ret;
         auto headers = c->request()->headers().data();
-        std::sort(
-            headers.begin(),
-            headers.end(),
-            [](Headers::HeaderKeyValue &a, Headers::HeaderKeyValue &b) { return a.key < b.key; });
+        std::ranges::sort(headers,
+                          [](const Headers::HeaderKeyValue &a, const Headers::HeaderKeyValue &b) {
+            return a.key < b.key;
+        });
 
-        for (const auto &header : headers) {
+        for (const auto &header : std::as_const(headers)) {
             ret.addQueryItem(QString::fromLatin1(header.key), QString::fromLatin1(header.value));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
@@ -136,9 +136,9 @@ public:
     void cookie(Context *c, const QString &name)
     {
         QUrlQuery ret;
-        const auto cookie = c->request()->cookie(name.toLatin1());
-        if (!cookie.isNull()) {
-            ret.addQueryItem(name, QString::fromLatin1(cookie));
+        const auto cookieItem = c->request()->cookie(name.toLatin1());
+        if (!cookieItem.isNull()) {
+            ret.addQueryItem(name, QString::fromLatin1(cookieItem));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -147,9 +147,10 @@ public:
     void cookies(Context *c)
     {
         QUrlQuery ret;
-        auto cookies = c->request()->cookies();
-        for (const auto &cookie : cookies) {
-            ret.addQueryItem(QString::fromLatin1(cookie.name), QString::fromLatin1(cookie.value));
+        const auto cookieItems = c->request()->cookies();
+        for (const auto &cookieItem : cookieItems) {
+            ret.addQueryItem(QString::fromLatin1(cookieItem.name),
+                             QString::fromLatin1(cookieItem.value));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -158,9 +159,9 @@ public:
     void cookies_list(Context *c, const QString &name)
     {
         QUrlQuery ret;
-        const auto values = c->request()->cookies(name.toLatin1());
-        for (const auto &cookie : values) {
-            ret.addQueryItem(name, QString::fromLatin1(cookie));
+        const auto cookieItems = c->request()->cookies(name.toLatin1());
+        for (const auto &cookieItem : cookieItems) {
+            ret.addQueryItem(name, QString::fromLatin1(cookieItem));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -317,13 +318,13 @@ public:
     void uploads(Context *c)
     {
         QUrlQuery ret;
-        const auto uploads = c->request()->uploadsMap();
-        for (const auto &[key, upload] : uploads.asKeyValueRange()) {
-            ret.addQueryItem(key.toString(), upload->name());
-            ret.addQueryItem(key.toString(), upload->filename());
-            ret.addQueryItem(key.toString(), QString::fromLatin1(upload->contentType()));
-            ret.addQueryItem(key.toString(), QString::number(upload->size()));
-            ret.addQueryItem(key.toString(), QString::fromLatin1(upload->readAll().toBase64()));
+        const auto uploadItems = c->request()->uploadsMap();
+        for (const auto &[key, uploadItem] : uploadItems.asKeyValueRange()) {
+            ret.addQueryItem(key.toString(), uploadItem->name());
+            ret.addQueryItem(key.toString(), uploadItem->filename());
+            ret.addQueryItem(key.toString(), QString::fromLatin1(uploadItem->contentType()));
+            ret.addQueryItem(key.toString(), QString::number(uploadItem->size()));
+            ret.addQueryItem(key.toString(), QString::fromLatin1(uploadItem->readAll().toBase64()));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -332,12 +333,13 @@ public:
     void uploadsName(Context *c, const QString &name)
     {
         QUrlQuery ret;
-        const Uploads uploads = c->request()->uploads(name);
-        for (const auto &upload : uploads) {
-            ret.addQueryItem(upload->name(), upload->filename());
-            ret.addQueryItem(upload->name(), QString::fromLatin1(upload->contentType()));
-            ret.addQueryItem(upload->name(), QString::number(upload->size()));
-            ret.addQueryItem(upload->name(), QString::fromLatin1(upload->readAll().toBase64()));
+        const Uploads uploadItems = c->request()->uploads(name);
+        for (const auto &uploadItem : uploadItems) {
+            ret.addQueryItem(uploadItem->name(), uploadItem->filename());
+            ret.addQueryItem(uploadItem->name(), QString::fromLatin1(uploadItem->contentType()));
+            ret.addQueryItem(uploadItem->name(), QString::number(uploadItem->size()));
+            ret.addQueryItem(uploadItem->name(),
+                             QString::fromLatin1(uploadItem->readAll().toBase64()));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -345,13 +347,14 @@ public:
     C_ATTR(upload, :Local :AutoArgs)
     void upload(Context *c, const QString &name)
     {
-        Upload *upload = c->request()->upload(name);
-        if (upload) {
+        Upload *uploadItem = c->request()->upload(name);
+        if (uploadItem) {
             QUrlQuery ret;
-            ret.addQueryItem(upload->name(), upload->filename());
-            ret.addQueryItem(upload->name(), QString::fromLatin1(upload->contentType()));
-            ret.addQueryItem(upload->name(), QString::number(upload->size()));
-            ret.addQueryItem(upload->name(), QString::fromLatin1(upload->readAll().toBase64()));
+            ret.addQueryItem(uploadItem->name(), uploadItem->filename());
+            ret.addQueryItem(uploadItem->name(), QString::fromLatin1(uploadItem->contentType()));
+            ret.addQueryItem(uploadItem->name(), QString::number(uploadItem->size()));
+            ret.addQueryItem(uploadItem->name(),
+                             QString::fromLatin1(uploadItem->readAll().toBase64()));
             c->response()->setBody(ret.toString(QUrl::FullyEncoded));
         }
     }
@@ -731,7 +734,6 @@ void TestRequest::testController_data()
         << headers << QByteArray() << QByteArrayLiteral("gotDefault");
 
     query.clear();
-    body = QUuid::createUuid().toByteArray();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral(""));
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
@@ -834,9 +836,8 @@ void TestRequest::testController_data()
         << QByteArrayLiteral("path=texto2&path=texto1");
 
     query.clear();
-    body = QUuid::createUuid().toByteArray();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral(""));
+    query.addQueryItem(QStringLiteral("foo"), u""_s);
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baa"));
     query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
     query.addQueryItem(QStringLiteral("and yet another is fine"), QString{});
@@ -1034,7 +1035,7 @@ void TestRequest::testController_data()
                              "octet-stream&file1=27&file1=aHR0cHM6Ly9leGFtcGxlLmNvbS9hZG1pbgoK");
 }
 
-QByteArray createBody(QByteArray &result, int count)
+static QByteArray createBody(QByteArray &result, int count)
 {
     QByteArray body;
     QMap<QString, QByteArray> uploads;

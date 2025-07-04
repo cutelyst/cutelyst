@@ -20,8 +20,8 @@ public:
     {
     }
 
-    void initTest();
-    void cleanupTest();
+    void initTest() override;
+    void cleanupTest() override;
 
 private Q_SLOTS:
     void initTestCase();
@@ -37,7 +37,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
 private:
-    TestEngine *m_engine;
+    TestEngine *m_engine = nullptr;
     QNetworkCookie m_cookie;
     const QByteArray m_cookieName = "xsrftoken";
     const QByteArray m_fieldName  = "xsrfprotect";
@@ -135,11 +135,11 @@ void TestCsrfProtection::initTestCase()
         const QList<QNetworkCookie> cookies =
             QNetworkCookie::parseCookies(result.headers.header("Set-Cookie"));
         QVERIFY(!cookies.empty());
-        for (const QNetworkCookie &cookie : cookies) {
-            if (cookie.name() == m_cookieName) {
-                m_cookie = cookie;
-                break;
-            }
+        auto foundIt = std::ranges::find_if(cookies, [this](const QNetworkCookie &cookie) {
+            return cookie.name() == m_cookieName;
+        });
+        if (foundIt != cookies.end()) {
+            m_cookie = *foundIt;
         }
         QVERIFY(!m_cookie.value().isEmpty());
         initTest();

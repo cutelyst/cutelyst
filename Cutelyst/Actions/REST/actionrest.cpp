@@ -61,7 +61,7 @@ bool ActionREST::doExecute(Context *c)
 {
     Q_D(const ActionREST);
 
-    int &actionRefCount = c->d_ptr->actionRefCount;
+    const int &actionRefCount = c->d_ptr->actionRefCount; // cppcheck-suppress variableScope
 
     if (!Action::doExecute(c)) {
         return false;
@@ -91,16 +91,16 @@ Action *ActionRESTPrivate::getRestAction(Context *c, const QByteArray &httpMetho
     Q_Q(const ActionREST);
     const QString restMethod = q->name() + u'_' + QString::fromLatin1(httpMethod);
 
-    Controller *controller = q->controller();
-    Action *action         = controller->actionFor(restMethod);
+    const Controller *controller = q->controller();
+    Action *action               = controller->actionFor(restMethod);
     if (!action) {
         // Look for non registered actions in this controller
         const ActionList actions = controller->actions();
-        for (Action *controllerAction : actions) {
-            if (controllerAction->name() == restMethod) {
-                action = controllerAction;
-                break;
-            }
+        auto it = std::ranges::find_if(actions, [&restMethod](const Action *controllerAction) {
+            return controllerAction->name() == restMethod;
+        });
+        if (it != actions.end()) {
+            action = *it;
         }
     }
 
@@ -142,13 +142,13 @@ void ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
     response->setBody(body);
 }
 
-QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller,
+QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(const Controller *controller,
                                                           const QString &methodName) const
 {
     QStringList methods;
     const QString name       = methodName + u'_';
     const ActionList actions = controller->actions();
-    for (Action *action : actions) {
+    for (const Action *action : actions) {
         const QString method = action->name();
         if (method.startsWith(name)) {
             methods.append(method.mid(name.size()));

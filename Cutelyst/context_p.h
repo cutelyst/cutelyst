@@ -68,17 +68,17 @@ class DummyRequest
 {
     Q_OBJECT
 public:
-    DummyRequest(QObject *parent)
+    explicit DummyRequest(QObject *parent)
         : QObject(parent)
     {
     }
 
-    virtual qint64 doWrite(const char *, qint64) override { return -1; }
+    qint64 doWrite(const char *, qint64) override { return -1; }
 
     /*!
      * Reimplement this to write the headers back to the client
      */
-    virtual bool writeHeaders(quint16, const Headers &) override { return false; }
+    bool writeHeaders(quint16, const Headers &) override { return false; }
 };
 
 } // namespace Cutelyst

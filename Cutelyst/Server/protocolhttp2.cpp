@@ -93,9 +93,9 @@ enum Settings {
 constexpr int PREFACE_SIZE = 24;
 } // namespace
 
-ProtocolHttp2::ProtocolHttp2(Server *wsgi)
-    : Protocol(wsgi)
-    , m_headerTableSize(qint32(wsgi->http2HeaderTableSize()))
+ProtocolHttp2::ProtocolHttp2(Server *server)
+    : Protocol(server)
+    , m_headerTableSize(qint32(server->http2HeaderTableSize()))
 {
     m_bufferSize = qMin(m_bufferSize, 2147483647);
 
@@ -407,11 +407,10 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         pos += 1;
     }
 
-    quint32 streamDependency = 0;
     //    quint8 weight = 0;
     if (fr.flags & FlagHeadersPriority) {
         // TODO disable exclusive bit
-        streamDependency = net_be32(ptr + pos);
+        quint32 streamDependency = net_be32(ptr + pos);
         if (fr.streamId == streamDependency) {
             //            qCDebug(C_SERVER_H2) << "header stream dep";
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
@@ -482,7 +481,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
     }
 
     quint8 *it;
-    quint8 *itEnd;
+    const quint8 *itEnd;
     if (request->headersBuffer.size()) {
         it    = reinterpret_cast<quint8 *>(request->headersBuffer.begin());
         itEnd = reinterpret_cast<quint8 *>(request->headersBuffer.end());
@@ -511,7 +510,9 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
     return 0;
 }
 
-int ProtocolHttp2::parsePriority(ProtoRequestHttp2 *sock, QIODevice *io, const H2Frame &fr) const
+int ProtocolHttp2::parsePriority(const ProtoRequestHttp2 *sock,
+                                 QIODevice *io,
+                                 const H2Frame &fr) const
 {
     //    qDebug() << "Consumming PRIORITY";
     if (fr.len != 5) {
@@ -541,7 +542,9 @@ int ProtocolHttp2::parsePriority(ProtoRequestHttp2 *sock, QIODevice *io, const H
     return 0;
 }
 
-int ProtocolHttp2::parsePing(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
+int ProtocolHttp2::parsePing(const ProtoRequestHttp2 *request,
+                             QIODevice *io,
+                             const H2Frame &fr) const
 {
     //    qCDebug(C_SERVER_H2) << "Got PING" << fr.flags;
     if (fr.len != 8) {

@@ -456,7 +456,6 @@ add_custom_target(cppcheck
         --check-level=exhaustive
         --library=qt.cfg
         "-i${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
-        --suppress=*:*.moc
         --suppress=*:*moc_*.cpp
 )
 

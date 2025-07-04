@@ -152,12 +152,11 @@ void ViewEmail::setSenderPassword(const QString &password)
 QByteArray ViewEmail::render(Context *c) const
 {
     Q_D(const ViewEmail);
-    QByteArray ret;
     QVariantHash email = c->stash(d->stashKey).toHash();
     if (email.isEmpty()) {
         c->appendError(QStringLiteral(
             "Cannot render template, template name or template stash key not defined"));
-        return ret;
+        return {};
     }
 
     MimeMessage message;
@@ -200,7 +199,7 @@ QByteArray ViewEmail::render(Context *c) const
     QVariant parts = email.value(QStringLiteral("parts"));
     if (body.isNull() && parts.isNull()) {
         c->appendError(QStringLiteral("Can't send email without parts or body, check stash"));
-        return ret;
+        return {};
     }
 
     if (!parts.isNull()) {
@@ -233,7 +232,7 @@ QByteArray ViewEmail::render(Context *c) const
     ServerReply *reply = d->server->sendMail(message);
     connect(reply, &ServerReply::finished, reply, &ServerReply::deleteLater);
 
-    return ret;
+    return {};
 }
 
 ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name)

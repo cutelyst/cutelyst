@@ -85,7 +85,7 @@ public:
      * The pointer to the Application object is used to load the plugin configuration from
      * the configuration file section @c Cutelyst_MemcachedSessionStore_Plugin.
      */
-    MemcachedSessionStore(Application *app, QObject *parent = nullptr);
+    explicit MemcachedSessionStore(Application *app, QObject *parent = nullptr);
 
     /**
      * Deconstructs the %MemcachedSessionStore object

@@ -48,7 +48,7 @@ public:
     virtual void terminateChild() override;
     void terminateChild(qint64 pid);
 
-    static void stopWSGI(const QString &pidfile);
+    static void stopSERVER(const QString &pidfile);
 
     static bool setUmask(const QByteArray &valueStr);
     static bool setGidUid(const QString &gid, const QString &uid, bool noInitgroups);
@@ -62,7 +62,7 @@ public:
     void handleSigInt();
     void handleSigChld();
 
-    static void setSched(Cutelyst::Server *wsgi, int workerId, int workerCore);
+    static void setSched(Cutelyst::Server *server, int workerId, int workerCore);
 
 private:
     int setupUnixSignalHandlers();

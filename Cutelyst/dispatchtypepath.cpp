@@ -154,19 +154,23 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
     if (it != paths.end()) {
         qint8 actionNumberOfArgs = action->numberOfArgs();
         auto &actions            = it->actions;
-        for (const Action *regAction : actions) {
+        bool conflict            = std::ranges::any_of(actions, [&](const Action *regAction) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
                 qCCritical(CUTELYST_DISPATCHER_PATH)
                     << "Not registering Action" << action->name() << "of controller"
                     << action->controller()->objectName() << "because it conflicts with"
                     << regAction->name() << "of controller"
                     << regAction->controller()->objectName();
-                return false;
+                return true;
             }
+            return false;
+        });
+        if (conflict) {
+            return false;
         }
 
         actions.push_back(action);
-        std::ranges::sort(actions, [](Action *a, Action *b) -> bool {
+        std::ranges::sort(actions, [](const Action *a, const Action *b) -> bool {
             return a->numberOfArgs() < b->numberOfArgs();
         });
     } else {

@@ -12,18 +12,44 @@
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
-inline QByteArray decodeBasicAuth(const QByteArray &auth);
-inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth);
-
 namespace {
+
+inline QByteArray decodeBasicAuth(const QByteArray &auth)
+{
+    QByteArray ret;
+    int pos = auth.indexOf("Basic ");
+    if (pos != -1) {
+        pos += 6;
+        ret = auth.mid(pos, auth.indexOf(',', pos) - pos);
+        ret = QByteArray::fromBase64(ret);
+    }
+    return ret;
+}
+
+inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth)
+{
+    Headers::Authorization ret;
+    const QByteArray authorization = decodeBasicAuth(auth);
+    if (!authorization.isEmpty()) {
+        int pos = authorization.indexOf(':');
+        if (pos == -1) {
+            ret.user = QString::fromLatin1(authorization);
+        } else {
+            ret.user     = QString::fromLatin1(authorization.left(pos));
+            ret.password = QString::fromLatin1(authorization.mid(pos + 1));
+        }
+    }
+    return ret;
+}
+
 QVector<Headers::HeaderKeyValue>::const_iterator
     findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QAnyStringView key) noexcept
 {
-    auto matchKey = [key](Headers::HeaderKeyValue entry) {
+    return std::ranges::find_if(headers, [key](Headers::HeaderKeyValue entry) {
         return QAnyStringView::compare(key, entry.key, Qt::CaseInsensitive) == 0;
-    };
-    return std::find_if(headers.cbegin(), headers.cend(), matchKey);
+    });
 }
+
 } // namespace
 
 Headers::Headers(const Headers &other) noexcept
@@ -443,8 +469,7 @@ void Headers::setHeader(const QByteArray &key, const QByteArray &value)
         return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
 
-    if (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
-        result != m_data.end()) {
+    if (auto result = std::ranges::find_if(m_data, matchKey); result != m_data.end()) {
         result->value = value;
         ++result;
 
@@ -452,7 +477,7 @@ void Headers::setHeader(const QByteArray &key, const QByteArray &value)
             std::remove_if(result, m_data.end(), matchKey);
         m_data.erase(begin, m_data.cend());
     } else {
-        m_data.emplace_back(HeaderKeyValue{key, value});
+        m_data.emplace_back(HeaderKeyValue{.key = key, .value = value});
     }
 }
 
@@ -515,34 +540,6 @@ bool Headers::operator==(const Headers &other) const noexcept
 
     return std::ranges::all_of(
         m_data, [otherData](const auto &myValue) { return otherData.contains(myValue); });
-}
-
-QByteArray decodeBasicAuth(const QByteArray &auth)
-{
-    QByteArray ret;
-    int pos = auth.indexOf("Basic ");
-    if (pos != -1) {
-        pos += 6;
-        ret = auth.mid(pos, auth.indexOf(',', pos) - pos);
-        ret = QByteArray::fromBase64(ret);
-    }
-    return ret;
-}
-
-Headers::Authorization decodeBasicAuthPair(const QByteArray &auth)
-{
-    Headers::Authorization ret;
-    const QByteArray authorization = decodeBasicAuth(auth);
-    if (!authorization.isEmpty()) {
-        int pos = authorization.indexOf(':');
-        if (pos == -1) {
-            ret.user = QString::fromLatin1(authorization);
-        } else {
-            ret.user     = QString::fromLatin1(authorization.left(pos));
-            ret.password = QString::fromLatin1(authorization.mid(pos + 1));
-        }
-    }
-    return ret;
 }
 
 QDebug operator<<(QDebug debug, const Headers &headers)

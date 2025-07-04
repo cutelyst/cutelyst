@@ -16,14 +16,14 @@ public:
     AuthenticationUser
         authenticateBasic(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
     AuthenticationUser authenticationFailed(Context *c,
-                                            AuthenticationRealm *realm,
+                                            const AuthenticationRealm *realm,
                                             const ParamsMultiMap &authinfo);
 
     bool isAuthTypeDigest() const;
     bool isAuthTypeBasic() const;
 
-    void createBasicAuthResponse(Context *c, AuthenticationRealm *realm);
-    QByteArrayList buildAuthHeaderCommon(AuthenticationRealm *realm) const;
+    void createBasicAuthResponse(const Cutelyst::Context *c, const AuthenticationRealm *realm);
+    QByteArrayList buildAuthHeaderCommon(const AuthenticationRealm *realm) const;
     QByteArray joinAuthHeaderParts(const QByteArray &type, const QByteArrayList &parts) const;
 
     CredentialHttp::AuthType type             = CredentialHttp::Any;

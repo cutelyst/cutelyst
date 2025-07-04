@@ -188,26 +188,20 @@ bool RoleACL::canVisit(Context *c) const
     const QStringList allowed  = d->allowedRole;
 
     if (!required.isEmpty() && !allowed.isEmpty()) {
-        for (const QString &role : required) {
-            if (!user_has.contains(role)) {
-                return false;
-            }
+        bool allRequired = std::ranges::all_of(
+            required, [&user_has](const QString &role) { return user_has.contains(role); });
+        if (!allRequired) {
+            return false;
         }
 
-        for (const QString &role : allowed) {
-            if (user_has.contains(role)) {
-                return true;
-            }
-        }
+        return std::ranges::any_of(
+            allowed, [&user_has](const QString &role) { return user_has.contains(role); });
     } else if (!required.isEmpty()) {
         return std::ranges::all_of(
-            required, [user_has](const QString &role) { return user_has.contains(role); });
+            required, [&user_has](const QString &role) { return user_has.contains(role); });
     } else if (!allowed.isEmpty()) {
-        for (const QString &role : allowed) {
-            if (user_has.contains(role)) {
-                return true;
-            }
-        }
+        return std::ranges::any_of(
+            allowed, [&user_has](const QString &role) { return user_has.contains(role); });
     }
 
     return false;

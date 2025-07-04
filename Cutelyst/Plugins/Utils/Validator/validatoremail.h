@@ -211,7 +211,7 @@ public:
      * \param label     Optional label used in the diagnose string.
      * \return Descriptive and translated string for the \a diagnose.
      */
-    static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = {});
+    static QString diagnoseString(const Context *c, Diagnose diagnose, const QString &label = {});
 
     /**
      * Returns a descriptive and translated string for the \a category.
@@ -220,7 +220,7 @@ public:
      * \param label     Optional label used in the category string.
      * \return Descriptive and translated string for the \a category.
      */
-    static QString categoryString(Context *c, Category category, const QString &label = {});
+    static QString categoryString(const Context *c, Category category, const QString &label = {});
 
     /**
      * Returns the category the \a diagnose belongs to.
@@ -237,7 +237,7 @@ public:
      * \param label     Optional label used in the category string.
      * \return Descriptive and translated string for the Category the \a diagnose belongs to.
      */
-    static QString categoryString(Context *c, Diagnose diagnose, const QString &label = {});
+    static QString categoryString(const Context *c, Diagnose diagnose, const QString &label = {});
 
     /**
      * \ingroup plugins-utils-validator-rules

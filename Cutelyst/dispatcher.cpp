@@ -43,16 +43,16 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
     d->dispatchers = dispatchers;
 
     ActionList registeredActions;
-    for (Controller *controller : controllers) {
+    for (Controller *controllerItem : controllers) {
         bool instanceUsed  = false;
-        const auto actions = controller->actions();
+        const auto actions = controllerItem->actions();
         for (Action *action : actions) {
             bool registered = false;
             if (!d->actions.contains(action->reverse())) {
                 if (!action->attributes().contains(QStringLiteral("Private"))) {
                     // Register the action with each dispatcher
-                    for (DispatchType *dispatch : dispatchers) {
-                        if (dispatch->registerAction(action)) {
+                    for (DispatchType *dispatcher : dispatchers) {
+                        if (dispatcher->registerAction(action)) {
                             registered = true;
                         }
                     }
@@ -87,7 +87,8 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
         }
 
         if (instanceUsed) {
-            d->controllers.insert(controller->objectName(), {controller->objectName(), controller});
+            d->controllers.insert(controllerItem->objectName(),
+                                  {controllerItem->objectName(), controllerItem});
         }
     }
 
@@ -98,8 +99,8 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
     // Cache root actions, BEFORE the controllers set them
     d->rootActions = d->actionContainer.value(u"").actions;
 
-    for (Controller *controller : controllers) {
-        controller->d_ptr->setupFinished();
+    for (const Controller *controllerItem : controllers) {
+        controllerItem->d_ptr->setupFinished();
     }
 
     // Unregister any dispatcher that is not in use
@@ -115,15 +116,15 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
 
     if (printActions) {
         // List all public actions
-        for (DispatchType *dispatch : dispatchers) {
-            qCDebug(CUTELYST_DISPATCHER) << dispatch->list().constData();
+        for (const DispatchType *dispatcher : dispatchers) {
+            qCDebug(CUTELYST_DISPATCHER) << dispatcher->list().constData();
         }
     }
 }
 
 bool Dispatcher::dispatch(Context *c)
 {
-    Action *action = c->action();
+    const Action *action = c->action();
     if (action) {
         return action->controller()->_DISPATCH(c);
     } else {
@@ -164,7 +165,7 @@ void Dispatcher::prepareAction(Context *c)
 {
     Q_D(Dispatcher);
 
-    Request *request = c->request();
+    const Request *request = c->request();
     d->prepareAction(c, request->path());
 
     static const bool log = CUTELYST_DISPATCHER().isDebugEnabled();
@@ -191,10 +192,11 @@ void DispatcherPrivate::prepareAction(Context *c, QStringView path) const
     {
         // Check out the dispatch types to see if any
         // will handle the path at this level
-        for (DispatchType *type : dispatchers) {
-            if (type->match(c, path, args) == DispatchType::ExactMatch) {
-                return;
-            }
+        bool matched = std::ranges::any_of(dispatchers, [&](const DispatchType *type) {
+            return type->match(c, path, args) == DispatchType::ExactMatch;
+        });
+        if (matched) {
+            return;
         }
 
         // leave the loop if we are at the root "/"
@@ -288,10 +290,10 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
         qCCritical(CUTELYST_DISPATCHER) << "Dispatcher::uriForAction called with null action";
         ret = u"/"_s;
     } else {
-        for (DispatchType *dispatch : d->dispatchers) {
-            ret = dispatch->uriForAction(action, captures);
+        for (const DispatchType *dispatcher : d->dispatchers) {
+            ret = dispatcher->uriForAction(action, captures);
             if (!ret.isNull()) {
-                if (ret.isEmpty()) {
+                if (ret.isEmpty()) { // cppcheck-suppress knownConditionTrueFalse
                     ret = u"/"_s;
                 }
                 break;
@@ -304,8 +306,8 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
 Action *Dispatcher::expandAction(const Context *c, Action *action) const
 {
     Q_D(const Dispatcher);
-    for (DispatchType *dispatch : d->dispatchers) {
-        Action *expandedAction = dispatch->expandAction(c, action);
+    for (const DispatchType *dispatcher : d->dispatchers) {
+        Action *expandedAction = dispatcher->expandAction(c, action);
         if (expandedAction) {
             return expandedAction;
         }
@@ -326,8 +328,8 @@ void DispatcherPrivate::printActions() const
     auto keys = actions.keys();
     std::ranges::sort(keys);
     for (const auto &key : std::as_const(keys)) {
-        Action *action = actions.value(key).action;
-        QString path   = key.toString();
+        const Action *action = actions.value(key).action;
+        QString path         = key.toString();
         if (!path.startsWith(u'/')) {
             path.prepend(u'/');
         }
@@ -366,7 +368,7 @@ ActionList DispatcherPrivate::getContainers(QStringView ns) const
     return ret;
 }
 
-Action *DispatcherPrivate::command2Action(Context *c,
+Action *DispatcherPrivate::command2Action(const Context *c,
                                           QStringView command,
                                           const QStringList &args) const
 {
@@ -378,7 +380,7 @@ Action *DispatcherPrivate::command2Action(Context *c,
     return invokeAsPath(c, command, args);
 }
 
-Action *DispatcherPrivate::invokeAsPath(Context *c,
+Action *DispatcherPrivate::invokeAsPath(const Context *c,
                                         QStringView relativePath,
                                         const QStringList &args) const
 {
@@ -413,7 +415,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c,
     return nullptr;
 }
 
-QString DispatcherPrivate::actionRel2Abs(Context *c, QStringView path)
+QString DispatcherPrivate::actionRel2Abs(const Context *c, QStringView path)
 {
     QString ret;
     if (path.startsWith(u'/')) {

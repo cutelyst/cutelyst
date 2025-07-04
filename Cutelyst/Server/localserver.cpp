@@ -59,9 +59,9 @@ inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
-LocalServer::LocalServer(Server *wsgi, QObject *parent)
+LocalServer::LocalServer(Server *server, QObject *parent)
     : QLocalServer(parent)
-    , m_wsgi(wsgi)
+    , m_server(server)
 {
 }
 
@@ -72,7 +72,7 @@ void LocalServer::setProtocol(Protocol *protocol)
 
 LocalServer *LocalServer::createServer(ServerEngine *engine) const
 {
-    auto server = new LocalServer(m_wsgi, engine);
+    auto server = new LocalServer(m_server, engine);
     server->setProtocol(m_protocol);
     server->m_engine = engine;
 
@@ -165,14 +165,14 @@ void LocalServer::shutdown()
     } else {
         const auto childrenL = children();
         for (auto child : childrenL) {
-            auto socket = qobject_cast<LocalSocket *>(child);
-            if (socket) {
-                connect(socket, &LocalSocket::finished, this, [this]() {
+            auto sock = qobject_cast<LocalSocket *>(child);
+            if (sock) {
+                connect(sock, &LocalSocket::finished, this, [this]() {
                     if (!m_processing) {
                         m_engine->serverShutdown();
                     }
                 });
-                m_engine->handleSocketShutdown(socket);
+                m_engine->handleSocketShutdown(sock);
             }
         }
     }
@@ -183,12 +183,12 @@ void LocalServer::timeoutConnections()
     if (m_processing) {
         const auto childrenL = children();
         for (auto child : childrenL) {
-            auto socket = qobject_cast<LocalSocket *>(child);
-            if (socket && !socket->processing && socket->state() == QLocalSocket::ConnectedState) {
-                if (socket->timeout) {
-                    socket->connectionClose();
+            auto sock = qobject_cast<LocalSocket *>(child);
+            if (sock && !sock->processing && sock->state() == QLocalSocket::ConnectedState) {
+                if (sock->timeout) {
+                    sock->connectionClose();
                 } else {
-                    socket->timeout = true;
+                    sock->timeout = true;
                 }
             }
         }

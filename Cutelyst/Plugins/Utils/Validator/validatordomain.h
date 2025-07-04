@@ -137,7 +137,7 @@ public:
      * \param label     Optinonal label that will be part of the diagnose string if not empty.
      * \return a human readable diagnose description.
      */
-    static QString diagnoseString(Context *c, Diagnose diagnose, const QString &label = {});
+    static QString diagnoseString(const Context *c, Diagnose diagnose, const QString &label = {});
 
 protected:
     /**

@@ -17,7 +17,7 @@ class LocalServer final : public QLocalServer
 {
     Q_OBJECT
 public:
-    explicit LocalServer(Server *wsgi, QObject *parent = nullptr);
+    explicit LocalServer(Server *server, QObject *parent = nullptr);
 
     void setProtocol(Protocol *protocol);
 
@@ -43,7 +43,7 @@ private:
 
     QSocketNotifier *m_socketNotifier = nullptr;
     ServerEngine *m_engine            = nullptr;
-    Server *m_wsgi;
+    Server *m_server;
 
     Protocol *m_protocol = nullptr;
     qintptr m_socket     = -1;

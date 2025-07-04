@@ -185,7 +185,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
 private:
-    TestEngine *m_engine;
+    TestEngine *m_engine = nullptr;
 
     TestEngine *getEngine();
 
@@ -746,10 +746,11 @@ public:
         } else if (opt == QLatin1String("ForceDecimal")) {
             option = ValidatorFileSize::ForceDecimal;
         }
-        const double min = c->req()->bodyParameter(u"min"_s, u"-1.0"_s).toDouble();
-        const double max = c->req()->bodyParameter(u"max"_s, u"-1.0"_s).toDouble();
+        const double minParam = c->req()->bodyParameter(u"min"_s, u"-1.0"_s).toDouble();
+        const double maxParam = c->req()->bodyParameter(u"max"_s, u"-1.0"_s).toDouble();
         c->setLocale(QLocale(c->req()->bodyParameter(u"locale"_s, u"C"_s)));
-        Validator v({new ValidatorFileSize(u"field"_s, option, min, max, m_validatorMessages)});
+        Validator v(
+            {new ValidatorFileSize(u"field"_s, option, minParam, maxParam, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming));
     }
 

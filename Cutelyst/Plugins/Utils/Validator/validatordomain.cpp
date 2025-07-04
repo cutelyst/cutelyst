@@ -249,7 +249,7 @@ void ValidatorDomain::validateCb(
     }
 }
 
-QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QString &label)
+QString ValidatorDomain::diagnoseString(const Context *c, Diagnose diagnose, const QString &label)
 {
     if (label.isEmpty()) {
         switch (diagnose) {

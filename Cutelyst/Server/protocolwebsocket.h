@@ -13,7 +13,7 @@ class Server;
 class ProtocolWebSocket final : public Protocol
 {
 public:
-    explicit ProtocolWebSocket(Server *wsgi);
+    explicit ProtocolWebSocket(Server *server);
     virtual ~ProtocolWebSocket() override;
 
     Type type() const override;

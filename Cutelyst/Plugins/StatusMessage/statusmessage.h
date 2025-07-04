@@ -89,7 +89,7 @@ public:
     /**
      * Constructs a new %StatusMessage object with the given Application \a parent.
      */
-    StatusMessage(Application *parent);
+    explicit StatusMessage(Application *parent);
 
     /**
      * Destroys the %StatusMessage object.

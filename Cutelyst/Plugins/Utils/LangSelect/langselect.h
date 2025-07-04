@@ -390,7 +390,7 @@ public:
      * The plugin will @b not be connected to the Application::beforePrepareAction signal
      * so you have to use one of the static functions to set and store the locale.
      */
-    LangSelect(Application *parent);
+    explicit LangSelect(Application *parent);
 
     /**
      * Deconstructs the %LangSelect object.

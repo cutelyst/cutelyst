@@ -32,7 +32,7 @@ public:
     /**
      * Constructs a new %Dispatcher object with the given \a parent.
      */
-    Dispatcher(QObject *parent = nullptr);
+    explicit Dispatcher(QObject *parent = nullptr);
 
     /**
      * Destroys the %Dispatcher object.
