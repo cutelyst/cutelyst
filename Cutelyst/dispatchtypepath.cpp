@@ -59,7 +59,12 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table, {u"Path"_s, u"Private"_s}, u"Loaded Path actions:"_s);
+    return Utils::buildTable(table,
+                             {
+                                 u"Path"_s,
+                                 u"Private"_s,
+                             },
+                             u"Loaded Path actions:"_s);
 }
 
 Cutelyst::DispatchType::MatchType

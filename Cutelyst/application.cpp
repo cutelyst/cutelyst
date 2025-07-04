@@ -729,8 +729,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table,
                                                    {
-                                                       u"Parameter",
-                                                       u"Value",
+                                                       u"Parameter"_s,
+                                                       u"Value"_s,
                                                    },
                                                    title)
                                      .constData();
