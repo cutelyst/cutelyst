@@ -80,7 +80,7 @@ public:
     /**
      * Default realm name.
      */
-    static char *defaultRealm;
+    static const QStringView defaultRealm;
 
     /**
      * Constructs a new %Authentication object with the given \a parent.
@@ -102,35 +102,30 @@ public:
      */
     void addRealm(std::shared_ptr<AuthenticationStore> store,
                   std::shared_ptr<AuthenticationCredential> credential,
-                  const QString &name = QLatin1String(defaultRealm));
+                  QStringView name = defaultRealm);
 
     /**
      * Returns an AuthenticationRealm object that was registered with \a name.
      */
-    [[nodiscard]] std::shared_ptr<AuthenticationRealm>
-        realm(const QString &name = QLatin1String(defaultRealm)) const;
+    [[nodiscard]] std::shared_ptr<AuthenticationRealm> realm(QStringView name = defaultRealm) const;
 
     /**
      * Returns true if the \a userinfo could be validated against \a realm.
      */
-    [[nodiscard]] static bool authenticate(Context *c,
-                                           const ParamsMultiMap &userinfo,
-                                           const QString &realm = QLatin1String(defaultRealm));
+    [[nodiscard]] static bool
+        authenticate(Context *c, const ParamsMultiMap &userinfo, QStringView realm = defaultRealm);
 
     /**
      * Returns \c true if the request information could be validated against \a realm.
      */
-    [[nodiscard]] inline static bool
-        authenticate(Context *c, const QString &realm = QLatin1String(defaultRealm));
+    [[nodiscard]] inline static bool authenticate(Context *c, QStringView realm = defaultRealm);
 
     /**
      * Tries to find the user with \a userinfo using the \a realm, returning a non null
      * AuthenticationUser on success
      */
     [[nodiscard]] static AuthenticationUser
-        findUser(Context *c,
-                 const ParamsMultiMap &userinfo,
-                 const QString &realm = QLatin1String(defaultRealm));
+        findUser(Context *c, const ParamsMultiMap &userinfo, QStringView realm = defaultRealm);
 
     /**
      * Returns the authenticated user if any, if you only need to know if the user is
@@ -152,8 +147,7 @@ public:
      * Works like userExists(), except that it only returns \c true if a user is both logged
      * in right now and was retrieved from the realm provided.
      */
-    [[nodiscard]] static bool userInRealm(Context *c,
-                                          const QString &realmName = QLatin1String(defaultRealm));
+    [[nodiscard]] static bool userInRealm(Context *c, QStringView realmName = defaultRealm);
 
     /**
      * Logs the user out. Deletes the currently logged in user from the Context and the session.
@@ -167,7 +161,7 @@ protected:
     AuthenticationPrivate *d_ptr;
 };
 
-inline bool Authentication::authenticate(Context *c, const QString &realm)
+inline bool Authentication::authenticate(Context *c, QStringView realm)
 {
     return Authentication::authenticate(c, ParamsMultiMap(), realm);
 }
