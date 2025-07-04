@@ -12,6 +12,9 @@
 
 Q_LOGGING_CATEGORY(C_SERVER_WIN, "cutelyst.server.windows", QtWarningMsg)
 
+using namespace std::chrono_literals;
+using namespace Qt::StringLiterals;
+
 WindowsFork::WindowsFork(QObject *parent)
     : AbstractFork(parent)
 {
@@ -22,10 +25,7 @@ bool WindowsFork::continueMaster(int *exit)
     installTouchReload();
 
     m_masterChildProcess = new QProcess(this);
-    connect(m_masterChildProcess,
-            static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            this,
-            &WindowsFork::childFinished);
+    connect(m_masterChildProcess, &QProcess::finished, this, &WindowsFork::childFinished);
 
     auto env = QProcessEnvironment::systemEnvironment();
     env.insert(u"CUTELYST_WSGI_IGNORE_MASTER"_s, u"1"_s);
@@ -75,7 +75,7 @@ void WindowsFork::restart()
 
     if (!m_materChildRestartTimer) {
         m_materChildRestartTimer = new QTimer(this);
-        m_materChildRestartTimer->setInterval(1 * 1000);
+        m_materChildRestartTimer->setInterval(1s);
         m_materChildRestartTimer->setSingleShot(false);
 
         connect(m_materChildRestartTimer, &QTimer::timeout, this, &WindowsFork::restartTerminate);
