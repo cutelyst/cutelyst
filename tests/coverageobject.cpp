@@ -21,10 +21,10 @@ QString CoverageObject::generateTestName() const
 {
     QString test_name;
     test_name += QString::fromLatin1(metaObject()->className());
-    test_name += QLatin1Char('/');
+    test_name += u'/';
     test_name += QString::fromLatin1(QTest::currentTestFunction());
     if (QTest::currentDataTag()) {
-        test_name += QLatin1Char('/');
+        test_name += u'/';
         test_name += QString::fromLatin1(QTest::currentDataTag());
     }
     return test_name;

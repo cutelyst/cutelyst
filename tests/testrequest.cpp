@@ -65,7 +65,7 @@ public:
     void args(Context *c, const QStringList &args)
     {
         if (c->request()->args() == args) {
-            c->response()->setBody(args.join(QLatin1Char('/')));
+            c->response()->setBody(args.join(u'/'));
         } else {
             c->response()->setBody(QByteArrayLiteral("error"));
         }
@@ -245,7 +245,7 @@ public:
     void queryParametersList(Context *c, const QString &param)
     {
         const QStringList params = c->request()->queryParams(param);
-        c->response()->setBody(params.join(QLatin1Char('&')));
+        c->response()->setBody(params.join(u'&'));
     }
 
     C_ATTR(queryParam, :Local :AutoArgs)
@@ -281,7 +281,7 @@ public:
     {
         const QStringList params =
             c->request()->bodyParameters(c->request()->queryParam(u"param"_s));
-        c->response()->setBody(params.join(QLatin1Char('&')));
+        c->response()->setBody(params.join(u'&'));
     }
 
     C_ATTR(bodyParameter, :Local :AutoArgs)

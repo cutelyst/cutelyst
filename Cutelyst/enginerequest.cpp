@@ -69,7 +69,7 @@ void EngineRequest::finalizeError()
     // of ours if we'd give it less than 512 bytes.
     erroBody.reserve(512);
 
-    erroBody.append(context->errors().join(QLatin1Char('\n')).toUtf8());
+    erroBody.append(context->errors().join(u'\n').toUtf8());
 
     res->setBody(erroBody);
 

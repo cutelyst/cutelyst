@@ -65,12 +65,11 @@ ServerEngine::ServerEngine(Application *localApp,
 
         for (const QString &part : staticMap) {
             staticMapPlugin->addStaticMap(
-                part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
+                part.section(u'=', 0, 0), part.section(u'=', 1, 1), false);
         }
 
         for (const QString &part : staticMap2) {
-            staticMapPlugin->addStaticMap(
-                part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
+            staticMapPlugin->addStaticMap(part.section(u'=', 0, 0), part.section(u'=', 1, 1), true);
         }
     }
 }

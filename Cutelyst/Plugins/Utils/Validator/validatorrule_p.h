@@ -171,7 +171,7 @@ public:
 
         Q_ASSERT(c);
 
-        qsizetype sepPos = field.indexOf(QLatin1Char('|'));
+        qsizetype sepPos = field.indexOf(u'|');
         if (sepPos > -1) {
             const QString fieldName = field.left(sepPos);
             const QString value     = params.value(fieldName);
@@ -185,12 +185,12 @@ public:
                         }
                         var = dt;
                     }
-                } else if (type.startsWith(QLatin1Char('t'))) {
+                } else if (type.startsWith(u't')) {
                     const QTime t = extractTime(c, value, format);
                     if (t.isValid()) {
                         var = t;
                     }
-                } else if (type.startsWith(QLatin1Char('d'))) {
+                } else if (type.startsWith(u'd')) {
                     const QDate d = extractDate(c, value, format);
                     if (d.isValid()) {
                         var = d;

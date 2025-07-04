@@ -178,8 +178,7 @@ void TestStatusMessage::doTest()
     Headers headers = result.headers;
     headers.setHeader(QByteArrayLiteral("Cookie"), headers.header("Set-Cookie"));
 
-    QUrl urlAux2(url + u"Test/" + m_sm->statusMsgStashKey() + QLatin1Char('/') +
-                 m_sm->errorMgStashKey());
+    QUrl urlAux2(url + u"Test/" + m_sm->statusMsgStashKey() + u'/' + m_sm->errorMgStashKey());
 
     auto body = QString::fromLatin1(result.body);
     QUrlQuery query;

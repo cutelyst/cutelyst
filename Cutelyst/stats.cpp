@@ -60,7 +60,7 @@ QByteArray Stats::report()
     QVector<QStringList> table;
     for (const auto &stat : d->actions) {
         const std::chrono::duration<double> duration = stat.end - stat.begin;
-        table.append({stat.action, QString::number(duration.count(), 'f') + QLatin1Char('s')});
+        table.append({stat.action, QString::number(duration.count(), 'f') + u's'});
     }
 
     ret = Utils::buildTable(table, {u"Action"_s, u"Time"_s});

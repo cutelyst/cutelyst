@@ -74,9 +74,9 @@ QByteArray DispatchTypeChained::list() const
         if (parent.compare(u"/") != 0) {
             QStringList row;
             if (parents.isEmpty()) {
-                row.append(QLatin1Char('/') + endPoint->reverse());
+                row.append(u'/' + endPoint->reverse());
             } else {
-                row.append(QLatin1Char('/') + parents.first()->reverse());
+                row.append(u'/' + parents.first()->reverse());
             }
             row.append(parent);
             unattachedTable.append(row);
@@ -85,17 +85,17 @@ QByteArray DispatchTypeChained::list() const
 
         QVector<QStringList> rows;
         for (const Action *p : parents) {
-            QString name = QLatin1Char('/') + p->reverse();
+            QString name = u'/' + p->reverse();
 
             QString extraHttpMethod = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
             if (!extraHttpMethod.isEmpty()) {
-                name.prepend(extraHttpMethod + QLatin1Char(' '));
+                name.prepend(extraHttpMethod + u' ');
             }
 
             const auto attributes = p->attributes();
             auto it               = attributes.constFind(u"CaptureArgs"_s);
             if (it != attributes.constEnd()) {
-                name.append(u" (" + it.value() + QLatin1Char(')'));
+                name.append(u" (" + it.value() + u')');
             } else {
                 name.append(u" (0)");
             }
@@ -117,13 +117,13 @@ QByteArray DispatchTypeChained::list() const
             line.append(u"=> ");
         }
         if (!extra.isEmpty()) {
-            line.append(extra + QLatin1Char(' '));
+            line.append(extra + u' ');
         }
-        line.append(QLatin1Char('/') + endPoint->reverse());
+        line.append(u'/' + endPoint->reverse());
         if (endPoint->numberOfArgs() == -1) {
             line.append(u" (...)");
         } else {
-            line.append(u" (" + QString::number(endPoint->numberOfArgs()) + QLatin1Char(')'));
+            line.append(u" (" + QString::number(endPoint->numberOfArgs()) + u')');
         }
 
         if (!consumes.isEmpty()) {
@@ -131,7 +131,7 @@ QByteArray DispatchTypeChained::list() const
         }
         rows.append({QString(), line});
 
-        rows[0][0] = QLatin1Char('/') + parts.join(QLatin1Char('/'));
+        rows[0][0] = u'/' + parts.join(u'/');
         paths.append(rows);
     }
 
@@ -179,7 +179,7 @@ DispatchType::MatchType
         captures.append(a.toString());
     }
     request->setCaptures(captures);
-    request->setMatch(QLatin1Char('/') + action->reverse());
+    request->setMatch(u'/' + action->reverse());
     setupMatchedAction(c, action);
 
     return ExactMatch;
@@ -220,7 +220,7 @@ bool DispatchTypeChained::registerAction(Action *action)
         return false;
     }
 
-    if (part.startsWith(QLatin1Char('/'))) {
+    if (part.startsWith(u'/')) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
             << "Absolute parameters to PathPart not allowed registering" << action->reverse();
         return false;
@@ -232,7 +232,7 @@ bool DispatchTypeChained::registerAction(Action *action)
     auto &childrenOf = d->childrenOf[chainedTo][part];
     childrenOf.insert(childrenOf.begin(), action);
 
-    d->actions[QLatin1Char('/') + action->reverse()] = action;
+    d->actions[u'/' + action->reverse()] = action;
 
     if (!d->checkArgsAttr(action, u"Args"_s) || !d->checkArgsAttr(action, u"CaptureArgs"_s)) {
         return false;
@@ -305,7 +305,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
         return ret;
     }
 
-    ret = QLatin1Char('/') + parts.join(QLatin1Char('/'));
+    ret = u'/' + parts.join(u'/');
     return ret;
 }
 
@@ -412,7 +412,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
 
                 // try the remaining parts against children of this action
                 const BestActionMatch ret =
-                    recurseMatch(reqArgsSize, QLatin1Char('/') + action->reverse(), localParts);
+                    recurseMatch(reqArgsSize, u'/' + action->reverse(), localParts);
 
                 //    No best action currently
                 // OR The action has less parts

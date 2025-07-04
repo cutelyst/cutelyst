@@ -564,7 +564,7 @@ int main(int argc, char *argv[])
 
         server.parseCommandLine(argsAfterDashDash);
 
-        server.setHttpSocket({QLatin1Char(':') + QString::number(port)});
+        server.setHttpSocket({u':' + QString::number(port)});
 
         bool restart = parser.isSet(restartOpt);
         server.setMaster(restart);

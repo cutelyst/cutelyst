@@ -45,7 +45,7 @@ int ValidatorPwQuality::validate(const QString &value,
                 if (options.typeId() == QMetaType::QVariantMap) {
                     const QVariantMap map = options.toMap();
                     for (const auto &[key, mapValue] : map.asKeyValueRange()) {
-                        const QString opt = key + QLatin1Char('=') + mapValue.toString();
+                        const QString opt = key + u'=' + mapValue.toString();
                         const int orv     = pwquality_set_option(pwq, opt.toUtf8().constData());
                         if (orv != 0) {
                             QList<char> buf(ValidatorPwQualityPrivate::errStrBufSize);

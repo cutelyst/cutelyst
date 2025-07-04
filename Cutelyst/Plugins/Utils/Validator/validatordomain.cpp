@@ -37,7 +37,7 @@ bool ValidatorDomain::validate(const QString &value,
     const QString ace = QString::fromLatin1(QUrl::toAce(withoutRootDot)).toLower();
 
     // split up the utf8 string into parts to get the non puny code TLD
-    const QStringList nonAceParts = withoutRootDot.split(QLatin1Char('.'));
+    const QStringList nonAceParts = withoutRootDot.split(u'.');
     if (!nonAceParts.empty()) {
         const QString tld = nonAceParts.last();
         if (!tld.isEmpty()) {
@@ -59,7 +59,7 @@ bool ValidatorDomain::validate(const QString &value,
                 if (!ace.isEmpty()) {
                     // maximum length of the name in the DNS is 253 without the last dot
                     if (ace.length() <= ValidatorDomainPrivate::maxDnsNameWithLastDot) {
-                        const QStringList parts = ace.split(QLatin1Char('.'), Qt::KeepEmptyParts);
+                        const QStringList parts = ace.split(u'.', Qt::KeepEmptyParts);
                         // there has to be more than only the TLD
                         if (parts.size() > 1) {
                             // the TLD can not have only 1 char
@@ -156,7 +156,7 @@ bool ValidatorDomain::validate(const QString &value,
 
     if (diag == Valid && extractedValue) {
         if (hasRootDot) {
-            *extractedValue = ace + QLatin1Char('.');
+            *extractedValue = ace + u'.';
         } else {
             *extractedValue = ace;
         }
