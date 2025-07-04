@@ -78,8 +78,7 @@ bool StaticCompressed::setup(Application *app)
 
     const QVariantMap config = app->engine()->config(u"Cutelyst_StaticCompressed_Plugin"_s);
     const QString _defaultCacheDir =
-        QStandardPaths::writableLocation(QStandardPaths::CacheLocation) +
-        QLatin1String("/compressed-static");
+        QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + u"/compressed-static";
     d->cacheDir.setPath(config
                             .value(u"cache_directory"_s,
                                    d->defaultConfig.value(u"cache_directory"_s, _defaultCacheDir))
@@ -277,7 +276,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                             continue;
                         }
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-                        if (format == QLatin1String("br")) {
+                        if (format == u"br") {
                             compressedPath = locateCacheFile(path, currentDateTime, Brotli);
                             if (compressedPath.isEmpty()) {
                                 continue;
@@ -290,7 +289,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                         } else
 #endif
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD
-                            if (format == QLatin1String("zstd")) {
+                            if (format == u"zstd") {
                             compressedPath = locateCacheFile(path, currentDateTime, Zstd);
                             if (compressedPath.isEmpty()) {
                                 continue;
@@ -302,7 +301,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                             }
                         } else
 #endif
-                            if (format == QLatin1String("gzip")) {
+                            if (format == u"gzip") {
                             compressedPath = locateCacheFile(
                                 path, currentDateTime, useZopfli ? ZopfliGzip : Gzip);
                             if (compressedPath.isEmpty()) {
@@ -314,7 +313,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                                 contentEncoding = "gzip"_ba;
                                 break;
                             }
-                        } else if (format == QLatin1String("deflate")) {
+                        } else if (format == u"deflate") {
                             compressedPath = locateCacheFile(
                                 path, currentDateTime, useZopfli ? ZopfliDeflate : Deflate);
                             if (compressedPath.isEmpty()) {
@@ -430,7 +429,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
         if (info.exists() && (info.lastModified() > origLastModified)) {
             compressedPath = path;
         } else {
-            QLockFile lock(path + QLatin1String(".lock"));
+            QLockFile lock(path + u".lock");
             if (lock.tryLock(std::chrono::milliseconds{10})) {
                 switch (compression) {
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZSTD

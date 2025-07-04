@@ -342,10 +342,12 @@ void DispatcherPrivate::printActions() const
     }
 
     qCDebug(CUTELYST_DISPATCHER) << Utils::buildTable(table,
-                                                      {QLatin1String("Private"),
-                                                       QLatin1String("Class"),
-                                                       QLatin1String("Method")},
-                                                      QLatin1String("Loaded Private actions:"))
+                                                      {
+                                                          u"Private"_s,
+                                                          u"Class"_s,
+                                                          u"Method"_s,
+                                                      },
+                                                      u"Loaded Private actions:"_s)
                                         .constData();
 }
 

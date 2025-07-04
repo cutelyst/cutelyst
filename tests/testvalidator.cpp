@@ -737,13 +737,13 @@ public:
     {
         ValidatorFileSize::Option option = ValidatorFileSize::NoOption;
         const QString opt                = c->req()->bodyParameter(u"option"_s);
-        if (opt == QLatin1String("OnlyBinary")) {
+        if (opt == u"OnlyBinary") {
             option = ValidatorFileSize::OnlyBinary;
-        } else if (opt == QLatin1String("OnlyDecimal")) {
+        } else if (opt == u"OnlyDecimal") {
             option = ValidatorFileSize::OnlyDecimal;
-        } else if (opt == QLatin1String("ForceBinary")) {
+        } else if (opt == u"ForceBinary") {
             option = ValidatorFileSize::ForceBinary;
-        } else if (opt == QLatin1String("ForceDecimal")) {
+        } else if (opt == u"ForceDecimal") {
             option = ValidatorFileSize::ForceDecimal;
         }
         const double minParam = c->req()->bodyParameter(u"min"_s, u"-1.0"_s).toDouble();
@@ -868,13 +868,13 @@ public:
 
         if (!c->request()->bodyParameter(u"type"_s).isEmpty()) {
             const QString t = c->request()->bodyParameter(u"type"_s);
-            if (t == QLatin1String("sint")) {
+            if (t == u"sint") {
                 type = QMetaType::Int;
-            } else if (t == QLatin1String("uint")) {
+            } else if (t == u"uint") {
                 type = QMetaType::UInt;
-            } else if (t == QLatin1String("float")) {
+            } else if (t == u"float") {
                 type = QMetaType::Float;
-            } else if (t == QLatin1String("string")) {
+            } else if (t == u"string") {
                 type = QMetaType::QString;
             }
         }
@@ -891,13 +891,13 @@ public:
 
         if (!c->request()->bodyParameter(u"type"_s).isEmpty()) {
             const QString t = c->request()->bodyParameter(u"type"_s);
-            if (t == QLatin1String("sint")) {
+            if (t == u"sint") {
                 type = QMetaType::Int;
-            } else if (t == QLatin1String("uint")) {
+            } else if (t == u"uint") {
                 type = QMetaType::UInt;
-            } else if (t == QLatin1String("float")) {
+            } else if (t == u"float") {
                 type = QMetaType::Float;
-            } else if (t == QLatin1String("string")) {
+            } else if (t == u"string") {
                 type = QMetaType::QString;
             }
         }
@@ -1131,13 +1131,13 @@ public:
 
         if (!c->request()->bodyParameter(u"type"_s).isEmpty()) {
             const QString t = c->request()->bodyParameter(u"type"_s);
-            if (t == QLatin1String("sint")) {
+            if (t == u"sint") {
                 type = QMetaType::Int;
-            } else if (t == QLatin1String("uint")) {
+            } else if (t == u"uint") {
                 type = QMetaType::UInt;
-            } else if (t == QLatin1String("float")) {
+            } else if (t == u"float") {
                 type = QMetaType::Float;
-            } else if (t == QLatin1String("string")) {
+            } else if (t == u"string") {
                 type = QMetaType::QString;
             }
         }
@@ -1411,7 +1411,7 @@ void TestValidator::testValidatorAfter_data()
                 QDateTime(QDate(2018, 1, 15), QTime(13, 0)).toString(Qt::ISODate),
                 QByteArray(),
                 QByteArrayLiteral("+"))) +
-            QLatin1String("&tz_field=Europe/Berlin");
+            u"&tz_field=Europe/Berlin";
         QTest::newRow("timezone-fromfield-valid") << queryPath << QByteArray() << valid;
     }
 }
@@ -1593,7 +1593,7 @@ void TestValidator::testValidatorBefore_data()
                 QDateTime(QDate(2018, 1, 15), QTime(11, 0)).toString(Qt::ISODate),
                 QByteArray(),
                 QByteArrayLiteral("+"))) +
-            QLatin1String("&tz_field=Europe/Berlin");
+            u"&tz_field=Europe/Berlin";
         QTest::newRow("before-timezone-fromfield-valid") << pathQuery << QByteArray() << valid;
     }
 }

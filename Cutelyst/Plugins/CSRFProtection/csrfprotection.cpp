@@ -652,7 +652,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         c->qtTrId("cutelyst-csrf-reject-referer-malformed"));
                     ok = false;
                 } else {
-                    if (Q_UNLIKELY(refererUrl.scheme() != QLatin1String("https"))) {
+                    if (Q_UNLIKELY(refererUrl.scheme() != u"https")) {
                         CSRFProtectionPrivate::reject(
                             c,
                             u"Referer checking failed - Referer is insecure while "

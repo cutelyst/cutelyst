@@ -136,26 +136,25 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     Q_D(RoleACL);
     Q_UNUSED(application)
 
-    const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
-    d->actionReverse      = args.value(QLatin1String("reverse")).toString();
+    const auto attributes = args.value(u"attributes"_s).value<ParamsMultiMap>();
+    d->actionReverse      = args.value(u"reverse"_s).toString();
 
-    if (!attributes.contains(QLatin1String("RequiresRole")) &&
-        !attributes.contains(QLatin1String("AllowedRole"))) {
+    if (!attributes.contains(u"RequiresRole"_s) && !attributes.contains(u"AllowedRole"_s)) {
         qFatal("RoleACL: Action %s requires at least one RequiresRole or AllowedRole attribute",
                qPrintable(d->actionReverse));
     } else {
-        const QStringList required = attributes.values(QLatin1String("RequiresRole"));
+        const QStringList required = attributes.values(u"RequiresRole"_s);
         for (const QString &role : required) {
             d->requiresRole.append(role);
         }
 
-        const QStringList allowed = attributes.values(QLatin1String("AllowedRole"));
+        const QStringList allowed = attributes.values(u"AllowedRole"_s);
         for (const QString &role : allowed) {
             d->allowedRole.append(role);
         }
     }
 
-    auto it = attributes.constFind(QLatin1String("ACLDetachTo"));
+    auto it = attributes.constFind(u"ACLDetachTo"_s);
     if (it == attributes.constEnd() || it.value().isEmpty()) {
         qFatal("RoleACL: Action %s requires the ACLDetachTo(<action>) attribute",
                qPrintable(d->actionReverse));

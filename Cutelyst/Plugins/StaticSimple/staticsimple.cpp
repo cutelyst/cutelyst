@@ -24,7 +24,7 @@ StaticSimple::StaticSimple(Application *parent)
     , d_ptr(new StaticSimplePrivate)
 {
     Q_D(StaticSimple);
-    d->includePaths.append(parent->config(QLatin1String("root")).toString());
+    d->includePaths.append(parent->config(u"root"_s).toString());
 }
 
 StaticSimple::~StaticSimple()

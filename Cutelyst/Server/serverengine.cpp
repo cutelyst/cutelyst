@@ -165,8 +165,8 @@ void ServerEngine::postFork(int workerId)
 QByteArray ServerEngine::dateHeader()
 {
     QString ret;
-    ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
-                                                              u"ddd, dd MMM yyyy hh:mm:ss 'GMT"_s);
+    ret = u"\r\nDate: " + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
+                                                u"ddd, dd MMM yyyy hh:mm:ss 'GMT"_s);
     return ret.toLatin1();
 }
 

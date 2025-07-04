@@ -254,7 +254,7 @@ bool Application::setup(Engine *engine)
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine   = engine;
-    d->config   = engine->config(QLatin1String("Cutelyst"));
+    d->config   = engine->config(u"Cutelyst"_s);
 
     d->setupHome();
 
@@ -278,8 +278,7 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore && !tablePlugins.isEmpty()) {
             qCDebug(CUTELYST_CORE)
-                << Utils::buildTable(tablePlugins, QStringList(), QLatin1String("Loaded plugins:"))
-                       .constData();
+                << Utils::buildTable(tablePlugins, {}, u"Loaded plugins:"_s).constData();
         }
 
         if (zeroCore) {
@@ -288,9 +287,7 @@ bool Application::setup(Engine *engine)
             tableDataHandlers.append({u"application/json"_s});
             tableDataHandlers.append({u"multipart/form-data"_s});
             qCDebug(CUTELYST_CORE)
-                << Utils::buildTable(tableDataHandlers,
-                                     QStringList(),
-                                     QLatin1String("Loaded Request Data Handlers:"))
+                << Utils::buildTable(tableDataHandlers, {}, u"Loaded Request Data Handlers:"_s)
                        .constData();
 
             qCDebug(CUTELYST_CORE) << "Loaded dispatcher"
@@ -321,7 +318,7 @@ bool Application::setup(Engine *engine)
         QStringList controllerNames = d->controllersHash.keys();
         controllerNames.sort();
         for (const QString &controller : std::as_const(controllerNames)) {
-            table.append({controller, QLatin1String("Controller")});
+            table.append({controller, u"Controller"_s});
         }
 
         for (View *viewItem : std::as_const(d->views)) {
@@ -335,8 +332,11 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore && !table.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(table,
-                                                        {u"Class"_s, u"Type"_s},
-                                                        QLatin1String("Loaded components:"))
+                                                        {
+                                                            u"Class"_s,
+                                                            u"Type"_s,
+                                                        },
+                                                        u"Loaded components:"_s)
                                           .constData();
         }
 
@@ -649,13 +649,13 @@ void Application::setDefaultLocale(const QLocale &locale)
 void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
-    if (!config.contains(QLatin1String("home"))) {
+    if (!config.contains(u"home"_s)) {
         config.insert(u"home"_s, QDir::currentPath());
     }
 
-    if (!config.contains(QLatin1String("root"))) {
-        QDir home = config.value(QLatin1String("home")).toString();
-        config.insert(u"root"_s, home.absoluteFilePath(QLatin1String("root")));
+    if (!config.contains(u"root"_s)) {
+        QDir home = config.value(u"home"_s).toString();
+        config.insert(u"root"_s, home.absoluteFilePath(u"root"_s));
     }
 }
 
@@ -700,12 +700,12 @@ void Cutelyst::ApplicationPrivate::logRequest(const Request *req)
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QLatin1String("Query Parameters are:"));
+        logRequestParameters(params, u"Query Parameters are:"_s);
     }
 
     params = req->bodyParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QLatin1String("Body Parameters are:"));
+        logRequestParameters(params, u"Body Parameters are:"_s);
     }
 
     const auto bodyData = req->bodyData();
@@ -730,8 +730,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table,
                                                    {
-                                                       QLatin1String("Parameter"),
-                                                       QLatin1String("Value"),
+                                                       u"Parameter",
+                                                       u"Value",
                                                    },
                                                    title)
                                      .constData();
@@ -748,12 +748,12 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QVector<Cutelyst::Upl
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table,
                                                    {
-                                                       QLatin1String("Parameter"),
-                                                       QLatin1String("Filename"),
-                                                       QLatin1String("Type"),
-                                                       QLatin1String("Size"),
+                                                       u"Parameter"_s,
+                                                       u"Filename"_s,
+                                                       u"Type"_s,
+                                                       u"Size"_s,
                                                    },
-                                                   QLatin1String("File Uploads are:"))
+                                                   u"File Uploads are:"_s)
                                      .constData();
 }
 

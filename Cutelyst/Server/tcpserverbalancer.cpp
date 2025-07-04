@@ -114,9 +114,9 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         QSsl::KeyAlgorithm algorithm = QSsl::Rsa;
         const QString keyAlgorithm   = sslString.section(QLatin1Char(','), 2, 2);
         if (!keyAlgorithm.isEmpty()) {
-            if (keyAlgorithm.compare(QLatin1String("rsa"), Qt::CaseInsensitive) == 0) {
+            if (keyAlgorithm.compare(u"rsa", Qt::CaseInsensitive) == 0) {
                 algorithm = QSsl::Rsa;
-            } else if (keyAlgorithm.compare(QLatin1String("ec"), Qt::CaseInsensitive) == 0) {
+            } else if (keyAlgorithm.compare(u"ec", Qt::CaseInsensitive) == 0) {
                 algorithm = QSsl::Ec;
             } else {
                 std::cerr << "Failed to select SSL Key Algorithm" << qPrintable(keyAlgorithm)

@@ -28,7 +28,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 {
     const QString username = user.value(u"username"_s);
 
-    QTemporaryFile tmp(m_filename + QLatin1String("-XXXXXXX"));
+    QTemporaryFile tmp(m_filename + u"-XXXXXXX");
     tmp.setAutoRemove(false); // sort of a backup
     if (!tmp.open()) {
         qCWarning(C_AUTH_HTPASSWD) << "Failed to open temporary file for writing";
