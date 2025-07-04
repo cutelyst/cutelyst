@@ -22,10 +22,7 @@ public:
     }
 
     C_ATTR(error, :Local :AutoArgs)
-    void error(Context *c)
-    {
-        c->response()->setBody(StatusMessage::error(c, QStringLiteral("SM:error")));
-    }
+    void error(Context *c) { c->response()->setBody(StatusMessage::error(c, u"SM:error"_s)); }
 
     C_ATTR(errorTest, :Local :AutoArgs)
     void errorTest(Context *c, const QString &statusKey, const QString &errorKey)
@@ -35,10 +32,7 @@ public:
     }
 
     C_ATTR(status, :Local :AutoArgs)
-    void status(Context *c)
-    {
-        c->response()->setBody(StatusMessage::status(c, QStringLiteral("SM:status")));
-    }
+    void status(Context *c) { c->response()->setBody(StatusMessage::status(c, u"SM:status"_s)); }
 
     C_ATTR(statusTest, :Local :AutoArgs)
     void statusTest(Context *c, const QString &statusKey, const QString &errorKey)
@@ -51,10 +45,8 @@ public:
     void errorQuery(Context *c)
     {
         ParamsMultiMap ret = StatusMessage::errorQuery(
-            c,
-            QStringLiteral("SM:errorQuery"),
-            ParamsMultiMap{{QStringLiteral("SM"), QStringLiteral("testing")}});
-        c->response()->setBody(c->uriFor(QStringLiteral("/"), ret).toString(QUrl::FullyEncoded));
+            c, u"SM:errorQuery"_s, ParamsMultiMap{{u"SM"_s, u"testing"_s}});
+        c->response()->setBody(c->uriFor(u"/"_s, ret).toString(QUrl::FullyEncoded));
     }
 
     C_ATTR(errorQueryTest, :Local :AutoArgs)
@@ -68,10 +60,8 @@ public:
     void statusQuery(Context *c)
     {
         ParamsMultiMap ret = StatusMessage::statusQuery(
-            c,
-            QStringLiteral("SM:statusQuery"),
-            ParamsMultiMap{{QStringLiteral("SM"), QStringLiteral("testing")}});
-        c->response()->setBody(c->uriFor(QStringLiteral("/"), ret).toString(QUrl::FullyEncoded));
+            c, u"SM:statusQuery"_s, ParamsMultiMap{{u"SM"_s, u"testing"_s}});
+        c->response()->setBody(c->uriFor(u"/"_s, ret).toString(QUrl::FullyEncoded));
     }
 
     C_ATTR(statusQueryTest, :Local :AutoArgs)
@@ -196,7 +186,7 @@ void TestStatusMessage::doTest()
     if (body.startsWith(u"http://")) {
         QUrl urlToken(body);
         QUrlQuery tokenQuery(urlToken);
-        QCOMPARE(tokenQuery.queryItemValue(QStringLiteral("SM")), QStringLiteral("testing"));
+        QCOMPARE(tokenQuery.queryItemValue(u"SM"_s), u"testing"_s);
         query.addQueryItem(m_sm->tokenParam(), tokenQuery.queryItemValue(m_sm->tokenParam()));
     } else {
         query.addQueryItem(m_sm->tokenParam(), body);
@@ -219,36 +209,32 @@ void TestStatusMessage::testController_data()
     QTest::addColumn<QByteArray>("output");
 
     QTest::newRow("statusmessage-error-00")
-        << QStringLiteral("/status/message/test/error") << QString{} << QString{} << QString{}
-        << QString{} << QByteArrayLiteral("SM:error");
-    QTest::newRow("statusmessage-error-01")
-        << QStringLiteral("/status/message/test/error") << QStringLiteral("some_token")
-        << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
+        << u"/status/message/test/error"_s << QString{} << QString{} << QString{} << QString{}
         << QByteArrayLiteral("SM:error");
+    QTest::newRow("statusmessage-error-01")
+        << u"/status/message/test/error"_s << u"some_token"_s << u"sm_prefix"_s << u"sm_status"_s
+        << u"sm_error"_s << QByteArrayLiteral("SM:error");
 
     QTest::newRow("statusmessage-status-00")
-        << QStringLiteral("/status/message/test/status") << QString{} << QString{} << QString{}
-        << QString{} << QByteArrayLiteral("SM:status");
-    QTest::newRow("statusmessage-status-01")
-        << QStringLiteral("/status/message/test/status") << QStringLiteral("some_token")
-        << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
+        << u"/status/message/test/status"_s << QString{} << QString{} << QString{} << QString{}
         << QByteArrayLiteral("SM:status");
+    QTest::newRow("statusmessage-status-01")
+        << u"/status/message/test/status"_s << u"some_token"_s << u"sm_prefix"_s << u"sm_status"_s
+        << u"sm_error"_s << QByteArrayLiteral("SM:status");
 
     QTest::newRow("statusmessage-errorquery-00")
-        << QStringLiteral("/status/message/test/errorQuery") << QString{} << QString{} << QString{}
-        << QString{} << QByteArrayLiteral("SM:errorQuery");
-    QTest::newRow("statusmessage-errorquery-01")
-        << QStringLiteral("/status/message/test/errorQuery") << QStringLiteral("some_token")
-        << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
+        << u"/status/message/test/errorQuery"_s << QString{} << QString{} << QString{} << QString{}
         << QByteArrayLiteral("SM:errorQuery");
+    QTest::newRow("statusmessage-errorquery-01")
+        << u"/status/message/test/errorQuery"_s << u"some_token"_s << u"sm_prefix"_s
+        << u"sm_status"_s << u"sm_error"_s << QByteArrayLiteral("SM:errorQuery");
 
     QTest::newRow("statusmessage-statusquery-00")
-        << QStringLiteral("/status/message/test/statusQuery") << QString{} << QString{} << QString{}
-        << QString{} << QByteArrayLiteral("SM:statusQuery");
-    QTest::newRow("statusmessage-statusquery-01")
-        << QStringLiteral("/status/message/test/statusQuery") << QStringLiteral("some_token")
-        << QStringLiteral("sm_prefix") << QStringLiteral("sm_status") << QStringLiteral("sm_error")
+        << u"/status/message/test/statusQuery"_s << QString{} << QString{} << QString{} << QString{}
         << QByteArrayLiteral("SM:statusQuery");
+    QTest::newRow("statusmessage-statusquery-01")
+        << u"/status/message/test/statusQuery"_s << u"some_token"_s << u"sm_prefix"_s
+        << u"sm_status"_s << u"sm_error"_s << QByteArrayLiteral("SM:statusQuery");
 }
 
 QTEST_MAIN(TestStatusMessage)

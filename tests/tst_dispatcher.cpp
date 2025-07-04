@@ -76,7 +76,7 @@ void Tst_Dispatcher::testController_data()
     QTest::addColumn<QString>("url");
     QTest::addColumn<QByteArray>("output");
 
-    QTest::newRow("path-test00") << QStringLiteral("/test/unknown_resource")
+    QTest::newRow("path-test00") << u"/test/unknown_resource"_s
                                  << QByteArrayLiteral("Unknown resource '/test/unknown_resource'.");
 }
 

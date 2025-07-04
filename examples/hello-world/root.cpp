@@ -12,6 +12,8 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
+using namespace Qt::StringLiterals;
+
 Root::Root(QObject *app)
     : Controller(app)
 {
@@ -33,7 +35,7 @@ void Root::json(Context *c)
 
 void Root::echo(Context *c)
 {
-    QUrl websocket_url = c->uriFor(actionFor(QStringLiteral("ws")));
+    QUrl websocket_url = c->uriFor(actionFor(u"ws"_s));
     websocket_url.setScheme(u"ws"_qs);
     c->response()->setBody(
         QStringLiteral("<!DOCTYPE html>\n"
@@ -162,16 +164,16 @@ void Root::ws(Context *c)
 
 void Root::session(Context *c)
 {
-    QString foo = Session::value(c, QStringLiteral("foo")).toString();
+    QString foo = Session::value(c, u"foo"_s).toString();
 
     c->response()->setBody(QLatin1String("Foo: ") + foo + QLatin1Char('\n'));
 
-    Session::setValue(c, QStringLiteral("foo"), QStringLiteral("bar"));
+    Session::setValue(c, u"foo"_s, u"bar"_s);
 }
 
 void Root::read_session(Context *c)
 {
-    QString foo = Session::value(c, QStringLiteral("foo")).toString();
+    QString foo = Session::value(c, u"foo"_s).toString();
     c->response()->setBody(QLatin1String("Foo: ") + foo + QLatin1Char('\n'));
 }
 
@@ -184,7 +186,7 @@ void Root::async(Context *c, const QString &timeout)
         t->deleteLater(); // we need to free this lambda so async object goes out of scope
 
         qDebug() << "Finished async" << timeout;
-        c->response()->setBody(QStringLiteral("Hello async in %1 seconds.\n").arg(timeout));
+        c->response()->setBody(u"Hello async in %1 seconds.\n"_s.arg(timeout));
     });
     t->start();
 }

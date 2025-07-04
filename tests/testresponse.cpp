@@ -60,15 +60,14 @@ public:
     C_ATTR(status, :Local :AutoArgs)
     void status(Context *c)
     {
-        c->response()->setStatus(c->request()->queryParam(QStringLiteral("data")).toInt());
+        c->response()->setStatus(c->request()->queryParam(u"data"_s).toInt());
         c->response()->setBody(QByteArray::number(c->response()->status()));
     }
 
     C_ATTR(contentEncoding, :Local :AutoArgs)
     void contentEncoding(Context *c)
     {
-        c->response()->setContentEncoding(
-            c->request()->queryParam(QStringLiteral("data")).toLatin1());
+        c->response()->setContentEncoding(c->request()->queryParam(u"data"_s).toLatin1());
         c->response()->setBody(c->response()->contentEncoding());
     }
 
@@ -80,7 +79,7 @@ public:
         buffer->write("something_to_test_for_updated_content_type");
         c->response()->setBody(buffer);
 
-        c->response()->setBody(c->request()->queryParam(QStringLiteral("data")));
+        c->response()->setBody(c->request()->queryParam(u"data"_s));
     }
 
     C_ATTR(contentLengthIODevice, :Local :AutoArgs)
@@ -90,14 +89,14 @@ public:
 
         auto buffer = new QBuffer;
         buffer->open(QBuffer::ReadWrite);
-        buffer->write(c->request()->queryParam(QStringLiteral("data")).toLatin1());
+        buffer->write(c->request()->queryParam(u"data"_s).toLatin1());
         c->response()->setBody(buffer);
     }
 
     C_ATTR(contentType, :Local :AutoArgs)
     void contentType(Context *c)
     {
-        c->response()->setContentType(c->request()->queryParam(QStringLiteral("data")).toLatin1());
+        c->response()->setContentType(c->request()->queryParam(u"data"_s).toLatin1());
         c->response()->setBody(c->response()->contentType());
     }
 
@@ -132,29 +131,26 @@ public:
     }
 
     C_ATTR(redirect, :Local :AutoArgs)
-    void redirect(Context *c)
-    {
-        c->response()->redirect(c->request()->queryParam(QStringLiteral("url")));
-    }
+    void redirect(Context *c) { c->response()->redirect(c->request()->queryParam(u"url"_s)); }
 
     C_ATTR(redirectUrl, :Local :AutoArgs)
     void redirectUrl(Context *c)
     {
-        c->response()->redirect(QUrl(c->request()->queryParam(QStringLiteral("url"))));
+        c->response()->redirect(QUrl(c->request()->queryParam(u"url"_s)));
     }
 
     C_ATTR(setCookie, :Local :AutoArgs)
     void setCookie(Context *c)
     {
         ParamsMultiMap params = c->request()->queryParameters();
-        QNetworkCookie cookie(params.value(QStringLiteral("name")).toLatin1(),
-                              params.value(QStringLiteral("value")).toLatin1());
-        cookie.setDomain(params.value(QStringLiteral("domain")));
+        QNetworkCookie cookie(params.value(u"name"_s).toLatin1(),
+                              params.value(u"value"_s).toLatin1());
+        cookie.setDomain(params.value(u"domain"_s));
         cookie.setExpirationDate(
-            QDateTime::fromString(params.value(QStringLiteral("expiration_date")), Qt::ISODate));
-        cookie.setHttpOnly(QVariant(params.value(QStringLiteral("http_only"))).toBool());
-        cookie.setPath(params.value(QStringLiteral("path")));
-        cookie.setSecure(QVariant(params.value(QStringLiteral("secure"))).toBool());
+            QDateTime::fromString(params.value(u"expiration_date"_s), Qt::ISODate));
+        cookie.setHttpOnly(QVariant(params.value(u"http_only"_s)).toBool());
+        cookie.setPath(params.value(u"path"_s));
+        cookie.setSecure(QVariant(params.value(u"secure"_s)).toBool());
         c->response()->setCookie(cookie);
         c->response()->setBody(cookie.toRawForm());
     }
@@ -163,24 +159,24 @@ public:
     void setCookies(Context *c)
     {
         ParamsMultiMap params = c->request()->queryParameters();
-        QNetworkCookie cookie(params.value(QStringLiteral("name")).toLatin1(),
-                              params.value(QStringLiteral("value")).toLatin1());
-        cookie.setDomain(params.value(QStringLiteral("domain")));
+        QNetworkCookie cookie(params.value(u"name"_s).toLatin1(),
+                              params.value(u"value"_s).toLatin1());
+        cookie.setDomain(params.value(u"domain"_s));
         cookie.setExpirationDate(
-            QDateTime::fromString(params.value(QStringLiteral("expiration_date")), Qt::ISODate));
-        cookie.setHttpOnly(QVariant(params.value(QStringLiteral("http_only"))).toBool());
-        cookie.setPath(params.value(QStringLiteral("path")));
-        cookie.setSecure(QVariant(params.value(QStringLiteral("secure"))).toBool());
+            QDateTime::fromString(params.value(u"expiration_date"_s), Qt::ISODate));
+        cookie.setHttpOnly(QVariant(params.value(u"http_only"_s)).toBool());
+        cookie.setPath(params.value(u"path"_s));
+        cookie.setSecure(QVariant(params.value(u"secure"_s)).toBool());
 
         ParamsMultiMap bodyParams = c->request()->bodyParameters();
-        QNetworkCookie cookie2(bodyParams.value(QStringLiteral("name")).toLatin1(),
-                               bodyParams.value(QStringLiteral("value")).toLatin1());
-        cookie2.setDomain(bodyParams.value(QStringLiteral("domain")));
-        cookie2.setExpirationDate(QDateTime::fromString(
-            bodyParams.value(QStringLiteral("expiration_date")), Qt::ISODate));
-        cookie2.setHttpOnly(QVariant(bodyParams.value(QStringLiteral("http_only"))).toBool());
-        cookie2.setPath(bodyParams.value(QStringLiteral("path")));
-        cookie2.setSecure(QVariant(bodyParams.value(QStringLiteral("secure"))).toBool());
+        QNetworkCookie cookie2(bodyParams.value(u"name"_s).toLatin1(),
+                               bodyParams.value(u"value"_s).toLatin1());
+        cookie2.setDomain(bodyParams.value(u"domain"_s));
+        cookie2.setExpirationDate(
+            QDateTime::fromString(bodyParams.value(u"expiration_date"_s), Qt::ISODate));
+        cookie2.setHttpOnly(QVariant(bodyParams.value(u"http_only"_s)).toBool());
+        cookie2.setPath(bodyParams.value(u"path"_s));
+        cookie2.setSecure(QVariant(bodyParams.value(u"secure"_s)).toBool());
 
         c->response()->setCookies({cookie, cookie2});
         c->response()->setBody(cookie.toRawForm());
@@ -190,24 +186,24 @@ public:
     void removeCookies(Context *c, const QString &cookieToBeRemoved)
     {
         ParamsMultiMap params = c->request()->queryParameters();
-        QNetworkCookie cookie(params.value(QStringLiteral("name")).toLatin1(),
-                              params.value(QStringLiteral("value")).toLatin1());
-        cookie.setDomain(params.value(QStringLiteral("domain")));
+        QNetworkCookie cookie(params.value(u"name"_s).toLatin1(),
+                              params.value(u"value"_s).toLatin1());
+        cookie.setDomain(params.value(u"domain"_s));
         cookie.setExpirationDate(
-            QDateTime::fromString(params.value(QStringLiteral("expiration_date")), Qt::ISODate));
-        cookie.setHttpOnly(QVariant(params.value(QStringLiteral("http_only"))).toBool());
-        cookie.setPath(params.value(QStringLiteral("path")));
-        cookie.setSecure(QVariant(params.value(QStringLiteral("secure"))).toBool());
+            QDateTime::fromString(params.value(u"expiration_date"_s), Qt::ISODate));
+        cookie.setHttpOnly(QVariant(params.value(u"http_only"_s)).toBool());
+        cookie.setPath(params.value(u"path"_s));
+        cookie.setSecure(QVariant(params.value(u"secure"_s)).toBool());
 
         ParamsMultiMap bodyParams = c->request()->bodyParameters();
-        QNetworkCookie cookie2(bodyParams.value(QStringLiteral("name")).toLatin1(),
-                               bodyParams.value(QStringLiteral("value")).toLatin1());
-        cookie2.setDomain(bodyParams.value(QStringLiteral("domain")));
-        cookie2.setExpirationDate(QDateTime::fromString(
-            bodyParams.value(QStringLiteral("expiration_date")), Qt::ISODate));
-        cookie2.setHttpOnly(QVariant(bodyParams.value(QStringLiteral("http_only"))).toBool());
-        cookie2.setPath(bodyParams.value(QStringLiteral("path")));
-        cookie2.setSecure(QVariant(bodyParams.value(QStringLiteral("secure"))).toBool());
+        QNetworkCookie cookie2(bodyParams.value(u"name"_s).toLatin1(),
+                               bodyParams.value(u"value"_s).toLatin1());
+        cookie2.setDomain(bodyParams.value(u"domain"_s));
+        cookie2.setExpirationDate(
+            QDateTime::fromString(bodyParams.value(u"expiration_date"_s), Qt::ISODate));
+        cookie2.setHttpOnly(QVariant(bodyParams.value(u"http_only"_s)).toBool());
+        cookie2.setPath(bodyParams.value(u"path"_s));
+        cookie2.setSecure(QVariant(bodyParams.value(u"secure"_s)).toBool());
 
         c->response()->setCookies({cookie, cookie2});
         c->response()->removeCookies(cookieToBeRemoved.toLatin1());
@@ -293,71 +289,71 @@ void TestResponse::testController_data()
     Headers headers;
 
     QTest::newRow("status-test00")
-        << get << QStringLiteral("/response/test/status?data=200") << headers << QByteArray() << 200
+        << get << u"/response/test/status?data=200"_s << headers << QByteArray() << 200
         << Headers{{"Content-Length", "3"}} << QByteArrayLiteral("200");
 
     QTest::newRow("status-test01")
-        << get << QStringLiteral("/response/test/status?data=404") << headers << QByteArray() << 404
+        << get << u"/response/test/status?data=404"_s << headers << QByteArray() << 404
         << Headers{{"Content-Length", "3"}} << QByteArrayLiteral("404");
 
     QTest::newRow("status-test02")
-        << get << QStringLiteral("/response/test/status?data=301") << headers << QByteArray() << 301
+        << get << u"/response/test/status?data=301"_s << headers << QByteArray() << 301
         << Headers{{"Content-Length", "3"}} << QByteArrayLiteral("301");
 
     QTest::newRow("status-test03")
-        << get << QStringLiteral("/response/test/status?data=400") << headers << QByteArray() << 400
+        << get << u"/response/test/status?data=400"_s << headers << QByteArray() << 400
         << Headers{{"Content-Length", "3"}} << QByteArrayLiteral("400");
 
     QTest::newRow("contentEncoding-test00")
-        << get << QStringLiteral("/response/test/contentEncoding?data=UTF-8") << headers
-        << QByteArray() << 200 << Headers{{"Content-Length", "5"}, {"Content-Encoding", "UTF-8"}}
+        << get << u"/response/test/contentEncoding?data=UTF-8"_s << headers << QByteArray() << 200
+        << Headers{{"Content-Length", "5"}, {"Content-Encoding", "UTF-8"}}
         << QByteArrayLiteral("UTF-8");
 
     QTest::newRow("contentEncoding-test01")
-        << get << QStringLiteral("/response/test/contentEncoding?data=UTF-16") << headers
-        << QByteArray() << 200 << Headers{{"Content-Length", "6"}, {"Content-Encoding", "UTF-16"}}
+        << get << u"/response/test/contentEncoding?data=UTF-16"_s << headers << QByteArray() << 200
+        << Headers{{"Content-Length", "6"}, {"Content-Encoding", "UTF-16"}}
         << QByteArrayLiteral("UTF-16");
 
     QTest::newRow("contentLength-test00")
-        << get << QStringLiteral("/response/test/contentLength?data=Hello") << headers
-        << QByteArray() << 200 << Headers{{"Content-Length", "5"}} << QByteArrayLiteral("Hello");
+        << get << u"/response/test/contentLength?data=Hello"_s << headers << QByteArray() << 200
+        << Headers{{"Content-Length", "5"}} << QByteArrayLiteral("Hello");
 
     QTest::newRow("contentLengthIODevice-test00")
-        << get << QStringLiteral("/response/test/contentLengthIODevice?data=HelloWorld") << headers
+        << get << u"/response/test/contentLengthIODevice?data=HelloWorld"_s << headers
         << QByteArray() << 200 << Headers{{"Content-Length", "10"}}
         << QByteArrayLiteral("HelloWorld");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("data"), QStringLiteral("appplication/json"));
+    query.addQueryItem(u"data"_s, u"appplication/json"_s);
     QTest::newRow("contentType-test00")
-        << get << QStringLiteral("/response/test/contentType?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/contentType?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "17"}, {"Content-Type", "appplication/json"}}
         << QByteArrayLiteral("appplication/json");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("data"), QStringLiteral("TEXT/PLAIN; charset=UTF-8"));
+    query.addQueryItem(u"data"_s, u"TEXT/PLAIN; charset=UTF-8"_s);
     QTest::newRow("contentType-test01")
-        << get << QStringLiteral("/response/test/contentType?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/contentType?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "10"}, {"Content-Type", "TEXT/PLAIN; charset=UTF-8"}}
         << QByteArrayLiteral("text/plain");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("data"), QStringLiteral("appplication/json"));
+    query.addQueryItem(u"data"_s, u"appplication/json"_s);
     QTest::newRow("contentTypeCharset-test00")
         << get
-        << QStringLiteral("/response/test/contentTypeCharset?") + query.toString(QUrl::FullyEncoded)
+        << u"/response/test/contentTypeCharset?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << 200
         << Headers{{"Content-Length", "0"},
                    {"Content-Type", "appplication/json"},}
         << QByteArrayLiteral("");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("data"), QStringLiteral("TEXT/PLAIN; charset=utf-8"));
+    query.addQueryItem(u"data"_s, u"TEXT/PLAIN; charset=utf-8"_s);
     QTest::newRow("contentTypeCharset-test01")
         << get
-        << QStringLiteral("/response/test/contentTypeCharset?") + query.toString(QUrl::FullyEncoded)
+        << u"/response/test/contentTypeCharset?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << 200
         << Headers{{"Content-Length", "5"},
                    {"Content-Type", "TEXT/PLAIN; charset=utf-8"},}
@@ -365,42 +361,42 @@ void TestResponse::testController_data()
 
     query.clear();
     QTest::newRow("largeBody-test00")
-        << get << QStringLiteral("/response/test/largeBody") << headers << QByteArray()
+        << get << u"/response/test/largeBody"_s << headers << QByteArray()
         << 200
         << Headers{{"Content-Length", "4194304"},}
         << QByteArrayLiteral("abcd").repeated(1024 * 1024);
 
     query.clear();
     QTest::newRow("largeSetBody-test01")
-        << get << QStringLiteral("/response/test/largeSetBody") << headers << QByteArray()
+        << get << u"/response/test/largeSetBody"_s << headers << QByteArray()
         << 200
         << Headers{{"Content-Length", "4194304"},}
         << QByteArrayLiteral("abcd").repeated(1024 * 1024);
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("barz"));
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    query.addQueryItem(u"foo"_s, u"barz"_s);
+    query.addQueryItem(u"foo"_s, u"bar"_s);
     QTest::newRow("setJsonBody-test00")
-        << get << QStringLiteral("/response/test/setJsonBody?") + query.toString(QUrl::FullyEncoded)
+        << get << u"/response/test/setJsonBody?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << 200
         << Headers{{"Content-Length", "14"},
                    {"Content-Type", "application/json"},}
         << QByteArrayLiteral("{\"foo\":\"barz\"}");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("x"), QStringLiteral("y"));
+    query.addQueryItem(u"foo"_s, u"bar"_s);
+    query.addQueryItem(u"x"_s, u"y"_s);
     QTest::newRow("setJsonBody-test01")
-        << get << QStringLiteral("/response/test/setJsonBody?") + query.toString(QUrl::FullyEncoded)
+        << get << u"/response/test/setJsonBody?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << 200
         << Headers{{"Content-Length", "21"},
                    {"Content-Type", "application/json"},}
         << QByteArrayLiteral("{\"foo\":\"bar\",\"x\":\"y\"}");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("url"), QStringLiteral("http://cutelyst.org/foo#something"));
+    query.addQueryItem(u"url"_s, u"http://cutelyst.org/foo#something"_s);
     QTest::newRow("redirect-test00")
-        << get << QStringLiteral("/response/test/redirect?") + query.toString(QUrl::FullyEncoded)
+        << get << u"/response/test/redirect?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << 302
         << Headers{{"Content-Length", "217"},
                    {"Content-Type", "text/html; charset=utf-8"},
@@ -412,9 +408,9 @@ void TestResponse::testController_data()
                "href=\"http://cutelyst.org/foo#something\">here</a>.</p>\n  </body>\n</html>\n");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("url"), QStringLiteral("http://cutelyst.org/foo#something"));
+    query.addQueryItem(u"url"_s, u"http://cutelyst.org/foo#something"_s);
     QTest::newRow("redirecturl-test0")
-        << get << QStringLiteral("/response/test/redirectUrl?") + query.toString(QUrl::FullyEncoded)
+        << get << u"/response/test/redirectUrl?"_s + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << 302
         << Headers{{"Content-Length", "217"},
                    {"Content-Type", "text/html; charset=utf-8"},
@@ -426,32 +422,31 @@ void TestResponse::testController_data()
                "href=\"http://cutelyst.org/foo#something\">here</a>.</p>\n  </body>\n</html>\n");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"bar"_s);
     QTest::newRow("setCookie-test00")
-        << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
-        << Headers{{"Content-Length", "7"}, {"Set-Cookie", "foo=bar"}}
+        << get << u"/response/test/setCookie?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200 << Headers{{"Content-Length", "7"}, {"Set-Cookie", "foo=bar"}}
         << QByteArrayLiteral("foo=bar");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"bar"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
     QTest::newRow("setCookie-test01")
-        << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/setCookie?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "28"}, {"Set-Cookie", "foo=bar; domain=cutelyst.org"}}
         << QByteArrayLiteral("foo=bar; domain=cutelyst.org");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"bar"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
     QTest::newRow("setCookie-test02")
-        << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/setCookie?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "67"},
                    {"Set-Cookie",
 
@@ -459,14 +454,14 @@ void TestResponse::testController_data()
         << QByteArrayLiteral("foo=bar; expires=Tue, 21-Jun-2016 10:08:15 GMT; domain=cutelyst.org");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"bar"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
     QTest::newRow("setCookie-test03")
-        << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/setCookie?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "77"},
                    {"Set-Cookie",
                     "foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
@@ -475,15 +470,15 @@ void TestResponse::testController_data()
                "foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; domain=cutelyst.org");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"bar"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
+    query.addQueryItem(u"path"_s, u"/path"_s);
     QTest::newRow("setCookie-test04")
-        << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/setCookie?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "89"},
                    {"Set-Cookie",
                     "foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
@@ -492,16 +487,16 @@ void TestResponse::testController_data()
                              "domain=cutelyst.org; path=/path");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"bar"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
+    query.addQueryItem(u"path"_s, u"/path"_s);
+    query.addQueryItem(u"secure"_s, u"true"_s);
     QTest::newRow("setCookie-test05")
-        << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
-        << headers << QByteArray() << 200
+        << get << u"/response/test/setCookie?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << QByteArray() << 200
         << Headers{{"Content-Length", "97"},
                    {"Set-Cookie",
                     "foo=bar; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
@@ -510,17 +505,17 @@ void TestResponse::testController_data()
                              "domain=cutelyst.org; path=/path");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    query.addQueryItem(u"name"_s, u"bar"_s);
+    query.addQueryItem(u"value"_s, u"baz"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
+    query.addQueryItem(u"path"_s, u"/path"_s);
+    query.addQueryItem(u"secure"_s, u"true"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("setCookies-test00")
-        << post << QStringLiteral("/response/test/setCookies?") + query.toString(QUrl::FullyEncoded)
-        << headers << query.toString(QUrl::FullyEncoded).toLatin1() << 200
+        << post << u"/response/test/setCookies?"_s + query.toString(QUrl::FullyEncoded) << headers
+        << query.toString(QUrl::FullyEncoded).toLatin1() << 200
         << Headers{{"Content-Length", "97"},
                    {"Set-Cookie",
                     "bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
@@ -529,23 +524,23 @@ void TestResponse::testController_data()
                              "domain=cutelyst.org; path=/path");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    query.addQueryItem(u"name"_s, u"bar"_s);
+    query.addQueryItem(u"value"_s, u"baz"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
+    query.addQueryItem(u"path"_s, u"/path"_s);
+    query.addQueryItem(u"secure"_s, u"true"_s);
     QUrlQuery cookies;
-    cookies.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    cookies.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    cookies.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T11:08:15Z"));
-    cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    cookies.addQueryItem(u"name"_s, u"foo"_s);
+    cookies.addQueryItem(u"value"_s, u"bar"_s);
+    cookies.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    cookies.addQueryItem(u"expiration_date"_s, u"2016-06-21T11:08:15Z"_s);
+    cookies.addQueryItem(u"path"_s, u"/path"_s);
+    cookies.addQueryItem(u"secure"_s, u"true"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("setCookies-test01")
-        << post << QStringLiteral("/response/test/setCookies?") + query.toString(QUrl::FullyEncoded)
+        << post << u"/response/test/setCookies?"_s + query.toString(QUrl::FullyEncoded)
         << headers << cookies.toString(QUrl::FullyEncoded).toLatin1() << 200
         << Headers{{"Content-Length", "97"},
                    {"Set-Cookie",
@@ -558,24 +553,23 @@ void TestResponse::testController_data()
                              "domain=cutelyst.org; path=/path");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("bar"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    query.addQueryItem(u"name"_s, u"bar"_s);
+    query.addQueryItem(u"value"_s, u"baz"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
+    query.addQueryItem(u"path"_s, u"/path"_s);
+    query.addQueryItem(u"secure"_s, u"true"_s);
     cookies.clear();
-    cookies.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    cookies.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    cookies.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T11:08:15Z"));
-    cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    cookies.addQueryItem(u"name"_s, u"foo"_s);
+    cookies.addQueryItem(u"value"_s, u"bar"_s);
+    cookies.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    cookies.addQueryItem(u"expiration_date"_s, u"2016-06-21T11:08:15Z"_s);
+    cookies.addQueryItem(u"path"_s, u"/path"_s);
+    cookies.addQueryItem(u"secure"_s, u"true"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("removeCookies-test00")
-        << post
-        << QStringLiteral("/response/test/removeCookies/foo?") + query.toString(QUrl::FullyEncoded)
+        << post << u"/response/test/removeCookies/foo?"_s + query.toString(QUrl::FullyEncoded)
         << headers << cookies.toString(QUrl::FullyEncoded).toLatin1() << 200
         << Headers{{"Content-Length", "97"},
                    {"Set-Cookie",
@@ -585,24 +579,23 @@ void TestResponse::testController_data()
                              "domain=cutelyst.org; path=/path");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T10:08:15Z"));
-    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    query.addQueryItem(u"name"_s, u"foo"_s);
+    query.addQueryItem(u"value"_s, u"baz"_s);
+    query.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    query.addQueryItem(u"expiration_date"_s, u"2016-06-21T10:08:15Z"_s);
+    query.addQueryItem(u"http_only"_s, u"true"_s);
+    query.addQueryItem(u"path"_s, u"/path"_s);
+    query.addQueryItem(u"secure"_s, u"true"_s);
     cookies.clear();
-    cookies.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
-    cookies.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
-    cookies.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
-    cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T11:08:15Z"));
-    cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
-    cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    cookies.addQueryItem(u"name"_s, u"foo"_s);
+    cookies.addQueryItem(u"value"_s, u"bar"_s);
+    cookies.addQueryItem(u"domain"_s, u"cutelyst.org"_s);
+    cookies.addQueryItem(u"expiration_date"_s, u"2016-06-21T11:08:15Z"_s);
+    cookies.addQueryItem(u"path"_s, u"/path"_s);
+    cookies.addQueryItem(u"secure"_s, u"true"_s);
     headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("removeCookies-test01")
-        << post
-        << QStringLiteral("/response/test/removeCookies/foo?") + query.toString(QUrl::FullyEncoded)
+        << post << u"/response/test/removeCookies/foo?"_s + query.toString(QUrl::FullyEncoded)
         << headers << cookies.toString(QUrl::FullyEncoded).toLatin1() << 200
         << Headers{{"Content-Length", "97"}}
         << QByteArrayLiteral("foo=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "

@@ -12,13 +12,15 @@
 #include <cutelee/engine.h>
 #include <cutelee/templateloader.h>
 
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class CuteleeViewPrivate : public ViewPrivate
 {
 public:
     QStringList includePaths;
-    QString extension = QStringLiteral(".html");
+    QString extension = u".html"_s;
     QString wrapper;
     QString cutelystVar;
     Cutelee::Engine *engine;

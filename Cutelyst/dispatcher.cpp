@@ -49,7 +49,7 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
         for (Action *action : actions) {
             bool registered = false;
             if (!d->actions.contains(action->reverse())) {
-                if (!action->attributes().contains(QStringLiteral("Private"))) {
+                if (!action->attributes().contains(u"Private"_s)) {
                     // Register the action with each dispatcher
                     for (DispatchType *dispatcher : dispatchers) {
                         if (dispatcher->registerAction(action)) {

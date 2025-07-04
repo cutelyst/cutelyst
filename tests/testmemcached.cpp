@@ -354,7 +354,7 @@ public:
     {
         QVariantList list1;
         list1.append(QVariant::fromValue<quint32>(865469));
-        list1.append(QVariant::fromValue<QString>(QStringLiteral("Lorem ipsum 2")));
+        list1.append(QVariant::fromValue<QString>(u"Lorem ipsum 2"_s));
         list1.append(QVariant::fromValue<float>(7848.23423f));
         list1.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 2")));
         Memcached::set("replace3", list1, 5);
@@ -426,7 +426,7 @@ public:
     {
         QVariantList list1;
         list1.append(QVariant::fromValue<quint32>(865469));
-        list1.append(QVariant::fromValue<QString>(QStringLiteral("Lorem ipsum 2")));
+        list1.append(QVariant::fromValue<QString>(u"Lorem ipsum 2"_s));
         list1.append(QVariant::fromValue<float>(7848.23423f));
         list1.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 2")));
         Memcached::setByKey("replaceGroup", "replace7", list1, std::chrono::seconds{5});
@@ -962,8 +962,8 @@ private:
     {
         std::pair<QByteArray, QString> pair;
 
-        pair.first  = c->req()->queryParam(QStringLiteral("key")).toLatin1();
-        pair.second = c->req()->queryParam(QStringLiteral("val"));
+        pair.first  = c->req()->queryParam(u"key"_s).toLatin1();
+        pair.second = c->req()->queryParam(u"val"_s);
 
         return pair;
     }
@@ -990,13 +990,12 @@ private:
     {
         QVariantList list;
         list.append(QVariant::fromValue<quint32>(2345234));
-        list.append(QVariant::fromValue<QString>(QStringLiteral("Lorem ipsum")));
+        list.append(QVariant::fromValue<QString>(u"Lorem ipsum"_s));
         list.append(QVariant::fromValue<float>(23423.23423f));
         list.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum")));
-        QVariantMap map{{QStringLiteral("val1"), QVariant::fromValue<qint64>(2983479237492)},
-                        {QStringLiteral("val2"),
-                         QVariant::fromValue<QString>(QStringLiteral("Dolor sit amet"))},
-                        {QStringLiteral("val3"), QVariant::fromValue<float>(9832.002f)}};
+        QVariantMap map{{u"val1"_s, QVariant::fromValue<qint64>(2983479237492)},
+                        {u"val2"_s, QVariant::fromValue<QString>(u"Dolor sit amet"_s)},
+                        {u"val3"_s, QVariant::fromValue<float>(9832.002f)}};
         list.append(QVariant::fromValue<QVariantMap>(map));
         return list;
     }
@@ -1005,7 +1004,7 @@ private:
     {
         QVariantList list;
         list.append(QVariant::fromValue<quint64>(1232345234));
-        list.append(QVariant::fromValue<QString>(QStringLiteral("Lorem ipsum 2")));
+        list.append(QVariant::fromValue<QString>(u"Lorem ipsum 2"_s));
         list.append(QVariant::fromValue<float>(2342.23423f));
         list.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 3")));
         return list;
@@ -1047,11 +1046,10 @@ void TestMemcached::initTestCase()
         m_memcPort = portTestServer->serverPort();
         delete portTestServer;
 
-        QString memcBinFilePath = QStandardPaths::findExecutable(QStringLiteral("memcached"));
+        QString memcBinFilePath = QStandardPaths::findExecutable(u"memcached"_s);
         if (memcBinFilePath.isEmpty()) {
-            memcBinFilePath = QStandardPaths::findExecutable(
-                QStringLiteral("memcached"),
-                {QStringLiteral("/usr/sbin"), QStringLiteral("/sbin")});
+            memcBinFilePath =
+                QStandardPaths::findExecutable(u"memcached"_s, {u"/usr/sbin"_s, u"/sbin"_s});
         }
 
         QVERIFY2(!memcBinFilePath.isEmpty(),
@@ -1061,7 +1059,7 @@ void TestMemcached::initTestCase()
                  "started by your own before running this tests.");
 
         QStringList memcArgs;
-        memcArgs << QStringLiteral("-p") << QString::number(m_memcPort) << QStringLiteral("-U")
+        memcArgs << u"-p"_s << QString::number(m_memcPort) << u"-U"_s
                  << QString::number(m_memcPort);
 
         m_memcached = new QProcess(this);
@@ -1077,11 +1075,11 @@ void TestMemcached::initTestCase()
 
         // check if memcached is up and running
         QTcpSocket testSocket;
-        testSocket.connectToHost(QStringLiteral("127.0.0.1"), m_memcPort);
+        testSocket.connectToHost(u"127.0.0.1"_s, m_memcPort);
         QVERIFY(testSocket.waitForConnected(5000));
         QCOMPARE(testSocket.state(), QAbstractSocket::ConnectedState);
 
-        m_memcServers = QStringLiteral("localhost,") + QString::number(m_memcPort);
+        m_memcServers = u"localhost,"_s + QString::number(m_memcPort);
     }
 
     m_engine = getEngine();
@@ -1094,10 +1092,10 @@ TestEngine *TestMemcached::getEngine()
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     auto plugin = new Memcached(app);
-    QVariantMap pluginConfig{{QStringLiteral("binary_protocol"), true},
-                             {QStringLiteral("compression"), true},
-                             {QStringLiteral("compression_threshold"), 10},
-                             {QStringLiteral("servers"), m_memcServers}};
+    QVariantMap pluginConfig{{u"binary_protocol"_s, true},
+                             {u"compression"_s, true},
+                             {u"compression_threshold"_s, 10},
+                             {u"servers"_s, m_memcServers}};
     plugin->setDefaultConfig(pluginConfig);
     new MemcachedTest(app);
     if (!engine->init()) {
@@ -1134,8 +1132,8 @@ void TestMemcached::doTest()
 QUrlQuery TestMemcached::makeKeyValQuery(const QString &key, const QString &val)
 {
     QUrlQuery q;
-    q.addQueryItem(QStringLiteral("key"), key);
-    q.addQueryItem(QStringLiteral("val"), val);
+    q.addQueryItem(u"key"_s, key);
+    q.addQueryItem(u"val"_s, val);
     return q;
 }
 
@@ -1151,17 +1149,17 @@ void TestMemcached::testController_data()
     QUrlQuery q;
 
     const QMap<QString, QString> simpleInput{
-        {QStringLiteral("asdfjk"), QStringLiteral("lkkljad")},
-        {QStringLiteral("knda"), QStringLiteral("kjkjadsf")},
-        {QStringLiteral("kljn"), QStringLiteral("kjda lkjadsf")},
-        {QStringLiteral("lka54"), QStringLiteral("kjqkjd")},
-        {QStringLiteral("adsfo"), QStringLiteral("dafljk")},
-        {QStringLiteral("yxcfasdef"), QStringLiteral("lknkajsdnbfjakdsf")},
+        {u"asdfjk"_s, u"lkkljad"_s},
+        {u"knda"_s, u"kjkjadsf"_s},
+        {u"kljn"_s, u"kjda lkjadsf"_s},
+        {u"lka54"_s, u"kjqkjd"_s},
+        {u"adsfo"_s, u"dafljk"_s},
+        {u"yxcfasdef"_s, u"lknkajsdnbfjakdsf"_s},
         {QStringLiteral("asdfhbdfjhavbsdfkagfdsfvbdjsafasfgewuoig23487bfjlahb3q2r4elfbq2w35gbawfbq2"
                         "35luqz2q3lu4vwefjlhwv32423bjhblje"),
          QStringLiteral("nbjkbadsfauwiz34gt723qbc68rw7o wvegarlzt78w468o23 328 bv287468bv "
                         "lawerbw37a4v6283qopvb3 log3q2o4b723874vboualwe")},
-        {QStringLiteral("asdfasdf"), QStringLiteral("lkjasdalfasdhfasdf")}};
+        {u"asdfasdf"_s, u"lkjasdalfasdhfasdf"_s}};
 
     // **** Start testing setting byte array ****
     // tests static bool Memcached::set(const QString &key, const QByteArray &value, time_t
@@ -1170,9 +1168,9 @@ void TestMemcached::testController_data()
     for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
         q.clear();
         q = makeKeyValQuery(key, value);
-        QTest::newRow(QStringLiteral("setByteArray-%1").arg(count).toUtf8().constData())
-            << QStringLiteral("/memcached/test/setByteArray?") + q.toString(QUrl::FullyEncoded)
-            << headers << QByteArray() << QByteArrayLiteral("valid");
+        QTest::newRow(u"setByteArray-%1"_s.arg(count).toUtf8().constData())
+            << u"/memcached/test/setByteArray?"_s + q.toString(QUrl::FullyEncoded) << headers
+            << QByteArray() << QByteArrayLiteral("valid");
         count++;
     }
 
@@ -1182,23 +1180,23 @@ void TestMemcached::testController_data()
     count = 0;
     for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
         q = makeKeyValQuery(key, value);
-        QTest::newRow(QStringLiteral("getByteArray-%1").arg(count).toUtf8().constData())
-            << QStringLiteral("/memcached/test/getByteArray?") + q.toString(QUrl::FullyDecoded)
-            << headers << QByteArray() << QByteArrayLiteral("valid");
+        QTest::newRow(u"getByteArray-%1"_s.arg(count).toUtf8().constData())
+            << u"/memcached/test/getByteArray?"_s + q.toString(QUrl::FullyDecoded) << headers
+            << QByteArray() << QByteArrayLiteral("valid");
         count++;
     }
 
     // **** Start testing set empty key ****
     // tests static bool Memcached::set(const QString &key, const QByteArray &value, time_t
     // expiration, MemcachedReturnType *returnType = nullptr)
-    QTest::newRow("setEmptyKey") << QStringLiteral("/memcached/test/setEmptyKey") << headers
-                                 << QByteArray() << QByteArrayLiteral("invalid");
+    QTest::newRow("setEmptyKey") << u"/memcached/test/setEmptyKey"_s << headers << QByteArray()
+                                 << QByteArrayLiteral("invalid");
 
     // **** Start testing set too long key ****
     // tests static bool Memcached::set(const QString &key, const QByteArray &value, time_t
     // expiration, MemcachedReturnType *returnType = nullptr)
-    QTest::newRow("setTooLongKey") << QStringLiteral("/memcached/test/setTooLongKey") << headers
-                                   << QByteArray() << QByteArrayLiteral("invalid");
+    QTest::newRow("setTooLongKey") << u"/memcached/test/setTooLongKey"_s << headers << QByteArray()
+                                   << QByteArrayLiteral("invalid");
 
     // **** Start testing setting byte array by key ****
     // tests static bool Memcached::setByKey(const QString &groupKey, const QString &key, const
@@ -1207,9 +1205,9 @@ void TestMemcached::testController_data()
     for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
         q.clear();
         q = makeKeyValQuery(key, value);
-        QTest::newRow(QStringLiteral("setByteArrayByKey-%1").arg(count).toUtf8().constData())
-            << QStringLiteral("/memcached/test/setByteArrayByKey?") + q.toString(QUrl::FullyEncoded)
-            << headers << QByteArray() << QByteArrayLiteral("valid");
+        QTest::newRow(u"setByteArrayByKey-%1"_s.arg(count).toUtf8().constData())
+            << u"/memcached/test/setByteArrayByKey?"_s + q.toString(QUrl::FullyEncoded) << headers
+            << QByteArray() << QByteArrayLiteral("valid");
         count++;
     }
 
@@ -1219,91 +1217,90 @@ void TestMemcached::testController_data()
     count = 0;
     for (const auto &[key, value] : simpleInput.asKeyValueRange()) {
         q = makeKeyValQuery(key, value);
-        QTest::newRow(QStringLiteral("getByteArrayByKey-%1").arg(count).toUtf8().constData())
-            << QStringLiteral("/memcached/test/getByteArrayByKey?") + q.toString(QUrl::FullyDecoded)
-            << headers << QByteArray() << QByteArrayLiteral("valid");
+        QTest::newRow(u"getByteArrayByKey-%1"_s.arg(count).toUtf8().constData())
+            << u"/memcached/test/getByteArrayByKey?"_s + q.toString(QUrl::FullyDecoded) << headers
+            << QByteArray() << QByteArrayLiteral("valid");
         count++;
     }
 
     const QVector<std::pair<QString, QByteArray>> testVect{
-        {QStringLiteral("setEmptyKeyByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("setTooLongKeyByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("setQVariantList"), QByteArrayLiteral("valid")},
-        {QStringLiteral("getQVariantList"), QByteArrayLiteral("valid")},
-        {QStringLiteral("setQVariantListByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("getQVariantListByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addByteArrayValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addByteArrayInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterAddByteArray"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addQVariantListValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addQVariantListInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterAddQVariantList"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addByteArrayValidByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addByteArrayInvalidByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterAddByteArrayByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addQVariantListValidByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("addQVariantListInvalidByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterAddQVariantListByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceByteArrayValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceByteArrayInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterReplaceByteArray"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceQVariantListValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceQVariantListInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterReplaceQVariantList"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceByteArrayValidByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceByteArrayInvalidByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterReplaceByteArrayByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceQVariantListValidByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("replaceQVariantListInvalidByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterReplaceQVariantListByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("directRemoveValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("directRemoveInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterDirectRemove"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("directRemoveValidByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("directRemoveInvalidByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("getAfterDirectRemoveByKey"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("existValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("existInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("existByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("existByKeyInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("incrementWithInitialValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("incrementWithInitialAvailableValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("incrementValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("getAfterIncrement"), QByteArrayLiteral("valid")},
-        {QStringLiteral("incrementInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("incrementWithInitialByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("incrementWithInitialByKeyAvailableValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("incrementByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("getAfterIncrementByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("incrementByKeyInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("decrementWithInitialValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementWithInitialAvailableValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("getAfterDecrement"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("decrementWithInitialByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementWithInitialByKeyAvailableValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("getAfterDecrementByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementByKeyInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("casValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("casInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("casVariantValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("casVariantInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("casByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("casByKeyInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("casByKeyVariantValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("casByKeyVariantInvalid"), QByteArrayLiteral("invalid")},
-        {QStringLiteral("mgetValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("mgetByKeyValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("mgetVariantValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("mgetByKeyVariantValid"), QByteArrayLiteral("valid")},
-        {QStringLiteral("flush"), QByteArrayLiteral("valid")}};
+        {u"setEmptyKeyByKey"_s, QByteArrayLiteral("invalid")},
+        {u"setTooLongKeyByKey"_s, QByteArrayLiteral("invalid")},
+        {u"setQVariantList"_s, QByteArrayLiteral("valid")},
+        {u"getQVariantList"_s, QByteArrayLiteral("valid")},
+        {u"setQVariantListByKey"_s, QByteArrayLiteral("valid")},
+        {u"getQVariantListByKey"_s, QByteArrayLiteral("valid")},
+        {u"addByteArrayValid"_s, QByteArrayLiteral("valid")},
+        {u"addByteArrayInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterAddByteArray"_s, QByteArrayLiteral("valid")},
+        {u"addQVariantListValid"_s, QByteArrayLiteral("valid")},
+        {u"addQVariantListInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterAddQVariantList"_s, QByteArrayLiteral("valid")},
+        {u"addByteArrayValidByKey"_s, QByteArrayLiteral("valid")},
+        {u"addByteArrayInvalidByKey"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterAddByteArrayByKey"_s, QByteArrayLiteral("valid")},
+        {u"addQVariantListValidByKey"_s, QByteArrayLiteral("valid")},
+        {u"addQVariantListInvalidByKey"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterAddQVariantListByKey"_s, QByteArrayLiteral("valid")},
+        {u"replaceByteArrayValid"_s, QByteArrayLiteral("valid")},
+        {u"replaceByteArrayInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterReplaceByteArray"_s, QByteArrayLiteral("valid")},
+        {u"replaceQVariantListValid"_s, QByteArrayLiteral("valid")},
+        {u"replaceQVariantListInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterReplaceQVariantList"_s, QByteArrayLiteral("valid")},
+        {u"replaceByteArrayValidByKey"_s, QByteArrayLiteral("valid")},
+        {u"replaceByteArrayInvalidByKey"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterReplaceByteArrayByKey"_s, QByteArrayLiteral("valid")},
+        {u"replaceQVariantListValidByKey"_s, QByteArrayLiteral("valid")},
+        {u"replaceQVariantListInvalidByKey"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterReplaceQVariantListByKey"_s, QByteArrayLiteral("valid")},
+        {u"directRemoveValid"_s, QByteArrayLiteral("valid")},
+        {u"directRemoveInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterDirectRemove"_s, QByteArrayLiteral("invalid")},
+        {u"directRemoveValidByKey"_s, QByteArrayLiteral("valid")},
+        {u"directRemoveInvalidByKey"_s, QByteArrayLiteral("invalid")},
+        {u"getAfterDirectRemoveByKey"_s, QByteArrayLiteral("invalid")},
+        {u"existValid"_s, QByteArrayLiteral("valid")},
+        {u"existInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"existByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"existByKeyInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"incrementWithInitialValid"_s, QByteArrayLiteral("valid")},
+        {u"incrementWithInitialAvailableValid"_s, QByteArrayLiteral("valid")},
+        {u"incrementValid"_s, QByteArrayLiteral("valid")},
+        {u"getAfterIncrement"_s, QByteArrayLiteral("valid")},
+        {u"incrementInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"incrementWithInitialByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"incrementWithInitialByKeyAvailableValid"_s, QByteArrayLiteral("valid")},
+        {u"incrementByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"getAfterIncrementByKey"_s, QByteArrayLiteral("valid")},
+        {u"incrementByKeyInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"decrementWithInitialValid"_s, QByteArrayLiteral("valid")},
+        {u"decrementWithInitialAvailableValid"_s, QByteArrayLiteral("valid")},
+        {u"decrementValid"_s, QByteArrayLiteral("valid")},
+        {u"getAfterDecrement"_s, QByteArrayLiteral("valid")},
+        {u"decrementInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"decrementWithInitialByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"decrementWithInitialByKeyAvailableValid"_s, QByteArrayLiteral("valid")},
+        {u"decrementByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"getAfterDecrementByKey"_s, QByteArrayLiteral("valid")},
+        {u"decrementByKeyInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"casValid"_s, QByteArrayLiteral("valid")},
+        {u"casInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"casVariantValid"_s, QByteArrayLiteral("valid")},
+        {u"casVariantInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"casByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"casByKeyInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"casByKeyVariantValid"_s, QByteArrayLiteral("valid")},
+        {u"casByKeyVariantInvalid"_s, QByteArrayLiteral("invalid")},
+        {u"mgetValid"_s, QByteArrayLiteral("valid")},
+        {u"mgetByKeyValid"_s, QByteArrayLiteral("valid")},
+        {u"mgetVariantValid"_s, QByteArrayLiteral("valid")},
+        {u"mgetByKeyVariantValid"_s, QByteArrayLiteral("valid")},
+        {u"flush"_s, QByteArrayLiteral("valid")}};
 
     for (const std::pair<QString, QByteArray> &test : testVect) {
         QTest::newRow(test.first.toLocal8Bit().constData())
-            << QStringLiteral("/memcached/test/") + test.first << headers << QByteArray()
-            << test.second;
+            << u"/memcached/test/"_s + test.first << headers << QByteArray() << test.second;
     }
 }
 

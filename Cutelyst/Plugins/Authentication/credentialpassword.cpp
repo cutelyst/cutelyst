@@ -11,6 +11,7 @@
 #include <QUuid>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALPASSWORD, "cutelyst.plugin.credentialpassword", QtWarningMsg)
 
@@ -140,7 +141,7 @@ QByteArray CredentialPassword::createPassword(const QByteArray &password,
 {
     QByteArray salt;
 #ifdef Q_OS_LINUX
-    QFile random(QStringLiteral("/dev/urandom"));
+    QFile random(u"/dev/urandom"_s);
     if (random.open(QIODevice::ReadOnly)) {
         salt = random.read(saltByteSize).toBase64();
     } else {

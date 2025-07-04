@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
     // Open HTTP/1.1 3000 port
     server.setHttpSocket({
-        {QStringLiteral(":3000")},
+        {u":3000"_s},
     });
 
     // Allow HTTP/1.1 upgrade to HTTP2 at 3000 port
@@ -32,12 +32,12 @@ int main(int argc, char *argv[])
 
     // Open HTTP/2 at 3001 port
     server.setHttp2Socket({
-        {QStringLiteral(":3001")},
+        {u":3001"_s},
     });
 
     // Open FastCGI 3002 port
     server.setFastcgiSocket({
-        {QStringLiteral(":3002")},
+        {u":3002"_s},
     });
 
     server.exec(new HelloWorld);

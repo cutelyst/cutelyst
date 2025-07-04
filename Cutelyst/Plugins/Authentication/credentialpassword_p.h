@@ -7,6 +7,8 @@
 
 #include "credentialpassword.h"
 
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class CredentialPasswordPrivate
@@ -16,7 +18,7 @@ public:
     static QByteArray cryptoEnumToStr(QCryptographicHash::Algorithm method);
     static int cryptoStrToEnum(const QByteArray &hashMethod);
 
-    QString passwordField                         = QStringLiteral("password");
+    QString passwordField                         = u"password"_s;
     CredentialPassword::PasswordType passwordType = CredentialPassword::None;
     QString passwordPreSalt;
     QString passwordPostSalt;

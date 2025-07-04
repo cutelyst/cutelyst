@@ -1226,7 +1226,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             returnStatus.push_back(ValidatorEmail::RFC5321TLD);
         }
 
-        if (QStringLiteral("0123456789").contains(atomListDomain[elementCount][0])) {
+        if (u"0123456789"_s.contains(atomListDomain[elementCount][0])) {
             returnStatus.push_back(ValidatorEmail::RFC5321TLDNumeric);
         }
     }

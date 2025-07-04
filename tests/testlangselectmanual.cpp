@@ -56,7 +56,7 @@ public:
     C_ATTR(testSession, :Local :AutoArgs)
     void testSession(Context *c)
     {
-        LangSelect::fromSession(c, QStringLiteral("lang"));
+        LangSelect::fromSession(c, u"lang"_s);
         c->res()->setBody(c->locale().bcp47Name());
     }
 
@@ -90,7 +90,7 @@ TestEngine *TestLangselectManual::getEngine()
     auto plugin = new LangSelect(app);
     plugin->setSupportedLocales({QLocale(QLocale::German), QLocale(QLocale::Portuguese)});
     plugin->setFallbackLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
-    plugin->setQueryKey(QStringLiteral("locale"));
+    plugin->setQueryKey(u"locale"_s);
 
     new LangselectManualTest(app);
     if (!engine->init()) {
@@ -133,58 +133,56 @@ void TestLangselectManual::testController_data()
 
     Headers headers;
 
-    QTest::newRow("session-00") << QStringLiteral("/langselect/manual/test/testSession") << headers
-                                << 200 << QByteArrayLiteral("en-GB");
+    QTest::newRow("session-00") << u"/langselect/manual/test/testSession"_s << headers << 200
+                                << QByteArrayLiteral("en-GB");
     headers.setHeader("Accept-Language", "de-AT,de;q=0.8,en-GB;q=0.6,en-US;q=0.4,en;q=0.2");
-    QTest::newRow("session-01") << QStringLiteral("/langselect/manual/test/testSession") << headers
-                                << 200 << QByteArrayLiteral("de");
+    QTest::newRow("session-01") << u"/langselect/manual/test/testSession"_s << headers << 200
+                                << QByteArrayLiteral("de");
     headers.setHeader("Accept-Language", "ru");
-    QTest::newRow("session-02") << QStringLiteral("/langselect/manual/test/testSession") << headers
-                                << 200 << QByteArrayLiteral("en-GB");
+    QTest::newRow("session-02") << u"/langselect/manual/test/testSession"_s << headers << 200
+                                << QByteArrayLiteral("en-GB");
     headers.setHeader("Accept-Language", "de-AT");
-    QTest::newRow("session-03") << QStringLiteral("/langselect/manual/test/testSession") << headers
-                                << 200 << QByteArrayLiteral("de");
+    QTest::newRow("session-03") << u"/langselect/manual/test/testSession"_s << headers << 200
+                                << QByteArrayLiteral("de");
 
     headers.removeHeader("Accept-Language");
-    QTest::newRow("path-00") << QStringLiteral("/langselect/manual/test/de/testPath") << headers
-                             << 200 << QByteArrayLiteral("de");
+    QTest::newRow("path-00") << u"/langselect/manual/test/de/testPath"_s << headers << 200
+                             << QByteArrayLiteral("de");
     QTest::newRow("path-01")
-        << QStringLiteral("/langselect/manual/test/ru/testPath?foo=bar") << headers << 307
+        << u"/langselect/manual/test/ru/testPath?foo=bar"_s << headers << 307
         << QByteArrayLiteral("http://127.0.0.1/langselect/manual/test/en-gb/testPath?foo=bar");
     headers.setHeader("Accept-Language", "de-AT,de;q=0.8,en-GB;q=0.6,en-US;q=0.4,en;q=0.2");
-    QTest::newRow("path-02") << QStringLiteral("/langselect/manual/test/ru/testPath?foo=bar")
-                             << headers << 307
+    QTest::newRow("path-02") << u"/langselect/manual/test/ru/testPath?foo=bar"_s << headers << 307
                              << QByteArrayLiteral(
                                     "http://127.0.0.1/langselect/manual/test/de/testPath?foo=bar");
     headers.setHeader("Accept-Language", "de-CH");
-    QTest::newRow("path-03") << QStringLiteral("/langselect/manual/test/ru/testPath?foo=bar")
-                             << headers << 307
+    QTest::newRow("path-03") << u"/langselect/manual/test/ru/testPath?foo=bar"_s << headers << 307
                              << QByteArrayLiteral(
                                     "http://127.0.0.1/langselect/manual/test/de/testPath?foo=bar");
-    QTest::newRow("path-04") << QStringLiteral("/langselect/manual/test/en-gb/testPath") << headers
-                             << 200 << QByteArrayLiteral("en-GB");
+    QTest::newRow("path-04") << u"/langselect/manual/test/en-gb/testPath"_s << headers << 200
+                             << QByteArrayLiteral("en-GB");
 
     headers.removeHeader("Accept-Language");
     QTest::newRow("query-00")
-        << QStringLiteral("/langselect/manual/test/testUrlQuery") << headers << 307
+        << u"/langselect/manual/test/testUrlQuery"_s << headers << 307
         << QByteArrayLiteral("http://127.0.0.1/langselect/manual/test/testUrlQuery?locale=en-gb");
     headers.setHeader("Accept-Language", "de-AT,de;q=0.8,en-GB;q=0.6,en-US;q=0.4,en;q=0.2");
     QTest::newRow("query-01")
-        << QStringLiteral("/langselect/manual/test/testUrlQuery") << headers << 307
+        << u"/langselect/manual/test/testUrlQuery"_s << headers << 307
         << QByteArrayLiteral("http://127.0.0.1/langselect/manual/test/testUrlQuery?locale=de");
     QTest::newRow("query-02")
-        << QStringLiteral("/langselect/manual/test/testUrlQuery?foo=bar") << headers << 307
+        << u"/langselect/manual/test/testUrlQuery?foo=bar"_s << headers << 307
         << QByteArrayLiteral(
                "http://127.0.0.1/langselect/manual/test/testUrlQuery?foo=bar&locale=de");
     QTest::newRow("query-03")
-        << QStringLiteral("/langselect/manual/test/testUrlQuery?locale=ru") << headers << 307
+        << u"/langselect/manual/test/testUrlQuery?locale=ru"_s << headers << 307
         << QByteArrayLiteral("http://127.0.0.1/langselect/manual/test/testUrlQuery?locale=de");
     headers.removeHeader("Accept-Language");
     QTest::newRow("query-04")
-        << QStringLiteral("/langselect/manual/test/testUrlQuery?locale=ru") << headers << 307
+        << u"/langselect/manual/test/testUrlQuery?locale=ru"_s << headers << 307
         << QByteArrayLiteral("http://127.0.0.1/langselect/manual/test/testUrlQuery?locale=en-gb");
-    QTest::newRow("query-05") << QStringLiteral("/langselect/manual/test/testUrlQuery?locale=pt")
-                              << headers << 200 << QByteArrayLiteral("pt");
+    QTest::newRow("query-05") << u"/langselect/manual/test/testUrlQuery?locale=pt"_s << headers
+                              << 200 << QByteArrayLiteral("pt");
 }
 
 QTEST_MAIN(TestLangselectManual)

@@ -10,6 +10,8 @@
 #include <QDir>
 #include <QRegularExpression>
 
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class StaticSimplePrivate
@@ -17,7 +19,7 @@ class StaticSimplePrivate
 public:
     QVector<QDir> includePaths;
     QStringList dirs;
-    QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
+    QRegularExpression re = QRegularExpression(u"\\.[^/]+$"_s);
     bool serveDirsOnly{false};
 };
 

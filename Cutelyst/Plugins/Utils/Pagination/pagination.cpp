@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2015-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2015-2025 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "pagination.h"
@@ -7,6 +7,7 @@
 #include <QtCore/QLoggingCategory>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_PAGINATION, "cutelyst.utils.pagination", QtWarningMsg)
 
@@ -29,10 +30,10 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
         pageLinks = 1;
     }
 
-    insert(QStringLiteral("limit"), itemsPerPage);
-    insert(QStringLiteral("offset"), (currentPage - 1) * itemsPerPage);
-    insert(QStringLiteral("currentPage"), currentPage);
-    insert(QStringLiteral("current"), currentPage);
+    insert(u"limit"_s, itemsPerPage);
+    insert(u"offset"_s, (currentPage - 1) * itemsPerPage);
+    insert(u"currentPage"_s, currentPage);
+    insert(u"current"_s, currentPage);
 
     const int resultLastPage = ((numberOfItems - 1) / itemsPerPage) + 1;
     currentPage              = std::ranges::min(currentPage, resultLastPage);
@@ -44,11 +45,11 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
     for (int i = startPage; i <= endPage; ++i) {
         resultPages.append(i);
     }
-    insert(QStringLiteral("enableFirst"), currentPage > 1);
-    insert(QStringLiteral("enableLast"), currentPage != resultLastPage);
-    insert(QStringLiteral("pages"), QVariant::fromValue(resultPages));
-    insert(QStringLiteral("lastPage"), resultLastPage);
-    insert(QStringLiteral("numberOfItems"), numberOfItems);
+    insert(u"enableFirst"_s, currentPage > 1);
+    insert(u"enableLast"_s, currentPage != resultLastPage);
+    insert(u"pages"_s, QVariant::fromValue(resultPages));
+    insert(u"lastPage"_s, resultLastPage);
+    insert(u"numberOfItems"_s, numberOfItems);
 }
 
 Pagination::~Pagination()
@@ -57,12 +58,12 @@ Pagination::~Pagination()
 
 int Pagination::limit() const
 {
-    return value(QStringLiteral("limit")).toInt();
+    return value(u"limit"_s).toInt();
 }
 
 int Pagination::offset() const
 {
-    return value(QStringLiteral("offset")).toInt();
+    return value(u"offset"_s).toInt();
 }
 
 int Pagination::offset(int itemsPerPage, int currentPage)
@@ -81,32 +82,32 @@ int Pagination::offset(int itemsPerPage, int currentPage)
 
 int Pagination::currentPage() const
 {
-    return value(QStringLiteral("currentPage")).toInt();
+    return value(u"currentPage"_s).toInt();
 }
 
 int Pagination::lastPage() const
 {
-    return value(QStringLiteral("lastPage")).toInt();
+    return value(u"lastPage"_s).toInt();
 }
 
 int Pagination::numberOfItems() const
 {
-    return value(QStringLiteral("numberOfItems")).toInt();
+    return value(u"numberOfItems"_s).toInt();
 }
 
 bool Pagination::enableFirst() const
 {
-    return value(QStringLiteral("enableFirst")).toBool();
+    return value(u"enableFirst"_s).toBool();
 }
 
 bool Pagination::enableLast() const
 {
-    return value(QStringLiteral("enableLast")).toBool();
+    return value(u"enableLast"_s).toBool();
 }
 
 QVector<int> Pagination::pages() const
 {
-    return value(QStringLiteral("pages")).value<QVector<int>>();
+    return value(u"pages"_s).value<QVector<int>>();
 }
 
 #include "moc_pagination.cpp"

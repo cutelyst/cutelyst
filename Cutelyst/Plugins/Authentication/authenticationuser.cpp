@@ -8,6 +8,7 @@
 #include <QDebug>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 AuthenticationUser::AuthenticationUser()
 {
@@ -24,12 +25,12 @@ AuthenticationUser::~AuthenticationUser()
 
 QVariant AuthenticationUser::id() const
 {
-    return m_data.value(QStringLiteral("id"));
+    return m_data.value(u"id"_s);
 }
 
 void AuthenticationUser::setId(const QVariant &id)
 {
-    m_data.insert(QStringLiteral("id"), id);
+    m_data.insert(u"id"_s, id);
 }
 
 bool AuthenticationUser::isNull() const
@@ -39,12 +40,12 @@ bool AuthenticationUser::isNull() const
 
 QString AuthenticationUser::authRealm()
 {
-    return m_data.value(QStringLiteral("authRealm")).toString();
+    return m_data.value(u"authRealm"_s).toString();
 }
 
 void AuthenticationUser::setAuthRealm(const QString &authRealm)
 {
-    m_data.insert(QStringLiteral("authRealm"), authRealm);
+    m_data.insert(u"authRealm"_s, authRealm);
 }
 
 QDataStream &operator<<(QDataStream &out, const AuthenticationUser &user)

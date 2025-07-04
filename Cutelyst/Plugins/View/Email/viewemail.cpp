@@ -18,6 +18,7 @@ Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email", QtWarningMsg)
 
 using namespace Cutelyst;
 using namespace SimpleMail;
+using namespace Qt::StringLiterals;
 
 ViewEmail::ViewEmail(QObject *parent, const QString &name)
     : View(new ViewEmailPrivate, parent, name)
@@ -162,7 +163,7 @@ QByteArray ViewEmail::render(Context *c) const
     MimeMessage message;
 
     QVariant value;
-    value = email.value(QStringLiteral("to"));
+    value = email.value(u"to"_s);
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
         message.addTo(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
@@ -172,7 +173,7 @@ QByteArray ViewEmail::render(Context *c) const
         }
     }
 
-    value = email.value(QStringLiteral("cc"));
+    value = email.value(u"cc"_s);
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
         message.addCc(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
@@ -182,7 +183,7 @@ QByteArray ViewEmail::render(Context *c) const
         }
     }
 
-    value = email.value(QStringLiteral("bcc"));
+    value = email.value(u"bcc"_s);
     if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
         message.addBcc(SimpleMail::EmailAddress{value.toString()});
     } else if (value.typeId() == QMetaType::QStringList) {
@@ -192,13 +193,13 @@ QByteArray ViewEmail::render(Context *c) const
         }
     }
 
-    message.setSender(SimpleMail::EmailAddress{email.value(QStringLiteral("from")).toString()});
-    message.setSubject(email.value(QStringLiteral("subject")).toString());
+    message.setSender(SimpleMail::EmailAddress{email.value(u"from"_s).toString()});
+    message.setSubject(email.value(u"subject"_s).toString());
 
-    QVariant body  = email.value(QStringLiteral("body"));
-    QVariant parts = email.value(QStringLiteral("parts"));
+    QVariant body  = email.value(u"body"_s);
+    QVariant parts = email.value(u"parts"_s);
     if (body.isNull() && parts.isNull()) {
-        c->appendError(QStringLiteral("Can't send email without parts or body, check stash"));
+        c->appendError(u"Can't send email without parts or body, check stash"_s);
         return {};
     }
 
@@ -213,7 +214,7 @@ QByteArray ViewEmail::render(Context *c) const
             }
         }
 
-        auto contentTypeIt = email.constFind(QStringLiteral("content_type"));
+        auto contentTypeIt = email.constFind(u"content_type"_s);
         if (contentTypeIt != email.constEnd() && !contentTypeIt.value().isNull() &&
             !contentTypeIt.value().toString().isEmpty()) {
             const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
@@ -249,29 +250,29 @@ void ViewEmail::initSender()
     QVariantHash config;
     const auto app = qobject_cast<Application *>(parent());
     if (app) {
-        config = app->config(QStringLiteral("VIEW_EMAIL")).toHash();
+        config = app->config(u"VIEW_EMAIL"_s).toHash();
     }
 
-    d->stashKey = config.value(QStringLiteral("stash_key"), QStringLiteral("email")).toString();
+    d->stashKey = config.value(u"stash_key"_s, u"email"_s).toString();
 
-    if (!config.value(QStringLiteral("sender_host")).isNull()) {
-        d->server->setHost(config.value(QStringLiteral("sender_host")).toString());
+    if (!config.value(u"sender_host"_s).isNull()) {
+        d->server->setHost(config.value(u"sender_host"_s).toString());
     }
-    if (!config.value(QStringLiteral("sender_port")).isNull()) {
-        d->server->setPort(quint16(config.value(QStringLiteral("sender_port")).toInt()));
+    if (!config.value(u"sender_port"_s).isNull()) {
+        d->server->setPort(quint16(config.value(u"sender_port"_s).toInt()));
     }
-    if (!config.value(QStringLiteral("sender_username")).isNull()) {
-        d->server->setUsername(config.value(QStringLiteral("sender_username")).toString());
+    if (!config.value(u"sender_username"_s).isNull()) {
+        d->server->setUsername(config.value(u"sender_username"_s).toString());
     }
-    if (!config.value(QStringLiteral("sender_password")).isNull()) {
-        d->server->setPassword(config.value(QStringLiteral("sender_password")).toString());
+    if (!config.value(u"sender_password"_s).isNull()) {
+        d->server->setPassword(config.value(u"sender_password"_s).toString());
     }
 }
 
 void ViewEmailPrivate::setupAttributes(std::shared_ptr<MimePart> part,
                                        const QVariantHash &attrs) const
 {
-    auto contentTypeIt = attrs.constFind(QStringLiteral("content_type"));
+    auto contentTypeIt = attrs.constFind(u"content_type"_s);
     if (contentTypeIt != attrs.constEnd() && !contentTypeIt.value().isNull() &&
         !contentTypeIt.value().toString().isEmpty()) {
         const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
@@ -282,7 +283,7 @@ void ViewEmailPrivate::setupAttributes(std::shared_ptr<MimePart> part,
         part->setContentType(defaultContentType);
     }
 
-    auto charsetIt = attrs.constFind(QStringLiteral("charset"));
+    auto charsetIt = attrs.constFind(u"charset"_s);
     if (charsetIt != attrs.constEnd() && !charsetIt.value().isNull() &&
         !charsetIt.value().toString().isEmpty()) {
         const QByteArray charset = charsetIt.value().toString().toLatin1();
@@ -293,7 +294,7 @@ void ViewEmailPrivate::setupAttributes(std::shared_ptr<MimePart> part,
         part->setCharset(defaultCharset);
     }
 
-    auto encodingIt = attrs.constFind(QStringLiteral("encoding"));
+    auto encodingIt = attrs.constFind(u"encoding"_s);
     if (encodingIt != attrs.constEnd() && !encodingIt.value().isNull() &&
         !encodingIt.value().toString().isEmpty()) {
         const QByteArray encoding = encodingIt.value().toString().toLatin1();

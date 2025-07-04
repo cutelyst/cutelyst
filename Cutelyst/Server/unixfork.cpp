@@ -42,6 +42,8 @@ Q_LOGGING_CATEGORY(C_SERVER_UNIX, "cutelyst.server.unix", QtWarningMsg)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
 
+using namespace Qt::StringLiterals;
+
 namespace {
 int signalsFd[2];
 } // namespace
@@ -372,7 +374,7 @@ int parseProcCpuinfo()
 
     //    static QMutex mutex;
     //    QMutexLocker locker(&mutex);
-    QFile file(QStringLiteral("/proc/cpuinfo"));
+    QFile file(u"/proc/cpuinfo"_s);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         qCWarning(C_SERVER_UNIX) << "Failed to open file" << file.errorString();
         //        cpuSockets = 1;

@@ -92,8 +92,7 @@ QUrl Request::uri() const
             uri.setAuthority(QString::fromLatin1(d->engineRequest->serverAddress));
         }
 
-        uri.setScheme(d->engineRequest->isSecure ? QStringLiteral("https")
-                                                 : QStringLiteral("http"));
+        uri.setScheme(d->engineRequest->isSecure ? u"https"_s : u"http"_s);
 
         // if the path does not start with a slash it cleans the uri
         // TODO check if engines will always set a slash
@@ -114,7 +113,7 @@ QString Request::base() const
     Q_D(const Request);
     QString base = d->base;
     if (!(d->parserStatus & RequestPrivate::BaseParsed)) {
-        base = d->engineRequest->isSecure ? QStringLiteral("https://") : QStringLiteral("http://");
+        base = d->engineRequest->isSecure ? u"https://"_s : u"http://"_s;
 
         // This is a hack just in case remote is not set
         if (d->engineRequest->serverAddress.isEmpty()) {

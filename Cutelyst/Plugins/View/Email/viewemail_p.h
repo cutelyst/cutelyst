@@ -15,6 +15,8 @@
 #include <QtCore/QStringList>
 
 using namespace SimpleMail;
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class ViewEmailPrivate : public ViewPrivate
@@ -23,7 +25,7 @@ public:
     void setupAttributes(std::shared_ptr<MimePart> part, const QVariantHash &attrs) const;
     void setupEncoding(std::shared_ptr<MimePart> part, const QByteArray &encoding) const;
 
-    QString stashKey              = QStringLiteral("email");
+    QString stashKey              = u"email"_s;
     QByteArray defaultContentType = QByteArrayLiteral("text/plain");
     QByteArray defaultCharset;
     QByteArray defaultEncoding;

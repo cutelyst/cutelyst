@@ -197,9 +197,8 @@ void AsyncValidator::doValidation()
     if (m_context.isNull()) {
         qCCritical(C_VALIDATOR)
             << "Cutelyst context object was destroyed while performing validation";
-        m_result.addError(
-            v->field(),
-            QStringLiteral("Cutelyst context object was destroyed while performing validation."));
+        m_result.addError(v->field(),
+                          u"Cutelyst context object was destroyed while performing validation."_s);
         Q_EMIT finished(m_result);
         return;
     }

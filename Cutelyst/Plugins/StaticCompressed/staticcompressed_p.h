@@ -19,6 +19,8 @@
 #    include <zstd.h>
 #endif
 
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class Context;
@@ -94,7 +96,7 @@ public:
     QStringList compressionFormatOrder;
     QVector<QDir> includePaths;
     QVariantMap defaultConfig;
-    QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
+    QRegularExpression re = QRegularExpression(u"\\.[^/]+$"_s);
     QDir cacheDir;
     bool useZopfli{false};
     bool checkPreCompressed{true};

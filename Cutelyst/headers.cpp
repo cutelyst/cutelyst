@@ -218,10 +218,10 @@ QDateTime Headers::date() const
     if (!value.isEmpty()) {
         if (value.endsWith(" GMT")) {
             ret = QLocale::c().toDateTime(QString::fromLatin1(value.left(value.size() - 4)),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+                                          u"ddd, dd MMM yyyy hh:mm:ss"_s);
         } else {
-            ret = QLocale::c().toDateTime(QString::fromLatin1(value),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret =
+                QLocale::c().toDateTime(QString::fromLatin1(value), u"ddd, dd MMM yyyy hh:mm:ss"_s);
         }
         ret.setTimeSpec(Qt::UTC);
     }
@@ -241,10 +241,10 @@ QDateTime Headers::ifModifiedSinceDateTime() const
     if (!value.isEmpty()) {
         if (value.endsWith(" GMT")) {
             ret = QLocale::c().toDateTime(QString::fromLatin1(value.left(value.size() - 4)),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+                                          u"ddd, dd MMM yyyy hh:mm:ss"_s);
         } else {
-            ret = QLocale::c().toDateTime(QString::fromLatin1(value),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret =
+                QLocale::c().toDateTime(QString::fromLatin1(value), u"ddd, dd MMM yyyy hh:mm:ss"_s);
         }
         ret.setTimeSpec(Qt::UTC);
     }

@@ -8,6 +8,7 @@
 #include <QMetaType>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 ValidatorBetween::ValidatorBetween(const QString &field,
                                    QMetaType::Type type,
@@ -64,11 +65,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                             << "Invalid maximum comparison value:" << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
-                            result.errorMessage =
-                                validationError(c,
-                                                QVariantMap{{QStringLiteral("val"), val},
-                                                            {QStringLiteral("min"), min},
-                                                            {QStringLiteral("max"), max}});
+                            result.errorMessage = validationError(
+                                c, QVariantMap{{u"val"_s, val}, {u"min"_s, min}, {u"max"_s, max}});
                             qCDebug(C_VALIDATOR).noquote()
                                 << debugString(c) << val << "is not between" << min << "and" << max;
                         } else {
@@ -108,11 +106,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                             << debugString(c) << "Invalid maximum comparison value:" << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
-                            result.errorMessage =
-                                validationError(c,
-                                                QVariantMap{{QStringLiteral("val"), val},
-                                                            {QStringLiteral("min"), min},
-                                                            {QStringLiteral("max"), max}});
+                            result.errorMessage = validationError(
+                                c, QVariantMap{{u"val"_s, val}, {u"min"_s, min}, {u"max"_s, max}});
                             qCDebug(C_VALIDATOR).noquote()
                                 << debugString(c) << val << "is not between" << min << "and" << max;
                         } else {
@@ -148,11 +143,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                             << debugString(c) << "Invalid maximum comparison value:" << d->max;
                     } else {
                         if ((val < min) || (val > max)) {
-                            result.errorMessage =
-                                validationError(c,
-                                                QVariantMap{{QStringLiteral("val"), val},
-                                                            {QStringLiteral("min"), min},
-                                                            {QStringLiteral("max"), max}});
+                            result.errorMessage = validationError(
+                                c, QVariantMap{{u"val"_s, val}, {u"min"_s, min}, {u"max"_s, max}});
                             qCDebug(C_VALIDATOR).noquote()
                                 << debugString(c) << val << "is not between" << min << "and" << max;
                         } else {
@@ -181,11 +173,8 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
                         << debugString(c) << "Invalid maximum comparison value:" << d->max;
                 } else {
                     if ((val < min) || (val > max)) {
-                        result.errorMessage =
-                            validationError(c,
-                                            QVariantMap{{QStringLiteral("val"), val},
-                                                        {QStringLiteral("min"), min},
-                                                        {QStringLiteral("max"), max}});
+                        result.errorMessage = validationError(
+                            c, QVariantMap{{u"val"_s, val}, {u"min"_s, min}, {u"max"_s, max}});
                         qCDebug(C_VALIDATOR).noquote() << debugString(c) << "String length" << val
                                                        << "is not between" << min << "and" << max;
                     } else {
@@ -241,21 +230,21 @@ QString ValidatorBetween::genericValidationError(Cutelyst::Context *c,
     case QMetaType::Long:
     case QMetaType::LongLong:
     case QMetaType::QString:
-        min = c->locale().toString(map.value(QStringLiteral("min")).toLongLong());
-        max = c->locale().toString(map.value(QStringLiteral("max")).toLongLong());
+        min = c->locale().toString(map.value(u"min"_s).toLongLong());
+        max = c->locale().toString(map.value(u"max"_s).toLongLong());
         break;
     case QMetaType::UChar:
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:
     case QMetaType::ULongLong:
-        min = c->locale().toString(map.value(QStringLiteral("min")).toULongLong());
-        max = c->locale().toString(map.value(QStringLiteral("max")).toULongLong());
+        min = c->locale().toString(map.value(u"min"_s).toULongLong());
+        max = c->locale().toString(map.value(u"max"_s).toULongLong());
         break;
     case QMetaType::Float:
     case QMetaType::Double:
-        min = c->locale().toString(map.value(QStringLiteral("min")).toDouble());
-        max = c->locale().toString(map.value(QStringLiteral("max")).toDouble());
+        min = c->locale().toString(map.value(u"min"_s).toDouble());
+        max = c->locale().toString(map.value(u"max"_s).toDouble());
         break;
     default:
         return validationDataError(c);

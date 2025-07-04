@@ -10,11 +10,13 @@
 #include <QLocale>
 #include <QTranslator>
 
+using namespace Qt::StringLiterals;
+
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
-    QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
-    QCoreApplication::setApplicationName(QStringLiteral("cutelystd"));
+    QCoreApplication::setOrganizationName(u"Cutelyst"_s);
+    QCoreApplication::setOrganizationDomain(u"cutelyst.org"_s);
+    QCoreApplication::setApplicationName(u"cutelystd"_s);
     QCoreApplication::setApplicationVersion(QStringLiteral(CUTELYST_VERSION));
 
     Cutelyst::Server server;
@@ -26,10 +28,8 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 
     QTranslator appTranslator;
-    if (appTranslator.load(QLocale(),
-                           QStringLiteral("cutelystserver"),
-                           QStringLiteral("."),
-                           QStringLiteral(CUTELYST_I18N_DIR))) {
+    if (appTranslator.load(
+            QLocale(), u"cutelystserver"_s, u"."_s, QStringLiteral(CUTELYST_I18N_DIR))) {
         QCoreApplication::installTranslator(&appTranslator);
     }
 

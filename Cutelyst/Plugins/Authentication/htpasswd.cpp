@@ -11,6 +11,7 @@
 #include <QTemporaryFile>
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 Q_LOGGING_CATEGORY(C_AUTH_HTPASSWD, "cutelyst.plugin.authentication.htpasswd", QtWarningMsg)
 
@@ -25,7 +26,7 @@ StoreHtpasswd::~StoreHtpasswd()
 
 void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 {
-    const QString username = user.value(QStringLiteral("username"));
+    const QString username = user.value(u"username"_s);
 
     QTemporaryFile tmp(m_filename + QLatin1String("-XXXXXXX"));
     tmp.setAutoRemove(false); // sort of a backup
@@ -42,7 +43,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
             QByteArrayList parts = line.split(':');
             if (!wrote && parts.size() >= 2 && parts.first() == username.toLatin1()) {
                 line = username.toLatin1() + ':' +
-                       user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
+                       user.value(u"password"_s).toLatin1().replace(':', ',') + '\n';
                 wrote = true;
             }
             tmp.write(line);
@@ -52,8 +53,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 
     if (!wrote) {
         QByteArray line = username.toLatin1() + ':' +
-                          user.value(QStringLiteral("password")).toLatin1().replace(':', ',') +
-                          '\n';
+                          user.value(u"password"_s).toLatin1().replace(':', ',') + '\n';
         tmp.write(line);
     }
 
@@ -71,7 +71,7 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
 {
     Q_UNUSED(c);
     AuthenticationUser ret;
-    const QString username = userInfo.value(QStringLiteral("username"));
+    const QString username = userInfo.value(u"username"_s);
 
     QFile file(m_filename);
     if (file.open(QFile::ReadOnly | QFile::Text)) {
@@ -80,11 +80,10 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
             QByteArrayList parts = line.trimmed().split(':');
             if (parts.size() >= 2 && !parts.first().startsWith('#') &&
                 parts.first() == username.toLatin1()) {
-                ret.insert(QStringLiteral("username"), username);
+                ret.insert(u"username"_s, username);
                 ret.setId(username);
                 QByteArray password = parts.at(1);
-                ret.insert(QStringLiteral("password"),
-                           QString::fromLatin1(password.replace(',', ':')));
+                ret.insert(u"password"_s, QString::fromLatin1(password.replace(',', ':')));
                 break;
             }
         }
@@ -100,5 +99,5 @@ QVariant StoreHtpasswd::forSession(Context *c, const AuthenticationUser &user)
 
 AuthenticationUser StoreHtpasswd::fromSession(Context *c, const QVariant &frozenUser)
 {
-    return findUser(c, {{QStringLiteral("username"), frozenUser.toString()}});
+    return findUser(c, {{u"username"_s, frozenUser.toString()}});
 }

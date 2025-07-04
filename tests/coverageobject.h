@@ -13,7 +13,7 @@
 #include <QObject>
 
 using namespace Cutelyst;
-using namespace Qt::Literals::StringLiterals;
+using namespace Qt::StringLiterals;
 
 class CoverageObject : public QObject
 {

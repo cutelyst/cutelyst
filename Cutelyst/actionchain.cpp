@@ -7,6 +7,7 @@
 #include "request_p.h"
 
 using namespace Cutelyst;
+using namespace Qt::StringLiterals;
 
 ActionChain::ActionChain(const ActionList &chain, QObject *parent)
     : Action(new ActionChainPrivate, parent)
@@ -17,7 +18,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent)
     const Action *final = d->chain.last();
 
     QVariantHash args;
-    args.insert(QStringLiteral("namespace"), final->ns());
+    args.insert(u"namespace"_s, final->ns());
     setupAction(args, nullptr);
 
     setName(u'_' + final->name());

@@ -12,6 +12,8 @@
 
 #include <QNetworkCookie>
 
+using namespace Qt::StringLiterals;
+
 namespace Cutelyst {
 
 class LangSelectPrivate
@@ -48,8 +50,8 @@ public:
     QString sessionKey;
     QByteArray cookieName;
     QString cookieDomain;
-    QString langStashKey = QStringLiteral("c_langselect_lang");
-    QString dirStashKey  = QStringLiteral("c_langselect_dir");
+    QString langStashKey = u"c_langselect_lang"_s;
+    QString dirStashKey  = u"c_langselect_dir"_s;
     QLocale fallbackLocale;
     std::chrono::seconds cookieExpiration   = cookieDefaultExpiration;
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Lax;
