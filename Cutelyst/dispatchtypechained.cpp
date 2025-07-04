@@ -129,7 +129,7 @@ QByteArray DispatchTypeChained::list() const
         if (!consumes.isEmpty()) {
             line.append(u" :" + consumes);
         }
-        rows.append({QString(), line});
+        rows.append({QString{}, line});
 
         rows[0][0] = u'/' + parts.join(u'/');
         paths.append(rows);
@@ -138,12 +138,21 @@ QByteArray DispatchTypeChained::list() const
     QTextStream out(&buffer, QTextStream::WriteOnly);
 
     if (!paths.isEmpty()) {
-        out << Utils::buildTable(paths, {u"Path Spec", u"Private"}, u"Loaded Chained actions:"_s);
+        out << Utils::buildTable(paths,
+                                 {
+                                     u"Path Spec"_s,
+                                     u"Private"_s,
+                                 },
+                                 u"Loaded Chained actions:"_s);
     }
 
     if (!unattachedTable.isEmpty()) {
-        out << Utils::buildTable(
-            unattachedTable, {u"Private", u"Missing parent"}, u"Unattached Chained actions:"_s);
+        out << Utils::buildTable(unattachedTable,
+                                 {
+                                     u"Private"_s,
+                                     u"Missing parent"_s,
+                                 },
+                                 u"Unattached Chained actions:"_s);
     }
 
     return buffer;

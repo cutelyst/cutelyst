@@ -63,6 +63,10 @@ QByteArray Stats::report()
         table.append({stat.action, QString::number(duration.count(), 'f') + u's'});
     }
 
-    ret = Utils::buildTable(table, {u"Action"_s, u"Time"_s});
+    ret = Utils::buildTable(table,
+                            {
+                                u"Action"_s,
+                                u"Time"_s,
+                            });
     return ret;
 }
