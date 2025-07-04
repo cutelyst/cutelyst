@@ -546,8 +546,7 @@ QString ContextPrivate::statsStartExecute(Component *code)
 
     if (stack.size() > 2) {
         actionName = u"-> " + actionName;
-        actionName =
-            actionName.rightJustified(actionName.size() + stack.size() - 2, QLatin1Char(' '));
+        actionName = actionName.rightJustified(actionName.size() + stack.size() - 2, u' ');
     }
 
     stats->profileStart(actionName);

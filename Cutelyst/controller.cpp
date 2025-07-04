@@ -496,7 +496,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta,
             if (controller->ns().isEmpty()) {
                 reverse = QString::fromLatin1(name);
             } else {
-                reverse = controller->ns() + QLatin1Char('/') + QString::fromLatin1(name);
+                reverse = controller->ns() + u'/' + QString::fromLatin1(name);
             }
 
             Action *action = createAction({{u"name"_s, QVariant::fromValue(name)},
@@ -597,7 +597,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
         QString value = pair.second;
         if (key.compare(u"Global") == 0) {
             key   = u"Path"_s;
-            value = parsePathAttr(QLatin1Char('/') + QString::fromLatin1(name));
+            value = parsePathAttr(u'/' + QString::fromLatin1(name));
         } else if (key.compare(u"Local") == 0) {
             key   = u"Path"_s;
             value = parsePathAttr(QString::fromLatin1(name));

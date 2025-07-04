@@ -60,7 +60,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
     // simple check for an IPv4 address with four parts, because QHostAddress also tolerates
     // addresses like 192.168.2 and fills them with 0 somewhere
-    if (!value.contains(QLatin1Char(':')) && !value.contains(ValidatorIpPrivate::regex)) {
+    if (!value.contains(u':') && !value.contains(ValidatorIpPrivate::regex)) {
 
         valid = false;
 

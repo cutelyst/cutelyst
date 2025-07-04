@@ -84,7 +84,7 @@ std::shared_ptr<MimePart>
     ;
     // prefix with template_prefix if configured
     if (!d->templatePrefix.isEmpty()) {
-        templateString = d->templatePrefix + QLatin1Char('/') + templateString;
+        templateString = d->templatePrefix + u'/' + templateString;
     }
 
     // render the email part

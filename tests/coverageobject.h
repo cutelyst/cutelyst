@@ -100,43 +100,38 @@ public:
     C_ATTR(index, :Path :AutoArgs)
     void index(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(hello, :Local :AutoArgs)
     void hello(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(global, :Global :AutoArgs)
     void global(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(many, :Local :AutoArgs)
     void many(Context *c, const QStringList &args)
     {
         Q_UNUSED(args)
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(one, :Local :AutoArgs)
     void one(Context *c, const QString &one)
     {
         Q_UNUSED(one)
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(two, :Local :AutoArgs)
@@ -144,41 +139,36 @@ public:
     {
         Q_UNUSED(one)
         Q_UNUSED(two)
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(manyOld, :Local :Args)
     void manyOld(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(manyOldWithNoArgs, :Local)
     void manyOldWithNoArgs(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(oneOld, :Local :Args(1))
     void oneOld(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(twoOld, :Local :Args(2))
     void twoOld(Context *c)
     {
-        c->response()->setBody(
-            QStringLiteral("path %1 args %2")
-                .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
+        c->response()->setBody(QStringLiteral("path %1 args %2")
+                                   .arg(c->request()->path(), c->request()->args().join(u'/')));
     }
 
     C_ATTR(root, :Chained("/"))
@@ -198,7 +188,7 @@ public:
     void item(Context *c)
     {
         c->response()->body().append(QByteArrayLiteral("/item[MANY]/"));
-        c->response()->body().append(c->request()->args().join(QLatin1Char('/')).toLatin1());
+        c->response()->body().append(c->request()->args().join(u'/').toLatin1());
     }
 
     C_ATTR(itemOne, :Chained("chain") :PathPart("item") :AutoArgs)
@@ -224,7 +214,7 @@ public:
     void midleEndMany(Context *c, const QStringList &args)
     {
         c->response()->body().append(QByteArrayLiteral("/end/"));
-        c->response()->body().append(args.join(QLatin1Char('/')).toLatin1());
+        c->response()->body().append(args.join(u'/').toLatin1());
     }
 
     C_ATTR(uriFor, :Global :AutoArgs)
@@ -242,7 +232,7 @@ public:
         auto query            = c->request()->queryParameters();
 
         QStringList captures =
-            query.take(QStringLiteral("captures")).split(QLatin1Char('/'), Qt::SkipEmptyParts);
+            query.take(QStringLiteral("captures")).split(u'/', Qt::SkipEmptyParts);
         QString action = query.take(QStringLiteral("action"));
         QUrl uri       = c->uriForAction(action, captures, arguments, query);
         if (uri.isEmpty()) {

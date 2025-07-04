@@ -61,8 +61,8 @@ MainWindow::~MainWindow()
 void MainWindow::clientSend()
 {
     QString path = ui->clientPathLE->text();
-    if (!path.startsWith(QLatin1Char('/'))) {
-        path.prepend(QLatin1Char('/'));
+    if (!path.startsWith(u'/')) {
+        path.prepend(u'/');
     }
     QUrl url(u"http://localhost:" + QString::number(ui->serverPortSB->value()) + path);
     QNetworkRequest request(url);

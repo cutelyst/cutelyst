@@ -166,7 +166,7 @@ void Root::session(Context *c)
 {
     QString foo = Session::value(c, u"foo"_s).toString();
 
-    c->response()->setBody(u"Foo: " + foo + QLatin1Char('\n'));
+    c->response()->setBody(u"Foo: " + foo + u'\n');
 
     Session::setValue(c, u"foo"_s, u"bar"_s);
 }
@@ -174,7 +174,7 @@ void Root::session(Context *c)
 void Root::read_session(Context *c)
 {
     QString foo = Session::value(c, u"foo"_s).toString();
-    c->response()->setBody(u"Foo: " + foo + QLatin1Char('\n'));
+    c->response()->setBody(u"Foo: " + foo + u'\n');
 }
 
 void Root::async(Context *c, const QString &timeout)

@@ -39,8 +39,8 @@ std::pair<QString, QString> splitQuery(const QString &query)
 {
     std::pair<QString, QString> ret;
 
-    ret.first  = query.section(QLatin1Char('='), 0, 0);
-    ret.second = query.section(QLatin1Char('='), 1);
+    ret.first  = query.section(u'=', 0, 0);
+    ret.second = query.section(u'=', 1);
 
     return ret;
 }

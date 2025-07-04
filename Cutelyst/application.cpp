@@ -347,11 +347,10 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(d->controllers, d->dispatchers, d->engine->workerCore() == 0);
 
         if (zeroCore) {
-            qCInfo(CUTELYST_CORE) << qPrintable(
-                QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
-                    .arg(QCoreApplication::applicationName(),
-                         QLatin1String(Application::cutelystVersion()),
-                         QLatin1String(qVersion())));
+            qCInfo(CUTELYST_CORE) << qPrintable(u"%1 powered by Cutelyst %2, Qt %3."_s.arg(
+                QCoreApplication::applicationName(),
+                QString::fromLatin1(Application::cutelystVersion()),
+                QString::fromLatin1(qVersion())));
         }
 
         Q_EMIT preForked(this);

@@ -52,9 +52,9 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
 
         if (ValidatorEmailPrivate::checkEmail(v, d->options, d->threshold, &diag)) {
             if (!diag.literal.isEmpty()) {
-                result.value.setValue<QString>(diag.localpart + QLatin1Char('@') + diag.literal);
+                result.value.setValue<QString>(diag.localpart + u'@' + diag.literal);
             } else {
-                result.value.setValue<QString>(diag.localpart + QLatin1Char('@') + diag.domain);
+                result.value.setValue<QString>(diag.localpart + u'@' + diag.domain);
             }
         } else {
             result.errorMessage =
@@ -138,7 +138,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     const bool allowIdn       = options.testFlag(ValidatorEmail::AllowIDN);
 
     QString email;
-    const qsizetype atPos = address.lastIndexOf(QLatin1Char('@'));
+    const qsizetype atPos = address.lastIndexOf(u'@');
     if (allowIdn) {
         if (atPos > 0) {
             const QString local  = address.left(atPos);
@@ -155,7 +155,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             if (asciiDomain) {
                 email = address;
             } else {
-                email = local + QLatin1Char('@') + QString::fromLatin1(QUrl::toAce(domain));
+                email = local + u'@' + QString::fromLatin1(QUrl::toAce(domain));
             }
         } else {
             email = address;
@@ -192,7 +192,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             //
             //   atom            =   [CFWS] 1*atext [CFWS]
 
-            if (token == QLatin1Char('(')) { // comment
+            if (token == u'(') { // comment
                 if (elementLen == 0) {
                     // Comments are OK at the beginning of an element
                     returnStatus.push_back((elementCount == 0) ? ValidatorEmail::CFWSComment
@@ -205,7 +205,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
 
                 contextStack.push_back(context);
                 context = ContextComment;
-            } else if (token == QLatin1Char('.')) { // Next dot-atom element
+            } else if (token == u'.') { // Next dot-atom element
                 if (elementLen == 0) {
                     // Another dot, already?
                     returnStatus.push_back((elementCount == 0)
@@ -225,7 +225,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 elementCount++;
                 parseLocalPart += token;
                 atomListLocalPart[elementCount].clear();
-            } else if (token == QLatin1Char('"')) {
+            } else if (token == u'"') {
                 if (elementLen == 0) {
                     // The entire local-part can be a quoted string for RFC 5321
                     // If it's just one atom that is quoted then it's an RFC 5322 obsolete form
@@ -261,7 +261,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 contextStack.push_back(context);
                 context    = ContextFWS;
                 tokenPrior = token;
-            } else if (token == QLatin1Char('@')) {
+            } else if (token == u'@') {
                 // At this point we should have a valid local part
                 if (contextStack.size() != 1) {
                     returnStatus.push_back(ValidatorEmail::ErrorFatal);
@@ -399,7 +399,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             // RFC 5321 (and in turn RFC 1035), anything that is "semantically
             // invisible" must comply only with RFC 5322.
 
-            if (token == QLatin1Char('(')) { // comment
+            if (token == u'(') { // comment
                 if (elementLen == 0) {
                     // Comments at the start of the domain are deprecated in the text
                     // Comments at the start of a subdomain are obs-domain
@@ -415,7 +415,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
 
                 contextStack.push_back(context);
                 context = ContextComment;
-            } else if (token == QLatin1Char('.')) { // next dot-atom element
+            } else if (token == u'.') { // next dot-atom element
                 if (elementLen == 0) {
                     // another dot, already?
                     returnStatus.push_back((elementCount == 0)
@@ -449,7 +449,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 atomListDomain[elementCount].clear();
                 parseDomain += token;
 
-            } else if (token == QLatin1Char('[')) { // Domain literal
+            } else if (token == u'[') { // Domain literal
                 if (parseDomain.isEmpty()) {
                     endOrDie = true; // domain literal must be the only component
                     elementLen++;
@@ -532,7 +532,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     (uni > ValidatorEmailPrivate::asciiTilde) ||
                     ValidatorEmailPrivate::stringSpecials.contains(token)) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // Fatal error
-                } else if (token == QLatin1Char('-')) {
+                } else if (token == u'-') {
                     if (elementLen == 0) {
                         // Hyphens can't be at the beginning of a subdomain
                         returnStatus.push_back(
@@ -567,7 +567,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             //                       obs-dtext          ;  "[", "]", or "\"
             //
             //   obs-dtext       =   obs-NO-WS-CTL / quoted-pair
-            if (token == QLatin1Char(']')) { // End of domain literal
+            if (token == u']') { // End of domain literal
                 if (static_cast<int>(*std::ranges::max_element(returnStatus.constBegin(),
                                                                returnStatus.constEnd())) <
                     static_cast<int>(ValidatorEmail::Deprecated)) {
@@ -651,7 +651,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                         returnStatus.push_back(ValidatorEmail::RFC5322DomainLiteral);
                     } else {
                         const QString ipv6          = addressLiteral.mid(5);
-                        const QStringList matchesIP = ipv6.split(QLatin1Char(':'));
+                        const QStringList matchesIP = ipv6.split(u':');
                         qsizetype groupCount        = matchesIP.size();
                         index                       = ipv6.indexOf(u"::");
 
@@ -678,13 +678,12 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                             }
                         }
 
-                        if ((ipv6.size() == 1 && ipv6[0] == QLatin1Char(':')) ||
-                            (ipv6[0] == QLatin1Char(':') && ipv6[1] != QLatin1Char(':'))) {
+                        if ((ipv6.size() == 1 && ipv6[0] == u':') ||
+                            (ipv6[0] == u':' && ipv6[1] != u':')) {
                             returnStatus.push_back(
                                 ValidatorEmail::RFC5322IPv6ColonStart); // Address starts with a
                                                                         // single colon
-                        } else if (ipv6.right(2).at(1) == QLatin1Char(':') &&
-                                   ipv6.right(2).at(0) != QLatin1Char(':')) {
+                        } else if (ipv6.right(2).at(1) == u':' && ipv6.right(2).at(0) != u':') {
                             returnStatus.push_back(
                                 ValidatorEmail::RFC5322IPv6ColonEnd); // Address ends with a single
                                                                       // colon
@@ -711,7 +710,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 elementLen++;
                 contextPrior = context;
                 context      = contextStack.takeLast();
-            } else if (token == QLatin1Char('\\')) {
+            } else if (token == u'\\') {
                 returnStatus.push_back(ValidatorEmail::RFC5322DomLitOBSDText);
                 contextStack.push_back(context);
                 context = ContextQuotedPair;
@@ -744,8 +743,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 const char16_t uni = token.unicode();
 
                 // CR, LF, SP & HTAB have already been parsed above
-                if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) ||
-                    (uni == QLatin1Char('[').unicode())) {
+                if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == u'[')) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingDText); // Fatal error
                     break;
                 } else if ((uni < ValidatorEmailPrivate::asciiExclamationMark) ||
@@ -770,7 +768,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             //                       [CFWS]
             //
             //   qcontent        =   qtext / quoted-pair
-            if (token == QLatin1Char('\\')) { // Quoted pair
+            if (token == u'\\') { // Quoted pair
                 contextStack.push_back(context);
                 context = ContextQuotedPair;
             } else if ((token == QChar(QChar::CarriageReturn)) ||
@@ -800,7 +798,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 contextStack.push_back(context);
                 context    = ContextFWS;
                 tokenPrior = token;
-            } else if (token == QLatin1Char('"')) { // end of quoted string
+            } else if (token == u'"') { // end of quoted string
                 parseLocalPart += token;
                 atomListLocalPart[elementCount] += token;
                 elementLen++;
@@ -901,17 +899,17 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             case ContextComment:
                 break;
             case ContextQuotedString:
-                parseLocalPart += QLatin1Char('\\');
+                parseLocalPart += u'\\';
                 parseLocalPart += token;
-                atomListLocalPart[elementCount] += QLatin1Char('\\');
+                atomListLocalPart[elementCount] += u'\\';
                 atomListLocalPart[elementCount] += token;
                 elementLen += 2; // The maximum sizes specified by RFC 5321 are octet counts, so we
                                  // must include the backslash
                 break;
             case ComponentLiteral:
-                parseDomain += QLatin1Char('\\');
+                parseDomain += u'\\';
                 parseDomain += token;
-                atomListDomain[elementCount] += QLatin1Char('\\');
+                atomListDomain[elementCount] += u'\\';
                 atomListDomain[elementCount] += token;
                 elementLen += 2; // The maximum sizes specified by RFC 5321 are octet counts, so we
                                  // must include the backslash
@@ -932,11 +930,11 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             //   comment         =   "(" *([FWS] ccontent) [FWS] ")"
             //
             //   ccontent        =   ctext / quoted-pair / comment
-            if (token == QLatin1Char('(')) { // netsted comment
+            if (token == u'(') { // netsted comment
                 // nested comments are OK
                 contextStack.push_back(context);
                 context = ContextComment;
-            } else if (token == QLatin1Char(')')) {
+            } else if (token == u')') {
                 contextPrior = context;
                 context      = contextStack.takeLast();
 
@@ -956,7 +954,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 // $atomlist[$context][$element_count]
                 // .= ISEMAIL_STRING_SP; 					$element_len++;
                 //				}
-            } else if (token == QLatin1Char('\\')) { // Quoted pair
+            } else if (token == u'\\') { // Quoted pair
                 contextStack.push_back(context);
                 context = ContextQuotedPair;
             } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) ||
@@ -1155,7 +1153,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     //     //   RR, with a preference of 0, pointing to that host.
 
     //     if (elementCount == 0) {
-    //         parseDomain += QLatin1Char('.');
+    //         parseDomain += u'.';
     //     }
 
     //     QDnsLookup mxLookup(QDnsLookup::MX, parseDomain);
@@ -1252,9 +1250,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         diagnoseStruct->domain       = parseDomain;
         diagnoseStruct->literal      = parseLiteral;
         if (!parseLiteral.isEmpty()) {
-            diagnoseStruct->cleanedEmail = parseLocalPart + QLatin1Char('@') + parseLiteral;
+            diagnoseStruct->cleanedEmail = parseLocalPart + u'@' + parseLiteral;
         } else {
-            diagnoseStruct->cleanedEmail = parseLocalPart + QLatin1Char('@') + parseDomain;
+            diagnoseStruct->cleanedEmail = parseLocalPart + u'@' + parseDomain;
         }
     }
 

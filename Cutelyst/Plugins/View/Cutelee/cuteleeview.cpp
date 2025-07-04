@@ -141,7 +141,7 @@ void CuteleeView::preloadTemplates()
     const auto includePaths = d->includePaths;
     for (const QString &includePath : includePaths) {
         QDirIterator it(includePath,
-                        {QLatin1Char('*') + d->extension},
+                        {u'*' + d->extension},
                         QDir::Files | QDir::NoDotAndDotDot,
                         QDirIterator::Subdirectories);
         while (it.hasNext()) {
@@ -282,11 +282,10 @@ QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename,
     if (Q_LIKELY(!filename.isEmpty() && !directory.isEmpty())) {
         const QDir i18nDir(directory);
         if (Q_LIKELY(i18nDir.exists())) {
-            const QString _prefix = prefix.isEmpty() ? u"."_s : prefix;
-            const QString _suffix = suffix.isEmpty() ? u".qm"_s : suffix;
-            const QStringList namesFilter =
-                QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
-            const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
+            const QString _prefix         = prefix.isEmpty() ? u"."_s : prefix;
+            const QString _suffix         = suffix.isEmpty() ? u".qm"_s : suffix;
+            const QStringList namesFilter = QStringList({filename + _prefix + u'*' + _suffix});
+            const QFileInfoList tsFiles   = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
                 locales.reserve(tsFiles.size());
                 for (const QFileInfo &ts : tsFiles) {

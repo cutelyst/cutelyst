@@ -160,23 +160,23 @@ TestEngine *TestActionRoleACL::getEngine()
     QString pluginPaths = current.absolutePath();
 
     std::ignore = current.cd(u"Cutelyst/Actions/RoleACL"_s);
-    pluginPaths += QLatin1Char(';') + current.absolutePath();
+    pluginPaths += u';' + current.absolutePath();
 
     current     = buildDir;
     std::ignore = current.cd(u"Release"_s);
-    pluginPaths += QLatin1Char(';') + current.absolutePath();
+    pluginPaths += u';' + current.absolutePath();
 
     current     = buildDir;
     std::ignore = current.cd(u"Release/Cutelyst/Actions/RoleACL"_s);
-    pluginPaths += QLatin1Char(';') + current.absolutePath();
+    pluginPaths += u';' + current.absolutePath();
 
     current     = buildDir;
     std::ignore = current.cd(u"Debug"_s);
-    pluginPaths += QLatin1Char(';') + current.absolutePath();
+    pluginPaths += u';' + current.absolutePath();
 
     current     = buildDir;
     std::ignore = current.cd(u"Debug/Cutelyst/Actions/RoleACL"_s);
-    pluginPaths += QLatin1Char(';') + current.absolutePath();
+    pluginPaths += u';' + current.absolutePath();
 
     qDebug() << "setting CUTELYST_PLUGINS_DIR to" << pluginPaths;
     qputenv("CUTELYST_PLUGINS_DIR", pluginPaths.toLocal8Bit());

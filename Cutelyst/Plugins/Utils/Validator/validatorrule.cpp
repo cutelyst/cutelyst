@@ -186,7 +186,7 @@ QString ValidatorRule::debugString(const Context *c) const
     Q_D(const ValidatorRule);
     return QString::fromLatin1(d->validatorName) +
            QLatin1String(": Validation failed for field \"") + field() + QLatin1String("\" at ") +
-           c->controllerName() + u"::" + c->actionName() + QLatin1Char(':');
+           c->controllerName() + u"::" + c->actionName() + u':';
 }
 
 bool ValidatorRule::trimBefore() const noexcept

@@ -66,7 +66,7 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
             // registered by Dispatchers but we need them
             // as private actions anyway
             if (registered) {
-                const QString name = action->ns() + QLatin1Char('/') + action->name();
+                const QString name = action->ns() + u'/' + action->name();
                 d->actions.insert(name, {name, action});
                 auto it = d->actionContainer.find(action->ns());
                 if (it != d->actionContainer.end()) {
@@ -429,7 +429,7 @@ QString DispatcherPrivate::actionRel2Abs(const Context *c, QStringView path)
     if (ns.isEmpty()) {
         ret = path.toString();
     } else {
-        ret = ns + QLatin1Char('/') + path;
+        ret = ns + u'/' + path;
     }
     return ret;
 }

@@ -107,7 +107,7 @@ public:
         } else {
             QString ret;
             for (const Action *action : actions) {
-                ret.append(action->reverse() + QLatin1Char(';'));
+                ret.append(action->reverse() + u';');
             }
             c->response()->setBody(ret);
         }

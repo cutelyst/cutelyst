@@ -53,21 +53,21 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 {
     m_protocol = protocol;
 
-    int commaPos                    = line.indexOf(QLatin1Char(','));
+    int commaPos                    = line.indexOf(u',');
     const QString addressPortString = line.mid(0, commaPos);
 
     QString addressString;
-    int closeBracketPos = addressPortString.indexOf(QLatin1Char(']'));
+    int closeBracketPos = addressPortString.indexOf(u']');
     if (closeBracketPos != -1) {
-        if (!line.startsWith(QLatin1Char('['))) {
+        if (!line.startsWith(u'[')) {
             std::cerr << "Failed to parse address: " << qPrintable(addressPortString) << '\n';
             return false;
         }
         addressString = addressPortString.mid(1, closeBracketPos - 1);
     } else {
-        addressString = addressPortString.section(QLatin1Char(':'), 0, -2);
+        addressString = addressPortString.section(u':', 0, -2);
     }
-    const QString portString = addressPortString.section(QLatin1Char(':'), -1);
+    const QString portString = addressPortString.section(u':', -1);
 
     QHostAddress address;
     if (addressString.isEmpty()) {
@@ -90,7 +90,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         }
 
         const QString sslString = line.mid(commaPos + 1);
-        const QString certPath  = sslString.section(QLatin1Char(','), 0, 0);
+        const QString certPath  = sslString.section(u',', 0, 0);
         QFile certFile(certPath);
         if (!certFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL certificate" << qPrintable(certPath)
@@ -103,7 +103,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
             return false;
         }
 
-        const QString keyPath = sslString.section(QLatin1Char(','), 1, 1);
+        const QString keyPath = sslString.section(u',', 1, 1);
         QFile keyFile(keyPath);
         if (!keyFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL private key" << qPrintable(keyPath)
@@ -112,7 +112,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         }
 
         QSsl::KeyAlgorithm algorithm = QSsl::Rsa;
-        const QString keyAlgorithm   = sslString.section(QLatin1Char(','), 2, 2);
+        const QString keyAlgorithm   = sslString.section(u',', 2, 2);
         if (!keyAlgorithm.isEmpty()) {
             if (keyAlgorithm.compare(u"rsa", Qt::CaseInsensitive) == 0) {
                 algorithm = QSsl::Rsa;

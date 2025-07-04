@@ -188,7 +188,7 @@ void TestCsrfProtection::cleanupTest()
 void TestCsrfProtection::invalidateToken(QChar &ch)
 {
     if (ch.isDigit()) {
-        if (ch < QLatin1Char('9')) {
+        if (ch < u'9') {
             ch.unicode()++;
         } else {
             ch.unicode()--;
@@ -199,10 +199,10 @@ void TestCsrfProtection::invalidateToken(QChar &ch)
         } else {
             ch = ch.toUpper();
         }
-    } else if (ch == QLatin1Char('-')) {
-        ch = QLatin1Char('_');
-    } else if (ch == QLatin1Char('_')) {
-        ch = QLatin1Char('-');
+    } else if (ch == u'-') {
+        ch = u'_';
+    } else if (ch == u'_') {
+        ch = u'-';
     }
 }
 

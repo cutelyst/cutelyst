@@ -1004,7 +1004,7 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
     Q_Q(Server);
 
     bool ret = true;
-    if (line.startsWith(QLatin1Char('/'))) {
+    if (line.startsWith(u'/')) {
         auto server = new LocalServer(q, this);
         server->setProtocol(protocol);
         if (!socketAccess.isEmpty()) {
