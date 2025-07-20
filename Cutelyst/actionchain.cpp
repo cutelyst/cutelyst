@@ -75,10 +75,7 @@ bool ActionChain::doExecute(Context *c)
 
         // Final action gets args instead of captures
         request->setArguments(action != localChain.last() ? args : currentArgs);
-        ++actionRefCount;
-        const bool ret = action->dispatch(c);
-        --actionRefCount;
-        if (!ret) {
+        if (!action->dispatch(c)) {
             return false;
         }
     }
