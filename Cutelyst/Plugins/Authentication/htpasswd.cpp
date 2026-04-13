@@ -42,8 +42,8 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
             QByteArray line      = file.readLine();
             QByteArrayList parts = line.split(':');
             if (!wrote && parts.size() >= 2 && parts.first() == username.toLatin1()) {
-                line = username.toLatin1() + ':' +
-                       user.value(u"password"_s).toLatin1().replace(':', ',') + '\n';
+                line  = username.toLatin1() + ':' +
+                        user.value(u"password"_s).toLatin1().replace(':', ',') + '\n';
                 wrote = true;
             }
             tmp.write(line);
