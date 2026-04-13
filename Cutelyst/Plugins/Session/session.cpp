@@ -58,10 +58,10 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName().toLatin1() + "_session";
 
-    d->loadedConfig   = app->engine()->config(u"Cutelyst_Session_Plugin"_s);
-    d->sessionExpires = std::chrono::duration_cast<std::chrono::seconds>(
-                            Utils::durationFromString(d->config(u"expires"_s, 7200).toString()))
-                            .count();
+    d->loadedConfig    = app->engine()->config(u"Cutelyst_Session_Plugin"_s);
+    d->sessionExpires  = std::chrono::duration_cast<std::chrono::seconds>(
+                             Utils::durationFromString(d->config(u"expires"_s, 7200).toString()))
+                             .count();
     d->expiryThreshold = d->config(u"expiry_threshold"_s, 0).toLongLong();
     d->verifyAddress   = d->config(u"verify_address"_s, false).toBool();
     d->verifyUserAgent = d->config(u"verify_user_agent"_s, false).toBool();

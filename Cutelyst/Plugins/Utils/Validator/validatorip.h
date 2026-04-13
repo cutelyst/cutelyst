@@ -47,7 +47,7 @@ public:
                                 2001:db8::/32 are invalid. */
         NoMultiCast = 16,    /**< Multicast addresses are invalid. */
         PublicOnly  = NoPrivateRange | NoReservedRange |
-                     NoMultiCast /**< Combines NoPrivateRange, NoReservedRange and NoMultiCast. */
+                      NoMultiCast /**< Combines NoPrivateRange, NoReservedRange and NoMultiCast. */
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 

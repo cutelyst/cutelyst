@@ -897,11 +897,11 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
 
         if (availableWindowSize > remainingData) {
             ret           = parser->sendFrame(protoRequest->io,
-                                    FrameData,
-                                    FlagDataEndStream,
-                                    streamId,
-                                    data + sent,
-                                    qint32(remainingData));
+                                              FrameData,
+                                              FlagDataEndStream,
+                                              streamId,
+                                              data + sent,
+                                              qint32(remainingData));
             remainingData = 0;
             protoRequest->windowSize -= remainingData;
             windowSize -= remainingData;
