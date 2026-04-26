@@ -25,18 +25,18 @@ Root::~Root()
 
 void Root::hello(Context *c)
 {
-    c->response()->setBody("Hello World! \n"_qba);
+    c->response()->setBody("Hello World! \n"_ba);
 }
 
 void Root::json(Context *c)
 {
-    c->res()->setJsonObjectBody({{u"message"_qs, u"Hello, World!"_qs}});
+    c->res()->setJsonObjectBody({{u"message"_s, u"Hello, World!"_s}});
 }
 
 void Root::echo(Context *c)
 {
     QUrl websocket_url = c->uriFor(actionFor(u"ws"_s));
-    websocket_url.setScheme(u"ws"_qs);
+    websocket_url.setScheme(u"ws"_s);
     c->response()->setBody(
         QStringLiteral("<!DOCTYPE html>\n"
                        "<html lang=\"en\">\n"

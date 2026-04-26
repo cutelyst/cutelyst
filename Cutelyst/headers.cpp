@@ -8,13 +8,12 @@
 #include "engine.h"
 
 #include <QStringList>
+#include <QTimeZone>
 
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
-namespace {
-
-inline QByteArray decodeBasicAuth(const QByteArray &auth)
+inline static QByteArray decodeBasicAuth(const QByteArray &auth)
 {
     QByteArray ret;
     int pos = auth.indexOf("Basic ");
@@ -26,7 +25,7 @@ inline QByteArray decodeBasicAuth(const QByteArray &auth)
     return ret;
 }
 
-inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth)
+inline static Headers::Authorization decodeBasicAuthPair(const QByteArray &auth)
 {
     Headers::Authorization ret;
     const QByteArray authorization = decodeBasicAuth(auth);
@@ -42,15 +41,13 @@ inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth)
     return ret;
 }
 
-QVector<Headers::HeaderKeyValue>::const_iterator
+static QVector<Headers::HeaderKeyValue>::const_iterator
     findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QAnyStringView key) noexcept
 {
     return std::ranges::find_if(headers, [key](Headers::HeaderKeyValue entry) {
         return QAnyStringView::compare(key, entry.key, Qt::CaseInsensitive) == 0;
     });
 }
-
-} // namespace
 
 Headers::Headers(const Headers &other) noexcept
     : m_data(other.m_data)
@@ -223,7 +220,7 @@ QDateTime Headers::date() const
             ret =
                 QLocale::c().toDateTime(QString::fromLatin1(value), u"ddd, dd MMM yyyy hh:mm:ss"_s);
         }
-        ret.setTimeSpec(Qt::UTC);
+        ret.setTimeZone(QTimeZone::UTC);
     }
 
     return ret;
@@ -246,7 +243,7 @@ QDateTime Headers::ifModifiedSinceDateTime() const
             ret =
                 QLocale::c().toDateTime(QString::fromLatin1(value), u"ddd, dd MMM yyyy hh:mm:ss"_s);
         }
-        ret.setTimeSpec(Qt::UTC);
+        ret.setTimeZone(QTimeZone::UTC);
     }
 
     return ret;
@@ -488,12 +485,12 @@ void Headers::setHeader(const QByteArray &field, const QByteArrayList &values)
 
 void Headers::pushHeader(const QByteArray &key, const QByteArray &value)
 {
-    m_data.emplace_back(HeaderKeyValue{key, value});
+    m_data.emplace_back(HeaderKeyValue{.key = key, .value = value});
 }
 
 void Headers::pushHeader(const QByteArray &key, const QByteArrayList &values)
 {
-    m_data.emplace_back(HeaderKeyValue{key, values.join(", ")});
+    m_data.emplace_back(HeaderKeyValue{.key = key, .value = values.join(", ")});
 }
 
 void Headers::removeHeader(QAnyStringView key)
