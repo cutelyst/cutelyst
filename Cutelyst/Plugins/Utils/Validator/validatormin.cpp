@@ -261,12 +261,8 @@ QString ValidatorMin::genericValidationDataError(Context *c, const QVariant &err
         }
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
     Q_UNREACHABLE_RETURN({});
-#else
-    return {};
-#endif
 }
 
 QString ValidatorMin::genericParsingError(Context *c, const QVariant &errorData) const

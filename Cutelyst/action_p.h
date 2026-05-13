@@ -17,19 +17,6 @@ public:
     QMetaMethod method;
     ParamsMultiMap attributes;
     Controller *controller = nullptr;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
-    QStringList emptyArgs = {
-        QString(),
-        QString(),
-        QString(),
-        QString(),
-        QString(),
-        QString(),
-        QString(),
-        QString(),
-        QString(),
-    };
-#endif
     qint8 numberOfArgs     = -1;
     qint8 numberOfCaptures = -1;
     bool evaluateBool      = false;

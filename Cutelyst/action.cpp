@@ -142,85 +142,6 @@ bool Action::doExecute(Context *c)
 
     bool ret;
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
-
-    if (d->evaluateBool) {
-        bool methodRet;
-
-        if (d->listSignature) {
-            // clang-format off
-            ret = d->method.invoke(d->controller,
-                                   Qt::DirectConnection,
-                                   Q_RETURN_ARG(bool, methodRet),
-                                   Q_ARG(Cutelyst::Context*, c),
-                                   Q_ARG(QStringList, c->request()->args()));
-            // clang-format on
-        } else {
-            QStringList args = c->request()->args();
-            // Fill the missing arguments
-            args.append(d->emptyArgs);
-
-            // clang-format off
-            ret = d->method.invoke(d->controller,
-                                   Qt::DirectConnection,
-                                   Q_RETURN_ARG(bool, methodRet),
-                                   Q_ARG(Cutelyst::Context*, c),
-                                   Q_ARG(QString, args.at(0)),
-                                   Q_ARG(QString, args.at(1)),
-                                   Q_ARG(QString, args.at(2)),
-                                   Q_ARG(QString, args.at(3)),
-                                   Q_ARG(QString, args.at(4)),
-                                   Q_ARG(QString, args.at(5)),
-                                   Q_ARG(QString, args.at(6)),
-                                   Q_ARG(QString, args.at(7)),
-                                   Q_ARG(QString, args.at(8)));
-            // clang-format on
-        }
-
-        if (ret) {
-            c->setState(methodRet);
-            return methodRet;
-        }
-
-        // The method failed to be called which means we should detach
-        c->detach();
-        c->setState(false);
-
-        return false;
-    } else {
-        if (d->listSignature) {
-            // clang-format off
-            ret = d->method.invoke(d->controller,
-                                   Qt::DirectConnection,
-                                   Q_ARG(Cutelyst::Context*, c),
-                                   Q_ARG(QStringList, c->request()->args()));
-            // clang-format on
-        } else {
-            QStringList args = c->request()->args();
-            // Fill the missing arguments
-            args.append(d->emptyArgs);
-
-            // clang-format off
-            ret = d->method.invoke(d->controller,
-                                   Qt::DirectConnection,
-                                   Q_ARG(Cutelyst::Context*, c),
-                                   Q_ARG(QString, args.at(0)),
-                                   Q_ARG(QString, args.at(1)),
-                                   Q_ARG(QString, args.at(2)),
-                                   Q_ARG(QString, args.at(3)),
-                                   Q_ARG(QString, args.at(4)),
-                                   Q_ARG(QString, args.at(5)),
-                                   Q_ARG(QString, args.at(6)),
-                                   Q_ARG(QString, args.at(7)),
-                                   Q_ARG(QString, args.at(8)));
-            // clang-format on
-        }
-        c->setState(ret);
-        return ret;
-    }
-
-#else
-
     /*
      * Qt 6.5 introduced a new variadic version of QMetaMethod::invoke() that
      * does not work with our current implementation above. The following code
@@ -458,8 +379,6 @@ bool Action::doExecute(Context *c)
         c->setState(ret);
         return ret;
     }
-
-#endif
 }
 
 #include "moc_action.cpp"
