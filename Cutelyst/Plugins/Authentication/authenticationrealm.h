@@ -87,6 +87,19 @@ public:
      */
     [[nodiscard]] QVariant userIsRestorable(Context *c);
 
+    /**
+     * Validates the given \a password for the \a user in this realm.
+     *
+     * This method delegates to the appropriate password validation mechanism:
+     * for PasswordType::LdapBind, it uses the store's validatePassword() method;
+     * otherwise, it uses the credential provider's password checking.
+     * Returns \c true if the password is valid.
+     */
+    [[nodiscard]] bool checkPassword(Context *c,
+                                     const AuthenticationUser &user,
+                                     const QString &password,
+                                     const QString &passwordField = QStringLiteral("password"));
+
 private:
     friend class Authentication;
     friend class AuthenticationPrivate;

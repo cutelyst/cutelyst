@@ -4,6 +4,8 @@
  */
 #include "authenticationuser.h"
 
+#include "authenticationrealm.h"
+
 #include <QDataStream>
 #include <QDebug>
 
@@ -46,6 +48,17 @@ QString AuthenticationUser::authRealm()
 void AuthenticationUser::setAuthRealm(const QString &authRealm)
 {
     m_data.insert(u"authRealm"_s, authRealm);
+}
+
+bool AuthenticationUser::checkPassword(Context *c,
+                                       AuthenticationRealm *realm,
+                                       const QString &password,
+                                       const QString &passwordField)
+{
+    if (!realm) {
+        return false;
+    }
+    return realm->checkPassword(c, *this, password, passwordField);
 }
 
 QDataStream &operator<<(QDataStream &out, const AuthenticationUser &user)

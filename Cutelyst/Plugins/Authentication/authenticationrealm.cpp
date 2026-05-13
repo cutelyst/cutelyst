@@ -7,6 +7,8 @@
 #include "authenticationstore.h"
 #include "common.h"
 #include "context.h"
+#include "credentialpassword.h"
+#include "storeldap.h"
 
 #include <Cutelyst/Plugins/Session/session.h>
 
@@ -117,6 +119,25 @@ QVariant AuthenticationRealm::userIsRestorable(Context *c)
     // No need to check if session is valid
     // as ::value will do that for us
     return Session::value(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
+}
+
+bool AuthenticationRealm::checkPassword(Context *c,
+                                        const AuthenticationUser &user,
+                                        const QString &password,
+                                        const QString &passwordField)
+{
+    // If the credential is CredentialPassword with LdapBind mode, delegate to store's
+    // validatePassword
+    auto credPassword = std::dynamic_pointer_cast<CredentialPassword>(m_credential);
+    if (credPassword &&
+        credPassword->passwordType() == CredentialPassword::PasswordType::SelfCheck) {
+        if (m_store) {
+            return m_store->validatePassword(c, user, password);
+        }
+        return false;
+    }
+    // For other password types (Hashed, Clear, None), return false (handled by credential)
+    return false;
 }
 
 #include "moc_authenticationrealm.cpp"

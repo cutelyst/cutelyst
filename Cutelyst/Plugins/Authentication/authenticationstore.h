@@ -22,6 +22,13 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationStore
 {
 public:
     /**
+     * Validates the given password for the user. Default implementation returns false.
+     * Stores that support password validation (e.g., LDAP) should override this.
+     */
+    virtual bool
+        validatePassword(Context *c, const AuthenticationUser &user, const QString &password) const;
+
+    /**
      * Constructs a new %AuthenticationStore object.
      */
     AuthenticationStore();

@@ -4,6 +4,7 @@
  */
 #include "authenticationrealm.h"
 #include "credentialpassword_p.h"
+#include "storeldap.h"
 
 #include <QFile>
 #include <QLoggingCategory>
@@ -34,7 +35,16 @@ AuthenticationUser CredentialPassword::authenticate(Context *c,
     Q_D(CredentialPassword);
     AuthenticationUser _user = realm->findUser(c, authinfo);
     if (!_user.isNull()) {
-        if (d->checkPassword(_user, authinfo)) {
+        bool validPassword = false;
+        if (d->passwordType == PasswordType::SelfCheck) {
+            // Delegate password validation to the user's realm
+            validPassword =
+                _user.checkPassword(c, realm, authinfo.value(d->passwordField), d->passwordField);
+        } else {
+            validPassword = d->checkPassword(_user, authinfo);
+        }
+
+        if (validPassword) {
             user = _user;
         } else {
             qCDebug(C_CREDENTIALPASSWORD) << "Password didn't match";
@@ -243,6 +253,9 @@ bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user,
     } else if (passwordType == CredentialPassword::None) {
         qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";
         return true;
+    } else if (passwordType == CredentialPassword::SelfCheck) {
+        qCWarning(C_CREDENTIALPASSWORD) << "checkPassword called with SelfCheck type; "
+                                           "password validation should be delegated to the store";
     }
 
     return false;

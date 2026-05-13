@@ -8,6 +8,20 @@
 
 using namespace Cutelyst;
 
+namespace Cutelyst {
+
+bool AuthenticationStore::validatePassword(Context *c,
+                                           const AuthenticationUser &user,
+                                           const QString &password) const
+{
+    Q_UNUSED(c);
+    Q_UNUSED(user);
+    Q_UNUSED(password);
+    return false;
+}
+
+} // namespace Cutelyst
+
 AuthenticationStore::AuthenticationStore()
 {
 }

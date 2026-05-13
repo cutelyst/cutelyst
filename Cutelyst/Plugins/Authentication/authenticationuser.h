@@ -15,6 +15,7 @@
 namespace Cutelyst {
 
 class AuthenticationRealm;
+class Context;
 
 /**
  * \ingroup plugins-authentication
@@ -69,6 +70,18 @@ public:
      * Sets the authentication realm from which this user was retrieved.
      */
     void setAuthRealm(const QString &authRealm);
+
+    /**
+     * Validates the given \a password for this user in the specified \a realm.
+     *
+     * This method delegates password validation to the realm, which may perform
+     * validation against the store (e.g., LDAP bind) or using the credential provider.
+     * Returns \c true if the password is valid.
+     */
+    [[nodiscard]] bool checkPassword(Context *c,
+                                     AuthenticationRealm *realm,
+                                     const QString &password,
+                                     const QString &passwordField = QStringLiteral("password"));
 
     /**
      * Returns the internal data object.

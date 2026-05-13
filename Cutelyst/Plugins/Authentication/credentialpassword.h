@@ -33,10 +33,11 @@ public:
      * The used password type.
      */
     enum PasswordType {
-        None,  /**< Ignore password check. */
-        Clear, /**< Clear text password. */
-        Hashed /**< Derived password hash using
-                    <A HREF="https://datatracker.ietf.org/doc/html/rfc8018">PBKDF2</A> method. */
+        None,     /**< Ignore password check. */
+        Clear,    /**< Clear text password. */
+        Hashed,   /**< Derived password hash using
+                       <A HREF="https://datatracker.ietf.org/doc/html/rfc8018">PBKDF2</A> method. */
+        SelfCheck /**< Validate password by binding the user DN to LDAP server. */
     };
     Q_ENUM(PasswordType)
 
@@ -78,6 +79,10 @@ public:
 
     /**
      * Sets the type of password this class will be dealing with.
+     *
+     * When set to PasswordType::SelfCheck, password validation is delegated to the user's realm
+     * and performed by binding as the found user DN.
+     *
      * \sa passwordType()
      */
     void setPasswordType(PasswordType type);

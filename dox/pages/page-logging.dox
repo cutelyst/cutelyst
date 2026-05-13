@@ -243,6 +243,10 @@ You can als find information about the used categories in the class/component de
         <td>StoreHtpasswd</td>
     </tr>
     <tr>
+        <td>cutelyst.plugin.authentication.ldap</td>
+        <td>StoreLDAP</td>
+    </tr>
+    <tr>
         <td>cutelyst.plugin.authentication.realm</td>
         <td>AuthenticationRealm</td>
     </tr>

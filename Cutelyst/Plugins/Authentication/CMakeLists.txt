@@ -6,6 +6,7 @@ set(plugin_authentication_SRC
     authenticationstore.cpp
     minimal.cpp
     htpasswd.cpp
+    storeldap.cpp
     credentialpassword.cpp
     credentialpassword_p.h
     credentialhttp.cpp
@@ -19,6 +20,7 @@ set(plugin_authentication_HEADERS
     authentication.h
     minimal.h
     htpasswd.h
+    storeldap.h
     credentialpassword.h
     credentialhttp.h
 )
@@ -53,6 +55,59 @@ target_link_libraries(${target_name}
     PRIVATE Cutelyst::Core
     PRIVATE Cutelyst::Session
 )
+
+find_package(LDAP QUIET)
+if(LDAP_FOUND)
+    target_link_libraries(${target_name}
+        PRIVATE ${LDAP_LIBRARIES}
+    )
+
+    if(DEFINED LDAP_INCLUDE_DIRS)
+        target_include_directories(${target_name}
+            BEFORE PRIVATE ${LDAP_INCLUDE_DIRS}
+        )
+    elseif(DEFINED LDAP_INCLUDE_DIR)
+        target_include_directories(${target_name}
+            BEFORE PRIVATE ${LDAP_INCLUDE_DIR}
+        )
+    endif()
+
+    target_compile_definitions(${target_name}
+        PUBLIC CUTELYST_PLUGIN_AUTHENTICATION_HAS_LDAP
+    )
+else()
+    find_package(PkgConfig QUIET)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(LDAP_PKG QUIET IMPORTED_TARGET ldap)
+    endif()
+
+    if(LDAP_PKG_FOUND)
+        target_link_libraries(${target_name}
+            PRIVATE ${LDAP_PKG_LINK_LIBRARIES}
+        )
+        if(DEFINED LDAP_PKG_INCLUDE_DIRS)
+            target_include_directories(${target_name}
+                BEFORE PRIVATE ${LDAP_PKG_INCLUDE_DIRS}
+            )
+        endif()
+        if(DEFINED LDAP_PKG_CFLAGS_OTHER)
+            target_compile_options(${target_name}
+                PRIVATE ${LDAP_PKG_CFLAGS_OTHER}
+            )
+        endif()
+        if(DEFINED LDAP_PKG_LDFLAGS_OTHER)
+            target_link_options(${target_name}
+                PRIVATE ${LDAP_PKG_LDFLAGS_OTHER}
+            )
+        endif()
+        target_compile_definitions(${target_name}
+            PUBLIC CUTELYST_PLUGIN_AUTHENTICATION_HAS_LDAP
+        )
+        message(STATUS "PLUGIN: Authentication LDAP store, enabled via pkg-config (ldap).")
+    else()
+        message(STATUS "PLUGIN: Authentication LDAP store, disabled (LDAP dependency not found).")
+    endif()
+endif()
 
 set_property(TARGET ${target_name} PROPERTY PUBLIC_HEADER ${plugin_authentication_HEADERS})
 install(TARGETS ${target_name}
