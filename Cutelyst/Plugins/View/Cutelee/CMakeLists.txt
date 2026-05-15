@@ -76,7 +76,6 @@ qt_add_lupdate(${target_name}
 qt_add_lrelease(${target_name}
     TS_FILES ${plugin_view_cutelee_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_view_cutelee_QM_FILES
-    OPTIONS -idbased
 )
 
 install(FILES ${plugin_view_cutelee_QM_FILES} DESTINATION ${I18NDIR})
