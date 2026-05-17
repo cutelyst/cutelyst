@@ -1,0 +1,48 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "ci-gcc-release-cpack",
+      "displayName": "GCC RelWithDebInfo – all features (CPack release)",
+      "description": "Builds with GCC in RelWithDebInfo mode with all plugins enabled, ready for CPack packaging.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-release-cpack",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc-14",
+        "CMAKE_CXX_COMPILER": "g++-14",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "BUILD_SHARED_LIBS": "ON",
+        "BUILD_TESTS": "OFF",
+        "BUILD_EXAMPLES": "OFF",
+        "BUILD_DOCS": "ON",
+        "ENABLE_LTO": "ON",
+        "USE_MIMALLOC": "ON",
+        "BUILD_ALL": "ON",
+        "PLUGIN_MEMCACHED": "ON",
+        "PLUGIN_MEMCACHEDSESSIONSTORE": "ON",
+        "PLUGIN_STATICCOMPRESSED": "ON",
+        "PLUGIN_CSRFPROTECTION": "ON",
+        "PLUGIN_VIEW_EMAIL": "ON",
+        "PLUGIN_VIEW_CUTELEE": "ON",
+        "PLUGIN_VALIDATOR_PWQUALITY": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "ci-gcc-release-cpack",
+      "displayName": "GCC RelWithDebInfo – all features (CPack release)",
+      "configurePreset": "ci-gcc-release-cpack"
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "ci-gcc-release-cpack",
+      "displayName": "CPack DEB package",
+      "configurePreset": "ci-gcc-release-cpack",
+      "generators": [
+        "DEB"
+      ]
+    }
+  ]
+}
