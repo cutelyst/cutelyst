@@ -155,17 +155,24 @@ void EventDispatcherEPollPrivate::wake_up_handler()
 void SocketNotifierInfo::process(quint32 events)
 {
     QEvent e(QEvent::SockAct);
+    QPointer<QSocketNotifier> rNotifier = r;
+    QPointer<QSocketNotifier> wNotifier = w;
+    QPointer<QSocketNotifier> xNotifier = x;
 
-    if (r && (events & EPOLLIN)) {
-        QCoreApplication::sendEvent(r, &e);
+    const bool readActive      = events & (EPOLLIN | EPOLLHUP | EPOLLERR);
+    const bool writeActive     = events & (EPOLLOUT | EPOLLHUP | EPOLLERR);
+    const bool exceptionActive = events & (EPOLLPRI | EPOLLHUP | EPOLLERR);
+
+    if (rNotifier && readActive) {
+        QCoreApplication::sendEvent(rNotifier.data(), &e);
     }
 
-    if (w && (events & EPOLLOUT)) {
-        QCoreApplication::sendEvent(w, &e);
+    if (wNotifier && writeActive) {
+        QCoreApplication::sendEvent(wNotifier.data(), &e);
     }
 
-    if (x && (events & EPOLLPRI)) {
-        QCoreApplication::sendEvent(x, &e);
+    if (xNotifier && exceptionActive) {
+        QCoreApplication::sendEvent(xNotifier.data(), &e);
     }
 }
 

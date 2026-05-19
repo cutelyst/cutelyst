@@ -60,7 +60,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
         data = static_cast<SocketNotifierInfo *>(it.value());
         Q_ASSERT(data);
 
-        QSocketNotifier **n = nullptr;
+        QPointer<QSocketNotifier> *n = nullptr;
         if (data) {
             e.data.ptr = data;
             switch (notifier->type()) {

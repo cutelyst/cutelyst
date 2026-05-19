@@ -56,11 +56,6 @@ void EventDispatcherEPoll::registerSocketNotifier(QSocketNotifier *notifier)
 void EventDispatcherEPoll::unregisterSocketNotifier(QSocketNotifier *notifier)
 {
 #ifndef QT_NO_DEBUG
-    if (notifier->socket() < 0) {
-        qWarning("QSocketNotifier: Internal error: sockfd < 0");
-        return;
-    }
-
     if (notifier->thread() != thread() || thread() != QThread::currentThread()) {
         qWarning("QSocketNotifier: socket notifiers cannot be disabled from another thread");
         return;

@@ -8,6 +8,7 @@
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QAtomicInt>
 #include <QtCore/QHash>
+#include <QtCore/QPointer>
 #include <qplatformdefs.h>
 
 class EpollAbastractEvent
@@ -59,10 +60,10 @@ public:
 
     virtual void process(quint32 events) override;
 
-    QSocketNotifier *r = nullptr;
-    QSocketNotifier *w = nullptr;
-    QSocketNotifier *x = nullptr;
-    quint32 events     = 0;
+    QPointer<QSocketNotifier> r;
+    QPointer<QSocketNotifier> w;
+    QPointer<QSocketNotifier> x;
+    quint32 events = 0;
 };
 
 class ZeroTimer final : public EpollAbastractEvent
