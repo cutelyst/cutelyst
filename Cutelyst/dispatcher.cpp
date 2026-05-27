@@ -21,6 +21,11 @@
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
+namespace {
+constexpr auto noDefaultActionId = "cutelyst-dispatcher-no-default-act";
+constexpr auto unknownResourceId = "cutelyst-dispatcher-unknown-resource";
+}
+
 Dispatcher::Dispatcher(QObject *parent)
     : QObject(parent)
     , d_ptr(new DispatcherPrivate(this))
@@ -124,8 +129,6 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
 
 bool Dispatcher::dispatch(Context *c)
 {
-    constexpr auto noDefaultActionId  = "cutelyst-dispatcher-no-default-act";
-    constexpr auto unknownResourceId  = "cutelyst-dispatcher-unknown-resource";
     const Action *action = c->action();
     if (action) {
         return action->controller()->_DISPATCH(c);
