@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <QBuffer>
 #include <QDir>
+#include <QDirIterator>
+#include <QFileInfo>
 #include <QObject>
 
 using namespace Cutelyst;
@@ -257,9 +259,12 @@ public:
         const QString i18nDir = QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s;
         QVector<QLocale> locales = loadTranslationsFromDir(u"cutelystcore"_s, i18nDir);
         if (locales.isEmpty()) {
-            const auto subDirs = QDir(i18nDir).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-            for (const QString &subDir : subDirs) {
-                locales = loadTranslationsFromDir(u"cutelystcore"_s, i18nDir + u'/' + subDir);
+            QDirIterator it(i18nDir,
+                            QStringList{u"cutelystcore.*.qm"_s},
+                            QDir::Files,
+                            QDirIterator::Subdirectories);
+            while (it.hasNext()) {
+                locales = loadTranslationsFromDir(u"cutelystcore"_s, QFileInfo(it.next()).absolutePath());
                 if (!locales.isEmpty()) {
                     break;
                 }
