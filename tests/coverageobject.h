@@ -269,7 +269,7 @@ public:
         if (!locales.isEmpty()) {
             const QLocale currentDefault = defaultLocale();
 
-            auto byLanguage = [&locales](QLocale::Language language) {
+            auto findLocaleByLanguage = [&locales](QLocale::Language language) {
                 auto it = std::find_if(locales.cbegin(), locales.cend(), [language](const QLocale &locale) {
                     return locale.language() == language;
                 });
@@ -277,8 +277,8 @@ public:
             };
 
             if (!locales.contains(currentDefault)) {
-                const QLocale sameLanguage = byLanguage(currentDefault.language());
-                const QLocale englishLocale = byLanguage(QLocale::English);
+                const QLocale sameLanguage = findLocaleByLanguage(currentDefault.language());
+                const QLocale englishLocale = findLocaleByLanguage(QLocale::English);
                 const QLocale fallbackLocale = sameLanguage.language() != QLocale::C
                     ? sameLanguage
                     : (englishLocale.language() != QLocale::C ? englishLocale : locales.constFirst());
