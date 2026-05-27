@@ -124,6 +124,8 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
 
 bool Dispatcher::dispatch(Context *c)
 {
+    constexpr auto noDefaultActionId  = "cutelyst-dispatcher-no-default-act";
+    constexpr auto unknownResourceId  = "cutelyst-dispatcher-unknown-resource";
     const Action *action = c->action();
     if (action) {
         return action->controller()->_DISPATCH(c);
@@ -131,15 +133,15 @@ bool Dispatcher::dispatch(Context *c)
         const QString path = c->req()->path();
         if (path.isEmpty()) {
             //% "No default action defined."
-            auto error = c->qtTrId("cutelyst-dispatcher-no-default-act");
-            if (error == "cutelyst-dispatcher-no-default-act"_L1) {
+            auto error = c->qtTrId(noDefaultActionId);
+            if (error == noDefaultActionId) {
                 error = u"No default action defined."_s;
             }
             c->appendError(error);
         } else {
             //% "Unknown resource '%1'."
-            auto error = c->qtTrId("cutelyst-dispatcher-unknown-resource");
-            if (error == "cutelyst-dispatcher-unknown-resource"_L1) {
+            auto error = c->qtTrId(unknownResourceId);
+            if (error == unknownResourceId) {
                 error = u"Unknown resource '%1'."_s;
             }
             c->appendError(error.arg(path));
