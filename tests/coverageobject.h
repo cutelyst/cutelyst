@@ -10,6 +10,7 @@
 #include <Cutelyst/TestEngine>
 
 #include <QBuffer>
+#include <QDir>
 #include <QObject>
 
 using namespace Cutelyst;
@@ -252,7 +253,15 @@ public:
     {
         defaultHeaders() = Headers();
         // load the core translations from the build directory
-        loadTranslations(u"cutelystcore"_s, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s);
+        const QString i18nDir = QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s;
+        if (loadTranslationsFromDir(u"cutelystcore"_s, i18nDir).isEmpty()) {
+            const auto subDirs = QDir(i18nDir).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+            for (const QString &subDir : subDirs) {
+                if (!loadTranslationsFromDir(u"cutelystcore"_s, i18nDir + u'/' + subDir).isEmpty()) {
+                    break;
+                }
+            }
+        }
     }
     bool init() override
     {

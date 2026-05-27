@@ -136,18 +136,10 @@ bool Dispatcher::dispatch(Context *c)
         const QString path = c->req()->path();
         if (path.isEmpty()) {
             //% "No default action defined."
-            auto error = c->qtTrId(noDefaultActionId);
-            if (error == noDefaultActionId) {
-                error = u"No default action defined."_s;
-            }
-            c->appendError(error);
+            c->appendError(c->qtTrId(noDefaultActionId));
         } else {
             //% "Unknown resource '%1'."
-            auto error = c->qtTrId(unknownResourceId);
-            if (error == unknownResourceId) {
-                error = u"Unknown resource '%1'."_s;
-            }
-            c->appendError(error.arg(path));
+            c->appendError(c->qtTrId(unknownResourceId).arg(path));
         }
     }
     return false;
