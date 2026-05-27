@@ -5,11 +5,11 @@
     <name></name>
     <message id="cutelyst-dispatcher-no-default-act">
         <source>No default action defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>No default action defined.</translation>
     </message>
     <message id="cutelyst-dispatcher-unknown-resource">
         <source>Unknown resource &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unknown resource &apos;%1&apos;.</translation>
     </message>
 </context>
 </TS>
