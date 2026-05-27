@@ -131,10 +131,18 @@ bool Dispatcher::dispatch(Context *c)
         const QString path = c->req()->path();
         if (path.isEmpty()) {
             //% "No default action defined."
-            c->appendError(c->qtTrId("cutelyst-dispatcher-no-default-act"));
+            auto error = c->qtTrId("cutelyst-dispatcher-no-default-act");
+            if (error == "cutelyst-dispatcher-no-default-act"_L1) {
+                error = u"No default action defined."_s;
+            }
+            c->appendError(error);
         } else {
             //% "Unknown resource '%1'."
-            c->appendError(c->qtTrId("cutelyst-dispatcher-unknown-resource").arg(path));
+            auto error = c->qtTrId("cutelyst-dispatcher-unknown-resource");
+            if (error == "cutelyst-dispatcher-unknown-resource"_L1) {
+                error = u"Unknown resource '%1'."_s;
+            }
+            c->appendError(error.arg(path));
         }
     }
     return false;
