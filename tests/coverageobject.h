@@ -9,6 +9,7 @@
 #include <Cutelyst/Engine>
 #include <Cutelyst/TestEngine>
 
+#include <algorithm>
 #include <QBuffer>
 #include <QDir>
 #include <QObject>
@@ -265,10 +266,24 @@ public:
             }
         }
 
-        if (!locales.isEmpty() && !locales.contains(defaultLocale())) {
-            const QLocale fallbackLocale = locales.contains(QLocale::English) ? QLocale::English
-                                                                               : locales.constFirst();
-            setDefaultLocale(fallbackLocale);
+        if (!locales.isEmpty()) {
+            const QLocale currentDefault = defaultLocale();
+
+            auto byLanguage = [&locales](QLocale::Language language) {
+                auto it = std::find_if(locales.cbegin(), locales.cend(), [language](const QLocale &locale) {
+                    return locale.language() == language;
+                });
+                return it == locales.cend() ? QLocale() : *it;
+            };
+
+            if (!locales.contains(currentDefault)) {
+                const QLocale sameLanguage = byLanguage(currentDefault.language());
+                const QLocale englishLocale = byLanguage(QLocale::English);
+                const QLocale fallbackLocale = sameLanguage.language() != QLocale::C
+                    ? sameLanguage
+                    : (englishLocale.language() != QLocale::C ? englishLocale : locales.constFirst());
+                setDefaultLocale(fallbackLocale);
+            }
         }
     }
     bool init() override
