@@ -264,7 +264,8 @@ public:
                             QDir::Files,
                             QDirIterator::Subdirectories);
             while (it.hasNext()) {
-                locales = loadTranslationsFromDir(u"cutelystcore"_s, QFileInfo(it.next()).absolutePath());
+                const QString qmPath = it.next();
+                locales = loadTranslationsFromDir(u"cutelystcore"_s, QFileInfo(qmPath).absolutePath());
                 if (!locales.isEmpty()) {
                     break;
                 }
