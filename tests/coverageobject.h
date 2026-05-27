@@ -279,9 +279,13 @@ public:
             if (!locales.contains(currentDefault)) {
                 const QLocale sameLanguage = findLocaleByLanguage(currentDefault.language());
                 const QLocale englishLocale = findLocaleByLanguage(QLocale::English);
-                const QLocale fallbackLocale = sameLanguage.language() != QLocale::C
-                    ? sameLanguage
-                    : (englishLocale.language() != QLocale::C ? englishLocale : locales.constFirst());
+                QLocale fallbackLocale = locales.constFirst();
+                if (englishLocale.language() != QLocale::C) {
+                    fallbackLocale = englishLocale;
+                }
+                if (sameLanguage.language() != QLocale::C) {
+                    fallbackLocale = sameLanguage;
+                }
                 setDefaultLocale(fallbackLocale);
             }
         }
