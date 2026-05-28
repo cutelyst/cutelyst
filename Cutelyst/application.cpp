@@ -521,6 +521,19 @@ QString Application::translate(const QLocale &locale,
 
     for (QTranslator *translator : std::as_const(translators)) {
         result = translator->translate(context, sourceText, disambiguation, n);
+        if (result.isEmpty()) {
+            // Diagnose ID-based lookup issues: check if the translator has any
+            // content, and whether passing explicit empty strings (instead of
+            // nullptr) makes a difference.
+            const QString withEmpty = translator->translate(
+                context ? context : "", sourceText, disambiguation ? disambiguation : "", n);
+            qCWarning(CUTELYST_CORE) << "translate(): empty result for source/id:" << sourceText
+                                     << "translator isEmpty:" << translator->isEmpty()
+                                     << "with empty-string ctx/dis:" << withEmpty;
+            if (!withEmpty.isEmpty()) {
+                result = withEmpty;
+            }
+        }
         if (!result.isEmpty()) {
             break;
         }
