@@ -494,14 +494,32 @@ QString Application::translate(const QLocale &locale,
 
     Q_D(const Application);
 
-    const QVector<QTranslator *> translators = d->translators.value(locale);
+    // Try exact locale first, then fall back through uiLanguages() — the same
+    // cascade Qt's own QTranslator::load(QLocale, …) uses — so that e.g. a
+    // translator stored under QLocale("en") is found when the context locale is
+    // QLocale(English, Latin, UnitedStates).
+    QVector<QTranslator *> translators = d->translators.value(locale);
+    if (translators.empty()) {
+        qCWarning(CUTELYST_CORE) << "translate(): no exact match for locale" << locale
+                                 << "- available keys:" << d->translators.keys()
+                                 << "- trying uiLanguages:" << locale.uiLanguages();
+        const QStringList langs = locale.uiLanguages();
+        for (const QString &lang : langs) {
+            translators = d->translators.value(QLocale(lang));
+            if (!translators.empty()) {
+                qCWarning(CUTELYST_CORE) << "translate(): matched via" << lang;
+                break;
+            }
+        }
+    }
+
     if (translators.empty()) {
         result = QString::fromUtf8(sourceText);
         replacePercentN(&result, n);
         return result;
     }
 
-    for (QTranslator *translator : translators) {
+    for (QTranslator *translator : std::as_const(translators)) {
         result = translator->translate(context, sourceText, disambiguation, n);
         if (!result.isEmpty()) {
             break;
