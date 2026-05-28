@@ -63,8 +63,9 @@ public:
     /**
      * Validates clear text \a password by binding to LDAP with the user DN.
      */
-    [[nodiscard]] bool
-        validatePassword(Context *c, const AuthenticationUser &user, const QString &password) const;
+    [[nodiscard]] bool validatePassword(Context *c,
+                                        const AuthenticationUser &user,
+                                        const QString &password) const override;
 
     /**
      * Sets LDAP server URI list (for example ldap://127.0.0.1:389).
