@@ -159,6 +159,7 @@ qt_add_lupdate(cutelystd
 qt_add_lrelease(cutelystd
     TS_FILES ${cutelystd_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE cutelystd_QM_FILES
+    ${CUTELYST_LRELEASE_OPTIONS}
 )
 
 install(FILES ${cutelystd_QM_FILES} DESTINATION ${I18NDIR})

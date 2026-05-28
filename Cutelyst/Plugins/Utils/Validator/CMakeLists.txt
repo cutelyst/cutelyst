@@ -234,6 +234,7 @@ qt_add_lupdate(${target_name}
 qt_add_lrelease(${target_name}
     TS_FILES ${plugin_utils_validator_TS_FILES}
     QM_FILES_OUTPUT_VARIABLE plugin_utils_validator_QM_FILES
+    ${CUTELYST_LRELEASE_OPTIONS}
 )
 
 install(FILES ${plugin_utils_validator_QM_FILES} DESTINATION ${I18NDIR})

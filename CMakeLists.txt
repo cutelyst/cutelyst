@@ -16,6 +16,13 @@ find_package(Qt${QT_VERSION_MAJOR} ${QT_MINIMUM_VERSION} COMPONENTS Core Network
 
 set(CUTELYST_API_LEVEL ${PROJECT_VERSION_MAJOR})
 
+# Qt < 6.10: -idbased is required so QM files are indexed by message ID,
+# which is needed by QTranslator::translate(nullptr, id, ...) / qtTrId().
+# Qt >= 6.10: always generates both hash tables; -idbased is deprecated.
+if (Qt6_VERSION VERSION_LESS "6.10.0")
+    set(CUTELYST_LRELEASE_OPTIONS OPTIONS -idbased)
+endif()
+
 # Include our cmake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
