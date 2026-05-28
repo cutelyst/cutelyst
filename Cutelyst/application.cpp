@@ -532,7 +532,10 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename,
     QVector<QLocale> locales;
 
     if (Q_LIKELY(!filename.isEmpty())) {
-        const QString _dir = directory.isEmpty() ? QStringLiteral(CUTELYST_I18N_DIR) : directory;
+        const QString _dir =
+            directory.isEmpty()
+                ? qEnvironmentVariable("CUTELYST_I18N_DIR", QStringLiteral(CUTELYST_I18N_DIR))
+                : directory;
         const QDir i18nDir(_dir);
         if (Q_LIKELY(i18nDir.exists())) {
             const QString _prefix         = prefix.isEmpty() ? u"."_s : prefix;
