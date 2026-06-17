@@ -27,6 +27,7 @@ public:
 
     void setBalancer(bool enable);
     QByteArray serverName() const { return m_serverName; }
+    QString bindError() const { return m_bindError; }
 
     void incomingConnection(qintptr handle) override;
 
@@ -42,6 +43,7 @@ private:
     QSslConfiguration *m_sslConfiguration = nullptr;
     int m_currentServer                   = 0;
     bool m_balancer                       = false;
+    QString m_bindError;
 };
 
 } // namespace Cutelyst

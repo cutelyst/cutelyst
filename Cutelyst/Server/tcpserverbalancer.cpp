@@ -2,6 +2,17 @@
  * SPDX-FileCopyrightText: (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#if defined(_WIN32)
+#    ifndef _WIN32_WINNT
+#        define _WIN32_WINNT 0x0601
+#    endif
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
+#endif
+
 #include "tcpserverbalancer.h"
 
 #include "server.h"
@@ -10,6 +21,7 @@
 #include "tcpsslserver.h"
 
 #include <iostream>
+#include <mutex>
 
 #include <QFile>
 #include <QLoggingCategory>
@@ -20,6 +32,7 @@
 #    include <fcntl.h>
 #    include <sys/socket.h>
 #    include <sys/types.h>
+#    include <unistd.h>
 #endif
 
 Q_LOGGING_CATEGORY(C_SERVER_BALANCER, "cutelyst.server.tcpbalancer", QtWarningMsg)
@@ -34,6 +47,129 @@ int listenReuse(const QHostAddress &address,
                 bool reusePort,
                 bool startListening);
 }
+#endif
+
+#ifdef Q_OS_WIN
+namespace {
+bool ensureWinsockInitialized(QString *errorOut)
+{
+    static std::once_flag once;
+    static int wsaInitError = 0;
+    std::call_once(once, [] {
+        WSADATA wsaData;
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+            wsaInitError = WSAGetLastError();
+        }
+    });
+    if (wsaInitError != 0) {
+        if (errorOut) {
+            *errorOut = QStringLiteral("WSAStartup failed (Windows socket error %1)")
+                            .arg(wsaInitError);
+        }
+        return false;
+    }
+    return true;
+}
+
+QString windowsSocketErrorString(int error)
+{
+    switch (error) {
+    case WSAEADDRINUSE:
+        return QStringLiteral("The bound address is already in use");
+    case WSAEACCES:
+        return QStringLiteral("The requested address is a protected address and requires "
+                              "appropriate privileges");
+    case WSAEADDRNOTAVAIL:
+        return QStringLiteral("The requested address is not valid in this context");
+    case WSANOTINITIALISED:
+        return QStringLiteral("Winsock has not been initialized");
+    default:
+        return QStringLiteral("Windows socket error %1").arg(error);
+    }
+}
+
+int listenExclusive(const QHostAddress &address, int listenQueue, quint16 port, QString *errorOut)
+{
+    if (!ensureWinsockInitialized(errorOut)) {
+        return -1;
+    }
+
+    const bool ipv6 = address.protocol() == QHostAddress::IPv6Protocol ||
+                      address.protocol() == QHostAddress::AnyIPProtocol;
+
+    SOCKET socket =
+        WSASocketW(ipv6 ? AF_INET6 : AF_INET,
+                   SOCK_STREAM,
+                   IPPROTO_TCP,
+                   nullptr,
+                   0,
+                   WSA_FLAG_NO_HANDLE_INHERIT | WSA_FLAG_OVERLAPPED);
+    if (socket == INVALID_SOCKET) {
+        if (errorOut) {
+            *errorOut = windowsSocketErrorString(WSAGetLastError());
+        }
+        return -1;
+    }
+
+    BOOL exclusive = TRUE;
+    if (setsockopt(socket,
+                   SOL_SOCKET,
+                   SO_EXCLUSIVEADDRUSE,
+                   reinterpret_cast<const char *>(&exclusive),
+                   sizeof(exclusive)) != 0) {
+        if (errorOut) {
+            *errorOut = windowsSocketErrorString(WSAGetLastError());
+        }
+        closesocket(socket);
+        return -1;
+    }
+
+    if (ipv6) {
+        sockaddr_in6 sa{};
+        sa.sin6_family = AF_INET6;
+        sa.sin6_port   = htons(port);
+        if (address.protocol() == QHostAddress::AnyIPProtocol) {
+            sa.sin6_addr = in6addr_any;
+        } else {
+            const Q_IPV6ADDR tmp = address.toIPv6Address();
+            memcpy(&sa.sin6_addr, &tmp, sizeof(tmp));
+        }
+        if (bind(socket, reinterpret_cast<sockaddr *>(&sa), sizeof(sa)) != 0) {
+            if (errorOut) {
+                *errorOut = windowsSocketErrorString(WSAGetLastError());
+            }
+            closesocket(socket);
+            return -1;
+        }
+    } else {
+        sockaddr_in sa{};
+        sa.sin_family = AF_INET;
+        sa.sin_port   = htons(port);
+        if (address.protocol() == QHostAddress::Any) {
+            sa.sin_addr.s_addr = INADDR_ANY;
+        } else {
+            sa.sin_addr.s_addr = htonl(address.toIPv4Address());
+        }
+        if (bind(socket, reinterpret_cast<sockaddr *>(&sa), sizeof(sa)) != 0) {
+            if (errorOut) {
+                *errorOut = windowsSocketErrorString(WSAGetLastError());
+            }
+            closesocket(socket);
+            return -1;
+        }
+    }
+
+    if (::listen(socket, listenQueue) != 0) {
+        if (errorOut) {
+            *errorOut = windowsSocketErrorString(WSAGetLastError());
+        }
+        closesocket(socket);
+        return -1;
+    }
+
+    return static_cast<int>(socket);
+}
+} // namespace
 #endif
 
 TcpServerBalancer::TcpServerBalancer(Server *server)
@@ -145,15 +281,40 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 
     m_address = address;
     m_port    = port;
+    m_bindError.clear();
 
 #ifdef Q_OS_LINUX
     int socket = listenReuse(
         address, m_server->listenQueue(), port, m_server->reusePort(), !m_server->reusePort());
-    if (socket > 0 && setSocketDescriptor(socket)) {
-        pauseAccepting();
+    if (socket > 0) {
+        if (setSocketDescriptor(socket)) {
+            pauseAccepting();
+        } else {
+            m_bindError = errorString();
+            ::close(socket);
+            qCWarning(C_SERVER_BALANCER) << "Failed to listen on TCP:" << line << m_bindError;
+            return false;
+        }
     } else {
         std::cerr << "Failed to listen on TCP: " << qPrintable(line) << " : "
                   << qPrintable(errorString()) << '\n';
+        return false;
+    }
+#elif defined(Q_OS_WIN)
+    int socket = listenExclusive(address, m_server->listenQueue(), port, &m_bindError);
+    if (socket > 0) {
+        if (setSocketDescriptor(socket)) {
+            pauseAccepting();
+        } else {
+            if (m_bindError.isEmpty()) {
+                m_bindError = errorString();
+            }
+            closesocket(socket);
+            qCWarning(C_SERVER_BALANCER) << "Failed to listen on TCP:" << line << m_bindError;
+            return false;
+        }
+    } else {
+        qCWarning(C_SERVER_BALANCER) << "Failed to listen on TCP:" << line << m_bindError;
         return false;
     }
 #else
@@ -162,8 +323,9 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     if (ret) {
         pauseAccepting();
     } else {
+        m_bindError = errorString();
         std::cerr << "Failed to listen on TCP: " << qPrintable(line) << " : "
-                  << qPrintable(errorString()) << '\n';
+                  << qPrintable(m_bindError) << '\n';
         return false;
     }
 #endif

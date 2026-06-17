@@ -93,6 +93,7 @@ public:
     ProtocolHttp2 *protoHTTP2   = nullptr;
     Protocol *protoFCGI         = nullptr;
     AbstractFork *genericFork   = nullptr;
+    QString lastListenError;
     int bufferSize              = 4096;
     int workersNotRunning       = 1;
     int threads                 = 1;

@@ -75,11 +75,17 @@ Server::Server(QObject *parent)
         delete d->protoFCGI;
         d->protoFCGI = nullptr;
 
-        delete d->mainEngine;
+        if (!d->engines.empty()) {
+            qDeleteAll(d->engines);
+            d->engines.clear();
+        }
         d->mainEngine = nullptr;
 
         qDeleteAll(d->servers);
         d->servers.clear();
+
+        delete d->genericFork;
+        d->genericFork = nullptr;
     };
 
     connect(this, &Server::errorOccured, this, cleanUp);
@@ -699,6 +705,7 @@ int Server::exec(Cutelyst::Application *app)
     if (d->processes == 0 && d->master) {
         d->processes = 1;
     }
+    delete d->genericFork;
     d->genericFork = new UnixFork(d->processes, qMax(d->threads, 1), !d->userEventLoop, this);
 #else
     if (d->processes == -1) {
@@ -707,6 +714,7 @@ int Server::exec(Cutelyst::Application *app)
     if (d->threads == -1) {
         d->threads = QThread::idealThreadCount();
     }
+    delete d->genericFork;
     d->genericFork = new WindowsFork(this);
 #endif
 
@@ -745,8 +753,10 @@ int Server::exec(Cutelyst::Application *app)
 
     if (!d->reusePort) {
         if (!d->listenTcpSockets()) {
-            //% "No specified sockets were able to be opened"
-            Q_EMIT errorOccured(qtTrId("cutelystd-err-no-socket-opened"));
+            const QString error = d->lastListenError.isEmpty()
+                                      ? QStringLiteral("No specified sockets were able to be opened")
+                                      : d->lastListenError;
+            Q_EMIT errorOccured(error);
             return 1; // No sockets has been opened
         }
     }
@@ -786,7 +796,10 @@ int Server::exec(Cutelyst::Application *app)
 
     if (d->reusePort) {
         if (!d->listenTcpSockets()) {
-            Q_EMIT errorOccured(qtTrId("cutelystd-err-no-socket-opened"));
+            const QString error = d->lastListenError.isEmpty()
+                                      ? QStringLiteral("No specified sockets were able to be opened")
+                                      : d->lastListenError;
+            Q_EMIT errorOccured(error);
             return 1; // No sockets has been opened
         }
     }
@@ -834,15 +847,17 @@ bool Server::start(Application *app)
     Q_D(Server);
 
     if (d->mainEngine) {
-        //% "Server not fully stopped."
-        Q_EMIT errorOccured(qtTrId("cutelystd-err-server-not-fully-stopped"));
+        Q_EMIT errorOccured(
+            QStringLiteral("Server not fully stopped. Wait for shutdown to complete."));
         return false;
     }
 
-    d->processes     = 0;
-    d->master        = false;
-    d->lazy          = false;
-    d->userEventLoop = true;
+    d->processes         = 0;
+    d->master            = false;
+    d->lazy              = false;
+    d->userEventLoop     = true;
+    d->workersNotRunning = 1;
+    d->lastListenError.clear();
 #ifdef Q_OS_UNIX
     d->uid.clear();
     d->gid.clear();
@@ -860,6 +875,13 @@ void Server::stop()
 {
     Q_D(Server);
     if (d->userEventLoop) {
+        for (QObject *obj : d->servers) {
+            if (auto *tcp = qobject_cast<QTcpServer *>(obj)) {
+                tcp->close();
+            } else if (auto *local = qobject_cast<LocalServer *>(obj)) {
+                local->close();
+            }
+        }
         Q_EMIT d->shutdown();
     }
 }
@@ -873,6 +895,8 @@ ServerPrivate::~ServerPrivate()
 
 bool ServerPrivate::listenTcpSockets()
 {
+    lastListenError.clear();
+
     if (httpSockets.isEmpty() && httpsSockets.isEmpty() && http2Sockets.isEmpty() &&
         fastcgiSockets.isEmpty()) {
         // no sockets to listen to
@@ -915,23 +939,35 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
 {
     Q_Q(Server);
 
-    bool ret = true;
-    if (!line.startsWith(u'/')) {
-        auto server = new TcpServerBalancer(q);
-        server->setBalancer(threadBalancer);
-        ret = server->listen(line, protocol, secure);
-
-        if (ret && server->socketDescriptor()) {
-            auto qEnum = Protocol::staticMetaObject.enumerator(0);
-            std::cout << qEnum.valueToKey(static_cast<int>(protocol->type())) << " socket "
-                      << QByteArray::number(static_cast<int>(servers.size())).constData()
-                      << " bound to TCP address " << server->serverName().constData() << " fd "
-                      << QByteArray::number(server->socketDescriptor()).constData() << '\n';
-            servers.emplace_back(server);
-        }
+    if (line.startsWith(u'/')) {
+        return true;
     }
 
-    return ret;
+    auto server = new TcpServerBalancer(q);
+    server->setBalancer(threadBalancer);
+    const bool ret = server->listen(line, protocol, secure);
+
+    if (!ret || !server->socketDescriptor()) {
+        const QString err =
+            server->bindError().isEmpty() ? server->errorString() : server->bindError();
+        if (!ret) {
+            lastListenError = QStringLiteral("Failed to listen on %1: %2").arg(line, err);
+        } else {
+            lastListenError =
+                QStringLiteral("Failed to listen on %1: no socket descriptor").arg(line);
+        }
+        qCWarning(CUTELYST_SERVER) << lastListenError;
+        delete server;
+        return false;
+    }
+
+    auto qEnum = Protocol::staticMetaObject.enumerator(0);
+    std::cout << qEnum.valueToKey(static_cast<int>(protocol->type())) << " socket "
+              << QByteArray::number(static_cast<int>(servers.size())).constData()
+              << " bound to TCP address " << server->serverName().constData() << " fd "
+              << QByteArray::number(server->socketDescriptor()).constData() << '\n';
+    servers.emplace_back(server);
+    return true;
 }
 
 bool ServerPrivate::listenLocalSockets()
@@ -1673,6 +1709,12 @@ bool ServerPrivate::setupApplication()
 
     Q_Q(Server);
 
+    if (!engines.empty() || mainEngine) {
+        qDeleteAll(engines);
+        engines.clear();
+        mainEngine = nullptr;
+    }
+
     if (!localApp) {
         std::cout << "Loading application: " << application.toLatin1().constData() << '\n';
         QPluginLoader loader(application);
@@ -1848,16 +1890,16 @@ ServerEngine *ServerPrivate::createEngine(Application *app, int workerCore)
     }
 
     auto engine = new ServerEngine(app, workerCore, opt, q);
+    const Qt::ConnectionType forkConnection =
+        userEventLoop ? Qt::DirectConnection : Qt::QueuedConnection;
     connect(this, &ServerPrivate::shutdown, engine, &ServerEngine::shutdown, Qt::QueuedConnection);
-    connect(
-        this, &ServerPrivate::postForked, engine, &ServerEngine::postFork, Qt::QueuedConnection);
+    connect(this, &ServerPrivate::postForked, engine, &ServerEngine::postFork, forkConnection);
     connect(engine,
             &ServerEngine::shutdownCompleted,
             this,
             &ServerPrivate::engineShutdown,
             Qt::QueuedConnection);
-    connect(
-        engine, &ServerEngine::started, this, &ServerPrivate::workerStarted, Qt::QueuedConnection);
+    connect(engine, &ServerEngine::started, this, &ServerPrivate::workerStarted, forkConnection);
 
     engine->setConfig(config);
     engine->setServers(servers);
