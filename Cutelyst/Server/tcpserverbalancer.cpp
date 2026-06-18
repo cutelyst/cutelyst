@@ -94,8 +94,9 @@ int listenExclusive(const QHostAddress &address, int listenQueue, quint16 port, 
         return -1;
     }
 
-    const bool ipv6 = address.protocol() == QHostAddress::IPv6Protocol ||
-                      address.protocol() == QHostAddress::AnyIPProtocol;
+    const bool dualStackAny = address == QHostAddress::Any ||
+                              address.protocol() == QHostAddress::AnyIPProtocol;
+    const bool ipv6         = address.protocol() == QHostAddress::IPv6Protocol || dualStackAny;
 
     SOCKET socket =
         WSASocketW(ipv6 ? AF_INET6 : AF_INET,
@@ -128,8 +129,14 @@ int listenExclusive(const QHostAddress &address, int listenQueue, quint16 port, 
         sockaddr_in6 sa{};
         sa.sin6_family = AF_INET6;
         sa.sin6_port   = htons(port);
-        if (address.protocol() == QHostAddress::AnyIPProtocol) {
+        if (dualStackAny) {
             sa.sin6_addr = in6addr_any;
+            const int v6only = 0;
+            setsockopt(socket,
+                       IPPROTO_IPV6,
+                       IPV6_V6ONLY,
+                       reinterpret_cast<const char *>(&v6only),
+                       sizeof(v6only));
         } else {
             const Q_IPV6ADDR tmp = address.toIPv6Address();
             memcpy(&sa.sin6_addr, &tmp, sizeof(tmp));
