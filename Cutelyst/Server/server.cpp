@@ -66,6 +66,7 @@ Server::Server(QObject *parent)
 
     auto cleanUp = [this]() {
         Q_D(Server);
+
         delete d->protoHTTP;
         d->protoHTTP = nullptr;
 
@@ -75,11 +76,13 @@ Server::Server(QObject *parent)
         delete d->protoFCGI;
         d->protoFCGI = nullptr;
 
-        if (!d->engines.empty()) {
-            qDeleteAll(d->engines);
-            d->engines.clear();
-        }
+        qDeleteAll(d->engines);
+        d->engines.clear();
         d->mainEngine = nullptr;
+
+        for (ServerEngine *engine : findChildren<ServerEngine *>(Qt::FindDirectChildrenOnly)) {
+            delete engine;
+        }
 
         qDeleteAll(d->servers);
         d->servers.clear();
@@ -875,13 +878,6 @@ void Server::stop()
 {
     Q_D(Server);
     if (d->userEventLoop) {
-        for (QObject *obj : d->servers) {
-            if (auto *tcp = qobject_cast<QTcpServer *>(obj)) {
-                tcp->close();
-            } else if (auto *local = qobject_cast<LocalServer *>(obj)) {
-                local->close();
-            }
-        }
         Q_EMIT d->shutdown();
     }
 }
@@ -1709,7 +1705,14 @@ bool ServerPrivate::setupApplication()
 
     Q_Q(Server);
 
-    if (!engines.empty() || mainEngine) {
+    if (userEventLoop) {
+        qDeleteAll(engines);
+        engines.clear();
+        mainEngine = nullptr;
+        for (ServerEngine *engine : q->findChildren<ServerEngine *>(Qt::FindDirectChildrenOnly)) {
+            delete engine;
+        }
+    } else if (!engines.empty() || mainEngine) {
         qDeleteAll(engines);
         engines.clear();
         mainEngine = nullptr;
@@ -1777,17 +1780,29 @@ bool ServerPrivate::setupApplication()
 
 void ServerPrivate::engineShutdown(ServerEngine *engine)
 {
+    if (mainEngine == engine) {
+        mainEngine = nullptr;
+    }
+
     const auto engineThread = engine->thread();
     if (QThread::currentThread() != engineThread) {
         connect(engineThread, &QThread::finished, this, [this, engine] {
             auto [first, last] = std::ranges::remove(engines, engine);
             engines.erase(first, last);
+            if (userEventLoop) {
+                delete engine;
+            }
             checkEngineShutdown();
         });
         engineThread->quit();
-    } else {
-        auto [first, last] = std::ranges::remove(engines, engine);
-        engines.erase(first, last);
+        return;
+    }
+
+    auto [first, last] = std::ranges::remove(engines, engine);
+    engines.erase(first, last);
+
+    if (userEventLoop) {
+        delete engine;
     }
 
     checkEngineShutdown();
