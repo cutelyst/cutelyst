@@ -15,6 +15,9 @@ target_link_libraries(coverage_test Qt::Test Cutelyst::Core Qt::Network)
 function(cute_test _testname _link1 _link2 _link3)
     add_executable(${_testname}_exec ${_testname}.cpp)
     add_test(NAME ${_testname} COMMAND ${_testname}_exec)
+    set_tests_properties(${_testname} PROPERTIES
+        ENVIRONMENT "CUTELYST_I18N_DIR=${CMAKE_BINARY_DIR}/Cutelyst"
+    )
     target_link_libraries(${_testname}_exec ${_link1} ${_link2} ${_link3} Cutelyst::Core coverage_test)
 endfunction()
 

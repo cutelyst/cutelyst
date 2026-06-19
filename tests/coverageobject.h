@@ -252,7 +252,9 @@ public:
     {
         defaultHeaders() = Headers();
         // load the core translations from the build directory
-        loadTranslations(u"cutelystcore"_s, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s);
+        const QString transDir        = QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s;
+        const QVector<QLocale> loaded = loadTranslationsFromDir(u"cutelystcore"_s, transDir);
+        qWarning() << "cutelystcore translations dir:" << transDir << "- loaded locales:" << loaded;
     }
     bool init() override
     {
