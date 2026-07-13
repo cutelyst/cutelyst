@@ -13,11 +13,10 @@
 #    include <ws2tcpip.h>
 #endif
 
-#include "tcpserverbalancer.h"
-
 #include "server.h"
 #include "serverengine.h"
 #include "tcpserver.h"
+#include "tcpserverbalancer.h"
 #include "tcpsslserver.h"
 
 #include <iostream>
@@ -63,8 +62,8 @@ bool ensureWinsockInitialized(QString *errorOut)
     });
     if (wsaInitError != 0) {
         if (errorOut) {
-            *errorOut = QStringLiteral("WSAStartup failed (Windows socket error %1)")
-                            .arg(wsaInitError);
+            *errorOut =
+                QStringLiteral("WSAStartup failed (Windows socket error %1)").arg(wsaInitError);
         }
         return false;
     }
@@ -94,17 +93,16 @@ int listenExclusive(const QHostAddress &address, int listenQueue, quint16 port, 
         return -1;
     }
 
-    const bool dualStackAny = address == QHostAddress::Any ||
-                              address.protocol() == QHostAddress::AnyIPProtocol;
-    const bool ipv6         = address.protocol() == QHostAddress::IPv6Protocol || dualStackAny;
+    const bool dualStackAny =
+        address == QHostAddress::Any || address.protocol() == QHostAddress::AnyIPProtocol;
+    const bool ipv6 = address.protocol() == QHostAddress::IPv6Protocol || dualStackAny;
 
-    SOCKET socket =
-        WSASocketW(ipv6 ? AF_INET6 : AF_INET,
-                   SOCK_STREAM,
-                   IPPROTO_TCP,
-                   nullptr,
-                   0,
-                   WSA_FLAG_NO_HANDLE_INHERIT | WSA_FLAG_OVERLAPPED);
+    SOCKET socket = WSASocketW(ipv6 ? AF_INET6 : AF_INET,
+                               SOCK_STREAM,
+                               IPPROTO_TCP,
+                               nullptr,
+                               0,
+                               WSA_FLAG_NO_HANDLE_INHERIT | WSA_FLAG_OVERLAPPED);
     if (socket == INVALID_SOCKET) {
         if (errorOut) {
             *errorOut = windowsSocketErrorString(WSAGetLastError());
@@ -130,7 +128,7 @@ int listenExclusive(const QHostAddress &address, int listenQueue, quint16 port, 
         sa.sin6_family = AF_INET6;
         sa.sin6_port   = htons(port);
         if (dualStackAny) {
-            sa.sin6_addr = in6addr_any;
+            sa.sin6_addr     = in6addr_any;
             const int v6only = 0;
             setsockopt(socket,
                        IPPROTO_IPV6,
