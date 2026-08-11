@@ -756,9 +756,10 @@ int Server::exec(Cutelyst::Application *app)
 
     if (!d->reusePort) {
         if (!d->listenTcpSockets()) {
-            const QString error = d->lastListenError.isEmpty()
-                                      ? QStringLiteral("No specified sockets were able to be opened")
-                                      : d->lastListenError;
+            const QString error =
+                d->lastListenError.isEmpty()
+                    ? QStringLiteral("No specified sockets were able to be opened")
+                    : d->lastListenError;
             Q_EMIT errorOccured(error);
             return 1; // No sockets has been opened
         }
@@ -799,9 +800,10 @@ int Server::exec(Cutelyst::Application *app)
 
     if (d->reusePort) {
         if (!d->listenTcpSockets()) {
-            const QString error = d->lastListenError.isEmpty()
-                                      ? QStringLiteral("No specified sockets were able to be opened")
-                                      : d->lastListenError;
+            const QString error =
+                d->lastListenError.isEmpty()
+                    ? QStringLiteral("No specified sockets were able to be opened")
+                    : d->lastListenError;
             Q_EMIT errorOccured(error);
             return 1; // No sockets has been opened
         }
