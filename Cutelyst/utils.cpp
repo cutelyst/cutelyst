@@ -181,7 +181,6 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
     bool hasKey   = false;
     bool skipUtf8 = true;
     char *from    = data;
-    int outlen    = 0;
 
     auto processKeyPair = [&] {
         if (hasKey) {
@@ -201,7 +200,7 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
         }
     };
 
-    for (int i = 0; i < len; ++i, ++outlen) {
+    for (int i = 0; i < len; ++i) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
             int a = static_cast<int>(static_cast<unsigned char>(inputPtr[++i]));
