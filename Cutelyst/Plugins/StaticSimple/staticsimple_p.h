@@ -20,7 +20,9 @@ public:
     QVector<QDir> includePaths;
     QStringList dirs;
     QRegularExpression re = QRegularExpression(u"\\.[^/]+$"_s);
+    QVariantMap defaultConfig;
     bool serveDirsOnly{false};
+    bool logFailedIp{false};
 };
 
 } // namespace Cutelyst

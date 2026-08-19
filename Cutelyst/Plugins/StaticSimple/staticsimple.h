@@ -33,6 +33,19 @@ class StaticSimplePrivate;
  * set setServeDirsOnly() to @c true (since %Cutelyst 4.0.0) to only serve files beginning with
  * these paths. Have a look at setDirs() to learn more.
  *
+ * <H3 ID="configfile">Runtime configuration</H3>
+ *
+ * The plugin offers some configuration options that can be set in the
+ * @ref configuration "application configuration file" in the @c Cutelyst_StaticSimple_Plugin
+ * section. You can override the defaults by setting a QVariantMap with selected default values
+ * to the constructor.
+ *
+ * @configblock{log_failed_ip,bool,false}
+ * If this is set to @c true, the log output for files not found will contain the IP address
+ * of the remote client.
+ * Since %Cutelyst 5.2.0
+ * @endconfigblock
+ *
  * <h3>Usage example</h3>
  *
  * @code{.cpp}
@@ -63,9 +76,19 @@ class CUTELYST_PLUGIN_STATICSIMPLE_EXPORT StaticSimple : public Plugin
     Q_DECLARE_PRIVATE(StaticSimple)
 public:
     /**
-     * Constructs a new %StaticSimple object with the given \a parent.
+     * Constructs a new %StaticSimple plugin with the given @a parent.
      */
     explicit StaticSimple(Application *parent);
+
+    /**
+     * Constructs a new %StaticSimple plugin wiht the given @a parent and @a defaultConfig.
+     *
+     * Use the @a defaultConfig to set default values for the configuration entries from
+     * the <A HREF="#configfile">configuration file</A>.
+     *
+     * @since %Cutelyst 5.2.0
+     */
+    StaticSimple(Application *parent, const QVariantMap &defaultConfig);
 
     /**
      * Destroys the %StaticSimple object.

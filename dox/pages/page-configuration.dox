@@ -151,6 +151,10 @@ available.
         <td>StaticCompressed</td>
         <td>Cutelyst_StaticCompressed_Plugin</td>
     </tr>
+    <tr>
+        <td>StaticSimple</td>
+        <td>Cutelyst_StaticSimple_Plugin</td>
+    </tr>
 </table>
 
 \section ownconfig Add your own configuration

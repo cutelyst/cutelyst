@@ -4,6 +4,7 @@
  */
 #include "application.h"
 #include "context.h"
+#include "engine.h"
 #include "request.h"
 #include "response.h"
 #include "staticsimple_p.h"
@@ -25,6 +26,15 @@ StaticSimple::StaticSimple(Application *parent)
 {
     Q_D(StaticSimple);
     d->includePaths.append(parent->config(u"root"_s).toString());
+}
+
+StaticSimple::StaticSimple(Application *parent, const QVariantMap &defaultConfig)
+    : Plugin(parent)
+    , d_ptr(new StaticSimplePrivate)
+{
+    Q_D(StaticSimple);
+    d->includePaths.append(parent->config(u"root"_s).toString());
+    d->defaultConfig = defaultConfig;
 }
 
 StaticSimple::~StaticSimple()
@@ -55,6 +65,14 @@ void StaticSimple::setServeDirsOnly(bool dirsOnly)
 
 bool StaticSimple::setup(Cutelyst::Application *app)
 {
+    Q_D(StaticSimple);
+
+    const QVariantMap config = app->engine()->config(u"Cutelyst_StaticSimple_Plugin"_s);
+
+    d->logFailedIp =
+        config.value(u"log_failed_ip"_s, d->defaultConfig.value(u"log_failed_ip"_s, false))
+            .toBool();
+
     connect(app, &Application::beforePrepareAction, this, &StaticSimple::beforePrepareAction);
     return true;
 }
@@ -142,7 +160,14 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath) const
         }
     }
 
-    qCWarning(C_STATICSIMPLE) << "File not found" << relPath;
+    if (d->logFailedIp) {
+        qCWarning(C_STATICSIMPLE).nospace().noquote()
+            << "File not found: \"" << relPath << '"' << " [" << c->req()->addressString() << "]";
+    } else {
+        qCWarning(C_STATICSIMPLE).nospace().noquote()
+            << "File not found: \"" << relPath << '"' << " [IP logging disabled]";
+    }
+
     return false;
 }
 
