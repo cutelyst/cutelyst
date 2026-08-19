@@ -102,6 +102,11 @@ class StaticCompressedPrivate;
  * section. You can override the defaults by setting a QVariantMap with selected default values
  * to the constructor.
  *
+ * @configblock{log_failed_ip,bool,false}
+ * If this is set to @c true, the log output for files not found will contain the IP address
+ * of the remote client.
+ * @endconfigblock
+ *
  * @configblock{cache_directory,string,QStandardPaths::CacheLocation + /compressed-static}
  * Sets the directory path where on the fly compressed data is saved.
  * @endconfigblock

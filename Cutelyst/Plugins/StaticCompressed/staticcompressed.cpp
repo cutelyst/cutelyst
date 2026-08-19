@@ -77,6 +77,11 @@ bool StaticCompressed::setup(Application *app)
     Q_D(StaticCompressed);
 
     const QVariantMap config = app->engine()->config(u"Cutelyst_StaticCompressed_Plugin"_s);
+
+    d->logFailedIp =
+        config.value(u"log_failed_ip"_s, d->defaultConfig.value(u"log_failed_ip"_s, false))
+            .toBool();
+
     const QString _defaultCacheDir =
         QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + u"/compressed-static";
     d->cacheDir.setPath(config
@@ -374,7 +379,13 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
         }
     }
 
-    qCWarning(C_STATICCOMPRESSED) << "File not found" << relPath;
+    if (logFailedIp) {
+        qCWarning(C_STATICCOMPRESSED).nospace().noquote()
+            << "File not found: \"" << relPath << '"' << " [" << c->req()->addressString() << "]";
+    } else {
+        qCWarning(C_STATICCOMPRESSED).nospace().noquote()
+            << "File not found: \"" << relPath << '"' << " [IP logging disabled]";
+    }
     return false;
 }
 

@@ -102,6 +102,7 @@ public:
     bool checkPreCompressed{true};
     bool onTheFlyCompression{true};
     bool serveDirsOnly{false};
+    bool logFailedIp{false};
 };
 
 } // namespace Cutelyst
