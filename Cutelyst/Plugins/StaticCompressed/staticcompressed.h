@@ -98,13 +98,14 @@ class StaticCompressedPrivate;
  * <H3 ID="configfile">Runtime configuration</H3>
  *
  * The plugin offers some configuration options that can be set in the
- * \ref configuration "application configuration file" in the @c Cutelyst_StaticCompressed_Plugin
+ * @ref configuration "application configuration file" in the @c Cutelyst_StaticCompressed_Plugin
  * section. You can override the defaults by setting a QVariantMap with selected default values
  * to the constructor.
  *
  * @configblock{log_failed_ip,bool,false}
  * If this is set to @c true, the log output for files not found will contain the IP address
  * of the remote client.
+ * Since %Cutelyst 5.2.0
  * @endconfigblock
  *
  * @configblock{cache_directory,string,QStandardPaths::CacheLocation + /compressed-static}
@@ -188,7 +189,7 @@ class StaticCompressedPrivate;
  * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files have to
  * be present (default: @c off)
  * @li @c -DPLUGIN_STATICCOMPRESSED_ZSTD@c:BOOL=ON - enables the @a Zstandard support,
- * <A HREF="https://github.com/facebook/zstd">libzstd</A development and header files have to be
+ * <A HREF="https://github.com/facebook/zstd">libzstd</A> development and header files have to be
  * present (default: @c off) (since %Cutelyst 4.4.0)
  *
  * Since %Cutelyst 2.0.0 you can check if \c CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI,
