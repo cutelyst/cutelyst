@@ -491,12 +491,11 @@ void CSRFProtectionPrivate::reject(Context *c,
     if (C_CSRFPROTECTION().isWarningEnabled()) {
         if (csrf->d_ptr->logFailedIp) {
             qCWarning(C_CSRFPROTECTION).nospace().noquote()
-                << "Forbidden: (" << logReason << "): " << c->req()->path() << " ["
+                << "Forbidden: (" << logReason << "): " << c->req()->path() << " [client "
                 << c->req()->addressString() << "]";
         } else {
             qCWarning(C_CSRFPROTECTION).nospace().noquote()
-                << "Forbidden: (" << logReason << "): " << c->req()->path()
-                << " [IP logging disabled]";
+                << "Forbidden: (" << logReason << "): " << c->req()->path();
         }
     }
 

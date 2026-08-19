@@ -160,12 +160,14 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath) const
         }
     }
 
-    if (d->logFailedIp) {
-        qCWarning(C_STATICSIMPLE).nospace().noquote()
-            << "File not found: \"" << relPath << '"' << " [" << c->req()->addressString() << "]";
-    } else {
-        qCWarning(C_STATICSIMPLE).nospace().noquote()
-            << "File not found: \"" << relPath << '"' << " [IP logging disabled]";
+    if (C_STATICSIMPLE().isWarningEnabled()) {
+        if (d->logFailedIp) {
+            qCWarning(C_STATICSIMPLE).nospace().noquote()
+                << "File not found: \"" << relPath << '"' << " [client "
+                << c->req()->addressString() << "]";
+        } else {
+            qCWarning(C_STATICSIMPLE).nospace().noquote() << "File not found: \"" << relPath << '"';
+        }
     }
 
     return false;

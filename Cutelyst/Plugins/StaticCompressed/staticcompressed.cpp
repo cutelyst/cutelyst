@@ -379,13 +379,17 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
         }
     }
 
-    if (logFailedIp) {
-        qCWarning(C_STATICCOMPRESSED).nospace().noquote()
-            << "File not found: \"" << relPath << '"' << " [" << c->req()->addressString() << "]";
-    } else {
-        qCWarning(C_STATICCOMPRESSED).nospace().noquote()
-            << "File not found: \"" << relPath << '"' << " [IP logging disabled]";
+    if (C_STATICCOMPRESSED().isWarningEnabled()) {
+        if (logFailedIp) {
+            qCWarning(C_STATICCOMPRESSED).nospace().noquote()
+                << "File not found: \"" << relPath << '"' << " [client "
+                << c->req()->addressString() << "]";
+        } else {
+            qCWarning(C_STATICCOMPRESSED).nospace().noquote()
+                << "File not found: \"" << relPath << '"';
+        }
     }
+
     return false;
 }
 
