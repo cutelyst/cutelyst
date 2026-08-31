@@ -9,7 +9,11 @@
 #include <Cutelyst/Engine>
 #include <Cutelyst/TestEngine>
 
+#include <algorithm>
 #include <QBuffer>
+#include <QDir>
+#include <QDirIterator>
+#include <QFileInfo>
 #include <QObject>
 
 using namespace Cutelyst;
@@ -252,7 +256,45 @@ public:
     {
         defaultHeaders() = Headers();
         // load the core translations from the build directory
-        loadTranslations(u"cutelystcore"_s, QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s);
+        const QString i18nDir = QStringLiteral(CUTELYST_BUILD_DIR) + u"/Cutelyst"_s;
+        QVector<QLocale> locales = loadTranslationsFromDir(u"cutelystcore"_s, i18nDir);
+        if (locales.isEmpty()) {
+            QDirIterator it(i18nDir,
+                            QStringList{u"cutelystcore.*.qm"_s},
+                            QDir::Files,
+                            QDirIterator::Subdirectories);
+            while (it.hasNext()) {
+                const QString qmPath = it.next();
+                locales = loadTranslationsFromDir(u"cutelystcore"_s, QFileInfo(qmPath).absolutePath());
+                if (!locales.isEmpty()) {
+                    break;
+                }
+            }
+        }
+
+        if (!locales.isEmpty()) {
+            const QLocale currentDefault = defaultLocale();
+
+            auto findLocaleByLanguage = [&locales](QLocale::Language language) {
+                auto it = std::find_if(locales.cbegin(), locales.cend(), [language](const QLocale &locale) {
+                    return locale.language() == language;
+                });
+                return it == locales.cend() ? QLocale() : *it;
+            };
+
+            if (!locales.contains(currentDefault)) {
+                const QLocale sameLanguage = findLocaleByLanguage(currentDefault.language());
+                const QLocale englishLocale = findLocaleByLanguage(QLocale::English);
+                QLocale fallbackLocale = locales.constFirst();
+                if (englishLocale.language() != QLocale::C) {
+                    fallbackLocale = englishLocale;
+                }
+                if (sameLanguage.language() != QLocale::C) {
+                    fallbackLocale = sameLanguage;
+                }
+                setDefaultLocale(fallbackLocale);
+            }
+        }
     }
     bool init() override
     {

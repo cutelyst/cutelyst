@@ -21,6 +21,11 @@
 using namespace Cutelyst;
 using namespace Qt::Literals::StringLiterals;
 
+namespace {
+constexpr auto noDefaultActionId = "cutelyst-dispatcher-no-default-act";
+constexpr auto unknownResourceId = "cutelyst-dispatcher-unknown-resource";
+}
+
 Dispatcher::Dispatcher(QObject *parent)
     : QObject(parent)
     , d_ptr(new DispatcherPrivate(this))
@@ -131,10 +136,10 @@ bool Dispatcher::dispatch(Context *c)
         const QString path = c->req()->path();
         if (path.isEmpty()) {
             //% "No default action defined."
-            c->appendError(c->qtTrId("cutelyst-dispatcher-no-default-act"));
+            c->appendError(c->qtTrId(noDefaultActionId));
         } else {
             //% "Unknown resource '%1'."
-            c->appendError(c->qtTrId("cutelyst-dispatcher-unknown-resource").arg(path));
+            c->appendError(c->qtTrId(unknownResourceId).arg(path));
         }
     }
     return false;
