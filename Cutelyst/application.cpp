@@ -494,15 +494,46 @@ QString Application::translate(const QLocale &locale,
 
     Q_D(const Application);
 
-    const QVector<QTranslator *> translators = d->translators.value(locale);
+    // Try exact locale first, then fall back through uiLanguages() — the same
+    // cascade Qt's own QTranslator::load(QLocale, …) uses — so that e.g. a
+    // translator stored under QLocale("en") is found when the context locale is
+    // QLocale(English, Latin, UnitedStates).
+    QVector<QTranslator *> translators = d->translators.value(locale);
+    if (translators.empty()) {
+        qCWarning(CUTELYST_CORE) << "translate(): no exact match for locale" << locale
+                                 << "- available keys:" << d->translators.keys()
+                                 << "- trying uiLanguages:" << locale.uiLanguages();
+        const QStringList langs = locale.uiLanguages();
+        for (const QString &lang : langs) {
+            translators = d->translators.value(QLocale(lang));
+            if (!translators.empty()) {
+                qCWarning(CUTELYST_CORE) << "translate(): matched via" << lang;
+                break;
+            }
+        }
+    }
+
     if (translators.empty()) {
         result = QString::fromUtf8(sourceText);
         replacePercentN(&result, n);
         return result;
     }
 
-    for (QTranslator *translator : translators) {
+    for (QTranslator *translator : std::as_const(translators)) {
         result = translator->translate(context, sourceText, disambiguation, n);
+        if (result.isEmpty()) {
+            // Diagnose ID-based lookup issues: check if the translator has any
+            // content, and whether passing explicit empty strings (instead of
+            // nullptr) makes a difference.
+            const QString withEmpty = translator->translate(
+                context ? context : "", sourceText, disambiguation ? disambiguation : "", n);
+            qCWarning(CUTELYST_CORE) << "translate(): empty result for source/id:" << sourceText
+                                     << "translator isEmpty:" << translator->isEmpty()
+                                     << "with empty-string ctx/dis:" << withEmpty;
+            if (!withEmpty.isEmpty()) {
+                result = withEmpty;
+            }
+        }
         if (!result.isEmpty()) {
             break;
         }
@@ -532,7 +563,10 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename,
     QVector<QLocale> locales;
 
     if (Q_LIKELY(!filename.isEmpty())) {
-        const QString _dir = directory.isEmpty() ? QStringLiteral(CUTELYST_I18N_DIR) : directory;
+        const QString _dir =
+            directory.isEmpty()
+                ? qEnvironmentVariable("CUTELYST_I18N_DIR", QStringLiteral(CUTELYST_I18N_DIR))
+                : directory;
         const QDir i18nDir(_dir);
         if (Q_LIKELY(i18nDir.exists())) {
             const QString _prefix         = prefix.isEmpty() ? u"."_s : prefix;
