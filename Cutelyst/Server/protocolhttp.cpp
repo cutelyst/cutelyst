@@ -78,6 +78,13 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
     }
 
     if (protoRequest->connState == ProtoRequestHttp::ContentBody) {
+        if (protoRequest->chunkPhase != ProtoRequestHttp::ChunkPhase::NotChunked) {
+            if (parseChunkedBody(sock, io)) {
+                processRequest(sock, io);
+            }
+            return;
+        }
+
         qint64 bytesAvailable = io->bytesAvailable();
         qint64 len;
         qint64 remaining;
@@ -140,6 +147,35 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                 if (len) {
                     parseHeader(ptr, ptr + len, sock);
                 } else {
+                    if (protoRequest->chunkPhase == ProtoRequestHttp::ChunkPhase::Size) {
+                        protoRequest->connState = ProtoRequestHttp::ContentBody;
+                        protoRequest->body      = createBody(0);
+                        if (!protoRequest->body) {
+                            qCWarning(C_SERVER_HTTP) << "error while creating body, closing socket";
+                            sock->connectionClose();
+                            return;
+                        }
+
+                        // Move any bytes already read past the header CRLF into the
+                        // start of the buffer so the chunked parser can consume them.
+                        const int leftover = protoRequest->buf_size - protoRequest->last;
+                        if (leftover > 0) {
+                            memmove(protoRequest->buffer,
+                                    protoRequest->buffer + protoRequest->last,
+                                    size_t(leftover));
+                        }
+                        protoRequest->buf_size  = leftover;
+                        protoRequest->last      = 0;
+                        protoRequest->beginLine = 0;
+
+                        if (parseChunkedBody(sock, io)) {
+                            if (!processRequest(sock, io)) {
+                                break;
+                            }
+                        }
+                        return;
+                    }
+
                     if (protoRequest->contentLength > 0) {
                         protoRequest->connState = ProtoRequestHttp::ContentBody;
                         protoRequest->body      = createBody(protoRequest->contentLength);
@@ -182,7 +218,15 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
             if (protoRequest->startOfRequest == TimePointSteady{}) {
                 protoRequest->startOfRequest = std::chrono::steady_clock::now();
             }
-            protoRequest->last = protoRequest->buf_size;
+            // Keep a trailing CR in the search window so a following LF still forms CRLF,
+            // then leave the loop to wait for more data (avoid spinning on the same CR).
+            if (protoRequest->buf_size > 0 &&
+                protoRequest->buffer[protoRequest->buf_size - 1] == '\r') {
+                protoRequest->last = protoRequest->buf_size - 1;
+            } else {
+                protoRequest->last = protoRequest->buf_size;
+            }
+            break;
         }
     }
 
@@ -194,6 +238,125 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
 ProtocolData *ProtocolHttp::createData(Socket *sock) const
 {
     return new ProtoRequestHttp(sock, m_bufferSize);
+}
+
+bool ProtocolHttp::parseChunkedBody(Socket *sock, QIODevice *io) const
+{
+    auto req = static_cast<ProtoRequestHttp *>(sock->protoData);
+
+    while (true) {
+        if (io->bytesAvailable() && req->buf_size < m_bufferSize) {
+            const qint64 n = io->read(req->buffer + req->buf_size, m_bufferSize - req->buf_size);
+            if (n == -1) {
+                qCWarning(C_SERVER_HTTP) << "Failed to read chunked body" << io->errorString();
+                sock->connectionClose();
+                return false;
+            }
+            req->buf_size += int(n);
+        }
+
+        switch (req->chunkPhase) {
+        case ProtoRequestHttp::ChunkPhase::Size:
+        {
+            const int ix = CrLfIndexIn(req->buffer, req->buf_size, 0);
+            if (ix < 0) {
+                if (req->buf_size == m_bufferSize) {
+                    qCWarning(C_SERVER_HTTP) << "chunk size line too long";
+                    sock->connectionClose();
+                }
+                return false;
+            }
+
+            // Allow chunk extensions: size[;ext...]
+            int sizeEnd = 0;
+            while (sizeEnd < ix) {
+                const char c = req->buffer[sizeEnd];
+                if (c == ';' || c == ' ') {
+                    break;
+                }
+                ++sizeEnd;
+            }
+
+            bool ok = false;
+            const qint64 chunkSize =
+                QByteArray::fromRawData(req->buffer, sizeEnd).toLongLong(&ok, 16);
+            if (!ok || chunkSize < 0) {
+                qCWarning(C_SERVER_HTTP) << "invalid chunk size";
+                sock->connectionClose();
+                return false;
+            }
+
+            const int consume = ix + 2;
+            memmove(req->buffer, req->buffer + consume, size_t(req->buf_size - consume));
+            req->buf_size -= consume;
+
+            if (chunkSize == 0) {
+                req->chunkPhase = ProtoRequestHttp::ChunkPhase::Trailers;
+                break;
+            }
+
+            req->chunkBytesLeft = chunkSize;
+            req->chunkPhase     = ProtoRequestHttp::ChunkPhase::Data;
+            break;
+        }
+        case ProtoRequestHttp::ChunkPhase::Data:
+        {
+            if (req->buf_size == 0) {
+                return false;
+            }
+            const qint64 take = qMin(req->chunkBytesLeft, static_cast<qint64>(req->buf_size));
+            if (req->body->write(req->buffer, take) != take) {
+                qCWarning(C_SERVER_HTTP) << "failed writing chunk data";
+                sock->connectionClose();
+                return false;
+            }
+            memmove(req->buffer, req->buffer + take, size_t(req->buf_size - take));
+            req->buf_size -= int(take);
+            req->chunkBytesLeft -= take;
+            if (req->chunkBytesLeft == 0) {
+                req->chunkPhase = ProtoRequestHttp::ChunkPhase::DataCrLf;
+            }
+            break;
+        }
+        case ProtoRequestHttp::ChunkPhase::DataCrLf:
+        {
+            if (req->buf_size < 2) {
+                return false;
+            }
+            if (req->buffer[0] != '\r' || req->buffer[1] != '\n') {
+                qCWarning(C_SERVER_HTTP) << "missing CRLF after chunk data";
+                sock->connectionClose();
+                return false;
+            }
+            memmove(req->buffer, req->buffer + 2, size_t(req->buf_size - 2));
+            req->buf_size -= 2;
+            req->chunkPhase = ProtoRequestHttp::ChunkPhase::Size;
+            break;
+        }
+        case ProtoRequestHttp::ChunkPhase::Trailers:
+        {
+            const int ix = CrLfIndexIn(req->buffer, req->buf_size, 0);
+            if (ix < 0) {
+                return false;
+            }
+            if (ix == 0) {
+                // Empty trailer line — body complete.
+                memmove(req->buffer, req->buffer + 2, size_t(req->buf_size - 2));
+                req->buf_size -= 2;
+                req->chunkPhase = ProtoRequestHttp::ChunkPhase::NotChunked;
+                req->last       = 0;
+                req->beginLine  = 0;
+                return true;
+            }
+            // Skip trailer field line
+            memmove(req->buffer, req->buffer + ix + 2, size_t(req->buf_size - (ix + 2)));
+            req->buf_size -= (ix + 2);
+            break;
+        }
+        case ProtoRequestHttp::ChunkPhase::NotChunked:
+            return true;
+        }
+    }
 }
 
 bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
@@ -295,6 +458,13 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
         qint64 cl = value.toLongLong(&ok);
         if (ok && cl >= 0) {
             protoRequest->contentLength = cl;
+        }
+    } else if (protoRequest->chunkPhase == ProtoRequestHttp::ChunkPhase::NotChunked &&
+               key.compare("Transfer-Encoding", Qt::CaseInsensitive) == 0) {
+        // RFC 9112: if Transfer-Encoding includes chunked, Content-Length is ignored.
+        if (value.toLower().contains("chunked"_ba)) {
+            protoRequest->chunkPhase    = ProtoRequestHttp::ChunkPhase::Size;
+            protoRequest->contentLength = -1;
         }
     } else if (!protoRequest->headerHost && key.compare("Host", Qt::CaseInsensitive) == 0) {
         protoRequest->serverAddress = value;

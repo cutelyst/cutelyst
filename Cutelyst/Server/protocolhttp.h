@@ -49,6 +49,15 @@ public:
     };
     Q_ENUM(OpCode)
 
+    enum class ChunkPhase {
+        NotChunked = 0,
+        Size,
+        Data,
+        DataCrLf,
+        Trailers,
+    };
+    Q_ENUM(ChunkPhase)
+
     ProtoRequestHttp(Socket *sock, int bufferSize);
     ~ProtoRequestHttp() override;
 
@@ -88,6 +97,8 @@ public:
         websocketUpgraded = false;
         last              = 0;
         beginLine         = 0;
+        chunkPhase        = ChunkPhase::NotChunked;
+        chunkBytesLeft    = 0;
 
         serverAddress = sock->serverAddress;
         remoteAddress = sock->remoteAddress;
@@ -106,6 +117,8 @@ public:
     int beginLine                    = 0;
     int websocket_start_of_frame     = 0;
     WebSocketPhase websocket_phase   = WebSocketPhase::WebSocketPhaseHeaders;
+    ChunkPhase chunkPhase            = ChunkPhase::NotChunked;
+    qint64 chunkBytesLeft            = 0;
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode     = 0;
     bool websocketUpgraded           = false;
@@ -137,6 +150,8 @@ private:
     inline bool processRequest(Socket *sock, QIODevice *io) const;
     inline void parseMethod(const char *ptr, const char *end, Socket *sock) const;
     inline void parseHeader(const char *ptr, const char *end, Socket *sock) const;
+    // Returns true when the chunked body is complete and the request can run.
+    bool parseChunkedBody(Socket *sock, QIODevice *io) const;
 
 protected:
     friend class ProtoRequestHttp;

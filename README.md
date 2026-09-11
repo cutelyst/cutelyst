@@ -6,8 +6,13 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
 
 ## BENCHMARKS
 
-Don't trust us on being fast, check out the most comprehensive web framework benchmarks by TechEmpower
-http://www.techempower.com/benchmarks/
+Don't trust us on being fast — check [HttpArena](https://www.http-arena.com/) (successor to the TechEmpower Framework Benchmarks):
+
+[![HTTP Arena](https://img.shields.io/endpoint?url=https://www.http-arena.com/badge/cutelyst/h1.json)](https://www.http-arena.com/#type=emerging,flagship&tuned=0)
+
+Entry source: [MDA2AV/HttpArena `frameworks/cutelyst`](https://github.com/MDA2AV/HttpArena/tree/main/frameworks/cutelyst)
+
+Historical TechEmpower Round 23 results remain at http://www.techempower.com/benchmarks/
 
 ## FEATURES:
 

@@ -61,16 +61,20 @@ QIODevice *Cutelyst::Protocol::createBody(qint64 contentLength) const
             return nullptr;
         }
         body = temp;
-    } else if (m_postBuffering && contentLength <= m_postBuffering) {
+    } else if (m_postBuffering && contentLength >= 0 && contentLength <= m_postBuffering) {
         auto buffer = new QBuffer;
         buffer->open(QIODevice::ReadWrite);
-        buffer->buffer().reserve(int(contentLength));
+        if (contentLength > 0) {
+            buffer->buffer().reserve(int(contentLength));
+        }
         body = buffer;
     } else {
-        // Unbuffered
+        // Unbuffered (also used for chunked bodies with unknown length)
         auto buffer = new QBuffer;
         buffer->open(QIODevice::ReadWrite);
-        buffer->buffer().reserve(int(contentLength));
+        if (contentLength > 0) {
+            buffer->buffer().reserve(int(contentLength));
+        }
         body = buffer;
     }
     return body;
