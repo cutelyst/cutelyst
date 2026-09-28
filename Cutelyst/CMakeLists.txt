@@ -171,6 +171,10 @@ qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
     ${CUTELYST_LRELEASE_OPTIONS}
 )
 
+add_custom_target(cutelystcore_translations ALL
+    DEPENDS ${cutelystcore_QM_FILES}
+)
+
 install(FILES ${cutelystcore_QM_FILES} DESTINATION ${I18NDIR})
 
 add_subdirectory(Plugins)
