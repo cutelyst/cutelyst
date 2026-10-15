@@ -89,8 +89,8 @@ Before=httpd.service nginx.service lighttpd.service
 [Service]
 Type=notify
 PIDFile=${RUNTIME_DIRECTORY}/myapp.pid
-ExecStart=/usr/bin/cutelystd4-qt6 -M --lazy -a /path/to/myapp.so --pidfile ${RUNTIME_DIRECTORY}/myapp.pid --fastcgi-socket ${RUNTIME_DIRECTORY}/myapp.sock --socket-access ug --chown-socket myappuser:www --uid myappuser --gid myappgroup
-ExecStop=/usr/bin/cutelyst4d-qt6 --stop ${RUNTIME_DIRECTORY}/myapp.pid
+ExecStart=/usr/bin/cutelystd5-qt6 -M --lazy -a /path/to/myapp.so --pidfile ${RUNTIME_DIRECTORY}/myapp.pid --fastcgi-socket ${RUNTIME_DIRECTORY}/myapp.sock --socket-access ug --chown-socket myappuser:www --uid myappuser --gid myappgroup
+ExecStop=/usr/bin/cutelystd5-qt6 --stop ${RUNTIME_DIRECTORY}/myapp.pid
 NotifyAccess=all
 RuntimeDirectory=myapp
 
