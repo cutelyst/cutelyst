@@ -63,7 +63,7 @@ Get started with our [Tutorial](https://github.com/cutelyst/cutelyst/wiki/Tutori
 ## REQUIREMENTS
 
  * CMake - for the build system (>= 3.28)
- * Qt - the core library of this framework (>= 6.4)
+ * Qt - the core library of this framework (>= 6.5)
 
 ## LICENSE
 
