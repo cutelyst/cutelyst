@@ -519,74 +519,99 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
 {
     ParamsMultiMap ret;
     std::vector<std::pair<QString, QString>> attributes;
-    // This is probably not the best parser ever
-    // but it handles cases like:
-    // :Args:Local('fo"')o'):ActionClass('foo')
-    // into
-    // (("Args",""), ("Local","'fo"')o'"), ("ActionClass","'foo'"))
 
-    int size = str.size();
-    int pos  = 0;
-    while (pos < size) {
-        // find the start of a key
-        if (str.at(pos) == ':') {
-            QString key;
-            QString value;
-            int keyStart  = ++pos;
-            int keyLength = 0;
-            while (pos < size) {
-                if (str.at(pos) == '(') {
-                    // attribute has value
-                    int valueStart = ++pos;
-                    while (pos < size) {
-                        if (str.at(pos) == ')') {
-                            // found the possible end of the value
-                            int valueEnd = pos;
-                            ++pos;
-                            if (pos < size && str.at(pos) == ':') {
-                                // found the start of a key so this is
-                                // really the end of a value
-                                value =
-                                    QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
-                                break;
-                            } else if (pos >= size) {
-                                // found the end of the string
-                                // save the remaining as the value
-                                value =
-                                    QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
-                                break;
-                            }
-                            // string was not '):' or ')$'
-                            continue;
-                        }
-                        ++pos;
-                    }
-                    break;
-                } else if (str.at(pos) == ':') {
-                    // Attribute has no value
-                    break;
-                }
-                ++keyLength;
+    {
+        const auto size         = str.size();
+        const qsizetype lastPos = size - 1;
+        qsizetype pos           = 0;
+        qsizetype keyStart      = 0;
+        qsizetype keyLength     = 0;
+        qsizetype valueStart    = 0;
+        qsizetype valueLength   = 0;
+        bool insideKey          = false;
+        bool insideValue        = false;
+        while (pos < size) {
+            const auto ch = str.at(pos);
+
+            if (insideKey && insideValue) {
+                qFatal("Action '%s' has invalid attributes that are not parseable",
+                       name.constData());
+            }
+
+            if (!insideKey && !insideValue && ch != ':') {
+                // we are somewhere
                 ++pos;
+                continue;
             }
 
-            // store the key
-            key = QString::fromLatin1(str.mid(keyStart, keyLength));
+            if (!insideKey && !insideValue && ch == ':') {
+                // we found the beginning of a key
+                insideKey = true;
+                keyStart  = ++pos;
+                continue;
+            }
 
-            // remove quotes
-            if (!value.isEmpty()) {
-                if ((value.startsWith(u'\'') && value.endsWith(u'\'')) ||
-                    (value.startsWith(u'"') && value.endsWith(u'"'))) {
-                    value.remove(0, 1);
-                    value.remove(value.size() - 1, 1);
+            if (insideKey) {
+                if (ch == ':' || pos == lastPos) {
+                    // key ended without value
+
+                    if (pos == lastPos) {
+                        // key ended at string end
+                        ++keyLength;
+                    }
+
+                    attributes.emplace_back(
+                        QString::fromLatin1(str.mid(keyStart, keyLength)).trimmed(), QString());
+
+                    keyLength = 0;
+                    keyStart  = 0;
+                    insideKey = false;
+                    continue;
+                } else if (ch == '(') {
+                    // key has value
+                    insideKey   = false;
+                    insideValue = true;
+                    valueStart  = ++pos;
+                    continue;
+                } else {
+                    // we are still inside the key
+                    ++keyLength;
+                    ++pos;
+                    continue;
                 }
             }
 
-            // store the key/value pair found
-            attributes.emplace_back(key, value);
-            continue;
+            if (insideValue) {
+                if (ch == ')') {
+                    // value ended
+                    QString value = QString::fromLatin1(str.mid(valueStart, valueLength)).trimmed();
+
+                    // remove quotes
+                    if (!value.isEmpty() && ((value.startsWith(u'\'') && value.endsWith(u'\'')) ||
+                                             (value.startsWith(u'"') && value.endsWith(u'"')))) {
+                        value.remove(0, 1);
+                        value.remove(value.size() - 1, 1);
+                    }
+
+                    attributes.emplace_back(
+                        QString::fromLatin1(str.mid(keyStart, keyLength)).trimmed(), value);
+
+                    keyLength   = 0;
+                    keyStart    = 0;
+                    valueLength = 0;
+                    valueStart  = 0;
+                    insideValue = false;
+
+                    ++pos;
+                    continue;
+                } else {
+                    // we are still inside the value
+                    ++valueLength;
+                    ++pos;
+                    continue;
+                }
+            }
         }
-        ++pos;
     }
 
     const static auto digitRE = QRegularExpression(u"\\D"_s);
