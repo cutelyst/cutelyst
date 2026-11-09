@@ -219,8 +219,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     }
                 }
 
-                endOrDie = false; // CFWS & quoted strings are OK again now we're at the beginning
-                                  // of an element (although they are obsolete forms)
+                endOrDie   = false; // CFWS & quoted strings are OK again now we're at the beginning
+                                    // of an element (although they are obsolete forms)
                 elementLen = 0;
                 elementCount++;
                 parseLocalPart += token;
@@ -442,8 +442,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     }
                 }
 
-                endOrDie = false; // CFWS is OK again now we're at the beginning of an element
-                                  // (although it may be obsolete CFWS)
+                endOrDie   = false; // CFWS is OK again now we're at the beginning of an element
+                                    // (although it may be obsolete CFWS)
                 elementLen = 0;
                 elementCount++;
                 atomListDomain[elementCount].clear();
